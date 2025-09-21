@@ -1,16 +1,31 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": [
       "node"
     ],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "outDir": "./dist"
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "incremental": true,
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
   },
+  "include": [
+    "src/globals/**/*.d.ts",
+    "**/*.ts",
+  ],
   "exclude": ["node_modules"]
 }

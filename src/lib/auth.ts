@@ -1,0 +1,87 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { nextCookies } from "better-auth/next-js";
+import { admin, emailOTP, openAPI } from "better-auth/plugins";
+
+import { db, schema } from "@/lib/db";
+import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/app-info";
+
+export type AuthType = {
+  user: typeof auth.$Infer.Session.user | null
+  session: typeof auth.$Infer.Session.session | null
+}
+
+export const auth = betterAuth({
+  appName: APP_NAME_CAPITALIZED,
+  user: {
+    additionalFields: {
+      username: {
+        type: "string",
+        required: true,
+      },
+    },
+    deleteUser: { enabled: true },
+    changeEmail: {
+      enabled: true,
+      async sendChangeEmailVerification({ newEmail, url }) {
+        console.log("sendChangeEmailVerification", { newEmail, url });
+      },
+    },
+  },
+  emailVerification: {
+    enabled: true,
+    async onEmailVerification(user, _request) {
+      console.log("onEmailVerification", { email: user.email });
+    },
+    async sendVerificationEmail({ user, url }) {
+      console.log("sendVerificationEmail", { email: user.email, url });
+    },
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 2 * 60, // 2 minutes
+    },
+  },
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  rateLimit: {
+    // enabled: true, // Включаем для режима development
+    customRules: {
+      // Ограничеваем количество запросов на отправку писем
+      "/change-email": {
+        window: 60,
+        max: 1,
+      },
+      "/email-otp/send-verification-otp": {
+        window: 60,
+        max: 5,
+      },
+    },
+  },
+  plugins: [
+    nextCookies(),
+    openAPI(),
+    emailOTP({
+      async sendVerificationOTP({ email, otp, type }) {
+        console.log("sendVerificationOTP", { email, otp, type });
+        // Implement the sendVerificationOTP method to send the OTP to the user's email address
+      },
+    }),
+    // An admin is any user assigned the admin role or any user whose ID is included in the adminUserIds option
+    admin({
+      defaultRole: "user", // Default
+      adminRoles: ["admin"], // Default
+      impersonationSessionDuration: 60 * 60, // 1 hour (Default)
+      defaultBanReason: "Без причины", // Not default
+      defaultBanExpiresIn: undefined, // Default
+      bannedUserMessage: "Ваш аккаунт был заблокирован", // Not default
+    }),
+  ],
+  advanced: {
+    generateId: false,
+    cookiePrefix: APP_NAME,
+  },
+});
