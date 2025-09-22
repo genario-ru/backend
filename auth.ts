@@ -1,9 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { nextCookies } from "better-auth/next-js";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
-import { db, schema } from "@/lib/db";
+import { db, schema } from "@/db";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/app-info";
 
 export type AuthType = {
@@ -62,7 +61,6 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    nextCookies(),
     openAPI(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {

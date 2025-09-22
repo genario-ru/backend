@@ -20,7 +20,8 @@
     "incremental": true,
     "outDir": "./dist",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/auth": ["./auth.ts"]
     },
   },
   "include": [
