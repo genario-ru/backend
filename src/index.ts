@@ -1,18 +1,20 @@
 import { serve } from "@hono/node-server";
-import { authRoutes } from "@/routes/v1/auth/route";
-import { createHonoApp } from "@/lib/create-hono-app";
-import { videoDurationsRoutes } from "./routes/v1/video-durations/route";
+import { authRoute } from "@/routes/v1/auth/route";
+import { createHonoApp } from "@/utils/create-hono-app";
+import { videoDurationsRoute } from "./routes/v1/video-durations/route";
+import { addGracefulShutdown } from "./utils/add-graceful-shutdown";
+import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 
-const app = createHonoApp();
-const routes = [authRoutes, videoDurationsRoutes] as const;
+const app = createHonoApp().basePath("/api");
+const appV1Routes = createHonoApp().basePath("/v1");
+const appV1RoutesList = [authRoute, videoDurationsRoute];
 
-routes.forEach((route) => {
-  app.basePath("/api").route("/", route);
+appV1RoutesList.forEach((route) => {
+  appV1Routes.route("/", route);
 });
 
-// app.get('/', (c) => {
-//   return c.text('Hello Hono!')
-// })
+app.use("*", errorHandlerMiddleware);
+app.route("/", appV1Routes);
 
 const server = serve({
   fetch: app.fetch,
@@ -21,17 +23,4 @@ const server = serve({
   console.log(`Server is running on http://localhost:${info.port}`)
 })
 
-process.on('SIGINT', () => {
-  server.close()
-  process.exit(0)
-})
-
-process.on('SIGTERM', () => {
-  server.close((err) => {
-    if (err) {
-      console.error(err)
-      process.exit(1)
-    }
-    process.exit(0)
-  })
-})
+addGracefulShutdown(server)

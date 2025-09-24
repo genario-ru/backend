@@ -1,14 +1,16 @@
 import { createMiddleware } from 'hono/factory';
 import { auth, type AuthType } from '@/auth';
 import { HTTPException } from 'hono/http-exception';
+import { APIErrorCode } from '@/types/api-error';
+import { throwAPIError } from '@/utils/throw-api-error';
 
 export const sessionMiddleware = createMiddleware<{ Variables: AuthType }>(async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
-    throw new HTTPException(401, {
+    return throwAPIError({
+      code: APIErrorCode.Unauthorized,
       message: "You have to authenticate to access this resource",
-      cause: "Unauthorized"
     })
   }
 

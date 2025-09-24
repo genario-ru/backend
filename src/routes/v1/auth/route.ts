@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
-import { createHonoApp } from "@/lib/create-hono-app";
+import { createHonoApp } from "@/utils/create-hono-app";
 
-export const authRoutes = createHonoApp();
+export const authRoute = createHonoApp().basePath("/auth");
 
-authRoutes.on(['POST', 'GET'], '/auth/**', (c) => {
+authRoute.on(['POST', 'GET'], '/**', (c) => {
   return auth.handler(c.req.raw)
 })

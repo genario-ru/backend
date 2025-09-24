@@ -1,13 +1,13 @@
 import { db } from "@/db";
-import { createHonoApp } from "@/lib/create-hono-app";
+import { createHonoApp } from "@/utils/create-hono-app";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 
-export const videoDurationsRoutes = createHonoApp();
+export const videoDurationsRoute = createHonoApp().basePath("/video-durations");
 
-videoDurationsRoutes.use(sessionMiddleware);
+videoDurationsRoute.use(sessionMiddleware);
 
-// GET /v1/video-durations
-videoDurationsRoutes.get("/v1/video-durations", async (c) => {
+// GET /api/v1/video-durations
+videoDurationsRoute.get("/", async (c) => {
   const foundVideoDurations = await db.query.videoDuration.findMany();
 
   return c.json(foundVideoDurations);
