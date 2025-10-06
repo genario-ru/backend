@@ -1,11 +1,11 @@
 import { timestamp } from "drizzle-orm/pg-core";
 
 export const timestamps = {
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
     .notNull()
     .defaultNow()
-    .$onUpdate(() => new Date()),
+    .$onUpdate(() => new Date().toISOString()),
 };
