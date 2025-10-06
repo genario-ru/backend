@@ -1,4 +1,4 @@
-import { APIErrorCode } from "@/types/api-error";
+import { APIErrorCode } from "@/schemas/common/api-error";
 import { throwAPIError } from "@/utils/throw-api-error";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";

@@ -1,6 +1,6 @@
 import { APIErrorCodeToAPIErrorStatusCode } from "@/constants/api-errors";
 import { httpStatusCodeMessages } from "@/constants/http-errors";
-import { APIErrorCode } from "@/types/api-error";
+import { APIErrorCode } from "@/schemas/common/api-error";
 import { HTTPException } from "hono/http-exception";
 
 type ThrownAPIErrorParams = {

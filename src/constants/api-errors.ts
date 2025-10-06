@@ -1,4 +1,4 @@
-import { APIErrorCode, APIErrorStatusCode } from "@/types/api-error";
+import { APIErrorCode, APIErrorStatusCode } from "@/schemas/common/api-error";
 
 export const APIErrorCodeToAPIErrorStatusCode: Record<APIErrorCode, APIErrorStatusCode> = {
   [APIErrorCode.Unauthorized]: APIErrorStatusCode.Unauthorized,
