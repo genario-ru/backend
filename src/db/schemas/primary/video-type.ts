@@ -4,7 +4,7 @@ import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../../constants/timestamps";
 import { ideasListToVideoType } from "../linking/ideas-list-to-video-type";
 import { platformToVideoType } from "../linking/platform-to-video-type";
-import { ideaVariant } from "./idea-variant";
+import { idea } from "./idea";
 import { scenario } from "./scenario";
 
 export const videoType = pgTable("video_type", {
@@ -17,7 +17,7 @@ export const videoType = pgTable("video_type", {
 });
 
 export const videoTypeRelations = relations(videoType, ({ many }) => ({
-  ideaVariants: many(ideaVariant),
+  ideas: many(idea),
   scenarios: many(scenario),
   platformToVideoType: many(platformToVideoType),
   ideasListToVideoType: many(ideasListToVideoType),

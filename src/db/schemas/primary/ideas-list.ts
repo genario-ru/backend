@@ -4,7 +4,7 @@ import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../../constants/timestamps";
 import { ideasListToTone } from "../linking/ideas-list-to-tone";
 import { ideasListToVideoType } from "../linking/ideas-list-to-video-type";
-import { ideaVariant } from "./idea-variant";
+import { idea } from "./idea";
 import { profile } from "./profile";
 import { template } from "./template";
 import { user } from "./user";
@@ -41,7 +41,7 @@ export const ideaRelations = relations(ideasList, ({ one, many }) => ({
     fields: [ideasList.templateId],
     references: [template.id],
   }),
-  ideaVariants: many(ideaVariant),
+  ideas: many(idea),
   ideasListToTone: many(ideasListToTone),
   ideasListToVideoType: many(ideasListToVideoType),
 }));

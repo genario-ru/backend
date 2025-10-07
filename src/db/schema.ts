@@ -19,7 +19,7 @@ export * from "./schemas/linking/subscription-to-credits-batch";
 
 // Primary
 export * from "./schemas/primary/attachment";
-export * from "./schemas/primary/idea-variant";
+export * from "./schemas/primary/idea";
 export * from "./schemas/primary/ideas-list";
 export * from "./schemas/primary/platform";
 export * from "./schemas/primary/profile";

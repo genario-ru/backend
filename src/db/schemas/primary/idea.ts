@@ -5,7 +5,7 @@ import { timestamps } from "../../constants/timestamps";
 import { ideasList } from "./ideas-list";
 import { videoType } from "./video-type";
 
-export const ideaVariant = pgTable("idea_variant", {
+export const idea = pgTable("idea", {
   id: uuid("id").defaultRandom().primaryKey(),
   ideasListId: uuid("ideas_list_id")
     .references(() => ideasList.id, {
@@ -26,13 +26,13 @@ export const ideaVariant = pgTable("idea_variant", {
   ...timestamps,
 });
 
-export const ideaVariantRelations = relations(ideaVariant, ({ one }) => ({
+export const ideaVariantRelations = relations(idea, ({ one }) => ({
   ideasList: one(ideasList, {
-    fields: [ideaVariant.ideasListId],
+    fields: [idea.ideasListId],
     references: [ideasList.id],
   }),
   videoType: one(videoType, {
-    fields: [ideaVariant.videoTypeId],
+    fields: [idea.videoTypeId],
     references: [videoType.id],
   }),
 }));

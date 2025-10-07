@@ -8,6 +8,13 @@
       "when": 1759785476938,
       "tag": "0000_luxuriant_taskmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759873733862,
+      "tag": "0001_silky_solo",
+      "breakpoints": true
     }
   ]
 }
