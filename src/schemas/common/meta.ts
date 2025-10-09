@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const metaParamsSchema = z.object({
   q: z.string().optional().describe("Строка поиска"),

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { HTTPErrorStatusCode, zHTTPErrorCode, zHTTPErrorStatusCode } from "./http-error";
 
 export enum APIErrorCode {
