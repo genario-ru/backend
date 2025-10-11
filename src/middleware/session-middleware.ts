@@ -1,6 +1,5 @@
 import { createMiddleware } from 'hono/factory';
 import { auth, type AuthType } from '@/auth';
-import { HTTPException } from 'hono/http-exception';
 import { APIErrorCode } from '@/schemas/common/api-error';
 import { throwAPIError } from '@/utils/throw-api-error';
 

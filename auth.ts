@@ -6,8 +6,8 @@ import { db, schema } from "@/db";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/app-info";
 
 export type AuthType = {
-  user: typeof auth.$Infer.Session.user | null
-  session: typeof auth.$Infer.Session.session | null
+  user: typeof auth.$Infer.Session.user
+  session: typeof auth.$Infer.Session.session
 }
 
 export const auth = betterAuth({

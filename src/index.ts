@@ -5,8 +5,8 @@ import { logger } from 'hono/logger'
 import { showRoutes } from 'hono/dev'
 import { authRoute } from "@/routes/auth/route";
 import { createHonoApp } from "@/utils/create-hono-app";
-import { videoDurationsRoute } from "./routes/v1/video-durations/route";
-import { videoTypesRoute } from "./routes/v1/video-types/route";
+import { videoDurationsRoute } from "./routes/v1/video-durations/root/get/route";
+import { videoTypesRoute } from "./routes/v1/video-types/root/get/route";
 import { addGracefulShutdown } from "./utils/add-graceful-shutdown";
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import { Scalar } from "@scalar/hono-api-reference";
