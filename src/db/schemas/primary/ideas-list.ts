@@ -28,7 +28,7 @@ export const ideasList = pgTable("ideas_list", {
   ...timestamps,
 });
 
-export const ideaRelations = relations(ideasList, ({ one, many }) => ({
+export const ideasListRelations = relations(ideasList, ({ one, many }) => ({
   user: one(user, {
     fields: [ideasList.userId],
     references: [user.id],

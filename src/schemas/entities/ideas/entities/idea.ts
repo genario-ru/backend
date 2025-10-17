@@ -7,7 +7,7 @@ import { videoTypeSchema } from "../../video-types/entities/video-type";
 
 export const ideaSchema = createSelectSchema(idea);
 
-export type IdeaVariant = z.infer<typeof ideaSchema>;
+export type Idea = z.infer<typeof ideaSchema>;
 
 export const ideaExtendedSchema = ideaSchema.extend(
   z.object({
@@ -15,4 +15,4 @@ export const ideaExtendedSchema = ideaSchema.extend(
   }).shape,
 );
 
-export type IdeaVariantExtended = z.infer<typeof ideaExtendedSchema>;
+export type IdeaExtended = z.infer<typeof ideaExtendedSchema>;
