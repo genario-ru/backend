@@ -9,13 +9,42 @@ import { authRoute } from "@/routes/auth/route";
 import { createHonoApp } from "@/utils/create-hono-app";
 
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
-import { videoDurationsRoute } from "./routes/v1/video-durations/root/get/route";
-import { videoTypesRoute } from "./routes/v1/video-types/root/get/route";
+import { deleteIdeaRoute, updateIdeaRoute } from "./routes/v1/ideas";
+import { getPlatformsRoute } from "./routes/v1/platforms";
+import {
+  createProfileRoute,
+  deleteProfileRoute,
+  getMyProfilesRoute,
+  getProfileRoute,
+  getProfileTypesRoute,
+  updateProfileRoute,
+} from "./routes/v1/profiles";
+import { getMyScenariosRoute } from "./routes/v1/scenarios";
+import { getTemplatesRoute } from "./routes/v1/templates";
+import { getTonesRoute } from "./routes/v1/tones";
+import { getVideoDurationsRoute } from "./routes/v1/video-durations";
+import { getVideoTypesRoute } from "./routes/v1/video-types";
 import { addGracefulShutdown } from "./utils/add-graceful-shutdown";
 
 const app = createHonoApp().basePath("/api");
 const appV1Routes = createHonoApp().basePath("/v1");
-const appV1RoutesList = [authRoute, videoDurationsRoute, videoTypesRoute];
+const appV1RoutesList = [
+  authRoute,
+  deleteIdeaRoute,
+  updateIdeaRoute,
+  getPlatformsRoute,
+  getMyProfilesRoute,
+  deleteProfileRoute,
+  getProfileRoute,
+  updateProfileRoute,
+  createProfileRoute,
+  getProfileTypesRoute,
+  getMyScenariosRoute,
+  getTemplatesRoute,
+  getTonesRoute,
+  getVideoDurationsRoute,
+  getVideoTypesRoute,
+];
 
 app.route("/", authRoute);
 

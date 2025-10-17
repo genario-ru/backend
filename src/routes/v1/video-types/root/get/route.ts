@@ -6,10 +6,10 @@ import {
 } from "@/schemas/entities/video-types/handlers/get-video-types/response";
 import { createHonoApp } from "@/utils/create-hono-app";
 
-export const videoTypesRoute = createHonoApp().basePath("/video-types");
+export const getVideoTypesRoute = createHonoApp().basePath("/video-types");
 
 // GET /api/v1/video-types
-videoTypesRoute.get("/", sessionMiddleware, async (c) => {
+getVideoTypesRoute.get("/", sessionMiddleware, async (c) => {
   const foundVideoTypes = await db.query.videoType.findMany();
 
   return c.json<GetVideoTypesResponse>(
