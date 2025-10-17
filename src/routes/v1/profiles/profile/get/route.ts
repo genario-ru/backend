@@ -1,10 +1,13 @@
 import { db } from "@/db";
-import { createHonoApp } from "@/utils/create-hono-app";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getProfileParamsSchema } from "@/schemas/entities/profiles/handlers/get-profile/params";
-import { throwAPIError } from "@/utils/throw-api-error";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { getProfileResponseSchema, type GetProfileResponse } from "@/schemas/entities/profiles/handlers/get-profile/response";
+import { getProfileParamsSchema } from "@/schemas/entities/profiles/handlers/get-profile/params";
+import {
+  type GetProfileResponse,
+  getProfileResponseSchema,
+} from "@/schemas/entities/profiles/handlers/get-profile/response";
+import { createHonoApp } from "@/utils/create-hono-app";
+import { throwAPIError } from "@/utils/throw-api-error";
 
 export const getProfileRoute = createHonoApp().basePath("/profiles/:profileId");
 
@@ -15,10 +18,7 @@ getProfileRoute.get("/", sessionMiddleware, async (c) => {
 
   const foundProfile = await db.query.profile.findFirst({
     where: (profile, { eq, and }) => {
-      return and(
-        eq(profile.id, profileId),
-        eq(profile.userId, user.id),
-      );
+      return and(eq(profile.id, profileId), eq(profile.userId, user.id));
     },
     with: {
       user: true,
@@ -35,7 +35,8 @@ getProfileRoute.get("/", sessionMiddleware, async (c) => {
   if (!foundProfile) {
     return throwAPIError({
       code: APIErrorCode.NotFound,
-      message: "Данный профиль не существует или у вас нет возможности просматривать его",
+      message:
+        "Данный профиль не существует или у вас нет возможности просматривать его",
     });
   }
 

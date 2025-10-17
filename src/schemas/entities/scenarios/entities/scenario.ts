@@ -1,13 +1,15 @@
-import { scenario } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { scenarioVersionExtendedSchema } from "./scenario-version";
+
+import { scenario } from "@/db/schema";
+
+import { platformSchema } from "../../platforms/entities/platform";
 import { profileSchema } from "../../profiles/entities/profile";
 import { templateSchema } from "../../templates/entities/template";
-import { platformSchema } from "../../platforms/entities/platform";
-import { videoTypeSchema } from "../../video-types/entities/video-type";
-import { videoDurationSchema } from "../../video-durations/entities/video-duration";
 import { toneSchema } from "../../tones/entities/tone";
+import { videoDurationSchema } from "../../video-durations/entities/video-duration";
+import { videoTypeSchema } from "../../video-types/entities/video-type";
+import { scenarioVersionExtendedSchema } from "./scenario-version";
 
 export const scenarioSchema = createSelectSchema(scenario);
 

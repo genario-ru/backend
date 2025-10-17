@@ -2,13 +2,13 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
-import { db, schema } from "@/db";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/app-info";
+import { db, schema } from "@/db";
 
 export type AuthType = {
-  user: typeof auth.$Infer.Session.user
-  session: typeof auth.$Infer.Session.session
-}
+  user: typeof auth.$Infer.Session.user;
+  session: typeof auth.$Infer.Session.session;
+};
 
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,

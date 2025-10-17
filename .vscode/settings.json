@@ -1,0 +1,11 @@
+{
+  "files.readonlyInclude": {
+    "src/codegen/**": true
+  },
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.addMissingImports": "always"
+  }
+}

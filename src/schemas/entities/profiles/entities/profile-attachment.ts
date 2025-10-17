@@ -1,6 +1,8 @@
-import { profileAttachment } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
+
+import { profileAttachment } from "@/db/schema";
+
 import { attachmentSchema } from "../../attachments/entities/attachment";
 
 export const profileAttachmentSchema = createSelectSchema(profileAttachment);

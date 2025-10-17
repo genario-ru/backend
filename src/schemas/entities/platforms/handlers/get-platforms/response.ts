@@ -1,4 +1,5 @@
 import * as z from "zod";
+
 import { platformExtendedSchema } from "../../entities/platform";
 
 export const getPlatformsResponseSchema = z.object({

@@ -1,6 +1,7 @@
-import { videoType } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
+
+import { videoType } from "@/db/schema";
 
 export const videoTypeSchema = createSelectSchema(videoType);
 

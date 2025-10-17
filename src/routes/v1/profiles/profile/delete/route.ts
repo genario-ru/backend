@@ -1,12 +1,18 @@
-import { createHonoApp } from "@/utils/create-hono-app";
-import { sessionMiddleware } from "@/middleware/session-middleware";
-import { deleteProfileParamsSchema } from "@/schemas/entities/profiles/handlers/delete-profile/params";
+import { and, eq } from "drizzle-orm";
+
 import { db } from "@/db";
 import { profile } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
-import { deleteProfileResponseSchema, type DeleteProfileResponse } from "@/schemas/entities/profiles/handlers/delete-profile/response";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { deleteProfileParamsSchema } from "@/schemas/entities/profiles/handlers/delete-profile/params";
+import {
+  type DeleteProfileResponse,
+  deleteProfileResponseSchema,
+} from "@/schemas/entities/profiles/handlers/delete-profile/response";
+import { createHonoApp } from "@/utils/create-hono-app";
 
-export const deleteProfileRoute = createHonoApp().basePath("/profiles/:profileId");
+export const deleteProfileRoute = createHonoApp().basePath(
+  "/profiles/:profileId",
+);
 
 // DELETE /api/v1/profiles/{profileId}
 deleteProfileRoute.delete("/", sessionMiddleware, async (c) => {
@@ -15,12 +21,7 @@ deleteProfileRoute.delete("/", sessionMiddleware, async (c) => {
 
   const [deletedProfile] = await db
     .delete(profile)
-    .where(
-      and(
-        eq(profile.id, profileId),
-        eq(profile.userId, user.id),
-      ),
-    )
+    .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
     .returning();
 
   return c.json<DeleteProfileResponse>(

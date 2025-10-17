@@ -1,6 +1,8 @@
-import { platform } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
+
+import { platform } from "@/db/schema";
+
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 
 export const platformSchema = createSelectSchema(platform);

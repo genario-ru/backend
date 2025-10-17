@@ -1,6 +1,8 @@
-import { scenarioChapter } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
+
+import { scenarioChapter } from "@/db/schema";
+
 import { scenarioSceneSchema } from "./scenario-scene";
 
 export const scenarioChapterSchema = createSelectSchema(scenarioChapter);

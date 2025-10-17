@@ -33,7 +33,10 @@ export enum HTTPErrorStatusCode {
 export const zHTTPErrorCode = z.enum(HTTPErrorCode);
 export const zHTTPErrorStatusCode = z.enum(HTTPErrorStatusCode);
 
-export const HTTPErrorCodeToHttpStatus: Record<HTTPErrorCode, HTTPErrorStatusCode> = {
+export const HTTPErrorCodeToHttpStatus: Record<
+  HTTPErrorCode,
+  HTTPErrorStatusCode
+> = {
   [HTTPErrorCode.BadRequest]: HTTPErrorStatusCode.BadRequest,
   [HTTPErrorCode.Unauthorized]: HTTPErrorStatusCode.Unauthorized,
   [HTTPErrorCode.Forbidden]: HTTPErrorStatusCode.Forbidden,
@@ -48,7 +51,10 @@ export const HTTPErrorCodeToHttpStatus: Record<HTTPErrorCode, HTTPErrorStatusCod
   [HTTPErrorCode.ServiceUnavailable]: HTTPErrorStatusCode.ServiceUnavailable,
 };
 
-export const httpStatusToHTTPErrorCode: Record<HTTPErrorStatusCode, HTTPErrorCode> = {
+export const httpStatusToHTTPErrorCode: Record<
+  HTTPErrorStatusCode,
+  HTTPErrorCode
+> = {
   [HTTPErrorStatusCode.BadRequest]: HTTPErrorCode.BadRequest,
   [HTTPErrorStatusCode.Unauthorized]: HTTPErrorCode.Unauthorized,
   [HTTPErrorStatusCode.Forbidden]: HTTPErrorCode.Forbidden,

@@ -1,9 +1,12 @@
 import { db } from "@/db";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { profile, profileToPlatform, profileToTone } from "@/db/schema";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { createProfileBodySchema } from "@/schemas/entities/profiles/handlers/create-profile/body";
-import { profile, profileToPlatform, profileToTone } from "@/db/schema";
-import { createProfileResponseSchema, type CreateProfileResponse } from "@/schemas/entities/profiles/handlers/create-profile/response";
+import {
+  type CreateProfileResponse,
+  createProfileResponseSchema,
+} from "@/schemas/entities/profiles/handlers/create-profile/response";
+import { createHonoApp } from "@/utils/create-hono-app";
 
 export const createProfileRoute = createHonoApp().basePath("/profiles");
 

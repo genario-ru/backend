@@ -1,6 +1,8 @@
-import { ideasList } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
+
+import { ideasList } from "@/db/schema";
+
 import { profileSchema } from "../../profiles/entities/profile";
 import { toneSchema } from "../../tones/entities/tone";
 import { videoTypeSchema } from "../../video-types/entities/video-type";

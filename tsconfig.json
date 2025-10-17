@@ -4,9 +4,7 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -22,11 +20,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/auth": ["./auth.ts"]
-    },
+    }
   },
-  "include": [
-    "src/globals/**/*.d.ts",
-    "**/*.ts",
-  ],
+  "include": ["src/globals/**/*.d.ts", "**/*.ts"],
   "exclude": ["node_modules"]
 }

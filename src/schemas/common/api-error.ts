@@ -1,5 +1,10 @@
 import * as z from "zod";
-import { HTTPErrorStatusCode, zHTTPErrorCode, zHTTPErrorStatusCode } from "./http-error";
+
+import {
+  HTTPErrorStatusCode,
+  zHTTPErrorCode,
+  zHTTPErrorStatusCode,
+} from "./http-error";
 
 export enum APIErrorCode {
   Unauthorized = "UNAUTHORIZED",

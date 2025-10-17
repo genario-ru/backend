@@ -1,8 +1,9 @@
-import { APIErrorCode } from "@/schemas/common/api-error";
-import { throwAPIError } from "@/utils/throw-api-error";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { prettifyError, ZodError } from "zod";
+
+import { APIErrorCode } from "@/schemas/common/api-error";
+import { throwAPIError } from "@/utils/throw-api-error";
 
 export const errorHandlerMiddleware = createMiddleware(async (_c, next) => {
   try {
@@ -16,12 +17,12 @@ export const errorHandlerMiddleware = createMiddleware(async (_c, next) => {
       return throwAPIError({
         code: APIErrorCode.ValidationError,
         details: prettifyError(error),
-      })
+      });
     }
 
     return throwAPIError({
       code: APIErrorCode.InternalServerError,
       details: error,
-    })
+    });
   }
-})
+});

@@ -1,7 +1,10 @@
 import { db } from "@/db";
-import { createHonoApp } from "@/utils/create-hono-app";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getMyScenariosResponseSchema, type GetMyScenariosResponse } from "@/schemas/entities/scenarios/handlers/get-my-scenarios/response";
+import {
+  type GetMyScenariosResponse,
+  getMyScenariosResponseSchema,
+} from "@/schemas/entities/scenarios/handlers/get-my-scenarios/response";
+import { createHonoApp } from "@/utils/create-hono-app";
 
 export const getMyScenariosRoute = createHonoApp().basePath("/scenarios/my");
 

@@ -1,10 +1,12 @@
-import { profile } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { userSchema } from "../../users/entities/user";
-import { profileTypeSchema } from "./profile-type";
+
+import { profile } from "@/db/schema";
+
 import { platformSchema } from "../../platforms/entities/platform";
 import { toneSchema } from "../../tones/entities/tone";
+import { userSchema } from "../../users/entities/user";
+import { profileTypeSchema } from "./profile-type";
 
 export const profileSchema = createSelectSchema(profile);
 

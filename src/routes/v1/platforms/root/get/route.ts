@@ -1,5 +1,8 @@
 import { db } from "@/db";
-import { getPlatformsResponseSchema, type GetPlatformsResponse } from "@/schemas/entities/platforms/handlers/get-platforms/response";
+import {
+  type GetPlatformsResponse,
+  getPlatformsResponseSchema,
+} from "@/schemas/entities/platforms/handlers/get-platforms/response";
 import { createHonoApp } from "@/utils/create-hono-app";
 
 export const getPlatformsRoute = createHonoApp().basePath("/platforms");
@@ -21,7 +24,7 @@ getPlatformsRoute.get("/", async (c) => {
 
   return c.json<GetPlatformsResponse>(
     getPlatformsResponseSchema.parse({
-      data: preparedPlatforms
+      data: preparedPlatforms,
     }),
   );
 });

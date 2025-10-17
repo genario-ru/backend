@@ -1,4 +1,5 @@
 import * as z from "zod";
+
 import { profileSchema } from "../../entities/profile";
 
 export const createProfileResponseSchema = z.object({

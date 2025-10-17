@@ -1,6 +1,9 @@
 import { db } from "@/db";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getTemplatesResponseSchema, type GetTemplatesResponse } from "@/schemas/entities/templates/handlers/get-templates/response";
+import {
+  type GetTemplatesResponse,
+  getTemplatesResponseSchema,
+} from "@/schemas/entities/templates/handlers/get-templates/response";
 import { createHonoApp } from "@/utils/create-hono-app";
 
 export const getTemplatesRoute = createHonoApp().basePath("/templates");
@@ -11,7 +14,7 @@ getTemplatesRoute.get("/", sessionMiddleware, async (c) => {
 
   return c.json<GetTemplatesResponse>(
     getTemplatesResponseSchema.parse({
-      data: foundTemplates
+      data: foundTemplates,
     }),
   );
 });

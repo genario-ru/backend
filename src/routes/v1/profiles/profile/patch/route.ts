@@ -1,16 +1,22 @@
+import { and, eq, inArray } from "drizzle-orm";
+import { difference } from "es-toolkit";
+
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateProfileBodySchema } from "@/schemas/entities/profiles/handlers/update-profile/body";
 import { updateProfileParamsSchema } from "@/schemas/entities/profiles/handlers/update-profile/params";
-import { updateProfileResponseSchema, type UpdateProfileResponse } from "@/schemas/entities/profiles/handlers/update-profile/response";
+import {
+  type UpdateProfileResponse,
+  updateProfileResponseSchema,
+} from "@/schemas/entities/profiles/handlers/update-profile/response";
 import { createHonoApp } from "@/utils/create-hono-app";
 import { throwAPIError } from "@/utils/throw-api-error";
-import { and, eq, inArray } from "drizzle-orm";
-import { difference } from "es-toolkit";
 
-export const updateProfileRoute = createHonoApp().basePath("/profiles/:profileId");
+export const updateProfileRoute = createHonoApp().basePath(
+  "/profiles/:profileId",
+);
 
 // PATCH /api/v1/profiles/{profileId}
 updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
@@ -26,10 +32,7 @@ updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
 
   const foundProfile = await db.query.profile.findFirst({
     where: (profile, { eq, and }) => {
-      return and(
-        eq(profile.id, profileId),
-        eq(profile.userId, user.id),
-      );
+      return and(eq(profile.id, profileId), eq(profile.userId, user.id));
     },
     with: {
       profileToPlatform: true,
@@ -40,7 +43,8 @@ updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
   if (!foundProfile) {
     return throwAPIError({
       code: APIErrorCode.NotFound,
-      message: "Данный профиль не существует или у вас нет возможности редактировать его",
+      message:
+        "Данный профиль не существует или у вас нет возможности редактировать его",
     });
   }
 
@@ -83,9 +87,7 @@ updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
 
     // Добавляем и удаляем тона, связанные с профилем
     if (newToneIds) {
-      const oldToneIds = foundProfile.profileToTone.map(
-        ({ toneId }) => toneId,
-      );
+      const oldToneIds = foundProfile.profileToTone.map(({ toneId }) => toneId);
 
       const createToneIds = difference(newToneIds, oldToneIds);
       const deleteToneIds = difference(oldToneIds, newToneIds);
@@ -119,12 +121,7 @@ updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
       tx
         .update(profile)
         .set(updateProfileParams)
-        .where(
-          and(
-            eq(profile.id, profileId),
-            eq(profile.userId, user.id),
-          ),
-        )
+        .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
         .returning(),
       ...updateLinkingTablePromises,
     ]);

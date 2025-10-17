@@ -1,7 +1,10 @@
 import { db } from "@/db";
-import { createHonoApp } from "@/utils/create-hono-app";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getVideoDurationsResponseSchema, type GetVideoDurationsResponse } from "@/schemas/entities/video-durations/handlers/get-video-durations/response";
+import {
+  type GetVideoDurationsResponse,
+  getVideoDurationsResponseSchema,
+} from "@/schemas/entities/video-durations/handlers/get-video-durations/response";
+import { createHonoApp } from "@/utils/create-hono-app";
 
 export const videoDurationsRoute = createHonoApp().basePath("/video-durations");
 
@@ -9,7 +12,9 @@ export const videoDurationsRoute = createHonoApp().basePath("/video-durations");
 videoDurationsRoute.get("/", sessionMiddleware, async (c) => {
   const foundVideoDurations = await db.query.videoDuration.findMany();
 
-  return c.json<GetVideoDurationsResponse>(getVideoDurationsResponseSchema.parse({
-    data: foundVideoDurations
-  }));
+  return c.json<GetVideoDurationsResponse>(
+    getVideoDurationsResponseSchema.parse({
+      data: foundVideoDurations,
+    }),
+  );
 });

@@ -1,6 +1,9 @@
 import { APIErrorCode, APIErrorStatusCode } from "@/schemas/common/api-error";
 
-export const APIErrorCodeToAPIErrorStatusCode: Record<APIErrorCode, APIErrorStatusCode> = {
+export const APIErrorCodeToAPIErrorStatusCode: Record<
+  APIErrorCode,
+  APIErrorStatusCode
+> = {
   [APIErrorCode.Unauthorized]: APIErrorStatusCode.Unauthorized,
   [APIErrorCode.Forbidden]: APIErrorStatusCode.Forbidden,
   [APIErrorCode.TokenExpired]: APIErrorStatusCode.TokenExpired,
@@ -33,7 +36,8 @@ export const APIErrorCodeToAPIErrorStatusCode: Record<APIErrorCode, APIErrorStat
   [APIErrorCode.TimeoutError]: APIErrorStatusCode.TimeoutError,
   [APIErrorCode.NetworkError]: APIErrorStatusCode.NetworkError,
 
-  [APIErrorCode.BusinessRuleViolation]: APIErrorStatusCode.BusinessRuleViolation,
+  [APIErrorCode.BusinessRuleViolation]:
+    APIErrorStatusCode.BusinessRuleViolation,
   [APIErrorCode.InvalidOperation]: APIErrorStatusCode.InvalidOperation,
   [APIErrorCode.OperationNotAllowed]: APIErrorStatusCode.OperationNotAllowed,
 

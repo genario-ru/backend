@@ -1,6 +1,9 @@
 import { db } from "@/db";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getTonesResponseSchema, type GetTonesResponse } from "@/schemas/entities/tones/handlers/get-tones/response";
+import {
+  type GetTonesResponse,
+  getTonesResponseSchema,
+} from "@/schemas/entities/tones/handlers/get-tones/response";
 import { createHonoApp } from "@/utils/create-hono-app";
 
 export const getTonesRoute = createHonoApp().basePath("/tones");
@@ -11,7 +14,7 @@ getTonesRoute.get("/", sessionMiddleware, async (c) => {
 
   return c.json<GetTonesResponse>(
     getTonesResponseSchema.parse({
-      data: foundTones
+      data: foundTones,
     }),
   );
 });

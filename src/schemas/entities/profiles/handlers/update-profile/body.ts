@@ -1,6 +1,7 @@
-import { profile } from "@/db/schema";
 import { createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
+
+import { profile } from "@/db/schema";
 
 export const updateProfileBodySchema = createUpdateSchema(profile)
   .pick({
