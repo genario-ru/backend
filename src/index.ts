@@ -1,6 +1,4 @@
-import { serve } from "@hono/node-server";
 import { Scalar } from "@scalar/hono-api-reference";
-import { showRoutes } from "hono/dev";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
@@ -24,7 +22,6 @@ import { getTemplatesRoute } from "./routes/v1/templates";
 import { getTonesRoute } from "./routes/v1/tones";
 import { getVideoDurationsRoute } from "./routes/v1/video-durations";
 import { getVideoTypesRoute } from "./routes/v1/video-types";
-import { addGracefulShutdown } from "./utils/add-graceful-shutdown";
 
 const app = createHonoApp().basePath("/api");
 const appV1Routes = createHonoApp().basePath("/v1");
@@ -74,18 +71,4 @@ app.get(
   }),
 );
 
-showRoutes(app, {
-  verbose: true,
-});
-
-const server = serve(
-  {
-    fetch: app.fetch,
-    port: 3000,
-  },
-  (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
-  },
-);
-
-addGracefulShutdown(server);
+export default app;
