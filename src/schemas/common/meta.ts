@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const metaParamsSchema = z.object({
+export const metaQuerySchema = z.object({
   q: z.string().optional().describe("Строка поиска"),
   page: z.coerce.number().optional().describe("Номер страницы"),
   perPage: z.coerce
