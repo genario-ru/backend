@@ -26,7 +26,14 @@ import {
   getProfileTypesRoute,
   updateProfileRoute,
 } from "./routes/v1/profiles";
-import { getMyScenariosRoute } from "./routes/v1/scenarios";
+import {
+  createScenarioRoute,
+  deleteScenarioRoute,
+  getMyScenariosRoute,
+  getScenarioRoute,
+  updateScenarioCurrentVersionRoute,
+  updateScenarioRoute,
+} from "./routes/v1/scenarios";
 import { getTemplatesRoute } from "./routes/v1/templates";
 import { getTonesRoute } from "./routes/v1/tones";
 import { getVideoDurationsRoute } from "./routes/v1/video-durations";
@@ -52,7 +59,12 @@ const appV1RoutesList = [
   updateProfileRoute,
   createProfileRoute,
   getProfileTypesRoute,
+  createScenarioRoute,
+  deleteScenarioRoute,
   getMyScenariosRoute,
+  getScenarioRoute,
+  updateScenarioCurrentVersionRoute,
+  updateScenarioRoute,
   getTemplatesRoute,
   getTonesRoute,
   getVideoDurationsRoute,

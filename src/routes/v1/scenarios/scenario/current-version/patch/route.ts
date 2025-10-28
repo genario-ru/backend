@@ -1,0 +1,42 @@
+import { zValidator } from "@hono/zod-validator";
+import { and, eq } from "drizzle-orm";
+
+import { db } from "@/db";
+import { scenario } from "@/db/schema";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { updateScenarioCurrentVersionBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/body";
+import { updateScenarioCurrentVersionParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/params";
+import {
+  type UpdateScenarioCurrentVersionResponse,
+  updateScenarioCurrentVersionResponseSchema,
+} from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/response";
+import { createHonoApp } from "@/utils/create-hono-app";
+
+export const updateScenarioCurrentVersionRoute = createHonoApp().basePath(
+  "/scenarios/:scenarioId/current-version",
+);
+
+// PATCH /api/v1/scenarios/{scenarioId}/current-version
+updateScenarioCurrentVersionRoute.patch(
+  "/",
+  sessionMiddleware,
+  zValidator("param", updateScenarioCurrentVersionParamsSchema),
+  zValidator("json", updateScenarioCurrentVersionBodySchema),
+  async (c) => {
+    const { scenarioId } = c.req.valid("param");
+    const { currentVersionId: newCurrentVersionId } = c.req.valid("json");
+    const user = c.get("user");
+
+    const [updatedScenario] = await db
+      .update(scenario)
+      .set({ currentVersionId: newCurrentVersionId })
+      .where(and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)))
+      .returning();
+
+    return c.json<UpdateScenarioCurrentVersionResponse>(
+      updateScenarioCurrentVersionResponseSchema.parse({
+        data: updatedScenario,
+      }),
+    );
+  },
+);
