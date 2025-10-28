@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -15,18 +16,23 @@ export const deleteProfileRoute = createHonoApp().basePath(
 );
 
 // DELETE /api/v1/profiles/{profileId}
-deleteProfileRoute.delete("/", sessionMiddleware, async (c) => {
-  const { profileId } = deleteProfileParamsSchema.parse(c.req.param());
-  const user = c.get("user");
+deleteProfileRoute.delete(
+  "/",
+  sessionMiddleware,
+  zValidator("param", deleteProfileParamsSchema),
+  async (c) => {
+    const { profileId } = c.req.valid("param");
+    const user = c.get("user");
 
-  const [deletedProfile] = await db
-    .delete(profile)
-    .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
-    .returning();
+    const [deletedProfile] = await db
+      .delete(profile)
+      .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
+      .returning();
 
-  return c.json<DeleteProfileResponse>(
-    deleteProfileResponseSchema.parse({
-      data: deletedProfile,
-    }),
-  );
-});
+    return c.json<DeleteProfileResponse>(
+      deleteProfileResponseSchema.parse({
+        data: deletedProfile,
+      }),
+    );
+  },
+);

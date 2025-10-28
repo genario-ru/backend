@@ -1,3 +1,5 @@
+import { zValidator } from "@hono/zod-validator";
+
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -11,55 +13,58 @@ import { createHonoApp } from "@/utils/create-hono-app";
 export const createProfileRoute = createHonoApp().basePath("/profiles");
 
 // POST /api/v1/profiles
-createProfileRoute.post("/", sessionMiddleware, async (c) => {
-  const body = await c.req.json();
+createProfileRoute.post(
+  "/",
+  sessionMiddleware,
+  zValidator("json", createProfileBodySchema),
+  async (c) => {
+    const { platformIds, toneIds, ...createProfileParams } =
+      c.req.valid("json");
 
-  const { platformIds, toneIds, ...createProfileParams } =
-    createProfileBodySchema.parse(body);
+    const user = c.get("user");
 
-  const user = c.get("user");
+    const createdProfile = await db.transaction(async (tx) => {
+      const [createdProfile] = await tx
+        .insert(profile)
+        .values({
+          userId: user.id,
+          ...createProfileParams,
+        })
+        .returning();
 
-  const createdProfile = await db.transaction(async (tx) => {
-    const [createdProfile] = await tx
-      .insert(profile)
-      .values({
-        userId: user.id,
-        ...createProfileParams,
-      })
-      .returning();
+      const createLinkingTablePromises: Promise<any>[] = [];
 
-    const createLinkingTablePromises: Promise<any>[] = [];
+      if (platformIds && platformIds.length > 0) {
+        createLinkingTablePromises.push(
+          tx.insert(profileToPlatform).values(
+            platformIds.map((platformId) => ({
+              profileId: createdProfile.id,
+              platformId,
+            })),
+          ),
+        );
+      }
 
-    if (platformIds && platformIds.length > 0) {
-      createLinkingTablePromises.push(
-        tx.insert(profileToPlatform).values(
-          platformIds.map((platformId) => ({
-            profileId: createdProfile.id,
-            platformId,
-          })),
-        ),
-      );
-    }
+      if (toneIds && toneIds.length > 0) {
+        createLinkingTablePromises.push(
+          tx.insert(profileToTone).values(
+            toneIds.map((toneId) => ({
+              profileId: createdProfile.id,
+              toneId,
+            })),
+          ),
+        );
+      }
 
-    if (toneIds && toneIds.length > 0) {
-      createLinkingTablePromises.push(
-        tx.insert(profileToTone).values(
-          toneIds.map((toneId) => ({
-            profileId: createdProfile.id,
-            toneId,
-          })),
-        ),
-      );
-    }
+      await Promise.all(createLinkingTablePromises);
 
-    await Promise.all(createLinkingTablePromises);
+      return createdProfile;
+    });
 
-    return createdProfile;
-  });
-
-  return c.json<CreateProfileResponse>(
-    createProfileResponseSchema.parse({
-      data: createdProfile,
-    }),
-  );
-});
+    return c.json<CreateProfileResponse>(
+      createProfileResponseSchema.parse({
+        data: createdProfile,
+      }),
+    );
+  },
+);

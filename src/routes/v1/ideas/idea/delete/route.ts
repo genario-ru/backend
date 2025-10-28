@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -15,38 +16,43 @@ import { throwAPIError } from "@/utils/throw-api-error";
 export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 
 // DELETE /api/v1/ideas/{ideaId}
-deleteIdeaRoute.patch("/", sessionMiddleware, async (c) => {
-  const { ideaId } = deleteIdeaParamsSchema.parse(c.req.param());
+deleteIdeaRoute.patch(
+  "/",
+  sessionMiddleware,
+  zValidator("param", deleteIdeaParamsSchema),
+  async (c) => {
+    const { ideaId } = c.req.valid("param");
 
-  const foundIdeaVariant = await db.query.idea.findFirst({
-    where: (idea, { eq }) => eq(idea.id, ideaId),
-    with: { ideasList: true },
-  });
-
-  if (!foundIdeaVariant) {
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message: "Данная идея не существует",
+    const foundIdeaVariant = await db.query.idea.findFirst({
+      where: (idea, { eq }) => eq(idea.id, ideaId),
+      with: { ideasList: true },
     });
-  }
 
-  const user = c.get("user");
+    if (!foundIdeaVariant) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Данная идея не существует",
+      });
+    }
 
-  if (foundIdeaVariant.ideasList.userId !== user.id) {
-    return throwAPIError({
-      code: APIErrorCode.Forbidden,
-      message: "У вас нет прав для удаления данной идеи",
-    });
-  }
+    const user = c.get("user");
 
-  const [deletedIdea] = await db
-    .delete(idea)
-    .where(eq(idea.id, ideaId))
-    .returning();
+    if (foundIdeaVariant.ideasList.userId !== user.id) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message: "У вас нет прав для удаления данной идеи",
+      });
+    }
 
-  return c.json<DeleteIdeaResponse>(
-    deleteIdeaResponseSchema.parse({
-      data: deletedIdea,
-    }),
-  );
-});
+    const [deletedIdea] = await db
+      .delete(idea)
+      .where(eq(idea.id, ideaId))
+      .returning();
+
+    return c.json<DeleteIdeaResponse>(
+      deleteIdeaResponseSchema.parse({
+        data: deletedIdea,
+      }),
+    );
+  },
+);

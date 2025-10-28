@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 
@@ -19,119 +20,127 @@ export const updateProfileRoute = createHonoApp().basePath(
 );
 
 // PATCH /api/v1/profiles/{profileId}
-updateProfileRoute.patch("/", sessionMiddleware, async (c) => {
-  const { profileId } = updateProfileParamsSchema.parse(c.req.param());
+updateProfileRoute.patch(
+  "/",
+  sessionMiddleware,
+  zValidator("param", updateProfileParamsSchema),
+  zValidator("json", updateProfileBodySchema),
+  async (c) => {
+    const { profileId } = c.req.valid("param");
 
-  const {
-    platformIds: newPlatformIds,
-    toneIds: newToneIds,
-    ...updateProfileParams
-  } = updateProfileBodySchema.parse(c.req.json());
+    const {
+      platformIds: newPlatformIds,
+      toneIds: newToneIds,
+      ...updateProfileParams
+    } = c.req.valid("json");
 
-  const user = c.get("user");
+    const user = c.get("user");
 
-  const foundProfile = await db.query.profile.findFirst({
-    where: (profile, { eq, and }) => {
-      return and(eq(profile.id, profileId), eq(profile.userId, user.id));
-    },
-    with: {
-      profileToPlatform: true,
-      profileToTone: true,
-    },
-  });
-
-  if (!foundProfile) {
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message:
-        "Данный профиль не существует или у вас нет возможности редактировать его",
+    const foundProfile = await db.query.profile.findFirst({
+      where: (profile, { eq, and }) => {
+        return and(eq(profile.id, profileId), eq(profile.userId, user.id));
+      },
+      with: {
+        profileToPlatform: true,
+        profileToTone: true,
+      },
     });
-  }
 
-  const updatedProfile = await db.transaction(async (tx) => {
-    const updateLinkingTablePromises: Promise<any>[] = [];
-
-    // Добавляем и удаляем платформы, связанные с профилем
-    if (newPlatformIds) {
-      const oldPlatformIds = foundProfile.profileToPlatform.map(
-        ({ platformId }) => platformId,
-      );
-
-      const createPlatformIds = difference(newPlatformIds, oldPlatformIds);
-      const deletePlatformIds = difference(oldPlatformIds, newPlatformIds);
-
-      if (createPlatformIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx.insert(profileToPlatform).values(
-            createPlatformIds.map((platformId) => ({
-              profileId,
-              platformId,
-            })),
-          ),
-        );
-      }
-
-      if (deletePlatformIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx
-            .delete(profileToPlatform)
-            .where(
-              and(
-                eq(profileToPlatform.profileId, profileId),
-                inArray(profileToPlatform.platformId, deletePlatformIds),
-              ),
-            ),
-        );
-      }
+    if (!foundProfile) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный профиль не существует или у вас нет возможности редактировать его",
+      });
     }
 
-    // Добавляем и удаляем тона, связанные с профилем
-    if (newToneIds) {
-      const oldToneIds = foundProfile.profileToTone.map(({ toneId }) => toneId);
+    const updatedProfile = await db.transaction(async (tx) => {
+      const updateLinkingTablePromises: Promise<any>[] = [];
 
-      const createToneIds = difference(newToneIds, oldToneIds);
-      const deleteToneIds = difference(oldToneIds, newToneIds);
-
-      if (createToneIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx.insert(profileToTone).values(
-            createToneIds.map((toneId) => ({
-              profileId,
-              toneId,
-            })),
-          ),
+      // Добавляем и удаляем платформы, связанные с профилем
+      if (newPlatformIds) {
+        const oldPlatformIds = foundProfile.profileToPlatform.map(
+          ({ platformId }) => platformId,
         );
-      }
 
-      if (deleteToneIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx
-            .delete(profileToTone)
-            .where(
-              and(
-                eq(profileToTone.profileId, profileId),
-                inArray(profileToTone.toneId, deleteToneIds),
-              ),
+        const createPlatformIds = difference(newPlatformIds, oldPlatformIds);
+        const deletePlatformIds = difference(oldPlatformIds, newPlatformIds);
+
+        if (createPlatformIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx.insert(profileToPlatform).values(
+              createPlatformIds.map((platformId) => ({
+                profileId,
+                platformId,
+              })),
             ),
-        );
+          );
+        }
+
+        if (deletePlatformIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx
+              .delete(profileToPlatform)
+              .where(
+                and(
+                  eq(profileToPlatform.profileId, profileId),
+                  inArray(profileToPlatform.platformId, deletePlatformIds),
+                ),
+              ),
+          );
+        }
       }
-    }
 
-    const [[updatedProfile]] = await Promise.all([
-      tx
-        .update(profile)
-        .set(updateProfileParams)
-        .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
-        .returning(),
-      ...updateLinkingTablePromises,
-    ]);
+      // Добавляем и удаляем тона, связанные с профилем
+      if (newToneIds) {
+        const oldToneIds = foundProfile.profileToTone.map(
+          ({ toneId }) => toneId,
+        );
 
-    return updatedProfile;
-  });
+        const createToneIds = difference(newToneIds, oldToneIds);
+        const deleteToneIds = difference(oldToneIds, newToneIds);
 
-  return c.json<UpdateProfileResponse>(
-    updateProfileResponseSchema.parse({
-      data: updatedProfile,
-    }),
-  );
-});
+        if (createToneIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx.insert(profileToTone).values(
+              createToneIds.map((toneId) => ({
+                profileId,
+                toneId,
+              })),
+            ),
+          );
+        }
+
+        if (deleteToneIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx
+              .delete(profileToTone)
+              .where(
+                and(
+                  eq(profileToTone.profileId, profileId),
+                  inArray(profileToTone.toneId, deleteToneIds),
+                ),
+              ),
+          );
+        }
+      }
+
+      const [[updatedProfile]] = await Promise.all([
+        tx
+          .update(profile)
+          .set(updateProfileParams)
+          .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
+          .returning(),
+        ...updateLinkingTablePromises,
+      ]);
+
+      return updatedProfile;
+    });
+
+    return c.json<UpdateProfileResponse>(
+      updateProfileResponseSchema.parse({
+        data: updatedProfile,
+      }),
+    );
+  },
+);
