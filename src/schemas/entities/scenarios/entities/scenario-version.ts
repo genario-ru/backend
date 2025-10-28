@@ -14,16 +14,14 @@ export const scenarioVersionSchema = createSelectSchema(scenarioVersion);
 
 export type ScenarioVersion = z.infer<typeof scenarioVersionSchema>;
 
-export const scenarioVersionExtendedSchema = scenarioVersionSchema.extend(
-  z.object({
-    profile: profileSchema.nullable(),
-    platform: platformSchema.nullable(),
-    videoType: videoTypeSchema.nullable(),
-    videoDuration: videoDurationSchema.nullable(),
-    tones: z.array(toneSchema).nullable(),
-    scenarioChapters: z.array(scenarioChapterSchema).nullable(),
-  }).shape,
-);
+export const scenarioVersionExtendedSchema = scenarioVersionSchema.extend({
+  profile: profileSchema.nullable(),
+  platform: platformSchema.nullable(),
+  videoType: videoTypeSchema.nullable(),
+  videoDuration: videoDurationSchema.nullable(),
+  tones: z.array(toneSchema).nullable(),
+  scenarioChapters: z.array(scenarioChapterSchema).nullable(),
+});
 
 export type ScenarioVersionExtended = z.infer<
   typeof scenarioVersionExtendedSchema

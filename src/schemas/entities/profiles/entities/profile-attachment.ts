@@ -9,11 +9,9 @@ export const profileAttachmentSchema = createSelectSchema(profileAttachment);
 
 export type ProfileAttachment = z.infer<typeof profileAttachmentSchema>;
 
-export const ProfileAttachmentExtendedSchema = profileAttachmentSchema.extend(
-  z.object({
-    attachment: attachmentSchema,
-  }).shape,
-);
+export const ProfileAttachmentExtendedSchema = profileAttachmentSchema.extend({
+  attachment: attachmentSchema,
+});
 
 export type ProfileAttachmentExtended = z.infer<
   typeof ProfileAttachmentExtendedSchema

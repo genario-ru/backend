@@ -9,10 +9,8 @@ export const platformSchema = createSelectSchema(platform);
 
 export type Platform = z.infer<typeof platformSchema>;
 
-export const platformExtendedSchema = platformSchema.extend(
-  z.object({
-    videoTypes: z.array(videoTypeSchema),
-  }).shape,
-);
+export const platformExtendedSchema = platformSchema.extend({
+  videoTypes: z.array(videoTypeSchema),
+});
 
 export type PlatformExtended = z.infer<typeof platformExtendedSchema>;

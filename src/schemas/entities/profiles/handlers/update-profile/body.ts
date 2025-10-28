@@ -10,11 +10,9 @@ export const updateProfileBodySchema = createUpdateSchema(profile)
     targetAudience: true,
     typeId: true,
   })
-  .extend(
-    z.object({
-      platformIds: z.array(z.uuid()).optional(),
-      toneIds: z.array(z.uuid()).optional(),
-    }).shape,
-  );
+  .extend({
+    platformIds: z.array(z.uuid()).optional(),
+    toneIds: z.array(z.uuid()).optional(),
+  });
 
 export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>;

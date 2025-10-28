@@ -9,10 +9,8 @@ export const ideaSchema = createSelectSchema(idea);
 
 export type Idea = z.infer<typeof ideaSchema>;
 
-export const ideaExtendedSchema = ideaSchema.extend(
-  z.object({
-    videoType: videoTypeSchema,
-  }).shape,
-);
+export const ideaExtendedSchema = ideaSchema.extend({
+  videoType: videoTypeSchema,
+});
 
 export type IdeaExtended = z.infer<typeof ideaExtendedSchema>;

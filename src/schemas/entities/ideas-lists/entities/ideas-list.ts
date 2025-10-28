@@ -11,12 +11,10 @@ export const ideasListSchema = createSelectSchema(ideasList);
 
 export type IdeasList = z.infer<typeof ideasListSchema>;
 
-export const ideasListExtendedSchema = ideasListSchema.extend(
-  z.object({
-    profile: profileSchema.nullable(),
-    tones: z.array(toneSchema),
-    videoTypes: z.array(videoTypeSchema),
-  }).shape,
-);
+export const ideasListExtendedSchema = ideasListSchema.extend({
+  profile: profileSchema.nullable(),
+  tones: z.array(toneSchema),
+  videoTypes: z.array(videoTypeSchema),
+});
 
 export type IdeasListExtended = z.infer<typeof ideasListExtendedSchema>;

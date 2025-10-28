@@ -10,10 +10,8 @@ export const updateIdeaBodySchema = createUpdateSchema(idea)
     saved: true,
     liked: true,
   })
-  .extend(
-    z.object({
-      ideaId: z.uuid(),
-    }).shape,
-  );
+  .extend({
+    ideaId: z.uuid(),
+  });
 
 export type UpdateIdeaBody = z.infer<typeof updateIdeaBodySchema>;

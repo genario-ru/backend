@@ -9,11 +9,9 @@ export const scenarioChapterSchema = createSelectSchema(scenarioChapter);
 
 export type ScenarioChapter = z.infer<typeof scenarioChapterSchema>;
 
-export const scenarioChapterExtendedSchema = scenarioChapterSchema.extend(
-  z.object({
-    scenes: z.array(scenarioSceneSchema),
-  }).shape,
-);
+export const scenarioChapterExtendedSchema = scenarioChapterSchema.extend({
+  scenes: z.array(scenarioSceneSchema),
+});
 
 export type ScenarioChapterExtended = z.infer<
   typeof scenarioChapterExtendedSchema

@@ -12,13 +12,11 @@ export const profileSchema = createSelectSchema(profile);
 
 export type Profile = z.infer<typeof profileSchema>;
 
-export const profileExtendedSchema = profileSchema.extend(
-  z.object({
-    user: userSchema,
-    type: profileTypeSchema,
-    platforms: z.array(platformSchema),
-    tones: z.array(toneSchema),
-  }).shape,
-);
+export const profileExtendedSchema = profileSchema.extend({
+  user: userSchema,
+  type: profileTypeSchema,
+  platforms: z.array(platformSchema),
+  tones: z.array(toneSchema),
+});
 
 export type ProfileExtended = z.infer<typeof profileExtendedSchema>;
