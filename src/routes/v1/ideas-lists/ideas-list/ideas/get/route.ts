@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -18,41 +19,49 @@ export const getIdeasRoute = createHonoApp().basePath(
 );
 
 // GET /api/v1/ideas-lists/{ideasListId}/ideas
-getIdeasRoute.get("/", sessionMiddleware, async (c) => {
-  const { ideasListId } = getIdeasParamsSchema.parse(c.req.param());
-  const query = c.req.query();
-  const { saved } = getIdeasQuerySchema.parse(query);
-  const user = c.get("user");
+getIdeasRoute.get(
+  "/",
+  sessionMiddleware,
+  zValidator("param", getIdeasParamsSchema),
+  zValidator("query", getIdeasQuerySchema),
+  async (c) => {
+    const { ideasListId } = c.req.valid("param");
+    const { saved } = c.req.valid("query");
+    const user = c.get("user");
 
-  const foundIdeasList = await db.query.ideasList.findFirst({
-    where: (ideasList, { eq, and }) => {
-      return and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id));
-    },
-  });
-
-  if (!foundIdeasList) {
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message:
-        "Данный список идей не существует или у вас нет возможности просматривать идеи внутри него",
+    const foundIdeasList = await db.query.ideasList.findFirst({
+      where: (ideasList, { eq, and }) => {
+        return and(
+          eq(ideasList.id, ideasListId),
+          eq(ideasList.userId, user.id),
+        );
+      },
     });
-  }
 
-  const ideasWhereConditions = [eq(idea.ideasListId, ideasListId)];
+    if (!foundIdeasList) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный список идей не существует или у вас нет возможности просматривать идеи внутри него",
+      });
+    }
 
-  if (saved !== undefined) {
-    ideasWhereConditions.push(eq(idea.saved, saved));
-  }
+    const ideasWhereConditions = [eq(idea.ideasListId, ideasListId)];
 
-  const foundIdeas = await db.query.idea.findMany({
-    where: and(...ideasWhereConditions),
-    orderBy: (idea, { desc }) => [desc(idea.createdAt)],
-    with: { videoType: true },
-  });
+    if (saved !== undefined) {
+      ideasWhereConditions.push(eq(idea.saved, saved));
+    }
 
-  return c.json<GetIdeasResponse>(
-    getIdeasResponseSchema.parse({
-      data: foundIdeas,
-    }),
-  );
-});
+    const foundIdeas = await db.query.idea.findMany({
+      where: and(...ideasWhereConditions),
+      orderBy: (idea, { desc }) => [desc(idea.createdAt)],
+      with: { videoType: true },
+    });
+
+    return c.json<GetIdeasResponse>(
+      getIdeasResponseSchema.parse({
+        data: foundIdeas,
+      }),
+    );
+  },
+);

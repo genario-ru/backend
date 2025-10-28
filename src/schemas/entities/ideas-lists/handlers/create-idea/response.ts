@@ -7,4 +7,3 @@ export const createIdeaResponseSchema = z.object({
 });
 
 export type CreateIdeaResponse = z.infer<typeof createIdeaResponseSchema>;
-

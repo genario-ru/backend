@@ -5,4 +5,3 @@ export const getIdeasQuerySchema = z.object({
 });
 
 export type GetIdeasQuery = z.infer<typeof getIdeasQuerySchema>;
-

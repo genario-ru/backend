@@ -5,4 +5,3 @@ export const createIdeaParamsSchema = z.object({
 });
 
 export type CreateIdeaParams = z.infer<typeof createIdeaParamsSchema>;
-

@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -15,18 +16,23 @@ export const deleteIdeasListRoute = createHonoApp().basePath(
 );
 
 // DELETE /api/v1/ideas-lists/{ideasListId}
-deleteIdeasListRoute.delete("/", sessionMiddleware, async (c) => {
-  const { ideasListId } = deleteIdeasListParamsSchema.parse(c.req.param());
-  const user = c.get("user");
+deleteIdeasListRoute.delete(
+  "/",
+  sessionMiddleware,
+  zValidator("param", deleteIdeasListParamsSchema),
+  async (c) => {
+    const { ideasListId } = c.req.valid("param");
+    const user = c.get("user");
 
-  const [deletedIdeasList] = await db
-    .delete(ideasList)
-    .where(and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)))
-    .returning();
+    const [deletedIdeasList] = await db
+      .delete(ideasList)
+      .where(and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)))
+      .returning();
 
-  return c.json<DeleteIdeasListResponse>(
-    deleteIdeasListResponseSchema.parse({
-      data: deletedIdeasList,
-    }),
-  );
-});
+    return c.json<DeleteIdeasListResponse>(
+      deleteIdeasListResponseSchema.parse({
+        data: deletedIdeasList,
+      }),
+    );
+  },
+);

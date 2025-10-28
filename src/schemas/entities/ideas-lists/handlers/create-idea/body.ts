@@ -10,4 +10,3 @@ export const createIdeaBodySchema = createInsertSchema(idea).pick({
 });
 
 export type CreateIdeaBody = z.infer<typeof createIdeaBodySchema>;
-

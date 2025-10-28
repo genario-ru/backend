@@ -10,11 +10,9 @@ export const createIdeasListBodySchema = createInsertSchema(ideasList)
     description: true,
     targetAudience: true,
   })
-  .extend(
-    z.object({
-      toneIds: z.array(z.uuid()).optional(),
-      videoTypeIds: z.array(z.uuid()).optional(),
-    }),
-  ).shape;
+  .extend({
+    toneIds: z.array(z.uuid()).optional(),
+    videoTypeIds: z.array(z.uuid()).optional(),
+  });
 
 export type CreateIdeasBodyParams = z.infer<typeof createIdeasListBodySchema>;

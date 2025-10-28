@@ -1,3 +1,5 @@
+import { zValidator } from "@hono/zod-validator";
+
 import { db } from "@/db";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
@@ -14,43 +16,51 @@ export const getIdeasListRoute = createHonoApp().basePath(
 );
 
 // GET /api/v1/ideas-lists/{ideasListId}
-getIdeasListRoute.get("/", sessionMiddleware, async (c) => {
-  const { ideasListId } = getIdeasListParamsSchema.parse(c.req.param());
-  const user = c.get("user");
+getIdeasListRoute.get(
+  "/",
+  sessionMiddleware,
+  zValidator("param", getIdeasListParamsSchema),
+  async (c) => {
+    const { ideasListId } = c.req.valid("param");
+    const user = c.get("user");
 
-  const foundIdeasList = await db.query.ideasList.findFirst({
-    where: (ideasList, { eq, and }) => {
-      return and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id));
-    },
-    with: {
-      profile: true,
-      ideasListToTone: {
-        with: { tone: true },
+    const foundIdeasList = await db.query.ideasList.findFirst({
+      where: (ideasList, { eq, and }) => {
+        return and(
+          eq(ideasList.id, ideasListId),
+          eq(ideasList.userId, user.id),
+        );
       },
-      ideasListToVideoType: {
-        with: { videoType: true },
+      with: {
+        profile: true,
+        ideasListToTone: {
+          with: { tone: true },
+        },
+        ideasListToVideoType: {
+          with: { videoType: true },
+        },
       },
-    },
-  });
-
-  if (!foundIdeasList) {
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message:
-        "Данный список идей не существует или у вас нет возможности просматривать его",
     });
-  }
 
-  const { ideasListToTone, ideasListToVideoType, ...ideasList } =
-    foundIdeasList;
+    if (!foundIdeasList) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный список идей не существует или у вас нет возможности просматривать его",
+      });
+    }
 
-  return c.json<GetIdeasListResponse>(
-    getIdeasListResponseSchema.parse({
-      data: {
-        ...ideasList,
-        tones: ideasListToTone.map(({ tone }) => tone),
-        videoTypes: ideasListToVideoType.map(({ videoType }) => videoType),
-      },
-    }),
-  );
-});
+    const { ideasListToTone, ideasListToVideoType, ...ideasList } =
+      foundIdeasList;
+
+    return c.json<GetIdeasListResponse>(
+      getIdeasListResponseSchema.parse({
+        data: {
+          ...ideasList,
+          tones: ideasListToTone.map(({ tone }) => tone),
+          videoTypes: ideasListToVideoType.map(({ videoType }) => videoType),
+        },
+      }),
+    );
+  },
+);

@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 
@@ -19,123 +20,132 @@ export const updateIdeasListRoute = createHonoApp().basePath(
 );
 
 // PATCH /api/v1/ideas-lists/{ideasListId}
-updateIdeasListRoute.patch("/", sessionMiddleware, async (c) => {
-  const { ideasListId } = updateIdeasListParamsSchema.parse(c.req.param());
+updateIdeasListRoute.patch(
+  "/",
+  sessionMiddleware,
+  zValidator("param", updateIdeasListParamsSchema),
+  zValidator("json", updateIdeasListBodySchema),
+  async (c) => {
+    const { ideasListId } = c.req.valid("param");
 
-  const {
-    toneIds: newToneIds,
-    videoTypeIds: newVideoTypeIds,
-    ...updateIdeasListParams
-  } = updateIdeasListBodySchema.parse(await c.req.json());
+    const {
+      toneIds: newToneIds,
+      videoTypeIds: newVideoTypeIds,
+      ...updateIdeasListParams
+    } = c.req.valid("json");
 
-  const user = c.get("user");
+    const user = c.get("user");
 
-  const foundIdeasList = await db.query.ideasList.findFirst({
-    where: (ideasList, { eq, and }) => {
-      return and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id));
-    },
-    with: {
-      ideasListToTone: true,
-      ideasListToVideoType: true,
-    },
-  });
-
-  if (!foundIdeasList) {
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message:
-        "Данный список идей не существует или у вас нет возможности редактировать его",
+    const foundIdeasList = await db.query.ideasList.findFirst({
+      where: (ideasList, { eq, and }) => {
+        return and(
+          eq(ideasList.id, ideasListId),
+          eq(ideasList.userId, user.id),
+        );
+      },
+      with: {
+        ideasListToTone: true,
+        ideasListToVideoType: true,
+      },
     });
-  }
 
-  const updatedIdeasList = await db.transaction(async (tx) => {
-    const updateLinkingTablePromises: Promise<any>[] = [];
-
-    // Добавляем и удаляем тона, связанные с списком идей
-    if (newToneIds) {
-      const oldToneIds = foundIdeasList.ideasListToTone.map(
-        ({ toneId }) => toneId,
-      );
-
-      const createToneIds = difference(newToneIds, oldToneIds);
-      const deleteToneIds = difference(oldToneIds, newToneIds);
-
-      if (createToneIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx.insert(ideasListToTone).values(
-            createToneIds.map((toneId) => ({
-              ideasListId,
-              toneId,
-            })),
-          ),
-        );
-      }
-
-      if (deleteToneIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx
-            .delete(ideasListToTone)
-            .where(
-              and(
-                eq(ideasListToTone.ideasListId, ideasListId),
-                inArray(ideasListToTone.toneId, deleteToneIds),
-              ),
-            ),
-        );
-      }
+    if (!foundIdeasList) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный список идей не существует или у вас нет возможности редактировать его",
+      });
     }
 
-    // Добавляем и удаляем типы видео, связанные с списком идей
-    if (newVideoTypeIds) {
-      const oldVideoTypeIds = foundIdeasList.ideasListToVideoType.map(
-        ({ videoTypeId }) => videoTypeId,
-      );
+    const updatedIdeasList = await db.transaction(async (tx) => {
+      const updateLinkingTablePromises: Promise<any>[] = [];
 
-      const createVideoTypeIds = difference(newVideoTypeIds, oldVideoTypeIds);
-      const deleteVideoTypeIds = difference(oldVideoTypeIds, newVideoTypeIds);
-
-      if (createVideoTypeIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx.insert(ideasListToVideoType).values(
-            createVideoTypeIds.map((videoTypeId) => ({
-              ideasListId,
-              videoTypeId,
-            })),
-          ),
+      // Добавляем и удаляем тона, связанные с списком идей
+      if (newToneIds) {
+        const oldToneIds = foundIdeasList.ideasListToTone.map(
+          ({ toneId }) => toneId,
         );
-      }
 
-      if (deleteVideoTypeIds.length > 0) {
-        updateLinkingTablePromises.push(
-          tx
-            .delete(ideasListToVideoType)
-            .where(
-              and(
-                eq(ideasListToVideoType.ideasListId, ideasListId),
-                inArray(ideasListToVideoType.videoTypeId, deleteVideoTypeIds),
-              ),
+        const createToneIds = difference(newToneIds, oldToneIds);
+        const deleteToneIds = difference(oldToneIds, newToneIds);
+
+        if (createToneIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx.insert(ideasListToTone).values(
+              createToneIds.map((toneId) => ({
+                ideasListId,
+                toneId,
+              })),
             ),
-        );
+          );
+        }
+
+        if (deleteToneIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx
+              .delete(ideasListToTone)
+              .where(
+                and(
+                  eq(ideasListToTone.ideasListId, ideasListId),
+                  inArray(ideasListToTone.toneId, deleteToneIds),
+                ),
+              ),
+          );
+        }
       }
-    }
 
-    const [[updatedIdeasList]] = await Promise.all([
-      tx
-        .update(ideasList)
-        .set(updateIdeasListParams)
-        .where(
-          and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)),
-        )
-        .returning(),
-      ...updateLinkingTablePromises,
-    ]);
+      // Добавляем и удаляем типы видео, связанные с списком идей
+      if (newVideoTypeIds) {
+        const oldVideoTypeIds = foundIdeasList.ideasListToVideoType.map(
+          ({ videoTypeId }) => videoTypeId,
+        );
 
-    return updatedIdeasList;
-  });
+        const createVideoTypeIds = difference(newVideoTypeIds, oldVideoTypeIds);
+        const deleteVideoTypeIds = difference(oldVideoTypeIds, newVideoTypeIds);
 
-  return c.json<UpdateIdeasListResponse>(
-    updateIdeasListResponseSchema.parse({
-      data: updatedIdeasList,
-    }),
-  );
-});
+        if (createVideoTypeIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx.insert(ideasListToVideoType).values(
+              createVideoTypeIds.map((videoTypeId) => ({
+                ideasListId,
+                videoTypeId,
+              })),
+            ),
+          );
+        }
+
+        if (deleteVideoTypeIds.length > 0) {
+          updateLinkingTablePromises.push(
+            tx
+              .delete(ideasListToVideoType)
+              .where(
+                and(
+                  eq(ideasListToVideoType.ideasListId, ideasListId),
+                  inArray(ideasListToVideoType.videoTypeId, deleteVideoTypeIds),
+                ),
+              ),
+          );
+        }
+      }
+
+      const [[updatedIdeasList]] = await Promise.all([
+        tx
+          .update(ideasList)
+          .set(updateIdeasListParams)
+          .where(
+            and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)),
+          )
+          .returning(),
+        ...updateLinkingTablePromises,
+      ]);
+
+      return updatedIdeasList;
+    });
+
+    return c.json<UpdateIdeasListResponse>(
+      updateIdeasListResponseSchema.parse({
+        data: updatedIdeasList,
+      }),
+    );
+  },
+);

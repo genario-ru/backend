@@ -10,11 +10,9 @@ export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
     description: true,
     targetAudience: true,
   })
-  .extend(
-    z.object({
-      toneIds: z.array(z.uuid()).optional(),
-      videoTypeIds: z.array(z.uuid()).optional(),
-    }).shape,
-  );
+  .extend({
+    toneIds: z.array(z.uuid()).optional(),
+    videoTypeIds: z.array(z.uuid()).optional(),
+  });
 
 export type UpdateIdeasListBody = z.infer<typeof updateIdeasListBodySchema>;

@@ -1,3 +1,4 @@
+import { zValidator } from "@hono/zod-validator";
 import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -17,88 +18,92 @@ const DEFAULT_SORT_ORDER = "desc" as const;
 export const getMyIdeasListsRoute = createHonoApp().basePath("/ideas-lists/my");
 
 // GET /api/v1/ideas-lists/my
-getMyIdeasListsRoute.get("/", sessionMiddleware, async (c) => {
-  const query = c.req.query();
-  const user = c.get("user");
+getMyIdeasListsRoute.get(
+  "/",
+  sessionMiddleware,
+  zValidator("query", getMyIdeasListsQuerySchema),
+  async (c) => {
+    const user = c.get("user");
 
-  const {
-    profileId,
-    q,
-    page = DEFAULT_PAGE,
-    perPage = DEFAULT_PER_PAGE,
-    sortBy = "createdAt",
-    sortOrder = DEFAULT_SORT_ORDER,
-  } = getMyIdeasListsQuerySchema.parse(query);
+    const {
+      profileId,
+      q,
+      page = DEFAULT_PAGE,
+      perPage = DEFAULT_PER_PAGE,
+      sortBy = "createdAt",
+      sortOrder = DEFAULT_SORT_ORDER,
+    } = c.req.valid("query");
 
-  const whereConditions = [eq(ideasList.userId, user.id)];
+    const whereConditions = [eq(ideasList.userId, user.id)];
 
-  if (q) {
-    const ilikeNameOrDescription = or(
-      ilike(ideasList.name, `%${q}%`),
-      ilike(ideasList.description, `%${q}%`),
-    );
+    if (q) {
+      const ilikeNameOrDescription = or(
+        ilike(ideasList.name, `%${q}%`),
+        ilike(ideasList.description, `%${q}%`),
+      );
 
-    if (ilikeNameOrDescription) {
-      whereConditions.push(ilikeNameOrDescription);
+      if (ilikeNameOrDescription) {
+        whereConditions.push(ilikeNameOrDescription);
+      }
     }
-  }
 
-  if (profileId) {
-    whereConditions.push(eq(ideasList.profileId, profileId));
-  }
+    if (profileId) {
+      whereConditions.push(eq(ideasList.profileId, profileId));
+    }
 
-  let orderByConditions = undefined;
+    let orderByConditions = undefined;
 
-  if (sortOrder === "asc") {
-    orderByConditions = asc(ideasList[sortBy]);
-  } else if (sortOrder === "desc") {
-    orderByConditions = desc(ideasList[sortBy]);
-  }
+    if (sortOrder === "asc") {
+      orderByConditions = asc(ideasList[sortBy]);
+    } else if (sortOrder === "desc") {
+      orderByConditions = desc(ideasList[sortBy]);
+    }
 
-  const [foundIdeasListsTotalCount, foundIdeasLists] = await Promise.all([
-    db.$count(ideasList, and(...whereConditions)),
-    db.query.ideasList.findMany({
-      where: and(...whereConditions),
-      orderBy: orderByConditions,
-      with: {
-        profile: true,
-        ideasListToTone: {
-          with: { tone: true },
+    const [foundIdeasListsTotalCount, foundIdeasLists] = await Promise.all([
+      db.$count(ideasList, and(...whereConditions)),
+      db.query.ideasList.findMany({
+        where: and(...whereConditions),
+        orderBy: orderByConditions,
+        with: {
+          profile: true,
+          ideasListToTone: {
+            with: { tone: true },
+          },
+          ideasListToVideoType: {
+            with: { videoType: true },
+          },
         },
-        ideasListToVideoType: {
-          with: { videoType: true },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(foundIdeasListsTotalCount / perPage);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    return c.json<GetMyIdeasListsResponse>(
+      getMyIdeasListsResponseSchema.parse({
+        data: foundIdeasLists.map((ideasList) => ({
+          ...ideasList,
+          tones: ideasList.ideasListToTone.map(
+            (ideasListToTone) => ideasListToTone.tone,
+          ),
+          videoTypes: ideasList.ideasListToVideoType.map(
+            (ideasListToVideoType) => ideasListToVideoType.videoType,
+          ),
+        })),
+        meta: {
+          profileId,
+          q,
+          previousPage,
+          currentPage: page,
+          nextPage,
+          perPage,
+          totalItems: foundIdeasListsTotalCount,
+          totalPages,
+          sortBy,
+          sortOrder,
         },
-      },
-    }),
-  ]);
-
-  const totalPages = Math.ceil(foundIdeasListsTotalCount / perPage);
-  const previousPage = page > 1 ? page - 1 : null;
-  const nextPage = page < totalPages ? page + 1 : null;
-
-  return c.json<GetMyIdeasListsResponse>(
-    getMyIdeasListsResponseSchema.parse({
-      data: foundIdeasLists.map((ideasList) => ({
-        ...ideasList,
-        tones: ideasList.ideasListToTone.map(
-          (ideasListToTone) => ideasListToTone.tone,
-        ),
-        videoTypes: ideasList.ideasListToVideoType.map(
-          (ideasListToVideoType) => ideasListToVideoType.videoType,
-        ),
-      })),
-      meta: {
-        profileId,
-        q,
-        previousPage,
-        currentPage: page,
-        nextPage,
-        perPage,
-        totalItems: foundIdeasListsTotalCount,
-        totalPages,
-        sortBy,
-        sortOrder,
-      },
-    }),
-  );
-});
+      }),
+    );
+  },
+);
