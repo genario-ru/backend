@@ -8,6 +8,13 @@ import { createHonoApp } from "@/utils/create-hono-app";
 
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import { deleteIdeaRoute, updateIdeaRoute } from "./routes/v1/ideas";
+import {
+  createIdeasListRoute,
+  deleteIdeasListRoute,
+  getIdeasListRoute,
+  getMyIdeasListsRoute,
+  updateIdeasListRoute,
+} from "./routes/v1/ideas-lists";
 import { getPlatformsRoute } from "./routes/v1/platforms";
 import {
   createProfileRoute,
@@ -29,6 +36,11 @@ const appV1RoutesList = [
   authRoute,
   deleteIdeaRoute,
   updateIdeaRoute,
+  createIdeasListRoute,
+  deleteIdeasListRoute,
+  getIdeasListRoute,
+  getMyIdeasListsRoute,
+  updateIdeasListRoute,
   getPlatformsRoute,
   getMyProfilesRoute,
   deleteProfileRoute,
