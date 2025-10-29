@@ -29,8 +29,11 @@ import {
 import {
   createScenarioRoute,
   deleteScenarioRoute,
+  deleteScenarioVersionRoute,
   getMyScenariosRoute,
   getScenarioRoute,
+  getScenarioVersionRoute,
+  getScenarioVersionsRoute,
   updateScenarioCurrentVersionRoute,
   updateScenarioRoute,
 } from "./routes/v1/scenarios";
@@ -65,6 +68,9 @@ const appV1RoutesList = [
   getScenarioRoute,
   updateScenarioCurrentVersionRoute,
   updateScenarioRoute,
+  deleteScenarioVersionRoute,
+  getScenarioVersionRoute,
+  getScenarioVersionsRoute,
   getTemplatesRoute,
   getTonesRoute,
   getVideoDurationsRoute,
