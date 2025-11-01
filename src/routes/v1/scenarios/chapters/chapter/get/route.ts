@@ -1,0 +1,69 @@
+import { zValidator } from "@hono/zod-validator";
+
+import { db } from "@/db";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { APIErrorCode } from "@/schemas/common/api-error";
+import { getScenarioChapterParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-chapter/params";
+import {
+  type GetScenarioChapterResponse,
+  getScenarioChapterResponseSchema,
+} from "@/schemas/entities/scenarios/handlers/get-scenario-chapter/response";
+import { createHonoApp } from "@/utils/create-hono-app";
+import { throwAPIError } from "@/utils/throw-api-error";
+
+export const getScenarioChapterRoute = createHonoApp().basePath(
+  "/scenarios/chapters/:chapterId",
+);
+
+// GET /api/v1/scenarios/chapters/{chapterId}
+getScenarioChapterRoute.get(
+  "/",
+  sessionMiddleware,
+  zValidator("param", getScenarioChapterParamsSchema),
+  async (c) => {
+    const { chapterId } = c.req.valid("param");
+    const user = c.get("user");
+
+    // Получаем chapter со всеми scenes и их components, а также проверяем владельца через JOIN
+    const chapter = await db.query.scenarioChapter.findFirst({
+      where: (scenarioChapter, { eq }) => eq(scenarioChapter.id, chapterId),
+      with: {
+        scenarioVersion: {
+          with: {
+            scenario: true,
+          },
+        },
+        scenes: {
+          orderBy: (scenarioScene, { asc }) => [asc(scenarioScene.startTime)],
+          with: {
+            components: true,
+          },
+        },
+      },
+    });
+
+    if (!chapter) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Раздел сценария не найден",
+      });
+    }
+
+    // Проверяем, что сценарий принадлежит пользователю
+    if (chapter.scenarioVersion.scenario.userId !== user.id) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message: "У вас нет доступа к этому разделу сценария",
+      });
+    }
+
+    // Убираем вложенные данные для response
+    const { scenarioVersion: _scenarioVersion, ...chapterData } = chapter;
+
+    return c.json<GetScenarioChapterResponse>(
+      getScenarioChapterResponseSchema.parse({
+        data: chapterData,
+      }),
+    );
+  },
+);

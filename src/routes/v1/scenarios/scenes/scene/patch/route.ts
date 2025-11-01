@@ -1,0 +1,76 @@
+import { zValidator } from "@hono/zod-validator";
+import { eq } from "drizzle-orm";
+
+import { db } from "@/db";
+import { scenarioScene } from "@/db/schema";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { APIErrorCode } from "@/schemas/common/api-error";
+import { updateScenarioSceneBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario-scene/body";
+import { updateScenarioSceneParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario-scene/params";
+import {
+  type UpdateScenarioSceneResponse,
+  updateScenarioSceneResponseSchema,
+} from "@/schemas/entities/scenarios/handlers/update-scenario-scene/response";
+import { createHonoApp } from "@/utils/create-hono-app";
+import { throwAPIError } from "@/utils/throw-api-error";
+
+export const updateScenarioSceneRoute = createHonoApp().basePath(
+  "/scenarios/scenes/:sceneId",
+);
+
+// PATCH /api/v1/scenarios/scenes/{sceneId}
+updateScenarioSceneRoute.patch(
+  "/",
+  sessionMiddleware,
+  zValidator("param", updateScenarioSceneParamsSchema),
+  zValidator("json", updateScenarioSceneBodySchema),
+  async (c) => {
+    const { sceneId } = c.req.valid("param");
+    const updateData = c.req.valid("json");
+    const user = c.get("user");
+
+    // Проверяем владельца через JOIN
+    const existingScene = await db.query.scenarioScene.findFirst({
+      where: (scenarioScene, { eq }) => eq(scenarioScene.id, sceneId),
+      with: {
+        scenarioChapter: {
+          with: {
+            scenarioVersion: {
+              with: {
+                scenario: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!existingScene) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Сцена не найдена",
+      });
+    }
+
+    if (
+      existingScene.scenarioChapter.scenarioVersion.scenario.userId !== user.id
+    ) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message: "У вас нет доступа к этой сцене",
+      });
+    }
+
+    const [updatedScene] = await db
+      .update(scenarioScene)
+      .set(updateData)
+      .where(eq(scenarioScene.id, sceneId))
+      .returning();
+
+    return c.json<UpdateScenarioSceneResponse>(
+      updateScenarioSceneResponseSchema.parse({
+        data: updatedScene,
+      }),
+    );
+  },
+);
