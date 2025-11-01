@@ -12,49 +12,33 @@ import { createHonoApp } from "@/utils/create-hono-app";
 import { throwAPIError } from "@/utils/throw-api-error";
 
 export const getScenarioVersionRoute = createHonoApp().basePath(
-  "/scenarios/:scenarioId/versions/:versionId",
+  "/scenarios/versions/:versionId",
 );
 
-// GET /api/v1/scenarios/{scenarioId}/versions/{versionId}
+// GET /api/v1/scenarios/versions/{versionId}
 getScenarioVersionRoute.get(
   "/",
   sessionMiddleware,
   zValidator("param", getScenarioVersionParamsSchema),
   async (c) => {
-    const { scenarioId, versionId } = c.req.valid("param");
+    const { versionId } = c.req.valid("param");
     const user = c.get("user");
 
-    // Проверяем, что сценарий принадлежит пользователю и загружаем связанные данные
-    const scenario = await db.query.scenario.findFirst({
-      where: (scenario, { eq, and }) =>
-        and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
-      with: {
-        profile: true,
-        platform: true,
-        videoType: true,
-        videoDuration: true,
-        scenarioToTone: {
-          with: { tone: true },
-        },
-      },
-    });
-
-    if (!scenario) {
-      return throwAPIError({
-        code: APIErrorCode.NotFound,
-        message:
-          "Данный сценарий не существует или у вас нет возможности просматривать его",
-      });
-    }
-
-    // Получаем версию с разделами
+    // Получаем версию с разделами и проверяем владельца через JOIN
     const version = await db.query.scenarioVersion.findFirst({
-      where: (scenarioVersion, { eq, and }) =>
-        and(
-          eq(scenarioVersion.id, versionId),
-          eq(scenarioVersion.scenarioId, scenarioId),
-        ),
+      where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
       with: {
+        scenario: {
+          with: {
+            profile: true,
+            platform: true,
+            videoType: true,
+            videoDuration: true,
+            scenarioToTone: {
+              with: { tone: true },
+            },
+          },
+        },
         chapters: {
           orderBy: (scenarioChapter, { asc }) => [
             asc(scenarioChapter.startTime),
@@ -70,18 +54,28 @@ getScenarioVersionRoute.get(
       });
     }
 
-    const { scenarioToTone, ...scenarioData } = scenario;
+    // Проверяем, что сценарий принадлежит пользователю
+    if (version.scenario.userId !== user.id) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message:
+          "Данный сценарий не существует или у вас нет возможности просматривать его",
+      });
+    }
+
+    const { scenarioToTone, ...scenarioData } = version.scenario;
+    const { scenario: _scenario, ...versionData } = version;
 
     return c.json<GetScenarioVersionResponse>(
       getScenarioVersionResponseSchema.parse({
         data: {
-          ...version,
+          ...versionData,
           profile: scenarioData.profile,
           platform: scenarioData.platform,
           videoType: scenarioData.videoType,
           videoDuration: scenarioData.videoDuration,
           tones: scenarioToTone.map((item) => item.tone),
-          scenarioChapters: version.chapters,
+          scenarioChapters: versionData.chapters,
         },
       }),
     );

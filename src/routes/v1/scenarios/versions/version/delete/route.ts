@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { scenarioVersion } from "@/db/schema";
@@ -14,39 +14,24 @@ import { createHonoApp } from "@/utils/create-hono-app";
 import { throwAPIError } from "@/utils/throw-api-error";
 
 export const deleteScenarioVersionRoute = createHonoApp().basePath(
-  "/scenarios/:scenarioId/versions/:versionId",
+  "/scenarios/versions/:versionId",
 );
 
-// DELETE /api/v1/scenarios/{scenarioId}/versions/{versionId}
+// DELETE /api/v1/scenarios/versions/{versionId}
 deleteScenarioVersionRoute.delete(
   "/",
   sessionMiddleware,
   zValidator("param", deleteScenarioVersionParamsSchema),
   async (c) => {
-    const { scenarioId, versionId } = c.req.valid("param");
+    const { versionId } = c.req.valid("param");
     const user = c.get("user");
 
-    // Проверяем, что сценарий принадлежит пользователю
-    const scenario = await db.query.scenario.findFirst({
-      where: (scenario, { eq, and }) =>
-        and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
-    });
-
-    if (!scenario) {
-      return throwAPIError({
-        code: APIErrorCode.NotFound,
-        message:
-          "Данный сценарий не существует или у вас нет возможности удалить его",
-      });
-    }
-
-    // Проверяем, что версия принадлежит сценарию
+    // Проверяем владельца через JOIN
     const existingVersion = await db.query.scenarioVersion.findFirst({
-      where: (scenarioVersion, { eq, and }) =>
-        and(
-          eq(scenarioVersion.id, versionId),
-          eq(scenarioVersion.scenarioId, scenarioId),
-        ),
+      where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
+      with: {
+        scenario: true,
+      },
     });
 
     if (!existingVersion) {
@@ -56,14 +41,17 @@ deleteScenarioVersionRoute.delete(
       });
     }
 
+    if (existingVersion.scenario.userId !== user.id) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message:
+          "Данный сценарий не существует или у вас нет возможности удалить его",
+      });
+    }
+
     const [deletedVersion] = await db
       .delete(scenarioVersion)
-      .where(
-        and(
-          eq(scenarioVersion.id, versionId),
-          eq(scenarioVersion.scenarioId, scenarioId),
-        ),
-      )
+      .where(eq(scenarioVersion.id, versionId))
       .returning();
 
     return c.json<DeleteScenarioVersionResponse>(

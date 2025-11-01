@@ -28,19 +28,19 @@ import {
 } from "./routes/v1/profiles";
 import {
   createScenarioRoute,
-  deleteScenarioRoute,
   deleteScenarioChapterRoute,
-  deleteScenarioVersionRoute,
+  deleteScenarioRoute,
   deleteScenarioSceneComponentRoute,
   deleteScenarioSceneRoute,
+  deleteScenarioVersionRoute,
   getMyScenariosRoute,
-  getScenarioRoute,
   getScenarioChapterRoute,
+  getScenarioRoute,
   getScenarioVersionRoute,
   getScenarioVersionsRoute,
+  updateScenarioChapterRoute,
   updateScenarioCurrentVersionRoute,
   updateScenarioRoute,
-  updateScenarioChapterRoute,
   updateScenarioSceneComponentRoute,
   updateScenarioSceneRoute,
 } from "./routes/v1/scenarios";
