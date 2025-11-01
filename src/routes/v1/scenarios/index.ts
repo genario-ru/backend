@@ -4,6 +4,13 @@ export { updateScenarioCurrentVersionRoute } from "./scenario/current-version/pa
 export { deleteScenarioRoute } from "./scenario/root/delete/route";
 export { getScenarioRoute } from "./scenario/root/get/route";
 export { updateScenarioRoute } from "./scenario/root/patch/route";
-export { getScenarioVersionsRoute } from "./scenario/versions/root/get/route";
 export { deleteScenarioVersionRoute } from "./scenario/versions/version/root/delete/route";
 export { getScenarioVersionRoute } from "./scenario/versions/version/root/get/route";
+export { getScenarioVersionsRoute } from "./scenario/versions/root/get/route";
+export { deleteScenarioVersionChapterRoute } from "./scenario/versions/version/chapters/chapter/root/delete/route";
+export { getScenarioVersionChapterRoute } from "./scenario/versions/version/chapters/chapter/root/get/route";
+export { updateScenarioVersionChapterRoute } from "./scenario/versions/version/chapters/chapter/root/patch/route";
+export { deleteScenarioVersionSceneRoute } from "./scenario/versions/version/chapters/chapter/scenes/scene/root/delete/route";
+export { updateScenarioVersionSceneRoute } from "./scenario/versions/version/chapters/chapter/scenes/scene/root/patch/route";
+export { deleteScenarioVersionSceneComponentRoute } from "./scenario/versions/version/chapters/chapter/scenes/scene/scene-components/scene-component/root/delete/route";
+export { updateScenarioVersionSceneComponentRoute } from "./scenario/versions/version/chapters/chapter/scenes/scene/scene-components/scene-component/root/patch/route";
