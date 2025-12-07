@@ -3,6 +3,8 @@ import * as z from "zod";
 
 import { ideasList } from "@/db/schema";
 
+import { ideasListsRegistry } from "../../registry";
+
 export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
   .pick({
     profileId: true,
@@ -13,6 +15,11 @@ export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
   .extend({
     toneIds: z.array(z.uuid()).optional(),
     videoTypeIds: z.array(z.uuid()).optional(),
+  })
+  .register(ideasListsRegistry, {
+    title: "Update ideas list body",
+    description: "Update ideas list body description",
+    ref: "UpdateIdeasListBodySchema",
   });
 
 export type UpdateIdeasListBody = z.infer<typeof updateIdeasListBodySchema>;

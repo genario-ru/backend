@@ -2,9 +2,17 @@ import * as z from "zod";
 
 import { metaQuerySchema } from "@/schemas/common/meta";
 
-export const getMyIdeasListsQuerySchema = metaQuerySchema.extend({
-  profileId: z.uuid().optional(),
-  sortBy: z.enum(["createdAt", "updatedAt"]).optional(),
-});
+import { ideasListsRegistry } from "../../registry";
+
+export const getMyIdeasListsQuerySchema = metaQuerySchema
+  .extend({
+    profileId: z.uuid().optional(),
+    sortBy: z.enum(["createdAt", "updatedAt"]).optional(),
+  })
+  .register(ideasListsRegistry, {
+    title: "Get my ideas lists query",
+    description: "Get my ideas lists query description",
+    ref: "GetMyIdeasListsQuerySchema",
+  });
 
 export type GetMyIdeasListsQuery = z.infer<typeof getMyIdeasListsQuerySchema>;

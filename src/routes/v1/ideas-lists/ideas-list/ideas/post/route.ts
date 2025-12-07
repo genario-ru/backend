@@ -1,7 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createIdeaBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-idea/body";
@@ -10,6 +12,7 @@ import {
   type CreateIdeaResponse,
   createIdeaResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/create-idea/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -21,6 +24,15 @@ export const createIdeaRoute = createHonoApp().basePath(
 createIdeaRoute.post(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.IdeasLists],
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Idea created successfully",
+        schema: createIdeaResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", createIdeaParamsSchema),
   zValidator("json", createIdeaBodySchema),
   async (c) => {

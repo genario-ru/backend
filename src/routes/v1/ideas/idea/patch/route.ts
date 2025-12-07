@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
@@ -23,6 +24,7 @@ updateIdeaRoute.patch(
   "/",
   sessionMiddleware,
   openAPIResponseMiddleware({
+    tags: [OpenAPITags.Ideas],
     responses: {
       200: createOpenAPIResponse({
         description: "Idea updated successfully",

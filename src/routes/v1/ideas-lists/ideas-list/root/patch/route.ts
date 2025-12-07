@@ -2,8 +2,10 @@ import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/body";
@@ -12,6 +14,7 @@ import {
   type UpdateIdeasListResponse,
   updateIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -23,6 +26,15 @@ export const updateIdeasListRoute = createHonoApp().basePath(
 updateIdeasListRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.IdeasLists],
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Ideas list updated successfully",
+        schema: updateIdeasListResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateIdeasListParamsSchema),
   zValidator("json", updateIdeasListBodySchema),
   async (c) => {

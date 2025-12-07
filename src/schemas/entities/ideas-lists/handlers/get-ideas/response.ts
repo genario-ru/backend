@@ -2,8 +2,15 @@ import * as z from "zod";
 
 import { ideaExtendedSchema } from "@/schemas/entities/ideas/entities/idea";
 
-export const getIdeasResponseSchema = z.object({
-  data: z.array(ideaExtendedSchema),
-});
+import { ideasListsRegistry } from "../../registry";
 
+export const getIdeasResponseSchema = z
+  .object({
+    data: z.array(ideaExtendedSchema),
+  })
+  .register(ideasListsRegistry, {
+    title: "Get ideas response",
+    description: "Get ideas response description",
+    ref: "GetIdeasResponseSchema",
+  });
 export type GetIdeasResponse = z.infer<typeof getIdeasResponseSchema>;

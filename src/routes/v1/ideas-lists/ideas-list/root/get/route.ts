@@ -1,6 +1,8 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list/params";
@@ -8,6 +10,7 @@ import {
   type GetIdeasListResponse,
   getIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -19,6 +22,15 @@ export const getIdeasListRoute = createHonoApp().basePath(
 getIdeasListRoute.get(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.IdeasLists],
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Ideas list retrieved successfully",
+        schema: getIdeasListResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", getIdeasListParamsSchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");

@@ -1,13 +1,16 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { createIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/body";
 import {
   type CreateIdeasListResponse,
   createIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createIdeasListRoute = createHonoApp().basePath("/ideas-lists");
@@ -16,6 +19,15 @@ export const createIdeasListRoute = createHonoApp().basePath("/ideas-lists");
 createIdeasListRoute.post(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.IdeasLists],
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Ideas list created successfully",
+        schema: createIdeasListResponseSchema,
+      }),
+    },
+  }),
   zValidator("json", createIdeasListBodySchema),
   async (c) => {
     const { toneIds, videoTypeIds, ...createIdeasListParams } =

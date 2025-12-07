@@ -6,6 +6,7 @@ import { ideasList } from "@/db/schema";
 import { profileSchema } from "../../profiles/entities/profile";
 import { toneSchema } from "../../tones/entities/tone";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
+import { ideasListsRegistry } from "../registry";
 
 export const ideasListSchema = createSelectSchema(ideasList).meta({
   title: "IdeasList",
@@ -21,7 +22,7 @@ export const ideasListExtendedSchema = ideasListSchema
     tones: z.array(toneSchema),
     videoTypes: z.array(videoTypeSchema),
   })
-  .meta({
+  .register(ideasListsRegistry, {
     title: "Ideas list extended",
     description: "Ideas list extended description",
     ref: "IdeasListExtendedSchema",

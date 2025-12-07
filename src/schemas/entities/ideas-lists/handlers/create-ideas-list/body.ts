@@ -3,6 +3,8 @@ import * as z from "zod";
 
 import { ideasList } from "@/db/schema";
 
+import { ideasListsRegistry } from "../../registry";
+
 export const createIdeasListBodySchema = createInsertSchema(ideasList)
   .pick({
     profileId: true,
@@ -13,6 +15,11 @@ export const createIdeasListBodySchema = createInsertSchema(ideasList)
   .extend({
     toneIds: z.array(z.uuid()).optional(),
     videoTypeIds: z.array(z.uuid()).optional(),
+  })
+  .register(ideasListsRegistry, {
+    title: "Create ideas list body",
+    description: "Create ideas list body description",
+    ref: "CreateIdeasListBodySchema",
   });
 
 export type CreateIdeasBodyParams = z.infer<typeof createIdeasListBodySchema>;

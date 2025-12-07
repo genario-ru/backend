@@ -1,7 +1,15 @@
 import * as z from "zod";
 
-export const deleteIdeasListParamsSchema = z.object({
-  ideasListId: z.uuid(),
-});
+import { ideasListsRegistry } from "../../registry";
+
+export const deleteIdeasListParamsSchema = z
+  .object({
+    ideasListId: z.uuid(),
+  })
+  .register(ideasListsRegistry, {
+    title: "Delete ideas list params",
+    description: "Delete ideas list params description",
+    ref: "DeleteIdeasListParamsSchema",
+  });
 
 export type DeleteIdeasListParams = z.infer<typeof deleteIdeasListParamsSchema>;

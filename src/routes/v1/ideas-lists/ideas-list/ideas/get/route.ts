@@ -1,8 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getIdeasParamsSchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas/params";
@@ -11,6 +13,7 @@ import {
   type GetIdeasResponse,
   getIdeasResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/get-ideas/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -22,6 +25,15 @@ export const getIdeasRoute = createHonoApp().basePath(
 getIdeasRoute.get(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.IdeasLists],
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Ideas list retrieved successfully",
+        schema: getIdeasResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", getIdeasParamsSchema),
   zValidator("query", getIdeasQuerySchema),
   async (c) => {
