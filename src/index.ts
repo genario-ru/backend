@@ -49,10 +49,11 @@ import { getTonesRoute } from "./routes/v1/tones";
 import { getVideoDurationsRoute } from "./routes/v1/video-durations";
 import { getVideoTypesRoute } from "./routes/v1/video-types";
 
-const app = createHonoApp().basePath("/api");
-const appV1Routes = createHonoApp().basePath("/v1");
-const appV1RoutesList = [
-  authRoute,
+const app = createHonoApp();
+const appAPI = app.basePath("/api");
+const appAPIV1Routes = appAPI.basePath("/v1");
+
+const appAPIv1RoutesList = [
   deleteIdeaRoute,
   updateIdeaRoute,
   createIdeasListRoute,
@@ -91,10 +92,10 @@ const appV1RoutesList = [
   getVideoTypesRoute,
 ];
 
-app.route("/", authRoute);
+appAPI.route("/", authRoute);
 
-appV1RoutesList.forEach((route) => {
-  appV1Routes.route("/", route);
+appAPIv1RoutesList.forEach((route) => {
+  appAPIV1Routes.route("/", route);
 });
 
 // Middleware
@@ -103,18 +104,15 @@ app.use(requestId());
 app.use(logger());
 app.use(errorHandlerMiddleware);
 
-// Routes
-app.route("/", appV1Routes);
-
 // Docs
 app.get(
-  "/docs",
+  "/api/docs",
   Scalar({
     pageTitle: "API Documentation",
     sources: [
       { url: "/api/open-api", title: "API" },
       // Better Auth schema generation endpoint
-      { url: "/api/auth/open-api/generate-schema", title: "Auth" },
+      { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
     ],
   }),
 );
