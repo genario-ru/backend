@@ -13,7 +13,7 @@ getMyScenariosRoute.get("/", sessionMiddleware, async (c) => {
   const user = c.get("user");
 
   const foundScenarios = await db.query.scenario.findMany({
-    where: (profile, { eq }) => eq(profile.userId, user.id),
+    where: (scenario, { eq }) => eq(scenario.userId, user.id),
     with: {
       profile: true,
       platform: true,
