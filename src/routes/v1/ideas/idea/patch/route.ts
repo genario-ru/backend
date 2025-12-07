@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { idea } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateIdeaBodySchema } from "@/schemas/entities/ideas/handlers/update-idea/body";
@@ -11,8 +12,9 @@ import {
   type UpdateIdeaResponse,
   updateIdeaResponseSchema,
 } from "@/schemas/entities/ideas/handlers/update-idea/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const updateIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 
@@ -20,6 +22,14 @@ export const updateIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 updateIdeaRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Idea updated successfully",
+        schema: updateIdeaResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateIdeaParamsSchema),
   zValidator("json", updateIdeaBodySchema),
   async (c) => {

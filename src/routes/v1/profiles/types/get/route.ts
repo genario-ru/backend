@@ -4,7 +4,7 @@ import {
   type GetProfileTypesResponse,
   getProfileTypesResponseSchema,
 } from "@/schemas/entities/profiles/handlers/get-profile-types/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getProfileTypesRoute = createHonoApp().basePath("/profiles/types");
 

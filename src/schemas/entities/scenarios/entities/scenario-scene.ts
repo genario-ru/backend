@@ -1,16 +1,26 @@
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 
-import { scenarioChapter, scenarioScene } from "@/db/schema";
+import { scenarioScene } from "@/db/schema";
 
 import { scenarioSceneComponentSchema } from "./scenario-scene-component";
 
-export const scenarioSceneSchema = createSelectSchema(scenarioScene);
+export const scenarioSceneSchema = createSelectSchema(scenarioScene).meta({
+  title: "Scenario scene",
+  description: "Scenario scene description",
+  ref: "ScenarioSceneSchema",
+});
 
 export type ScenarioScene = z.infer<typeof scenarioSceneSchema>;
 
-export const scenarioSceneExtendedSchema = scenarioSceneSchema.extend({
-  components: z.array(scenarioSceneComponentSchema),
-});
+export const scenarioSceneExtendedSchema = scenarioSceneSchema
+  .extend({
+    components: z.array(scenarioSceneComponentSchema),
+  })
+  .meta({
+    title: "Scenario scene extended",
+    description: "Scenario scene extended description",
+    ref: "ScenarioSceneExtendedSchema",
+  });
 
 export type ScenarioSceneExtended = z.infer<typeof scenarioSceneExtendedSchema>;

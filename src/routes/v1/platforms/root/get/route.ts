@@ -3,7 +3,7 @@ import {
   type GetPlatformsResponse,
   getPlatformsResponseSchema,
 } from "@/schemas/entities/platforms/handlers/get-platforms/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getPlatformsRoute = createHonoApp().basePath("/platforms");
 

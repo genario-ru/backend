@@ -8,8 +8,8 @@ import {
   type GetProfileResponse,
   getProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/get-profile/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const getProfileRoute = createHonoApp().basePath("/profiles/:profileId");
 

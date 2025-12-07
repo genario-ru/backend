@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { idea } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteIdeaParamsSchema } from "@/schemas/entities/ideas/handlers/delete-idea/params";
@@ -10,8 +11,9 @@ import {
   type DeleteIdeaResponse,
   deleteIdeaResponseSchema,
 } from "@/schemas/entities/ideas/handlers/delete-idea/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 
@@ -19,6 +21,14 @@ export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 deleteIdeaRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    responses: {
+      200: createOpenAPIResponse({
+        description: "Idea deleted successfully",
+        schema: deleteIdeaResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", deleteIdeaParamsSchema),
   async (c) => {
     const { ideaId } = c.req.valid("param");

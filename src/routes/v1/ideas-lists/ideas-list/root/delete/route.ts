@@ -9,7 +9,7 @@ import {
   type DeleteIdeasListResponse,
   deleteIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/delete-ideas-list/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const deleteIdeasListRoute = createHonoApp().basePath(
   "/ideas-lists/:ideasListId",

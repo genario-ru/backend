@@ -9,7 +9,7 @@ import {
   type DeleteProfileResponse,
   deleteProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/delete-profile/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const deleteProfileRoute = createHonoApp().basePath(
   "/profiles/:profileId",

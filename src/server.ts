@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { showRoutes } from "hono/dev";
 
 import app from ".";
-import { addGracefulShutdown } from "./utils/add-graceful-shutdown";
+import { addGracefulShutdown } from "./utils/server/add-graceful-shutdown";
 
 showRoutes(app, {
   verbose: true,

@@ -9,7 +9,7 @@ import {
   type GetMyIdeasListsResponse,
   getMyIdeasListsResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/get-my-ideas-lists/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;

@@ -9,7 +9,7 @@ import {
   type CreateScenarioResponse,
   createScenarioResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/create-scenario/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createScenarioRoute = createHonoApp().basePath("/scenarios");
 

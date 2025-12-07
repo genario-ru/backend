@@ -10,8 +10,8 @@ import {
   type DeleteScenarioSceneComponentResponse,
   deleteScenarioSceneComponentResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/delete-scenario-scene-component/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const deleteScenarioSceneComponentRoute = createHonoApp().basePath(
   "/scenarios/scene-components/:sceneComponentId",

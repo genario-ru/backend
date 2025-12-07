@@ -8,7 +8,7 @@ import {
   type CreateIdeasListResponse,
   createIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createIdeasListRoute = createHonoApp().basePath("/ideas-lists");
 

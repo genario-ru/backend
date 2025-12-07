@@ -10,7 +10,7 @@ import {
   type UpdateScenarioCurrentVersionResponse,
   updateScenarioCurrentVersionResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const updateScenarioCurrentVersionRoute = createHonoApp().basePath(
   "/scenarios/:scenarioId/current-version",

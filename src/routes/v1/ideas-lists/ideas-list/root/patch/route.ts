@@ -12,8 +12,8 @@ import {
   type UpdateIdeasListResponse,
   updateIdeasListResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const updateIdeasListRoute = createHonoApp().basePath(
   "/ideas-lists/:ideasListId",

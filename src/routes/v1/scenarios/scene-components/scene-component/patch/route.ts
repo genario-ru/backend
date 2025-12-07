@@ -11,8 +11,8 @@ import {
   type UpdateScenarioSceneComponentResponse,
   updateScenarioSceneComponentResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/update-scenario-scene-component/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const updateScenarioSceneComponentRoute = createHonoApp().basePath(
   "/scenarios/scene-components/:sceneComponentId",

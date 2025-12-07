@@ -4,7 +4,7 @@ import {
   type GetTemplatesResponse,
   getTemplatesResponseSchema,
 } from "@/schemas/entities/templates/handlers/get-templates/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getTemplatesRoute = createHonoApp().basePath("/templates");
 

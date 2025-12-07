@@ -9,7 +9,7 @@ import {
   type DeleteScenarioResponse,
   deleteScenarioResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/delete-scenario/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const deleteScenarioRoute = createHonoApp().basePath(
   "/scenarios/:scenarioId",

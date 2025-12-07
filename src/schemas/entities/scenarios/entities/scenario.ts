@@ -11,18 +11,28 @@ import { videoDurationSchema } from "../../video-durations/entities/video-durati
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 import { scenarioVersionExtendedSchema } from "./scenario-version";
 
-export const scenarioSchema = createSelectSchema(scenario);
+export const scenarioSchema = createSelectSchema(scenario).meta({
+  title: "Scenario",
+  description: "Scenario description",
+  ref: "ScenarioSchema",
+});
 
 export type Scenario = z.infer<typeof scenarioSchema>;
 
-export const scenarioExtendedSchema = scenarioSchema.extend({
-  currentVersion: scenarioVersionExtendedSchema.nullish(),
-  profile: profileSchema.nullish(),
-  template: templateSchema.nullish(),
-  platform: platformSchema.nullish(),
-  videoType: videoTypeSchema.nullish(),
-  videoDuration: videoDurationSchema.nullish(),
-  tones: z.array(toneSchema).nullish(),
-});
+export const scenarioExtendedSchema = scenarioSchema
+  .extend({
+    currentVersion: scenarioVersionExtendedSchema.nullish(),
+    profile: profileSchema.nullish(),
+    template: templateSchema.nullish(),
+    platform: platformSchema.nullish(),
+    videoType: videoTypeSchema.nullish(),
+    videoDuration: videoDurationSchema.nullish(),
+    tones: z.array(toneSchema).nullish(),
+  })
+  .meta({
+    title: "Scenario extended",
+    description: "Scenario extended description",
+    ref: "ScenarioExtendedSchema",
+  });
 
 export type ScenarioExtended = z.infer<typeof scenarioExtendedSchema>;

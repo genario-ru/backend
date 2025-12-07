@@ -10,8 +10,8 @@ import {
   type CreateIdeaResponse,
   createIdeaResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/create-idea/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const createIdeaRoute = createHonoApp().basePath(
   "/ideas-lists/:ideasListId/ideas",

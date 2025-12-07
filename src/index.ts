@@ -2,9 +2,10 @@ import { Scalar } from "@scalar/hono-api-reference";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
+import { openAPIRouteHandler } from "hono-openapi";
 
 import { authRoute } from "@/routes/auth/route";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import { deleteIdeaRoute, updateIdeaRoute } from "./routes/v1/ideas";
@@ -98,11 +99,19 @@ appAPIv1RoutesList.forEach((route) => {
   appAPIV1Routes.route("/", route);
 });
 
-// Middleware
-app.use(prettyJSON());
-app.use(requestId());
-app.use(logger());
-app.use(errorHandlerMiddleware);
+// OpenAPI
+app.get(
+  "/api/open-api",
+  openAPIRouteHandler(appAPI, {
+    documentation: {
+      info: {
+        title: "Genarion API",
+        version: "1.0.0",
+        description: "API for Genario application",
+      },
+    },
+  }),
+);
 
 // Docs
 app.get(
@@ -116,5 +125,11 @@ app.get(
     ],
   }),
 );
+
+// Middleware
+app.use(prettyJSON());
+app.use(requestId());
+app.use(logger());
+app.use(errorHandlerMiddleware);
 
 export default app;

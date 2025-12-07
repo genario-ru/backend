@@ -4,7 +4,7 @@ import {
   type GetTonesResponse,
   getTonesResponseSchema,
 } from "@/schemas/entities/tones/handlers/get-tones/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getTonesRoute = createHonoApp().basePath("/tones");
 

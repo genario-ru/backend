@@ -3,7 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import { prettifyError, ZodError } from "zod";
 
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const errorHandlerMiddleware = createMiddleware(async (_c, next) => {
   try {

@@ -8,8 +8,8 @@ import {
   type GetScenarioVersionsResponse,
   getScenarioVersionsResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/get-scenario-versions/response";
-import { createHonoApp } from "@/utils/create-hono-app";
-import { throwAPIError } from "@/utils/throw-api-error";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const getScenarioVersionsRoute = createHonoApp().basePath(
   "/scenarios/:scenarioId/versions",

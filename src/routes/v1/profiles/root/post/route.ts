@@ -8,7 +8,7 @@ import {
   type CreateProfileResponse,
   createProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/create-profile/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createProfileRoute = createHonoApp().basePath("/profiles");
 

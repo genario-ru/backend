@@ -4,7 +4,7 @@ import {
   type GetVideoTypesResponse,
   getVideoTypesResponseSchema,
 } from "@/schemas/entities/video-types/handlers/get-video-types/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getVideoTypesRoute = createHonoApp().basePath("/video-types");
 

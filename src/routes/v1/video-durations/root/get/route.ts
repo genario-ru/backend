@@ -4,7 +4,7 @@ import {
   type GetVideoDurationsResponse,
   getVideoDurationsResponseSchema,
 } from "@/schemas/entities/video-durations/handlers/get-video-durations/response";
-import { createHonoApp } from "@/utils/create-hono-app";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getVideoDurationsRoute =
   createHonoApp().basePath("/video-durations");
