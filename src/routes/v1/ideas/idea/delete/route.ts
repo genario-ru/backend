@@ -18,7 +18,7 @@ import { throwAPIError } from "@/utils/server/throw-api-error";
 export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 
 // DELETE /api/v1/ideas/{ideaId}
-deleteIdeaRoute.patch(
+deleteIdeaRoute.delete(
   "/",
   sessionMiddleware,
   openAPIResponseMiddleware({
