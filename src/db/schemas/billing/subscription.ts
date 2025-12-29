@@ -27,19 +27,19 @@ export const subscription = pgTable("subscription", {
     .notNull(),
   startsAt: timestamp("starts_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }).notNull(),
   endsAt: timestamp("ends_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }),
   lastBilledAt: timestamp("last_billed_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }),
   nextBillingAt: timestamp("next_billing_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }),
   status: subscriptionStatus("status").default("active"),
   isTrial: boolean("is_trial").notNull(),

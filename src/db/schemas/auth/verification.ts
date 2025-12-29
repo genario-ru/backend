@@ -8,7 +8,7 @@ export const verification = pgTable("verification", {
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }).notNull(),
   ...timestamps,
 });

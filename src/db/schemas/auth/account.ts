@@ -14,12 +14,12 @@ export const account = pgTable("account", {
   accessToken: text("access_token").unique(), // The access token of the account. Returned by the provider
   accessTokenExpiresAt: timestamp("access_token_expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }), // The time when the access token expires
   refreshToken: text("refresh_token").unique(), // The refresh token of the account. Returned by the provider
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }), // The time when the refresh token expires
   scope: text("scope"), // The scope of the account. Returned by the provider
   idToken: text("id_token"), // The id token returned from the provider

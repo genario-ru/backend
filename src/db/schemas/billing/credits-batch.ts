@@ -15,7 +15,7 @@ export const creditsBatch = pgTable("credits_batch", {
   remainingAmount: integer("remaining_amount").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }),
   ...timestamps,
 });

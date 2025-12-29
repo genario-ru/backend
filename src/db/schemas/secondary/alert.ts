@@ -16,7 +16,7 @@ export const alert = pgTable("alert", {
   type: alertType("type").default("info").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }).notNull(),
   ...timestamps,
 });

@@ -34,7 +34,7 @@ export const user = pgTable("user", {
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires", {
     withTimezone: true,
-    mode: "date",
+    mode: "string",
   }),
   ...timestamps,
 });
