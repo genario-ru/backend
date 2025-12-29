@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
@@ -25,7 +26,7 @@ deleteIdeaRoute.delete(
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],
     responses: {
-      200: createOpenAPIResponse({
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
         description: "Idea deleted successfully",
         schema: deleteIdeaResponseSchema,
       }),

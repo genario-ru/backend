@@ -1,5 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
@@ -25,7 +26,7 @@ getIdeasListRoute.get(
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {
-      200: createOpenAPIResponse({
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
         description: "Ideas list retrieved successfully",
         schema: getIdeasListResponseSchema,
       }),

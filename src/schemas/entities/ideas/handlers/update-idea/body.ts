@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { idea } from "@/db/schema";
 
+import { ideasRegistry } from "../../registry";
+
 export const updateIdeaBodySchema = createUpdateSchema(idea)
   .pick({
     name: true,
@@ -12,6 +14,11 @@ export const updateIdeaBodySchema = createUpdateSchema(idea)
   })
   .extend({
     ideaId: z.uuid(),
+  })
+  .register(ideasRegistry, {
+    title: "Update idea body",
+    description: "Update idea body description",
+    ref: "UpdateIdeaBodySchema",
   });
 
 export type UpdateIdeaBody = z.infer<typeof updateIdeaBodySchema>;

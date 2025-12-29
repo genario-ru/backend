@@ -3,9 +3,12 @@ import * as z from "zod";
 
 import { scenarioChapter } from "@/db/schema";
 
+import { scenariosRegistry } from "../registry";
 import { scenarioSceneSchema } from "./scenario-scene";
 
-export const scenarioChapterSchema = createSelectSchema(scenarioChapter).meta({
+export const scenarioChapterSchema = createSelectSchema(
+  scenarioChapter,
+).register(scenariosRegistry, {
   title: "Scenario chapter",
   description: "Scenario chapter description",
   ref: "ScenarioChapterSchema",
@@ -17,7 +20,7 @@ export const scenarioChapterExtendedSchema = scenarioChapterSchema
   .extend({
     scenes: z.array(scenarioSceneSchema),
   })
-  .meta({
+  .register(scenariosRegistry, {
     title: "Scenario chapter extended",
     description: "Scenario chapter extended description",
     ref: "ScenarioChapterExtendedSchema",

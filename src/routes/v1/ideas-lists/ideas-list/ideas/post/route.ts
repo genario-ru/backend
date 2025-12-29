@@ -1,5 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
@@ -27,7 +28,7 @@ createIdeaRoute.post(
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {
-      200: createOpenAPIResponse({
+      [HTTPStatusCode.Created]: createOpenAPIResponse({
         description: "Idea created successfully",
         schema: createIdeaResponseSchema,
       }),
@@ -65,6 +66,7 @@ createIdeaRoute.post(
       createIdeaResponseSchema.parse({
         data: createdIdea,
       }),
+      HTTPStatusCode.Created,
     );
   },
 );

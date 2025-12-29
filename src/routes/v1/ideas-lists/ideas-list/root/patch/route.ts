@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
@@ -29,7 +30,7 @@ updateIdeasListRoute.patch(
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {
-      200: createOpenAPIResponse({
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
         description: "Ideas list updated successfully",
         schema: updateIdeasListResponseSchema,
       }),

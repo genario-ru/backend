@@ -3,6 +3,8 @@ import * as z from "zod";
 
 import { scenario } from "@/db/schema";
 
+import { scenariosRegistry } from "../../registry";
+
 export const updateScenarioBodySchema = createUpdateSchema(scenario)
   .pick({
     name: true,
@@ -16,6 +18,11 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
   })
   .extend({
     toneIds: z.array(z.uuid()).optional(),
+  })
+  .register(scenariosRegistry, {
+    title: "Update scenario body",
+    description: "Update scenario body description",
+    ref: "UpdateScenarioBodySchema",
   });
 
 export type UpdateScenarioBody = z.infer<typeof updateScenarioBodySchema>;

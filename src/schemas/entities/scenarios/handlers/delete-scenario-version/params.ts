@@ -1,8 +1,16 @@
 import * as z from "zod";
 
-export const deleteScenarioVersionParamsSchema = z.object({
-  versionId: z.uuid(),
-});
+import { scenariosRegistry } from "../../registry";
+
+export const deleteScenarioVersionParamsSchema = z
+  .object({
+    versionId: z.uuid(),
+  })
+  .register(scenariosRegistry, {
+    title: "Delete scenario version params",
+    description: "Delete scenario version params description",
+    ref: "DeleteScenarioVersionParamsSchema",
+  });
 
 export type DeleteScenarioVersionParams = z.infer<
   typeof deleteScenarioVersionParamsSchema

@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { profile } from "@/db/schema";
 
+import { profilesRegistry } from "../../registry";
+
 export const updateProfileBodySchema = createUpdateSchema(profile)
   .pick({
     name: true,
@@ -13,6 +15,11 @@ export const updateProfileBodySchema = createUpdateSchema(profile)
   .extend({
     platformIds: z.array(z.uuid()).optional(),
     toneIds: z.array(z.uuid()).optional(),
+  })
+  .register(profilesRegistry, {
+    title: "Update profile body",
+    description: "Update profile body description",
+    ref: "UpdateProfileBodySchema",
   });
 
 export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>;

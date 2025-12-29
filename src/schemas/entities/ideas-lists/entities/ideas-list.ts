@@ -8,11 +8,14 @@ import { toneSchema } from "../../tones/entities/tone";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 import { ideasListsRegistry } from "../registry";
 
-export const ideasListSchema = createSelectSchema(ideasList).meta({
-  title: "IdeasList",
-  description: "IdeasList description",
-  ref: "IdeasListSchema",
-});
+export const ideasListSchema = createSelectSchema(ideasList).register(
+  ideasListsRegistry,
+  {
+    title: "IdeasList",
+    description: "IdeasList description",
+    ref: "IdeasListSchema",
+  },
+);
 
 export type IdeasList = z.infer<typeof ideasListSchema>;
 

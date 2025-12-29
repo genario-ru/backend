@@ -4,8 +4,9 @@ import * as z from "zod";
 import { idea } from "@/db/schema";
 
 import { videoTypeSchema } from "../../video-types/entities/video-type";
+import { ideasRegistry } from "../registry";
 
-export const ideaSchema = createSelectSchema(idea).meta({
+export const ideaSchema = createSelectSchema(idea).register(ideasRegistry, {
   title: "Idea",
   description: "Idea description",
   ref: "IdeaSchema",
@@ -17,7 +18,7 @@ export const ideaExtendedSchema = ideaSchema
   .extend({
     videoType: videoTypeSchema,
   })
-  .meta({
+  .register(ideasRegistry, {
     title: "Idea extended",
     description: "Idea extended description",
     ref: "IdeaExtendedSchema",

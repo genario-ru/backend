@@ -3,7 +3,9 @@ import * as z from "zod";
 
 import { user } from "@/db/schema";
 
-export const userSchema = createSelectSchema(user).meta({
+import { usersRegistry } from "../registry";
+
+export const userSchema = createSelectSchema(user).register(usersRegistry, {
   title: "User",
   description: "User description",
   ref: "UserSchema",

@@ -3,7 +3,9 @@ import * as z from "zod";
 
 import { tone } from "@/db/schema";
 
-export const toneSchema = createSelectSchema(tone).meta({
+import { tonesRegistry } from "../registry";
+
+export const toneSchema = createSelectSchema(tone).register(tonesRegistry, {
   title: "Tone",
   description: "Tone description",
   ref: "ToneSchema",

@@ -6,13 +6,17 @@ import { profile } from "@/db/schema";
 import { platformSchema } from "../../platforms/entities/platform";
 import { toneSchema } from "../../tones/entities/tone";
 import { userSchema } from "../../users/entities/user";
+import { profilesRegistry } from "../registry";
 import { profileTypeSchema } from "./profile-type";
 
-export const profileSchema = createSelectSchema(profile).meta({
-  title: "Profile",
-  description: "Profile description",
-  ref: "ProfileSchema",
-});
+export const profileSchema = createSelectSchema(profile).register(
+  profilesRegistry,
+  {
+    title: "Profile",
+    description: "Profile description",
+    ref: "ProfileSchema",
+  },
+);
 
 export type Profile = z.infer<typeof profileSchema>;
 
@@ -23,7 +27,7 @@ export const profileExtendedSchema = profileSchema
     platforms: z.array(platformSchema),
     tones: z.array(toneSchema),
   })
-  .meta({
+  .register(profilesRegistry, {
     title: "Profile extended",
     description: "Profile extended description",
     ref: "ProfileExtendedSchema",
