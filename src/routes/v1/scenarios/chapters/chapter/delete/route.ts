@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioChapter } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteScenarioChapterParamsSchema } from "@/schemas/entities/scenarios/handlers/delete-scenario-chapter/params";
@@ -10,6 +13,7 @@ import {
   type DeleteScenarioChapterResponse,
   deleteScenarioChapterResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/delete-scenario-chapter/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -21,6 +25,15 @@ export const deleteScenarioChapterRoute = createHonoApp().basePath(
 deleteScenarioChapterRoute.delete(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario chapter deleted successfully",
+        schema: deleteScenarioChapterResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", deleteScenarioChapterParamsSchema),
   async (c) => {
     const { chapterId } = c.req.valid("param");

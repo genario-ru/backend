@@ -1,6 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getScenarioChapterParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-chapter/params";
@@ -8,6 +11,7 @@ import {
   type GetScenarioChapterResponse,
   getScenarioChapterResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/get-scenario-chapter/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -19,6 +23,15 @@ export const getScenarioChapterRoute = createHonoApp().basePath(
 getScenarioChapterRoute.get(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario chapter retrieved successfully",
+        schema: getScenarioChapterResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", getScenarioChapterParamsSchema),
   async (c) => {
     const { chapterId } = c.req.valid("param");

@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioSceneComponent } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioSceneComponentBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario-scene-component/body";
@@ -11,6 +14,7 @@ import {
   type UpdateScenarioSceneComponentResponse,
   updateScenarioSceneComponentResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/update-scenario-scene-component/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -22,6 +26,15 @@ export const updateScenarioSceneComponentRoute = createHonoApp().basePath(
 updateScenarioSceneComponentRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario scene component updated successfully",
+        schema: updateScenarioSceneComponentResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateScenarioSceneComponentParamsSchema),
   zValidator("json", updateScenarioSceneComponentBodySchema),
   async (c) => {

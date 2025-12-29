@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenario } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { updateScenarioCurrentVersionBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/body";
 import { updateScenarioCurrentVersionParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/params";
@@ -10,6 +13,7 @@ import {
   type UpdateScenarioCurrentVersionResponse,
   updateScenarioCurrentVersionResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/update-scenario-current-version/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const updateScenarioCurrentVersionRoute = createHonoApp().basePath(
@@ -20,6 +24,15 @@ export const updateScenarioCurrentVersionRoute = createHonoApp().basePath(
 updateScenarioCurrentVersionRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario current version updated successfully",
+        schema: updateScenarioCurrentVersionResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateScenarioCurrentVersionParamsSchema),
   zValidator("json", updateScenarioCurrentVersionBodySchema),
   async (c) => {

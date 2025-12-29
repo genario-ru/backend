@@ -1,14 +1,18 @@
 import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { deleteProfileParamsSchema } from "@/schemas/entities/profiles/handlers/delete-profile/params";
 import {
   type DeleteProfileResponse,
   deleteProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/delete-profile/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const deleteProfileRoute = createHonoApp().basePath(
@@ -19,6 +23,15 @@ export const deleteProfileRoute = createHonoApp().basePath(
 deleteProfileRoute.delete(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Profiles],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Profile deleted successfully",
+        schema: deleteProfileResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", deleteProfileParamsSchema),
   async (c) => {
     const { profileId } = c.req.valid("param");

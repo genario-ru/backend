@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioVersion } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteScenarioVersionParamsSchema } from "@/schemas/entities/scenarios/handlers/delete-scenario-version/params";
@@ -10,6 +13,7 @@ import {
   type DeleteScenarioVersionResponse,
   deleteScenarioVersionResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/delete-scenario-version/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -21,6 +25,15 @@ export const deleteScenarioVersionRoute = createHonoApp().basePath(
 deleteScenarioVersionRoute.delete(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario version deleted successfully",
+        schema: deleteScenarioVersionResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", deleteScenarioVersionParamsSchema),
   async (c) => {
     const { versionId } = c.req.valid("param");

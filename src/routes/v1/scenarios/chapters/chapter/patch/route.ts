@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioChapter } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioChapterBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario-chapter/body";
@@ -11,6 +14,7 @@ import {
   type UpdateScenarioChapterResponse,
   updateScenarioChapterResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/update-scenario-chapter/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -22,6 +26,15 @@ export const updateScenarioChapterRoute = createHonoApp().basePath(
 updateScenarioChapterRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario chapter updated successfully",
+        schema: updateScenarioChapterResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateScenarioChapterParamsSchema),
   zValidator("json", updateScenarioChapterBodySchema),
   async (c) => {

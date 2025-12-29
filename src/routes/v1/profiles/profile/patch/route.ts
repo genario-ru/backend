@@ -2,8 +2,11 @@ import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateProfileBodySchema } from "@/schemas/entities/profiles/handlers/update-profile/body";
@@ -12,6 +15,7 @@ import {
   type UpdateProfileResponse,
   updateProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/update-profile/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -23,6 +27,15 @@ export const updateProfileRoute = createHonoApp().basePath(
 updateProfileRoute.patch(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Profiles],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Profile updated successfully",
+        schema: updateProfileResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", updateProfileParamsSchema),
   zValidator("json", updateProfileBodySchema),
   async (c) => {

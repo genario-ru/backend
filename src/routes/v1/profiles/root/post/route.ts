@@ -1,13 +1,17 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { createProfileBodySchema } from "@/schemas/entities/profiles/handlers/create-profile/body";
 import {
   type CreateProfileResponse,
   createProfileResponseSchema,
 } from "@/schemas/entities/profiles/handlers/create-profile/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createProfileRoute = createHonoApp().basePath("/profiles");
@@ -16,6 +20,15 @@ export const createProfileRoute = createHonoApp().basePath("/profiles");
 createProfileRoute.post(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Profiles],
+    responses: {
+      [HTTPStatusCode.Created]: createOpenAPIResponse({
+        description: "Profile created successfully",
+        schema: createProfileResponseSchema,
+      }),
+    },
+  }),
   zValidator("json", createProfileBodySchema),
   async (c) => {
     const { platformIds, toneIds, ...createProfileParams } =
@@ -65,6 +78,7 @@ createProfileRoute.post(
       createProfileResponseSchema.parse({
         data: createdProfile,
       }),
+      HTTPStatusCode.Created,
     );
   },
 );

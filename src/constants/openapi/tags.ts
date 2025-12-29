@@ -1,6 +1,7 @@
 export enum OpenAPITags {
   Ideas = "Ideas",
   IdeasLists = "Ideas lists",
+  Platforms = "Platforms",
   Profiles = "Profiles",
   Scenarios = "Scenarios",
   Templates = "Templates",

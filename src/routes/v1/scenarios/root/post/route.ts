@@ -1,14 +1,18 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { createScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,
   createScenarioResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/create-scenario/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const createScenarioRoute = createHonoApp().basePath("/scenarios");
@@ -17,6 +21,15 @@ export const createScenarioRoute = createHonoApp().basePath("/scenarios");
 createScenarioRoute.post(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Created]: createOpenAPIResponse({
+        description: "Scenario created successfully",
+        schema: createScenarioResponseSchema,
+      }),
+    },
+  }),
   zValidator("json", createScenarioBodySchema),
   async (c) => {
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
@@ -65,6 +78,7 @@ createScenarioRoute.post(
       createScenarioResponseSchema.parse({
         data: createdScenario,
       }),
+      HTTPStatusCode.Created,
     );
   },
 );

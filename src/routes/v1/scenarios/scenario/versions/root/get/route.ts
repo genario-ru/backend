@@ -1,6 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getScenarioVersionsParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-versions/params";
@@ -8,6 +11,7 @@ import {
   type GetScenarioVersionsResponse,
   getScenarioVersionsResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/get-scenario-versions/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -19,6 +23,15 @@ export const getScenarioVersionsRoute = createHonoApp().basePath(
 getScenarioVersionsRoute.get(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario versions retrieved successfully",
+        schema: getScenarioVersionsResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", getScenarioVersionsParamsSchema),
   async (c) => {
     const { scenarioId } = c.req.valid("param");

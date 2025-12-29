@@ -1,30 +1,48 @@
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import {
   type GetPlatformsResponse,
   getPlatformsResponseSchema,
 } from "@/schemas/entities/platforms/handlers/get-platforms/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 export const getPlatformsRoute = createHonoApp().basePath("/platforms");
 
 // GET /api/v1/platforms
-getPlatformsRoute.get("/", async (c) => {
-  const foundPlatforms = await db.query.platform.findMany({
-    with: {
-      platformToVideoType: {
-        with: { videoType: true },
-      },
+getPlatformsRoute.get(
+  "/",
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Platforms],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Platforms retrieved successfully",
+        schema: getPlatformsResponseSchema,
+      }),
     },
-  });
+  }),
+  async (c) => {
+    const foundPlatforms = await db.query.platform.findMany({
+      with: {
+        platformToVideoType: {
+          with: { videoType: true },
+        },
+      },
+    });
 
-  const preparedPlatforms = foundPlatforms.map((platform) => ({
-    ...platform,
-    videoTypes: platform.platformToVideoType.map(({ videoType }) => videoType),
-  }));
+    const preparedPlatforms = foundPlatforms.map((platform) => ({
+      ...platform,
+      videoTypes: platform.platformToVideoType.map(
+        ({ videoType }) => videoType,
+      ),
+    }));
 
-  return c.json<GetPlatformsResponse>(
-    getPlatformsResponseSchema.parse({
-      data: preparedPlatforms,
-    }),
-  );
-});
+    return c.json<GetPlatformsResponse>(
+      getPlatformsResponseSchema.parse({
+        data: preparedPlatforms,
+      }),
+    );
+  },
+);

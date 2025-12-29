@@ -1,8 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioSceneComponent } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteScenarioSceneComponentParamsSchema } from "@/schemas/entities/scenarios/handlers/delete-scenario-scene-component/params";
@@ -10,6 +13,7 @@ import {
   type DeleteScenarioSceneComponentResponse,
   deleteScenarioSceneComponentResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/delete-scenario-scene-component/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
@@ -21,6 +25,15 @@ export const deleteScenarioSceneComponentRoute = createHonoApp().basePath(
 deleteScenarioSceneComponentRoute.delete(
   "/",
   sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario scene component deleted successfully",
+        schema: deleteScenarioSceneComponentResponseSchema,
+      }),
+    },
+  }),
   zValidator("param", deleteScenarioSceneComponentParamsSchema),
   async (c) => {
     const { sceneComponentId } = c.req.valid("param");
