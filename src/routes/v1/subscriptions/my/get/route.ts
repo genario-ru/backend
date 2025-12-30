@@ -1,0 +1,44 @@
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
+import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { getMyScenariosResponseSchema } from "@/schemas/entities/scenarios/handlers/get-my-scenarios/response";
+import {
+  type GetMySubscriptionsResponse,
+  getMySubscriptionsResponseSchema,
+} from "@/schemas/entities/subscriptions/handlers/get-my-subscriptions/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+
+export const getMySubscriptionsRoute =
+  createHonoApp().basePath("/subscriptons/my");
+
+// GET /api/v1/subscriptons/my
+getMySubscriptionsRoute.get(
+  "/",
+  sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Subscriptions],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "My subscriptions retrieved successfully",
+        schema: getMyScenariosResponseSchema,
+      }),
+    },
+  }),
+  async (c) => {
+    const user = c.get("user");
+
+    const foundSubscriptions = await db.query.subscription.findMany({
+      where: (subscription, { eq }) => eq(subscription.userId, user.id),
+      with: { plan: true },
+    });
+
+    return c.json<GetMySubscriptionsResponse>(
+      getMySubscriptionsResponseSchema.parse({
+        data: foundSubscriptions,
+      }),
+    );
+  },
+);
