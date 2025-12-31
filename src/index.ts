@@ -1,4 +1,5 @@
 import { Scalar } from "@scalar/hono-api-reference";
+// import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
@@ -130,6 +131,15 @@ app.get(
 app.use(prettyJSON());
 app.use(requestId());
 app.use(logger());
+
+// app.use(
+//   cors({
+//     origin: ["https://genario.ru", "http://localhost:5173"],
+//     maxAge: 600,
+//     credentials: true,
+//   }),
+// );
+
 app.use(errorHandlerMiddleware);
 
 export default app;
