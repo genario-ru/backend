@@ -1,5 +1,5 @@
 import { Scalar } from "@scalar/hono-api-reference";
-// import { cors } from "hono/cors";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
@@ -106,7 +106,7 @@ app.get(
   openAPIRouteHandler(appAPI, {
     documentation: {
       info: {
-        title: "Genarion API",
+        title: "Genario API",
         version: "1.0.0",
         description: "API for Genario application",
       },
@@ -120,8 +120,7 @@ app.get(
   Scalar({
     pageTitle: "API Documentation",
     sources: [
-      { url: "/api/open-api", title: "API" },
-      // Better Auth schema generation endpoint
+      { url: "/api/open-api", title: "Product API" },
       { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
     ],
   }),
@@ -132,13 +131,13 @@ app.use(prettyJSON());
 app.use(requestId());
 app.use(logger());
 
-// app.use(
-//   cors({
-//     origin: ["https://genario.ru", "http://localhost:5173"],
-//     maxAge: 600,
-//     credentials: true,
-//   }),
-// );
+app.use(
+  cors({
+    origin: ["https://genario.ru", "http://localhost:5173"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
 
 app.use(errorHandlerMiddleware);
 
