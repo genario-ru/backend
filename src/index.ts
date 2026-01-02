@@ -94,6 +94,21 @@ const appAPIv1RoutesList = [
   getVideoTypesRoute,
 ];
 
+// Middleware
+app.use(prettyJSON());
+app.use(requestId());
+app.use(logger());
+
+app.use(
+  cors({
+    origin: ["https://genario.ru", "http://localhost:5173"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
+
+app.use(errorHandlerMiddleware);
+
 appAPI.route("/", authRoute);
 
 appAPIv1RoutesList.forEach((route) => {
@@ -110,6 +125,11 @@ app.get(
         version: "1.0.0",
         description: "API for Genario application",
       },
+      servers: [
+        {
+          url: "https://api.genario.ru",
+        },
+      ],
     },
   }),
 );
@@ -125,20 +145,5 @@ app.get(
     ],
   }),
 );
-
-// Middleware
-app.use(prettyJSON());
-app.use(requestId());
-app.use(logger());
-
-app.use(
-  cors({
-    origin: ["https://genario.ru", "http://localhost:5173"],
-    maxAge: 600,
-    credentials: true,
-  }),
-);
-
-app.use(errorHandlerMiddleware);
 
 export default app;
