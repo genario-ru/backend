@@ -13,12 +13,6 @@ export type AuthType = {
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,
   user: {
-    additionalFields: {
-      username: {
-        type: "string",
-        required: true,
-      },
-    },
     deleteUser: { enabled: true },
     changeEmail: {
       enabled: true,
