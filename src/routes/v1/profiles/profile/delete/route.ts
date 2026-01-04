@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -32,7 +32,7 @@ deleteProfileRoute.delete(
       }),
     },
   }),
-  zValidator("param", deleteProfileParamsSchema),
+  validator("param", deleteProfileParamsSchema),
   async (c) => {
     const { profileId } = c.req.valid("param");
     const user = c.get("user");

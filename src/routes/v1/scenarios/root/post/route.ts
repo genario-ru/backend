@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -30,7 +30,7 @@ createScenarioRoute.post(
       }),
     },
   }),
-  zValidator("json", createScenarioBodySchema),
+  validator("json", createScenarioBodySchema),
   async (c) => {
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
     const user = c.get("user");

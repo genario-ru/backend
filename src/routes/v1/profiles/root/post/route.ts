@@ -1,4 +1,4 @@
-import { zValidator } from "@hono/zod-validator";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -29,7 +29,7 @@ createProfileRoute.post(
       }),
     },
   }),
-  zValidator("json", createProfileBodySchema),
+  validator("json", createProfileBodySchema),
   async (c) => {
     const { platformIds, toneIds, ...createProfileParams } =
       c.req.valid("json");

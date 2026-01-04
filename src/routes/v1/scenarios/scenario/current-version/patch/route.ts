@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { and, eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -33,8 +33,8 @@ updateScenarioCurrentVersionRoute.patch(
       }),
     },
   }),
-  zValidator("param", updateScenarioCurrentVersionParamsSchema),
-  zValidator("json", updateScenarioCurrentVersionBodySchema),
+  validator("param", updateScenarioCurrentVersionParamsSchema),
+  validator("json", updateScenarioCurrentVersionBodySchema),
   async (c) => {
     const { scenarioId } = c.req.valid("param");
     const { currentVersionId: newCurrentVersionId } = c.req.valid("json");

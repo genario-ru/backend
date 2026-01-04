@@ -1,4 +1,4 @@
-import { zValidator } from "@hono/zod-validator";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -32,7 +32,7 @@ getScenarioVersionsRoute.get(
       }),
     },
   }),
-  zValidator("param", getScenarioVersionsParamsSchema),
+  validator("param", getScenarioVersionsParamsSchema),
   async (c) => {
     const { scenarioId } = c.req.valid("param");
     const user = c.get("user");

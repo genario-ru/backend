@@ -1,4 +1,4 @@
-import { zValidator } from "@hono/zod-validator";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -29,7 +29,7 @@ createIdeasListRoute.post(
       }),
     },
   }),
-  zValidator("json", createIdeasListBodySchema),
+  validator("json", createIdeasListBodySchema),
   async (c) => {
     const { toneIds, videoTypeIds, ...createIdeasListParams } =
       c.req.valid("json");

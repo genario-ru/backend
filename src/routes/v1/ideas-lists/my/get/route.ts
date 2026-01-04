@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -34,7 +34,7 @@ getMyIdeasListsRoute.get(
       }),
     },
   }),
-  zValidator("query", getMyIdeasListsQuerySchema),
+  validator("query", getMyIdeasListsQuerySchema),
   async (c) => {
     const user = c.get("user");
 

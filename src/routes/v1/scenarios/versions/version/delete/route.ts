@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -34,7 +34,7 @@ deleteScenarioVersionRoute.delete(
       }),
     },
   }),
-  zValidator("param", deleteScenarioVersionParamsSchema),
+  validator("param", deleteScenarioVersionParamsSchema),
   async (c) => {
     const { versionId } = c.req.valid("param");
     const user = c.get("user");

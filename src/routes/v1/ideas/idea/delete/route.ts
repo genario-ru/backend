@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -32,7 +32,7 @@ deleteIdeaRoute.delete(
       }),
     },
   }),
-  zValidator("param", deleteIdeaParamsSchema),
+  validator("param", deleteIdeaParamsSchema),
   async (c) => {
     const { ideaId } = c.req.valid("param");
 

@@ -1,5 +1,5 @@
-import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
@@ -33,8 +33,8 @@ updateIdeaRoute.patch(
       }),
     },
   }),
-  zValidator("param", updateIdeaParamsSchema),
-  zValidator("json", updateIdeaBodySchema),
+  validator("param", updateIdeaParamsSchema),
+  validator("json", updateIdeaBodySchema),
   async (c) => {
     const { ideaId } = c.req.valid("param");
     const updateIdeaBody = c.req.valid("json");
