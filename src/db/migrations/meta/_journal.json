@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759785476938,
-      "tag": "0000_luxuriant_taskmaster",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1759873733862,
-      "tag": "0001_silky_solo",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1767028179702,
-      "tag": "0002_pink_patch",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1767425643309,
-      "tag": "0003_safe_marrow",
+      "when": 1767515580624,
+      "tag": "0000_previous_devos",
       "breakpoints": true
     }
   ]

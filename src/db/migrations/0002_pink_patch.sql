@@ -1,1 +1,0 @@
-ALTER TABLE "credits_batch" DROP COLUMN "source_type";

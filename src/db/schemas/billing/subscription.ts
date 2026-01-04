@@ -5,7 +5,7 @@ import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { plan } from "./plan";
 
-export const subscriptionStatus = pgEnum("status", [
+export const subscriptionStatus = pgEnum("subscription_status", [
   "active",
   "overdue",
   "cancelled",

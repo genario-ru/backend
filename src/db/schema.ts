@@ -5,10 +5,15 @@ export * from "./schemas/auth/verification";
 
 // Billing
 export * from "./schemas/billing/credits-batch";
+export * from "./schemas/billing/credits-cost";
+export * from "./schemas/billing/credits-package";
+export * from "./schemas/billing/credits-usage";
 export * from "./schemas/billing/plan";
 export * from "./schemas/billing/subscription";
+export * from "./schemas/billing/transaction";
 
 // Linking
+export * from "./schemas/linking/credits-package-to-credits-batch";
 export * from "./schemas/linking/ideas-list-to-tone";
 export * from "./schemas/linking/ideas-list-to-video-type";
 export * from "./schemas/linking/platform-to-video-type";

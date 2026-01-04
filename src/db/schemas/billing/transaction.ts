@@ -4,8 +4,16 @@ import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 
-const transactionStatus = pgEnum("status", ["pending", "completed", "failed"]);
-const transactionPaymentMethod = pgEnum("payment_method", ["card", "fps"]);
+export const transactionStatus = pgEnum("transaction_status", [
+  "pending",
+  "completed",
+  "failed",
+]);
+
+export const transactionPaymentMethod = pgEnum("transaction_payment_method", [
+  "card",
+  "fps",
+]);
 
 export const transaction = pgTable("transaction", {
   id: uuid("id").defaultRandom().primaryKey(),

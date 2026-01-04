@@ -18,7 +18,7 @@ import { ideasList } from "./ideas-list";
 import { profile } from "./profile";
 import { scenario } from "./scenario";
 
-export const userRole = pgEnum("role", ["user", "admin"]);
+export const userRole = pgEnum("user_role", ["user", "admin"]);
 
 export const user = pgTable("user", {
   id: uuid("id").defaultRandom().primaryKey(),

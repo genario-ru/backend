@@ -2,7 +2,7 @@ import { integer, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 
-const creditsCostEntity = pgEnum("entity", [
+export const creditsCostEntity = pgEnum("credits_cost_entity", [
   "idea",
   "ideas-list",
   "scenario-version",
@@ -11,7 +11,10 @@ const creditsCostEntity = pgEnum("entity", [
   "scenario-scene-component",
 ]);
 
-const creditsCostAction = pgEnum("action", ["generate", "regenerate"]);
+export const creditsCostAction = pgEnum("credits_cost_action", [
+  "generate",
+  "regenerate",
+]);
 
 export const creditsCost = pgTable("credits_cost", {
   id: uuid("id").defaultRandom().primaryKey(),

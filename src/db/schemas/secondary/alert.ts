@@ -2,7 +2,7 @@ import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 
-export const alertType = pgEnum("type", [
+export const alertType = pgEnum("alert_type", [
   "info",
   "warning",
   "negative",

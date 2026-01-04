@@ -1,5 +1,5 @@
 {
-  "id": "0687d8b0-dfb7-4bc1-a228-6fecede34f7f",
+  "id": "d6f15ba0-df44-4538-be8b-d1c7f9d22360",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -90,8 +90,12 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -101,17 +105,23 @@
         "account_account_id_unique": {
           "name": "account_account_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["account_id"]
+          "columns": [
+            "account_id"
+          ]
         },
         "account_access_token_unique": {
           "name": "account_access_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["access_token"]
+          "columns": [
+            "access_token"
+          ]
         },
         "account_refresh_token_unique": {
           "name": "account_refresh_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["refresh_token"]
+          "columns": [
+            "refresh_token"
+          ]
         }
       },
       "policies": {},
@@ -186,8 +196,12 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -195,8 +209,12 @@
           "name": "session_impersonated_by_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["impersonated_by"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "impersonated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "cascade"
         }
@@ -206,7 +224,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -282,12 +302,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "source_type": {
-          "name": "source_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "initial_amount": {
           "name": "initial_amount",
           "type": "integer",
@@ -327,8 +341,216 @@
           "name": "credits_batch_user_id_user_id_fk",
           "tableFrom": "credits_batch",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.credits_cost": {
+      "name": "credits_cost",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "entity": {
+          "name": "entity",
+          "type": "credits_cost_entity",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "credits_cost_action",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.credits_package": {
+      "name": "credits_package",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.credits_usage": {
+      "name": "credits_usage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credits_batch_id": {
+          "name": "credits_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credits_cost_id": {
+          "name": "credits_cost_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "credits_usage_user_id_user_id_fk": {
+          "name": "credits_usage_user_id_user_id_fk",
+          "tableFrom": "credits_usage",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "credits_usage_credits_batch_id_credits_batch_id_fk": {
+          "name": "credits_usage_credits_batch_id_credits_batch_id_fk",
+          "tableFrom": "credits_usage",
+          "tableTo": "credits_batch",
+          "columnsFrom": [
+            "credits_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "credits_usage_credits_cost_id_credits_cost_id_fk": {
+          "name": "credits_usage_credits_cost_id_credits_cost_id_fk",
+          "tableFrom": "credits_usage",
+          "tableTo": "credits_cost",
+          "columnsFrom": [
+            "credits_cost_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -452,7 +674,7 @@
         },
         "status": {
           "name": "status",
-          "type": "status",
+          "type": "subscription_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
@@ -485,8 +707,12 @@
           "name": "subscription_user_id_user_id_fk",
           "tableFrom": "subscription",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -494,8 +720,171 @@
           "name": "subscription_plan_id_plan_id_fk",
           "tableFrom": "subscription",
           "tableTo": "plan",
-          "columnsFrom": ["plan_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "plan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction": {
+      "name": "transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_id": {
+          "name": "payment_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_provider": {
+          "name": "payment_provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_method": {
+          "name": "payment_method",
+          "type": "transaction_payment_method",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "transaction_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_user_id_user_id_fk": {
+          "name": "transaction_user_id_user_id_fk",
+          "tableFrom": "transaction",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.credits_package_to_credits_batch": {
+      "name": "credits_package_to_credits_batch",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "credits_package_id": {
+          "name": "credits_package_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credits_batch_id": {
+          "name": "credits_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "credits_package_to_credits_batch_credits_package_id_subscription_id_fk": {
+          "name": "credits_package_to_credits_batch_credits_package_id_subscription_id_fk",
+          "tableFrom": "credits_package_to_credits_batch",
+          "tableTo": "subscription",
+          "columnsFrom": [
+            "credits_package_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "credits_package_to_credits_batch_credits_batch_id_credits_batch_id_fk": {
+          "name": "credits_package_to_credits_batch_credits_batch_id_credits_batch_id_fk",
+          "tableFrom": "credits_package_to_credits_batch",
+          "tableTo": "credits_batch",
+          "columnsFrom": [
+            "credits_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -550,8 +939,12 @@
           "name": "ideas_list_to_tone_ideas_list_id_ideas_list_id_fk",
           "tableFrom": "ideas_list_to_tone",
           "tableTo": "ideas_list",
-          "columnsFrom": ["ideas_list_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "ideas_list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -559,8 +952,12 @@
           "name": "ideas_list_to_tone_tone_id_tone_id_fk",
           "tableFrom": "ideas_list_to_tone",
           "tableTo": "tone",
-          "columnsFrom": ["tone_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tone_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -615,8 +1012,12 @@
           "name": "ideas_list_to_video_type_ideas_list_id_ideas_list_id_fk",
           "tableFrom": "ideas_list_to_video_type",
           "tableTo": "ideas_list",
-          "columnsFrom": ["ideas_list_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "ideas_list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -624,8 +1025,12 @@
           "name": "ideas_list_to_video_type_video_type_id_video_type_id_fk",
           "tableFrom": "ideas_list_to_video_type",
           "tableTo": "video_type",
-          "columnsFrom": ["video_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "video_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -680,8 +1085,12 @@
           "name": "platform_to_video_type_platform_id_platform_id_fk",
           "tableFrom": "platform_to_video_type",
           "tableTo": "platform",
-          "columnsFrom": ["platform_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -689,8 +1098,12 @@
           "name": "platform_to_video_type_video_type_id_video_type_id_fk",
           "tableFrom": "platform_to_video_type",
           "tableTo": "video_type",
-          "columnsFrom": ["video_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "video_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -745,8 +1158,12 @@
           "name": "profile_to_platform_profile_id_profile_id_fk",
           "tableFrom": "profile_to_platform",
           "tableTo": "profile",
-          "columnsFrom": ["profile_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -754,8 +1171,12 @@
           "name": "profile_to_platform_platform_id_platform_id_fk",
           "tableFrom": "profile_to_platform",
           "tableTo": "platform",
-          "columnsFrom": ["platform_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -810,8 +1231,12 @@
           "name": "profile_to_tone_profile_id_profile_id_fk",
           "tableFrom": "profile_to_tone",
           "tableTo": "profile",
-          "columnsFrom": ["profile_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -819,8 +1244,12 @@
           "name": "profile_to_tone_tone_id_tone_id_fk",
           "tableFrom": "profile_to_tone",
           "tableTo": "tone",
-          "columnsFrom": ["tone_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tone_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -875,8 +1304,12 @@
           "name": "scenario_to_tone_scenario_id_scenario_id_fk",
           "tableFrom": "scenario_to_tone",
           "tableTo": "scenario",
-          "columnsFrom": ["scenario_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -884,8 +1317,12 @@
           "name": "scenario_to_tone_tone_id_tone_id_fk",
           "tableFrom": "scenario_to_tone",
           "tableTo": "tone",
-          "columnsFrom": ["tone_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "tone_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -940,8 +1377,12 @@
           "name": "subscription_to_credits_batch_subscription_id_subscription_id_fk",
           "tableFrom": "subscription_to_credits_batch",
           "tableTo": "subscription",
-          "columnsFrom": ["subscription_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "subscription_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -949,8 +1390,12 @@
           "name": "subscription_to_credits_batch_credits_batch_id_credits_batch_id_fk",
           "tableFrom": "subscription_to_credits_batch",
           "tableTo": "credits_batch",
-          "columnsFrom": ["credits_batch_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "credits_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1035,8 +1480,12 @@
           "name": "attachment_user_id_user_id_fk",
           "tableFrom": "attachment",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1047,8 +1496,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.idea_variant": {
-      "name": "idea_variant",
+    "public.idea": {
+      "name": "idea",
       "schema": "",
       "columns": {
         "id": {
@@ -1112,21 +1561,29 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "idea_variant_ideas_list_id_ideas_list_id_fk": {
-          "name": "idea_variant_ideas_list_id_ideas_list_id_fk",
-          "tableFrom": "idea_variant",
+        "idea_ideas_list_id_ideas_list_id_fk": {
+          "name": "idea_ideas_list_id_ideas_list_id_fk",
+          "tableFrom": "idea",
           "tableTo": "ideas_list",
-          "columnsFrom": ["ideas_list_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "ideas_list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
-        "idea_variant_video_type_id_video_type_id_fk": {
-          "name": "idea_variant_video_type_id_video_type_id_fk",
-          "tableFrom": "idea_variant",
+        "idea_video_type_id_video_type_id_fk": {
+          "name": "idea_video_type_id_video_type_id_fk",
+          "tableFrom": "idea",
           "tableTo": "video_type",
-          "columnsFrom": ["video_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "video_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1205,8 +1662,12 @@
           "name": "ideas_list_user_id_user_id_fk",
           "tableFrom": "ideas_list",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1214,8 +1675,12 @@
           "name": "ideas_list_profile_id_profile_id_fk",
           "tableFrom": "ideas_list",
           "tableTo": "profile",
-          "columnsFrom": ["profile_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1223,8 +1688,12 @@
           "name": "ideas_list_template_id_template_id_fk",
           "tableFrom": "ideas_list",
           "tableTo": "template",
-          "columnsFrom": ["template_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -1361,8 +1830,12 @@
           "name": "profile_user_id_user_id_fk",
           "tableFrom": "profile",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1370,8 +1843,12 @@
           "name": "profile_type_id_profile_type_id_fk",
           "tableFrom": "profile",
           "tableTo": "profile_type",
-          "columnsFrom": ["type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -1438,8 +1915,12 @@
           "name": "profile_attachment_profile_id_profile_id_fk",
           "tableFrom": "profile_attachment",
           "tableTo": "profile",
-          "columnsFrom": ["profile_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1447,8 +1928,12 @@
           "name": "profile_attachment_attachment_id_attachment_id_fk",
           "tableFrom": "profile_attachment",
           "tableTo": "attachment",
-          "columnsFrom": ["attachment_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "attachment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1609,8 +2094,12 @@
           "name": "scenario_user_id_user_id_fk",
           "tableFrom": "scenario",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1618,8 +2107,12 @@
           "name": "scenario_current_version_id_scenario_version_id_fk",
           "tableFrom": "scenario",
           "tableTo": "scenario_version",
-          "columnsFrom": ["current_version_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "current_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1627,8 +2120,12 @@
           "name": "scenario_profile_id_profile_id_fk",
           "tableFrom": "scenario",
           "tableTo": "profile",
-          "columnsFrom": ["profile_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1636,8 +2133,12 @@
           "name": "scenario_template_id_template_id_fk",
           "tableFrom": "scenario",
           "tableTo": "template",
-          "columnsFrom": ["template_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "template_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1645,8 +2146,12 @@
           "name": "scenario_platform_id_platform_id_fk",
           "tableFrom": "scenario",
           "tableTo": "platform",
-          "columnsFrom": ["platform_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1654,8 +2159,12 @@
           "name": "scenario_video_type_id_video_type_id_fk",
           "tableFrom": "scenario",
           "tableTo": "video_type",
-          "columnsFrom": ["video_type_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "video_type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         },
@@ -1663,8 +2172,12 @@
           "name": "scenario_video_duration_id_video_duration_id_fk",
           "tableFrom": "scenario",
           "tableTo": "video_duration",
-          "columnsFrom": ["video_duration_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "video_duration_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -1745,8 +2258,12 @@
           "name": "scenario_chapter_scenario_version_id_scenario_version_id_fk",
           "tableFrom": "scenario_chapter",
           "tableTo": "scenario_version",
-          "columnsFrom": ["scenario_version_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1839,8 +2356,12 @@
           "name": "scenario_scene_scenario_chapter_id_scenario_chapter_id_fk",
           "tableFrom": "scenario_scene",
           "tableTo": "scenario_chapter",
-          "columnsFrom": ["scenario_chapter_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_chapter_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -1848,8 +2369,12 @@
           "name": "scenario_scene_preview_id_attachment_id_fk",
           "tableFrom": "scenario_scene",
           "tableTo": "attachment",
-          "columnsFrom": ["preview_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "preview_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "cascade"
         }
@@ -1922,8 +2447,12 @@
           "name": "scenario_scene_component_scenario_scene_id_scenario_scene_id_fk",
           "tableFrom": "scenario_scene_component",
           "tableTo": "scenario_scene",
-          "columnsFrom": ["scenario_scene_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_scene_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1980,8 +2509,12 @@
           "name": "scenario_version_scenario_id_scenario_id_fk",
           "tableFrom": "scenario_version",
           "tableTo": "scenario",
-          "columnsFrom": ["scenario_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2060,8 +2593,12 @@
           "name": "scenario_video_reference_scenario_version_id_scenario_version_id_fk",
           "tableFrom": "scenario_video_reference",
           "tableTo": "scenario_version",
-          "columnsFrom": ["scenario_version_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "scenario_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -2069,8 +2606,12 @@
           "name": "scenario_video_reference_platform_id_platform_id_fk",
           "tableFrom": "scenario_video_reference",
           "tableTo": "platform",
-          "columnsFrom": ["platform_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "platform_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2144,7 +2685,9 @@
         "template_slug_unique": {
           "name": "template_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -2220,12 +2763,6 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "email": {
           "name": "email",
           "type": "text",
@@ -2266,7 +2803,7 @@
         },
         "role": {
           "name": "role",
-          "type": "role",
+          "type": "user_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -2310,20 +2847,19 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_username_unique": {
-          "name": "user_username_unique",
-          "nullsNotDistinct": false,
-          "columns": ["username"]
-        },
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         },
         "user_phone_unique": {
           "name": "user_phone_unique",
           "nullsNotDistinct": false,
-          "columns": ["phone"]
+          "columns": [
+            "phone"
+          ]
         }
       },
       "policies": {},
@@ -2477,7 +3013,7 @@
         },
         "type": {
           "name": "type",
-          "type": "type",
+          "type": "alert_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -2514,35 +3050,99 @@
     }
   },
   "enums": {
-    "public.status": {
-      "name": "status",
+    "public.credits_cost_action": {
+      "name": "credits_cost_action",
       "schema": "public",
-      "values": ["active", "overdue", "cancelled"]
+      "values": [
+        "generate",
+        "regenerate"
+      ]
+    },
+    "public.credits_cost_entity": {
+      "name": "credits_cost_entity",
+      "schema": "public",
+      "values": [
+        "idea",
+        "ideas-list",
+        "scenario-version",
+        "scenario-chapter",
+        "scenario-scene",
+        "scenario-scene-component"
+      ]
+    },
+    "public.subscription_status": {
+      "name": "subscription_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "overdue",
+        "cancelled"
+      ]
+    },
+    "public.transaction_payment_method": {
+      "name": "transaction_payment_method",
+      "schema": "public",
+      "values": [
+        "card",
+        "fps"
+      ]
+    },
+    "public.transaction_status": {
+      "name": "transaction_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "completed",
+        "failed"
+      ]
     },
     "public.scenario_chapter_status": {
       "name": "scenario_chapter_status",
       "schema": "public",
-      "values": ["pending", "generation", "failed", "ready"]
+      "values": [
+        "pending",
+        "generation",
+        "failed",
+        "ready"
+      ]
     },
     "public.scenario_scene_status": {
       "name": "scenario_scene_status",
       "schema": "public",
-      "values": ["pending", "generation", "failed", "ready"]
+      "values": [
+        "pending",
+        "generation",
+        "failed",
+        "ready"
+      ]
     },
     "public.scenario_version_status": {
       "name": "scenario_version_status",
       "schema": "public",
-      "values": ["pending", "generation", "failed", "ready"]
+      "values": [
+        "pending",
+        "generation",
+        "failed",
+        "ready"
+      ]
     },
-    "public.role": {
-      "name": "role",
+    "public.user_role": {
+      "name": "user_role",
       "schema": "public",
-      "values": ["user", "admin"]
+      "values": [
+        "user",
+        "admin"
+      ]
     },
-    "public.type": {
-      "name": "type",
+    "public.alert_type": {
+      "name": "alert_type",
       "schema": "public",
-      "values": ["info", "warning", "negative", "positive"]
+      "values": [
+        "info",
+        "warning",
+        "negative",
+        "positive"
+      ]
     }
   },
   "schemas": {},
