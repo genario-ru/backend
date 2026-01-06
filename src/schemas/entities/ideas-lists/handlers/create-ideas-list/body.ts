@@ -7,6 +7,7 @@ import { ideasListsRegistry } from "../../registry";
 
 export const createIdeasListBodySchema = createInsertSchema(ideasList)
   .pick({
+    templateId: true,
     profileId: true,
     name: true,
     description: true,
