@@ -4,6 +4,7 @@ import * as z from "zod";
 import { ideasList } from "@/db/schema";
 
 import { profileSchema } from "../../profiles/entities/profile";
+import { templateSchema } from "../../templates/entities/template";
 import { toneSchema } from "../../tones/entities/tone";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 import { ideasListsRegistry } from "../registry";
@@ -21,6 +22,7 @@ export type IdeasList = z.infer<typeof ideasListSchema>;
 
 export const ideasListExtendedSchema = ideasListSchema
   .extend({
+    template: templateSchema.nullable(),
     profile: profileSchema.nullable(),
     tones: z.array(toneSchema),
     videoTypes: z.array(videoTypeSchema),

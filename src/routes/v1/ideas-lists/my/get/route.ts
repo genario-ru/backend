@@ -79,6 +79,7 @@ getMyIdeasListsRoute.get(
         orderBy: orderByConditions,
         with: {
           profile: true,
+          template: true,
           ideasListToTone: {
             with: { tone: true },
           },

@@ -123,6 +123,7 @@ getMyArchiveItemsRoute.get(
             orderBy: ideasListOrderBy,
             with: {
               profile: true,
+              template: true,
               ideasListToTone: {
                 with: { tone: true },
               },

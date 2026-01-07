@@ -46,6 +46,7 @@ getIdeasListRoute.get(
       },
       with: {
         profile: true,
+        template: true,
         ideasListToTone: {
           with: { tone: true },
         },
