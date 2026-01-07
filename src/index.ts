@@ -9,7 +9,10 @@ import { authRoute } from "@/routes/auth/route";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
-import { getMyArchiveItemsRoute } from "./routes/v1/archive";
+import {
+  getArchiveFiltersRoute,
+  getMyArchiveItemsRoute,
+} from "./routes/v1/archive";
 import { deleteIdeaRoute, updateIdeaRoute } from "./routes/v1/ideas";
 import {
   createIdeaRoute,
@@ -66,6 +69,7 @@ const appAPIv1RoutesList = [
   createIdeaRoute,
   getMyIdeasListsRoute,
   getMyArchiveItemsRoute,
+  getArchiveFiltersRoute,
   updateIdeasListRoute,
   getPlatformsRoute,
   getMyProfilesRoute,

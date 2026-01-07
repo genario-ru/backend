@@ -10,6 +10,10 @@ export const getMyArchiveItemsQuerySchema = metaQuerySchema
     entity: archiveEntitySchema.optional(),
     templateIds: z.array(z.string().uuid()).optional(),
     profileIds: z.array(z.string().uuid()).optional(),
+    toneIds: z.array(z.string().uuid()).optional(),
+    videoTypeIds: z.array(z.string().uuid()).optional(),
+    platformIds: z.array(z.string().uuid()).optional(),
+    videoDurationIds: z.array(z.string().uuid()).optional(),
     sortBy: z.enum(["createdAt", "updatedAt"]).optional(),
   })
   .register(archiveRegistry, {

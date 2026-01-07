@@ -49,3 +49,17 @@ export const archiveItemSchema = z
   });
 
 export type ArchiveItem = z.infer<typeof archiveItemSchema>;
+
+export type ArchiveItemWithFilters = {
+  entity: ArchiveEntity;
+  data: {
+    tones?: Array<{ id: string }>;
+    videoTypes?: Array<{ id: string }>;
+    videoType?: { id: string } | null;
+    platform?: { id: string } | null;
+    videoDuration?: { id: string } | null;
+    createdAt: string | Date;
+    updatedAt: string | Date;
+    [key: string]: unknown;
+  };
+};

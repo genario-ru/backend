@@ -13,6 +13,7 @@ import { db } from "@/db";
 import { ideasList, scenario } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { type ArchiveItemWithFilters } from "@/schemas/entities/archive/entities/archive-item";
 import { archiveEntitySchema } from "@/schemas/entities/archive/entities/archive-item";
 import { getMyArchiveItemsQuerySchema } from "@/schemas/entities/archive/handlers/get-my-archive-items/query";
 import {
@@ -52,12 +53,21 @@ getMyArchiveItemsRoute.get(
       entity,
       templateIds,
       profileIds,
+      toneIds,
+      videoTypeIds,
+      platformIds,
+      videoDurationIds,
       q,
       page = DEFAULT_PAGE,
       perPage = DEFAULT_PER_PAGE,
       sortBy = DEFAULT_SORT_BY,
       sortOrder = DEFAULT_SORT_ORDER,
     } = c.req.valid("query");
+
+    const shouldLoadIdeasLists =
+      !entity || entity === archiveEntitySchema.enum.ideasList;
+    const shouldLoadScenarios =
+      !entity || entity === archiveEntitySchema.enum.scenario;
 
     const ideasListsWhereConditions = [eq(ideasList.userId, user.id)];
     const scenariosWhereConditions = [eq(scenario.userId, user.id)];
@@ -95,66 +105,176 @@ getMyArchiveItemsRoute.get(
       scenariosWhereConditions.push(inArray(scenario.profileId, profileIds));
     }
 
-    let orderByConditions = undefined;
+    let ideasListOrderBy = undefined;
+    let scenarioOrderBy = undefined;
 
     if (sortOrder === "asc") {
-      orderByConditions = asc(ideasList[sortBy]);
-      orderByConditions = asc(scenario[sortBy]);
+      ideasListOrderBy = asc(ideasList[sortBy]);
+      scenarioOrderBy = asc(scenario[sortBy]);
     } else if (sortOrder === "desc") {
-      orderByConditions = desc(ideasList[sortBy]);
-      orderByConditions = desc(scenario[sortBy]);
+      ideasListOrderBy = desc(ideasList[sortBy]);
+      scenarioOrderBy = desc(scenario[sortBy]);
     }
 
     const [foundIdeasLists, foundScenarios] = await Promise.all([
-      db.query.ideasList.findMany({
-        where: and(...ideasListsWhereConditions),
-        orderBy: orderByConditions,
-        with: {
-          profile: true,
-          ideasListToTone: {
-            with: { tone: true },
-          },
-          ideasListToVideoType: {
-            with: { videoType: true },
-          },
-        },
-      }),
-      db.query.scenario.findMany({
-        where: and(...scenariosWhereConditions),
-        orderBy: orderByConditions,
-        with: {
-          profile: true,
-        },
-      }),
+      shouldLoadIdeasLists
+        ? db.query.ideasList.findMany({
+            where: and(...ideasListsWhereConditions),
+            orderBy: ideasListOrderBy,
+            with: {
+              profile: true,
+              ideasListToTone: {
+                with: { tone: true },
+              },
+              ideasListToVideoType: {
+                with: { videoType: true },
+              },
+            },
+          })
+        : Promise.resolve([]),
+      shouldLoadScenarios
+        ? db.query.scenario.findMany({
+            where: and(...scenariosWhereConditions),
+            orderBy: scenarioOrderBy,
+            with: {
+              profile: true,
+              template: true,
+              platform: true,
+              videoType: true,
+              videoDuration: true,
+              scenarioToTone: {
+                with: { tone: true },
+              },
+            },
+          })
+        : Promise.resolve([]),
     ]);
 
-    const totalItems = foundIdeasLists.length + foundScenarios.length;
-    const totalPages = getTotalPages(totalItems, perPage);
+    const preparedIdeasLists = foundIdeasLists.map((ideasList) => {
+      const { ideasListToTone, ideasListToVideoType, ...ideasListData } =
+        ideasList;
 
-    const preparedIdeasLists = foundIdeasLists.map((ideasList) => ({
-      entity: archiveEntitySchema.enum.ideasList,
-      data: {
-        ...ideasList,
-        tones: ideasList.ideasListToTone.map(
-          (ideasListToTone) => ideasListToTone.tone,
-        ),
-        videoTypes: ideasList.ideasListToVideoType.map(
-          (ideasListToVideoType) => ideasListToVideoType.videoType,
-        ),
-      },
-    }));
-
-    const preparedScenarios = foundScenarios.map((scenario) => ({
-      entity: archiveEntitySchema.enum.scenario,
-      data: scenario,
-    }));
-
-    const sortedArchiveItems = [
-      ...preparedIdeasLists,
-      ...preparedScenarios,
-    ].sort((a, b) => {
-      return toTimestamp(b.data.createdAt) - toTimestamp(a.data.createdAt);
+      return {
+        entity: archiveEntitySchema.enum.ideasList,
+        data: {
+          ...ideasListData,
+          tones: ideasListToTone.map((ideasListToTone) => ideasListToTone.tone),
+          videoTypes: ideasListToVideoType.map(
+            (ideasListToVideoType) => ideasListToVideoType.videoType,
+          ),
+        },
+      };
     });
+
+    const preparedScenarios = foundScenarios.map((scenario) => {
+      const { scenarioToTone, ...scenarioData } = scenario;
+
+      return {
+        entity: archiveEntitySchema.enum.scenario,
+        data: {
+          ...scenarioData,
+          tones: scenarioToTone.map((scenarioTone) => scenarioTone.tone),
+        },
+      };
+    });
+
+    const toneIdsSet = toneIds ? new Set(toneIds) : undefined;
+    const videoTypeIdsSet = videoTypeIds ? new Set(videoTypeIds) : undefined;
+    const platformIdsSet = platformIds ? new Set(platformIds) : undefined;
+    const videoDurationIdsSet = videoDurationIds
+      ? new Set(videoDurationIds)
+      : undefined;
+
+    const filterBySelectedOptions = (archiveItem: ArchiveItemWithFilters) => {
+      const { data, entity: archiveItemEntity } = archiveItem;
+
+      if (toneIdsSet) {
+        const archiveItemToneIds = data.tones?.map((tone) => tone.id) ?? [];
+
+        if (!archiveItemToneIds.some((toneId) => toneIdsSet.has(toneId))) {
+          return false;
+        }
+      }
+
+      if (videoTypeIdsSet) {
+        if (archiveItemEntity === archiveEntitySchema.enum.ideasList) {
+          const archiveItemVideoTypeIds =
+            data.videoTypes?.map((videoType) => videoType.id) ?? [];
+
+          if (
+            !archiveItemVideoTypeIds.some((videoTypeId) =>
+              videoTypeIdsSet.has(videoTypeId),
+            )
+          ) {
+            return false;
+          }
+        }
+
+        if (archiveItemEntity === archiveEntitySchema.enum.scenario) {
+          const archiveItemVideoTypeId = data.videoType?.id;
+
+          if (
+            !archiveItemVideoTypeId ||
+            !videoTypeIdsSet.has(archiveItemVideoTypeId)
+          ) {
+            return false;
+          }
+        }
+      }
+
+      if (platformIdsSet) {
+        if (archiveItemEntity !== archiveEntitySchema.enum.scenario) {
+          return false;
+        }
+
+        const archiveItemPlatformId = data.platform?.id;
+
+        if (
+          !archiveItemPlatformId ||
+          !platformIdsSet.has(archiveItemPlatformId)
+        ) {
+          return false;
+        }
+      }
+
+      if (videoDurationIdsSet) {
+        if (archiveItemEntity !== archiveEntitySchema.enum.scenario) {
+          return false;
+        }
+
+        const archiveItemVideoDurationId = data.videoDuration?.id;
+
+        if (
+          !archiveItemVideoDurationId ||
+          !videoDurationIdsSet.has(archiveItemVideoDurationId)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+
+    const filteredIdeasLists = preparedIdeasLists.filter(
+      filterBySelectedOptions,
+    );
+    const filteredScenarios = preparedScenarios.filter(filterBySelectedOptions);
+
+    const filteredArchiveItems = [...filteredIdeasLists, ...filteredScenarios];
+
+    const sortedArchiveItems = filteredArchiveItems.sort((a, b) => {
+      const aTimestamp = toTimestamp(a.data[sortBy] ?? a.data.createdAt);
+      const bTimestamp = toTimestamp(b.data[sortBy] ?? b.data.createdAt);
+
+      if (sortOrder === "asc") {
+        return aTimestamp - bTimestamp;
+      }
+
+      return bTimestamp - aTimestamp;
+    });
+
+    const totalItems = sortedArchiveItems.length;
+    const totalPages = getTotalPages(totalItems, perPage);
 
     const currentPageArchiveItems = sortedArchiveItems.slice(
       (page - 1) * perPage,
@@ -166,8 +286,8 @@ getMyArchiveItemsRoute.get(
         data: currentPageArchiveItems,
         meta: {
           entity,
-          ideasListsTotalItems: foundIdeasLists.length,
-          scenariosTotalItems: foundScenarios.length,
+          ideasListsTotalItems: filteredIdeasLists.length,
+          scenariosTotalItems: filteredScenarios.length,
           q,
           previousPage: getPreviousPage(page),
           currentPage: page,
