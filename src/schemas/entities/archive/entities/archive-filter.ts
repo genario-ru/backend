@@ -17,6 +17,7 @@ export type ArchiveFilterOption = z.infer<typeof archiveFilterOptionSchema>;
 
 export const archiveSelectFilterSchema = z
   .object({
+    name: z.string(),
     type: z.literal("select"),
     options: z.array(archiveFilterOptionSchema),
   })
@@ -30,6 +31,7 @@ export type ArchiveSelectFilter = z.infer<typeof archiveSelectFilterSchema>;
 
 export const archiveMultiSelectFilterSchema = z
   .object({
+    name: z.string(),
     type: z.literal("multiselect"),
     options: z.array(archiveFilterOptionSchema),
   })

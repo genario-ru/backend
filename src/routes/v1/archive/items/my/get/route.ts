@@ -50,6 +50,7 @@ getMyArchiveItemsRoute.get(
     const user = c.get("user");
 
     const {
+      q,
       entity,
       templateIds,
       profileIds,
@@ -57,7 +58,6 @@ getMyArchiveItemsRoute.get(
       videoTypeIds,
       platformIds,
       videoDurationIds,
-      q,
       page = DEFAULT_PAGE,
       perPage = DEFAULT_PER_PAGE,
       sortBy = DEFAULT_SORT_BY,

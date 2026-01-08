@@ -61,16 +61,21 @@ getArchiveFiltersRoute.get(
 
     const archiveFilters = {
       entity: {
+        name: "Тип сущности",
         type: "select",
         options: [
           {
             label: "Списки идей",
             value: archiveEntitySchema.enum.ideasList,
           },
-          { label: "Сценарии", value: archiveEntitySchema.enum.scenario },
+          {
+            label: "Сценарии",
+            value: archiveEntitySchema.enum.scenario,
+          },
         ],
       },
       sortBy: {
+        name: "Сортировка по дате",
         type: "select",
         options: [
           { label: "Дата создания", value: "createdAt" },
@@ -78,21 +83,40 @@ getArchiveFiltersRoute.get(
         ],
       },
       sortOrder: {
+        name: "Порядок сортировки",
         type: "select",
         options: [
           { label: "По убыванию", value: "desc" },
           { label: "По возрастанию", value: "asc" },
         ],
       },
-      templateIds: { type: "multiselect", options: toOptions(foundTemplates) },
-      profileIds: { type: "multiselect", options: toOptions(foundProfiles) },
-      toneIds: { type: "multiselect", options: toOptions(foundTones) },
+      templateIds: {
+        name: "Шаблоны",
+        type: "multiselect",
+        options: toOptions(foundTemplates),
+      },
+      profileIds: {
+        name: "Профили",
+        type: "multiselect",
+        options: toOptions(foundProfiles),
+      },
+      toneIds: {
+        name: "Тональности",
+        type: "multiselect",
+        options: toOptions(foundTones),
+      },
       videoTypeIds: {
+        name: "Типы видео",
         type: "multiselect",
         options: toOptions(foundVideoTypes),
       },
-      platformIds: { type: "multiselect", options: toOptions(foundPlatforms) },
+      platformIds: {
+        name: "Платформы",
+        type: "multiselect",
+        options: toOptions(foundPlatforms),
+      },
       videoDurationIds: {
+        name: "Длительность видео",
         type: "multiselect",
         options: toOptions(foundVideoDurations),
       },
