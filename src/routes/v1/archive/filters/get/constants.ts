@@ -1,12 +1,12 @@
 import {
   ARCHIVE_SORT_VALUES,
-  type ArchiveSort,
   type ArchiveSortField,
   type ArchiveSortOrder,
+  DEFAULT_ARCHIVE_SORT,
 } from "@/schemas/entities/archive/entities/archive-sort";
 
 export const ARCHIVE_SORT_MAP: Record<
-  ArchiveSort,
+  string,
   { label: string; sortBy: ArchiveSortField; sortOrder: ArchiveSortOrder }
 > = {
   createdAtDesc: {
@@ -30,6 +30,8 @@ export const ARCHIVE_SORT_MAP: Record<
     sortOrder: "asc",
   },
 };
+
+export const DEFAULT_ARCHIVE_SORT_MAP = ARCHIVE_SORT_MAP[DEFAULT_ARCHIVE_SORT];
 
 export const ARCHIVE_SORT_OPTIONS = ARCHIVE_SORT_VALUES.map((value) => ({
   value,

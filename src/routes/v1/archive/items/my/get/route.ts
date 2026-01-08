@@ -12,10 +12,7 @@ import {
   archiveEntitySchema,
   type ArchiveItemWithFilters,
 } from "@/schemas/entities/archive/entities/archive-item";
-import {
-  type ArchiveSort,
-  DEFAULT_ARCHIVE_SORT,
-} from "@/schemas/entities/archive/entities/archive-sort";
+import { DEFAULT_ARCHIVE_SORT } from "@/schemas/entities/archive/entities/archive-sort";
 import { getMyArchiveItemsQuerySchema } from "@/schemas/entities/archive/handlers/get-my-archive-items/query";
 import {
   type GetMyArchiveItemsResponse,
@@ -30,7 +27,10 @@ import {
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
-import { ARCHIVE_SORT_MAP } from "../../../filters/get/constants";
+import {
+  ARCHIVE_SORT_MAP,
+  DEFAULT_ARCHIVE_SORT_MAP,
+} from "../../../filters/get/constants";
 
 export const getMyArchiveItemsRoute =
   createHonoApp().basePath("/archive/items/my");
@@ -66,8 +66,10 @@ getMyArchiveItemsRoute.get(
       sort,
     } = c.req.valid("query");
 
-    const sortValue: ArchiveSort = sort ?? DEFAULT_ARCHIVE_SORT;
-    const { sortBy, sortOrder } = ARCHIVE_SORT_MAP[sortValue];
+    const sortValue = sort ?? DEFAULT_ARCHIVE_SORT;
+
+    const { sortBy, sortOrder } =
+      ARCHIVE_SORT_MAP[sortValue] ?? DEFAULT_ARCHIVE_SORT_MAP;
 
     const shouldLoadIdeasLists =
       !entity || entity === archiveEntitySchema.enum.ideasList;

@@ -2,20 +2,16 @@ import * as z from "zod";
 
 import { metaResponseSchema } from "@/schemas/common/meta";
 
-import {
-  archiveEntitySchema,
-  archiveItemSchema,
-} from "../../entities/archive-item";
-import { archiveSortSchema } from "../../entities/archive-sort";
+import { archiveItemSchema } from "../../entities/archive-item";
 import { archiveRegistry } from "../../registry";
 
 export const archiveMetaResponseSchema = metaResponseSchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
-    entity: archiveEntitySchema.optional(),
+    entity: z.string().optional(),
     ideasListsTotalItems: z.number(),
     scenariosTotalItems: z.number(),
-    sort: archiveSortSchema,
+    sort: z.string(),
   });
 
 export type ArchiveMetaResponse = z.infer<typeof archiveMetaResponseSchema>;
