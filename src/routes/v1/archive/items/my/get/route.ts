@@ -3,11 +3,6 @@ import { validator } from "hono-openapi";
 
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants/api/defaults";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import {
-  ARCHIVE_SORT_MAP,
-  type ArchiveSort,
-  DEFAULT_ARCHIVE_SORT,
-} from "@/constants/entities/archive/sort";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, scenario } from "@/db/schema";
@@ -17,6 +12,10 @@ import {
   archiveEntitySchema,
   type ArchiveItemWithFilters,
 } from "@/schemas/entities/archive/entities/archive-item";
+import {
+  type ArchiveSort,
+  DEFAULT_ARCHIVE_SORT,
+} from "@/schemas/entities/archive/entities/archive-sort";
 import { getMyArchiveItemsQuerySchema } from "@/schemas/entities/archive/handlers/get-my-archive-items/query";
 import {
   type GetMyArchiveItemsResponse,
@@ -30,6 +29,8 @@ import {
 } from "@/utils/api/response-pages";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
+
+import { ARCHIVE_SORT_MAP } from "../../../filters/get/constants";
 
 export const getMyArchiveItemsRoute =
   createHonoApp().basePath("/archive/items/my");

@@ -1,12 +1,12 @@
 import * as z from "zod";
 
-import { ARCHIVE_SORT_VALUES } from "@/constants/entities/archive/sort";
 import { metaResponseSchema } from "@/schemas/common/meta";
 
 import {
   archiveEntitySchema,
   archiveItemSchema,
 } from "../../entities/archive-item";
+import { archiveSortSchema } from "../../entities/archive-sort";
 import { archiveRegistry } from "../../registry";
 
 export const archiveMetaResponseSchema = metaResponseSchema
@@ -15,7 +15,7 @@ export const archiveMetaResponseSchema = metaResponseSchema
     entity: archiveEntitySchema.optional(),
     ideasListsTotalItems: z.number(),
     scenariosTotalItems: z.number(),
-    sort: z.enum(ARCHIVE_SORT_VALUES),
+    sort: archiveSortSchema,
   });
 
 export type ArchiveMetaResponse = z.infer<typeof archiveMetaResponseSchema>;

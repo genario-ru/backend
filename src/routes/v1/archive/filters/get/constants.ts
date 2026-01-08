@@ -1,14 +1,9 @@
-export const ARCHIVE_SORT_VALUES = [
-  "createdAtDesc",
-  "createdAtAsc",
-  "updatedAtDesc",
-  "updatedAtAsc",
-] as const;
-
-export type ArchiveSort = (typeof ARCHIVE_SORT_VALUES)[number];
-
-type ArchiveSortField = "createdAt" | "updatedAt";
-type ArchiveSortOrder = "asc" | "desc";
+import {
+  ARCHIVE_SORT_VALUES,
+  type ArchiveSort,
+  type ArchiveSortField,
+  type ArchiveSortOrder,
+} from "@/schemas/entities/archive/entities/archive-sort";
 
 export const ARCHIVE_SORT_MAP: Record<
   ArchiveSort,
@@ -35,8 +30,6 @@ export const ARCHIVE_SORT_MAP: Record<
     sortOrder: "asc",
   },
 };
-
-export const DEFAULT_ARCHIVE_SORT: ArchiveSort = "createdAtDesc";
 
 export const ARCHIVE_SORT_OPTIONS = ARCHIVE_SORT_VALUES.map((value) => ({
   value,

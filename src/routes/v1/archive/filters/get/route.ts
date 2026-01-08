@@ -1,13 +1,11 @@
 import { eq } from "drizzle-orm";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { ARCHIVE_SORT_OPTIONS } from "@/constants/entities/archive/sort";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { archiveEntitySchema } from "@/schemas/entities/archive/entities/archive-item";
 import {
   type GetArchiveFiltersResponse,
   getArchiveFiltersResponseSchema,
@@ -15,6 +13,7 @@ import {
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
+import { ARCHIVE_SORT_OPTIONS } from "./constants";
 import { toOptions } from "./utils";
 
 export const getArchiveFiltersRoute =
@@ -54,57 +53,73 @@ getArchiveFiltersRoute.get(
       db.query.videoDuration.findMany(),
     ]);
 
-    const archiveFilters = {
-      entity: {
+    const archiveFilters = [
+      {
+        slug: "entity",
         name: "Тип сущности",
+        icon: "shapes",
         type: "select",
         options: [
           {
             label: "Списки идей",
-            value: archiveEntitySchema.enum.ideasList,
+            value: "ideasList",
           },
           {
             label: "Сценарии",
-            value: archiveEntitySchema.enum.scenario,
+            value: "scenario",
           },
         ],
       },
-      sort: {
+      {
+        slug: "sort",
         name: "Сортировка",
+        icon: "arrow-up-down",
         type: "select",
         options: ARCHIVE_SORT_OPTIONS,
       },
-      templateIds: {
+      {
+        slug: "templateIds",
         name: "Шаблоны",
+        icon: "book-dashed",
         type: "multiselect",
         options: toOptions(foundTemplates),
       },
-      profileIds: {
+      {
+        slug: "profileIds",
         name: "Профили",
+        icon: "users-round",
         type: "multiselect",
         options: toOptions(foundProfiles),
       },
-      toneIds: {
+      {
+        slug: "toneIds",
         name: "Тональности",
+        icon: "swatch-book",
         type: "multiselect",
         options: toOptions(foundTones),
       },
-      videoTypeIds: {
+      {
+        slug: "videoTypeIds",
         name: "Типы видео",
+        icon: "file-video-camera",
         type: "multiselect",
         options: toOptions(foundVideoTypes),
       },
-      platformIds: {
+      {
+        slug: "platformIds",
         name: "Платформы",
+        icon: "linkedin",
         type: "multiselect",
         options: toOptions(foundPlatforms),
       },
-      videoDurationIds: {
+      {
+        slug: "videoDurationIds",
         name: "Длительность видео",
+        icon: "timer",
         type: "multiselect",
         options: toOptions(foundVideoDurations),
       },
-    };
+    ];
 
     return c.json<GetArchiveFiltersResponse>(
       getArchiveFiltersResponseSchema.parse({
