@@ -107,7 +107,7 @@ app.use(logger());
 
 app.use(
   cors({
-    origin: ["https://genario.ru", "http://localhost:5173"],
+    origin: ["https://app.genario.ru", "http://localhost:5173"],
     maxAge: 600,
     credentials: true,
   }),

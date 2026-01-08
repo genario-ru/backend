@@ -72,7 +72,7 @@ export const auth = betterAuth({
       bannedUserMessage: "Ваш аккаунт был заблокирован", // Not default
     }),
   ],
-  trustedOrigins: ["http://localhost:5173", "https://genario.ru"],
+  trustedOrigins: ["http://localhost:5173", "https://app.genario.ru"],
   advanced: {
     defaultCookieAttributes: {
       sameSite: "none",
