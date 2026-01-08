@@ -1,5 +1,6 @@
 import * as z from "zod";
 
+import { ARCHIVE_SORT_VALUES } from "@/constants/entities/archive/sort";
 import { metaResponseSchema } from "@/schemas/common/meta";
 
 import {
@@ -8,12 +9,14 @@ import {
 } from "../../entities/archive-item";
 import { archiveRegistry } from "../../registry";
 
-export const archiveMetaResponseSchema = metaResponseSchema.extend({
-  entity: archiveEntitySchema.optional(),
-  ideasListsTotalItems: z.number(),
-  scenariosTotalItems: z.number(),
-  sortBy: z.enum(["createdAt", "updatedAt"]),
-});
+export const archiveMetaResponseSchema = metaResponseSchema
+  .omit({ sortBy: true, sortOrder: true })
+  .extend({
+    entity: archiveEntitySchema.optional(),
+    ideasListsTotalItems: z.number(),
+    scenariosTotalItems: z.number(),
+    sort: z.enum(ARCHIVE_SORT_VALUES),
+  });
 
 export type ArchiveMetaResponse = z.infer<typeof archiveMetaResponseSchema>;
 

@@ -17,7 +17,6 @@ import { createHonoApp } from "@/utils/server/create-hono-app";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
-const DEFAULT_SORT_ORDER = "desc" as const;
 
 export const getMyIdeasListsRoute = createHonoApp().basePath("/ideas-lists/my");
 
@@ -44,7 +43,7 @@ getMyIdeasListsRoute.get(
       page = DEFAULT_PAGE,
       perPage = DEFAULT_PER_PAGE,
       sortBy = "createdAt",
-      sortOrder = DEFAULT_SORT_ORDER,
+      sortOrder = "desc",
     } = c.req.valid("query");
 
     const whereConditions = [eq(ideasList.userId, user.id)];

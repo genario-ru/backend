@@ -1,11 +1,13 @@
 import * as z from "zod";
 
+import { ARCHIVE_SORT_VALUES } from "@/constants/entities/archive/sort";
 import { metaQuerySchema } from "@/schemas/common/meta";
 
 import { archiveEntitySchema } from "../../entities/archive-item";
 import { archiveRegistry } from "../../registry";
 
 export const getMyArchiveItemsQuerySchema = metaQuerySchema
+  .omit({ sortBy: true, sortOrder: true })
   .extend({
     entity: archiveEntitySchema.optional(),
     templateIds: z.array(z.string().uuid()).optional(),
@@ -14,7 +16,7 @@ export const getMyArchiveItemsQuerySchema = metaQuerySchema
     videoTypeIds: z.array(z.string().uuid()).optional(),
     platformIds: z.array(z.string().uuid()).optional(),
     videoDurationIds: z.array(z.string().uuid()).optional(),
-    sortBy: z.enum(["createdAt", "updatedAt"]).optional(),
+    sort: z.enum(ARCHIVE_SORT_VALUES).optional(),
   })
   .register(archiveRegistry, {
     title: "Get my archive items query",

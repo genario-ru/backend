@@ -1,20 +1,22 @@
 import { and, asc, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import {
-  DEFAULT_PAGE,
-  DEFAULT_PER_PAGE,
-  DEFAULT_SORT_BY,
-  DEFAULT_SORT_ORDER,
-} from "@/constants/api/defaults";
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants/api/defaults";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import {
+  ARCHIVE_SORT_MAP,
+  type ArchiveSort,
+  DEFAULT_ARCHIVE_SORT,
+} from "@/constants/entities/archive/sort";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, scenario } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { type ArchiveItemWithFilters } from "@/schemas/entities/archive/entities/archive-item";
-import { archiveEntitySchema } from "@/schemas/entities/archive/entities/archive-item";
+import {
+  archiveEntitySchema,
+  type ArchiveItemWithFilters,
+} from "@/schemas/entities/archive/entities/archive-item";
 import { getMyArchiveItemsQuerySchema } from "@/schemas/entities/archive/handlers/get-my-archive-items/query";
 import {
   type GetMyArchiveItemsResponse,
@@ -60,9 +62,11 @@ getMyArchiveItemsRoute.get(
       videoDurationIds,
       page = DEFAULT_PAGE,
       perPage = DEFAULT_PER_PAGE,
-      sortBy = DEFAULT_SORT_BY,
-      sortOrder = DEFAULT_SORT_ORDER,
+      sort,
     } = c.req.valid("query");
+
+    const sortValue: ArchiveSort = sort ?? DEFAULT_ARCHIVE_SORT;
+    const { sortBy, sortOrder } = ARCHIVE_SORT_MAP[sortValue];
 
     const shouldLoadIdeasLists =
       !entity || entity === archiveEntitySchema.enum.ideasList;
@@ -296,8 +300,7 @@ getMyArchiveItemsRoute.get(
           perPage,
           totalItems,
           totalPages,
-          sortBy,
-          sortOrder,
+          sort: sortValue,
         },
       }),
     );
