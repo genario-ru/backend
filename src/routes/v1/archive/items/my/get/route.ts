@@ -24,6 +24,7 @@ import {
   getPreviousPage,
   getTotalPages,
 } from "@/utils/api/response-pages";
+import { toArray } from "@/utils/api/to-array";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
@@ -55,16 +56,23 @@ getMyArchiveItemsRoute.get(
     const {
       q,
       entity,
-      templateIds,
-      profileIds,
-      toneIds,
-      videoTypeIds,
-      platformIds,
-      videoDurationIds,
+      templateIds: rawTemplateIds,
+      profileIds: rawProfileIds,
+      toneIds: rawToneIds,
+      videoTypeIds: rawVideoTypeIds,
+      platformIds: rawPlatformIds,
+      videoDurationIds: rawVideoDurationIds,
       page = DEFAULT_PAGE,
       perPage = DEFAULT_PER_PAGE,
       sort,
     } = c.req.valid("query");
+
+    const templateIds = toArray(rawTemplateIds);
+    const profileIds = toArray(rawProfileIds);
+    const toneIds = toArray(rawToneIds);
+    const videoTypeIds = toArray(rawVideoTypeIds);
+    const platformIds = toArray(rawPlatformIds);
+    const videoDurationIds = toArray(rawVideoDurationIds);
 
     const sortValue = sort ?? DEFAULT_ARCHIVE_SORT;
 

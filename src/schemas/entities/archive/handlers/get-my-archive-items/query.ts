@@ -7,14 +7,14 @@ import { archiveRegistry } from "../../registry";
 export const getMyArchiveItemsQuerySchema = metaQuerySchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
-    entity: z.string().optional(),
-    templateIds: z.array(z.string()).optional(),
-    profileIds: z.array(z.string()).optional(),
-    toneIds: z.array(z.string()).optional(),
-    videoTypeIds: z.array(z.string()).optional(),
-    platformIds: z.array(z.string()).optional(),
-    videoDurationIds: z.array(z.string()).optional(),
     sort: z.string().optional(),
+    entity: z.string().optional(),
+    templateIds: z.union([z.array(z.string()), z.string()]).optional(),
+    profileIds: z.union([z.array(z.string()), z.string()]).optional(),
+    toneIds: z.union([z.array(z.string()), z.string()]).optional(),
+    videoTypeIds: z.union([z.array(z.string()), z.string()]).optional(),
+    platformIds: z.union([z.array(z.string()), z.string()]).optional(),
+    videoDurationIds: z.union([z.array(z.string()), z.string()]).optional(),
   })
   .register(archiveRegistry, {
     title: "Get my archive items query",
