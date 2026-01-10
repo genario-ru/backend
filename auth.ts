@@ -21,12 +21,6 @@ export const auth = betterAuth({
       updateEmailWithoutVerification: true,
     },
   },
-  emailVerification: {
-    enabled: true,
-    async onEmailVerification(user, _request) {
-      console.log("onEmailVerification", { email: user.email });
-    },
-  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
@@ -48,11 +42,11 @@ export const auth = betterAuth({
   plugins: [
     openAPI(),
     emailOTP({
+      overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
         console.log("sendVerificationOTP", { email, otp, type });
         // Implement the sendVerificationOTP method to send the OTP to the user's email address
       },
-      overrideDefaultEmailVerification: true,
     }),
     // An admin is any user assigned the admin role or any user whose ID is included in the adminUserIds option
     admin({
