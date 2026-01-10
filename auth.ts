@@ -28,12 +28,6 @@ export const auth = betterAuth({
       console.log("sendVerificationEmail", { email: user.email, url });
     },
   },
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 2 * 60, // 2 minutes
-    },
-  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
