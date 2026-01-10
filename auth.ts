@@ -19,11 +19,17 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       updateEmailWithoutVerification: true,
-      sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
-        // TODO: Implement the sendChangeEmailConfirmation method to send the confirmation email to the user's new email address
-        console.log("sendChangeEmailConfirmation", { user, newEmail, url, token });
-      },
     },
+  },
+  emailVerification: {
+    // Required to send the verification email
+    sendVerificationEmail: async ({ user, url, token }) => {
+      console.log("sendVerificationEmail", {
+        email: user.email,
+        url,
+        token,
+      });
+    }
   },
   database: drizzleAdapter(db, {
     provider: "pg",
