@@ -19,6 +19,10 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       updateEmailWithoutVerification: true,
+      sendChangeEmailConfirmation: async ({ user, newEmail, url, token }) => {
+        // TODO: Implement the sendChangeEmailConfirmation method to send the confirmation email to the user's new email address
+        console.log("sendChangeEmailConfirmation", { user, newEmail, url, token });
+      },
     },
   },
   database: drizzleAdapter(db, {
@@ -26,9 +30,8 @@ export const auth = betterAuth({
     schema,
   }),
   rateLimit: {
-    // enabled: true, // Включаем для режима development
     customRules: {
-      // Ограничеваем количество запросов на отправку писем
+      // Restrict the number of requests to send change email confirmation
       "/change-email": {
         window: 60,
         max: 1,
@@ -42,10 +45,9 @@ export const auth = betterAuth({
   plugins: [
     openAPI(),
     emailOTP({
-      overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
+        // TODO: Implement the sendVerificationOTP method to send the OTP to the user's email address
         console.log("sendVerificationOTP", { email, otp, type });
-        // Implement the sendVerificationOTP method to send the OTP to the user's email address
       },
     }),
     // An admin is any user assigned the admin role or any user whose ID is included in the adminUserIds option
