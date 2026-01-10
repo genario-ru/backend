@@ -13,7 +13,9 @@ export type AuthType = {
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,
   user: {
-    deleteUser: { enabled: true },
+    deleteUser: {
+      enabled: true,
+    },
     changeEmail: {
       enabled: true,
     },
@@ -22,9 +24,6 @@ export const auth = betterAuth({
     enabled: true,
     async onEmailVerification(user, _request) {
       console.log("onEmailVerification", { email: user.email });
-    },
-    async sendVerificationEmail({ user, url }) {
-      console.log("sendVerificationEmail", { email: user.email, url });
     },
   },
   database: drizzleAdapter(db, {
@@ -52,6 +51,7 @@ export const auth = betterAuth({
         console.log("sendVerificationOTP", { email, otp, type });
         // Implement the sendVerificationOTP method to send the OTP to the user's email address
       },
+      overrideDefaultEmailVerification: true,
     }),
     // An admin is any user assigned the admin role or any user whose ID is included in the adminUserIds option
     admin({
