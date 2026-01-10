@@ -66,13 +66,15 @@ export const auth = betterAuth({
   ],
   trustedOrigins: ["http://localhost:5173", "https://app.genario.ru"],
   advanced: {
+    database: {
+      generateId: false,
+    },
     defaultCookieAttributes: {
       sameSite: "none",
     },
     crossSubDomainCookies: {
       enabled: true,
     },
-    generateId: false,
     cookiePrefix: APP_NAME,
   },
 });
