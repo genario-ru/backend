@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { scenarioToTone } from "../linking/scenario-to-tone";
@@ -49,6 +49,7 @@ export const scenario = pgTable("scenario", {
       onDelete: "set null",
     },
   ),
+  saved: boolean("saved").notNull().default(false),
   name: text("name"),
   description: text("description"),
   targetAudience: text("target_audience"),

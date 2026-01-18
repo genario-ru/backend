@@ -7,6 +7,7 @@ export { updateScenarioCurrentVersionRoute } from "./scenario/current-version/pa
 export { deleteScenarioRoute } from "./scenario/root/delete/route";
 export { getScenarioRoute } from "./scenario/root/get/route";
 export { updateScenarioRoute } from "./scenario/root/patch/route";
+export { saveScenarioRoute } from "./scenario/save/patch/route";
 export { getScenarioVersionsRoute } from "./scenario/versions/root/get/route";
 export { deleteScenarioSceneComponentRoute } from "./scene-components/scene-component/delete/route";
 export { updateScenarioSceneComponentRoute } from "./scene-components/scene-component/patch/route";

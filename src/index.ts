@@ -14,7 +14,11 @@ import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
 } from "./routes/v1/archive";
-import { deleteIdeaRoute, updateIdeaRoute } from "./routes/v1/ideas";
+import {
+  deleteIdeaRoute,
+  saveIdeaRoute,
+  updateIdeaRoute,
+} from "./routes/v1/ideas";
 import {
   createIdeaRoute,
   createIdeasListRoute,
@@ -45,6 +49,7 @@ import {
   getScenarioRoute,
   getScenarioVersionRoute,
   getScenarioVersionsRoute,
+  saveScenarioRoute,
   updateScenarioChapterRoute,
   updateScenarioCurrentVersionRoute,
   updateScenarioRoute,
@@ -63,6 +68,7 @@ const appAPIV1Routes = appAPI.basePath("/v1");
 const appAPIv1RoutesList = [
   deleteIdeaRoute,
   updateIdeaRoute,
+  saveIdeaRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   getIdeasListRoute,
@@ -85,6 +91,7 @@ const appAPIv1RoutesList = [
   getScenarioRoute,
   updateScenarioCurrentVersionRoute,
   updateScenarioRoute,
+  saveScenarioRoute,
   deleteScenarioVersionRoute,
   getScenarioVersionRoute,
   getScenarioVersionsRoute,
