@@ -8,6 +8,13 @@
       "when": 1767515580624,
       "tag": "0000_previous_devos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768750981677,
+      "tag": "0001_rare_the_executioner",
+      "breakpoints": true
     }
   ]
 }
