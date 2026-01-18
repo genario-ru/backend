@@ -23,12 +23,12 @@ export type ScenarioVersion = z.infer<typeof scenarioVersionSchema>;
 
 export const scenarioVersionExtendedSchema = scenarioVersionSchema
   .extend({
-    profile: profileSchema.nullable(),
-    platform: platformSchema.nullable(),
-    videoType: videoTypeSchema.nullable(),
-    videoDuration: videoDurationSchema.nullable(),
-    tones: z.array(toneSchema).nullable(),
-    scenarioChapters: z.array(scenarioChapterSchema).nullable(),
+    profile: profileSchema.nullish(),
+    platform: platformSchema.nullish(),
+    videoType: videoTypeSchema.nullish(),
+    videoDuration: videoDurationSchema.nullish(),
+    tones: z.array(toneSchema).nullish(),
+    scenarioChapters: z.array(scenarioChapterSchema).nullish(),
   })
   .register(scenariosRegistry, {
     title: "Scenario version extended",
