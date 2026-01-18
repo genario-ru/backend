@@ -8,6 +8,7 @@ import { openAPIRouteHandler } from "hono-openapi";
 import { authRoute } from "@/routes/auth/route";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
+import { TRUSTED_ORIGINS } from "./constants/api/trusted-origins";
 import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import {
   getArchiveFiltersRoute,
@@ -107,7 +108,7 @@ app.use(logger());
 
 app.use(
   cors({
-    origin: ["https://app.genario.ru", "http://localhost:5173"],
+    origin: TRUSTED_ORIGINS,
     maxAge: 600,
     credentials: true,
   }),

@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
+import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/common/app-info";
 import { db, schema } from "@/db";
 
@@ -9,6 +10,8 @@ export type AuthType = {
   user: typeof auth.$Infer.Session.user;
   session: typeof auth.$Infer.Session.session;
 };
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,
@@ -29,7 +32,7 @@ export const auth = betterAuth({
         url,
         token,
       });
-    }
+    },
   },
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -66,13 +69,13 @@ export const auth = betterAuth({
       bannedUserMessage: "Ваш аккаунт был заблокирован", // Not default
     }),
   ],
-  trustedOrigins: ["http://localhost:5173", "https://app.genario.ru"],
+  trustedOrigins: TRUSTED_ORIGINS,
   advanced: {
     database: {
       generateId: false,
     },
     defaultCookieAttributes: {
-      sameSite: "none",
+      sameSite: isProduction ? "none" : "lax",
     },
     crossSubDomainCookies: {
       enabled: true,
