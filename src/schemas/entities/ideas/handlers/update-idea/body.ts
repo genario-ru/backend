@@ -12,9 +12,6 @@ export const updateIdeaBodySchema = createUpdateSchema(idea)
     saved: true,
     liked: true,
   })
-  .extend({
-    ideaId: z.uuid(),
-  })
   .register(ideasRegistry, {
     title: "Update idea body",
     description: "Update idea body description",
