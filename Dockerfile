@@ -8,6 +8,10 @@ FROM base AS builder
 RUN apk add --no-cache gcompat
 WORKDIR /app
 
+# Принимаем build аргументы для переменных окружения
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
+
 # Копируем файлы зависимостей
 COPY package.json pnpm-lock.yaml ./
 COPY tsconfig.json tsup.config.ts drizzle.config.ts auth.ts ./
