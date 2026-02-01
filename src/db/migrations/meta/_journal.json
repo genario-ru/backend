@@ -15,6 +15,13 @@
       "when": 1768750981677,
       "tag": "0001_rare_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769935189987,
+      "tag": "0002_remarkable_alex_wilder",
+      "breakpoints": true
     }
   ]
 }

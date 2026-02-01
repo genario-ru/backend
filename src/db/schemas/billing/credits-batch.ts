@@ -3,6 +3,7 @@ import { integer, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { creditsPackageToCreditsBatch } from "../linking/credits-package-to-credits-batch";
+import { referralInviteToCreditsBatch } from "../linking/referral-invite-to-credits-batch";
 import { subscriptionToCreditsBatch } from "../linking/subscription-to-credits-batch";
 import { user } from "../primary/user";
 
@@ -29,5 +30,6 @@ export const creditsBatchRelations = relations(
     }),
     subscriptionToCreditsBatch: many(subscriptionToCreditsBatch),
     creditsPackageToCreditsBatch: many(creditsPackageToCreditsBatch),
+    referralInviteToCreditsBatch: many(referralInviteToCreditsBatch),
   }),
 );

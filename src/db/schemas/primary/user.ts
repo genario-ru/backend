@@ -12,7 +12,10 @@ import { timestamps } from "../../constants/timestamps";
 import { account } from "../auth/account";
 import { session } from "../auth/session";
 import { creditsBatch } from "../billing/credits-batch";
+import { planDiscount } from "../billing/plan-discount";
 import { subscription } from "../billing/subscription";
+import { referralCode } from "../referral/referral-code";
+import { referralInvite } from "../referral/referral-invite";
 import { attachment } from "./attachment";
 import { ideasList } from "./ideas-list";
 import { profile } from "./profile";
@@ -43,9 +46,12 @@ export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session, { relationName: "session" }),
   impersonatedSessions: many(session, { relationName: "impersonated_session" }),
   creditsBatches: many(creditsBatch),
+  planDiscounts: many(planDiscount),
   profiles: many(profile),
   ideasLists: many(ideasList),
   scenarios: many(scenario),
   attachments: many(attachment),
   subscriptions: many(subscription),
+  referralCodes: many(referralCode),
+  referralInvites: many(referralInvite),
 }));

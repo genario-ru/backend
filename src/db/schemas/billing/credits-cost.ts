@@ -4,10 +4,7 @@ import { timestamps } from "../../constants/timestamps";
 
 export const creditsCostEntity = pgEnum("credits_cost_entity", [
   "idea",
-  "ideas-list",
-  "scenario-version",
-  "scenario-chapter",
-  "scenario-scene",
+  "scenario-scene-preview",
   "scenario-scene-component",
 ]);
 

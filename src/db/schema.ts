@@ -9,6 +9,7 @@ export * from "./schemas/billing/credits-cost";
 export * from "./schemas/billing/credits-package";
 export * from "./schemas/billing/credits-usage";
 export * from "./schemas/billing/plan";
+export * from "./schemas/billing/plan-discount";
 export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/transaction";
 
@@ -19,6 +20,8 @@ export * from "./schemas/linking/ideas-list-to-video-type";
 export * from "./schemas/linking/platform-to-video-type";
 export * from "./schemas/linking/profile-to-platform";
 export * from "./schemas/linking/profile-to-tone";
+export * from "./schemas/linking/referral-invite-to-credits-batch";
+export * from "./schemas/linking/referral-invite-to-plan-discount";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/subscription-to-credits-batch";
 
@@ -41,6 +44,11 @@ export * from "./schemas/primary/tone";
 export * from "./schemas/primary/user";
 export * from "./schemas/primary/video-duration";
 export * from "./schemas/primary/video-type";
+
+// Referral
+export * from "./schemas/referral/referral-code";
+export * from "./schemas/referral/referral-invite";
+export * from "./schemas/referral/referral-reward";
 
 // Secondary
 export * from "./schemas/secondary/alert";
