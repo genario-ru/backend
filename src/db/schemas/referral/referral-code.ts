@@ -1,6 +1,11 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
+import {
+  generateReferralCode,
+  REFERRAL_CODE_LENGTH,
+} from "@/db/utils/generate-referral-code";
+
 import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { referralInvite } from "./referral-invite";
@@ -20,7 +25,10 @@ export const referralCode = pgTable("referral_code", {
       onDelete: "cascade",
     })
     .notNull(),
-  code: varchar("code", { length: 12 }).unique().notNull(),
+  code: varchar("code", { length: REFERRAL_CODE_LENGTH })
+    .unique()
+    .notNull()
+    .$defaultFn(() => generateReferralCode()),
   ...timestamps,
 });
 

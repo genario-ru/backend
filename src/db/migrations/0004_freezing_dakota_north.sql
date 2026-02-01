@@ -1,0 +1,1 @@
+ALTER TABLE "referral_code" ALTER COLUMN "code" SET DATA TYPE varchar(8);
