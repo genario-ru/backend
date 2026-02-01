@@ -44,7 +44,7 @@ export const user = pgTable("user", {
 export const userRelations = relations(user, ({ many }) => ({
   accounts: many(account),
   sessions: many(session, { relationName: "session" }),
-  impersonatedSessions: many(session, { relationName: "impersonated_session" }),
+  impersonatedSessions: many(session, { relationName: "impersonatedSession" }),
   creditsBatches: many(creditsBatch),
   planDiscounts: many(planDiscount),
   profiles: many(profile),
@@ -53,5 +53,10 @@ export const userRelations = relations(user, ({ many }) => ({
   attachments: many(attachment),
   subscriptions: many(subscription),
   referralCodes: many(referralCode),
-  referralInvites: many(referralInvite),
+  referralInvitesAsSource: many(referralInvite, {
+    relationName: "referralSourceUser",
+  }),
+  referralInvitesAsTarget: many(referralInvite, {
+    relationName: "referralTargetUser",
+  }),
 }));

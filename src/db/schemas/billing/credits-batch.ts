@@ -3,9 +3,9 @@ import { integer, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { creditsPackageToCreditsBatch } from "../linking/credits-package-to-credits-batch";
-import { referralInviteToCreditsBatch } from "../linking/referral-invite-to-credits-batch";
 import { subscriptionToCreditsBatch } from "../linking/subscription-to-credits-batch";
 import { user } from "../primary/user";
+import { referralInvite } from "../referral/referral-invite";
 
 export const creditsBatch = pgTable("credits_batch", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -28,8 +28,8 @@ export const creditsBatchRelations = relations(
       fields: [creditsBatch.userId],
       references: [user.id],
     }),
+    referralInvite: one(referralInvite),
     subscriptionToCreditsBatch: many(subscriptionToCreditsBatch),
     creditsPackageToCreditsBatch: many(creditsPackageToCreditsBatch),
-    referralInviteToCreditsBatch: many(referralInviteToCreditsBatch),
   }),
 );

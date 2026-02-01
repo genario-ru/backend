@@ -31,6 +31,6 @@ export const sessionRelations = relations(session, ({ one }) => ({
   impersonatedBy: one(user, {
     fields: [session.impersonatedBy],
     references: [user.id],
-    relationName: "impersonated_session",
+    relationName: "impersonatedSession",
   }),
 }));

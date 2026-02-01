@@ -3,7 +3,8 @@ import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
-import { referralInviteToPlanDiscount } from "../linking/referral-invite-to-plan-discount";
+import { creditsBatch } from "../billing/credits-batch";
+import { planDiscount } from "../billing/plan-discount";
 import { user } from "../primary/user";
 import { referralCode } from "./referral-code";
 
@@ -34,24 +35,38 @@ export const referralInvite = pgTable("referral_invite", {
       onDelete: "cascade",
     })
     .notNull(),
+  creditsBatchId: uuid("credits_batch_id").references(() => creditsBatch.id, {
+    onUpdate: "cascade",
+    onDelete: "cascade",
+  }),
+  planDiscountId: uuid("plan_discount_id").references(() => planDiscount.id, {
+    onUpdate: "cascade",
+    onDelete: "cascade",
+  }),
   ...timestamps,
 });
 
-export const referralInviteRelations = relations(
-  referralInvite,
-  ({ one, many }) => ({
-    referralSourceUser: one(user, {
-      fields: [referralInvite.referralSourceUserId],
-      references: [user.id],
-    }),
-    referralTargetUser: one(user, {
-      fields: [referralInvite.referralTargetUserId],
-      references: [user.id],
-    }),
-    referralCode: one(referralCode, {
-      fields: [referralInvite.referralCodeId],
-      references: [referralCode.id],
-    }),
-    referralInviteToPlanDiscount: many(referralInviteToPlanDiscount),
+export const referralInviteRelations = relations(referralInvite, ({ one }) => ({
+  referralSourceUser: one(user, {
+    relationName: "referralSourceUser",
+    fields: [referralInvite.referralSourceUserId],
+    references: [user.id],
   }),
-);
+  referralTargetUser: one(user, {
+    relationName: "referralTargetUser",
+    fields: [referralInvite.referralTargetUserId],
+    references: [user.id],
+  }),
+  referralCode: one(referralCode, {
+    fields: [referralInvite.referralCodeId],
+    references: [referralCode.id],
+  }),
+  creditsBatch: one(creditsBatch, {
+    fields: [referralInvite.creditsBatchId],
+    references: [creditsBatch.id],
+  }),
+  planDiscount: one(planDiscount, {
+    fields: [referralInvite.planDiscountId],
+    references: [planDiscount.id],
+  }),
+}));

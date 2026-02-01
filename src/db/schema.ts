@@ -20,8 +20,6 @@ export * from "./schemas/linking/ideas-list-to-video-type";
 export * from "./schemas/linking/platform-to-video-type";
 export * from "./schemas/linking/profile-to-platform";
 export * from "./schemas/linking/profile-to-tone";
-export * from "./schemas/linking/referral-invite-to-credits-batch";
-export * from "./schemas/linking/referral-invite-to-plan-discount";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/subscription-to-credits-batch";
 

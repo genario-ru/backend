@@ -3,8 +3,8 @@ import { integer, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
-import { referralInviteToPlanDiscount } from "../linking/referral-invite-to-plan-discount";
 import { user } from "../primary/user";
+import { referralInvite } from "../referral/referral-invite";
 import { plan } from "./plan";
 
 export const planDiscountType = pgEnum("plan_discount_type", [
@@ -33,17 +33,14 @@ export const planDiscount = pgTable("plan_discount", {
   ...timestamps,
 });
 
-export const planDiscountRelations = relations(
-  planDiscount,
-  ({ one, many }) => ({
-    user: one(user, {
-      fields: [planDiscount.userId],
-      references: [user.id],
-    }),
-    plan: one(plan, {
-      fields: [planDiscount.planId],
-      references: [plan.id],
-    }),
-    referralInviteToPlanDiscount: many(referralInviteToPlanDiscount),
+export const planDiscountRelations = relations(planDiscount, ({ one }) => ({
+  user: one(user, {
+    fields: [planDiscount.userId],
+    references: [user.id],
   }),
-);
+  plan: one(plan, {
+    fields: [planDiscount.planId],
+    references: [plan.id],
+  }),
+  referralInvite: one(referralInvite),
+}));
