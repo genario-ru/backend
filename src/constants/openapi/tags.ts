@@ -6,6 +6,7 @@ export enum OpenAPITags {
   Plans = "Plans",
   Platforms = "Platforms",
   Profiles = "Profiles",
+  Referral = "Referral",
   Scenarios = "Scenarios",
   Subscriptions = "Subscriptions",
   Templates = "Templates",

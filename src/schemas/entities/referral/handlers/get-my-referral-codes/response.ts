@@ -1,26 +1,20 @@
 import * as z from "zod";
 
-import { referralCodeSchema } from "../../entities/referral-code";
-import { referralRewardSchema } from "../../entities/referral-reward";
+import { referralCodeExtendedSchema } from "../../entities/referral-code";
 import { referralRegistry } from "../../registry";
 
-export const getReferralInfoResponseSchema = z
+export const getMyReferralCodesResponseSchema = z
   .object({
     data: z.object({
-      referralRewards: z.array(referralRewardSchema),
-      referralCodes: z.array(
-        referralCodeSchema.extend({
-          referralUrl: z.string(),
-        }),
-      ),
+      referralCodes: z.array(referralCodeExtendedSchema.omit({ user: true })),
     }),
   })
   .register(referralRegistry, {
-    title: "Get referral info response",
-    description: "Get referral info response description",
-    ref: "GetReferralInfoResponseSchema",
+    title: "Get my referral codes response",
+    description: "Get my referral codes response description",
+    ref: "GetMyReferralCodesResponseSchema",
   });
 
-export type GetReferralInfoResponse = z.infer<
-  typeof getReferralInfoResponseSchema
+export type GetMyReferralCodesResponse = z.infer<
+  typeof getMyReferralCodesResponseSchema
 >;

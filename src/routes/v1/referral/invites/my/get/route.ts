@@ -1,0 +1,99 @@
+import { and, asc, desc, eq } from "drizzle-orm";
+import { validator } from "hono-openapi";
+
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants/api/defaults";
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
+import { db } from "@/db";
+import { referralInvite } from "@/db/schema";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { DEFAULT_REFERRAL_INVITE_SORT } from "@/schemas/entities/referral/entities/referral-invite-sort";
+import { getMyReferralInvitesQuerySchema } from "@/schemas/entities/referral/handlers/get-my-referral-invites/query";
+import {
+  type GetMyReferralInvitesResponse,
+  getMyReferralInvitesResponseSchema,
+} from "@/schemas/entities/referral/handlers/get-my-referral-invites/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+
+import {
+  DEFAULT_REFERRAL_INVITE_SORT_MAP,
+  REFERRAL_INVITE_SORT_MAP,
+} from "./constants";
+
+export const getMyReferralInvitesRoute = createHonoApp().basePath(
+  "/referral/invites/my",
+);
+
+// GET /api/v1/referral/invites/my
+getMyReferralInvitesRoute.get(
+  "/",
+  sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Referral],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "My referral invites retrieved successfully",
+        schema: getMyReferralInvitesResponseSchema,
+      }),
+    },
+  }),
+  validator("query", getMyReferralInvitesQuerySchema),
+  async (c) => {
+    const user = c.get("user");
+
+    const {
+      page = DEFAULT_PAGE,
+      perPage = DEFAULT_PER_PAGE,
+      sort,
+    } = c.req.valid("query");
+
+    const whereConditions = [eq(referralInvite.referralSourceUserId, user.id)];
+    const sortValue = sort ?? DEFAULT_REFERRAL_INVITE_SORT;
+
+    const { sortBy, sortOrder } =
+      REFERRAL_INVITE_SORT_MAP[sortValue] ?? DEFAULT_REFERRAL_INVITE_SORT_MAP;
+
+    const orderByConditions =
+      sortOrder === "asc"
+        ? asc(referralInvite[sortBy])
+        : desc(referralInvite[sortBy]);
+
+    const [totalInvitesCount, foundInvites] = await Promise.all([
+      db.$count(referralInvite, and(...whereConditions)),
+      db.query.referralInvite.findMany({
+        where: and(...whereConditions),
+        orderBy: orderByConditions,
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        with: {
+          referralSourceUser: true,
+          referralTargetUser: true,
+          referralCode: true,
+          creditsBatch: true,
+          planDiscount: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalInvitesCount / perPage);
+    const previousPage = page > 1 ? page - 1 : null;
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    return c.json<GetMyReferralInvitesResponse>(
+      getMyReferralInvitesResponseSchema.parse({
+        data: foundInvites,
+        meta: {
+          previousPage,
+          currentPage: page,
+          nextPage,
+          perPage,
+          totalItems: totalInvitesCount,
+          totalPages,
+          sort: sortValue,
+        },
+      }),
+    );
+  },
+);

@@ -38,6 +38,10 @@ import {
   updateProfileRoute,
 } from "./routes/v1/profiles";
 import {
+  getMyReferralCodesRoute,
+  getMyReferralInvitesRoute,
+} from "./routes/v1/referral";
+import {
   createScenarioRoute,
   deleteScenarioChapterRoute,
   deleteScenarioRoute,
@@ -102,6 +106,8 @@ const appAPIv1RoutesList = [
   updateScenarioSceneRoute,
   deleteScenarioSceneComponentRoute,
   updateScenarioSceneComponentRoute,
+  getMyReferralCodesRoute,
+  getMyReferralInvitesRoute,
   getTemplatesRoute,
   getTonesRoute,
   getVideoDurationsRoute,
