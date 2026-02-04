@@ -40,6 +40,7 @@ import {
 import {
   getMyReferralCodesRoute,
   getMyReferralInvitesRoute,
+  getReferralInfoRoute,
 } from "./routes/v1/referral";
 import {
   createScenarioRoute,
@@ -108,6 +109,7 @@ const appAPIv1RoutesList = [
   updateScenarioSceneComponentRoute,
   getMyReferralCodesRoute,
   getMyReferralInvitesRoute,
+  getReferralInfoRoute,
   getTemplatesRoute,
   getTonesRoute,
   getVideoDurationsRoute,
