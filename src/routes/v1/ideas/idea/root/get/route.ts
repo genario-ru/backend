@@ -37,7 +37,21 @@ getIdeaRoute.get(
 
     const foundIdea = await db.query.idea.findFirst({
       where: (idea, { eq }) => eq(idea.id, ideaId),
-      with: { ideasList: true, videoType: true },
+      with: {
+        videoType: true,
+        ideasList: {
+          with: {
+            profile: true,
+            template: true,
+            ideasListToTone: {
+              with: { tone: true },
+            },
+            ideasListToVideoType: {
+              with: { videoType: true },
+            },
+          },
+        },
+      },
     });
 
     if (!foundIdea) {
@@ -54,9 +68,20 @@ getIdeaRoute.get(
       });
     }
 
+    const data = {
+      ...foundIdea,
+      ideasList: {
+        ...foundIdea.ideasList,
+        tones: foundIdea.ideasList.ideasListToTone.map(({ tone }) => tone),
+        videoTypes: foundIdea.ideasList.ideasListToVideoType.map(
+          ({ videoType }) => videoType,
+        ),
+      },
+    };
+
     return c.json<GetIdeaResponse>(
       getIdeaResponseSchema.parse({
-        data: foundIdea,
+        data,
       }),
     );
   },
