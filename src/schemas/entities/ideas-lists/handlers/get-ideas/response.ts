@@ -1,12 +1,12 @@
 import * as z from "zod";
 
-import { ideaExtendedSchema } from "@/schemas/entities/ideas/entities/idea";
+import { ideaSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import { ideasListsRegistry } from "../../registry";
 
 export const getIdeasResponseSchema = z
   .object({
-    data: z.array(ideaExtendedSchema),
+    data: z.array(ideaSchema),
   })
   .register(ideasListsRegistry, {
     title: "Get ideas response",
