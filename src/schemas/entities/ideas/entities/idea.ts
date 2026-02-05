@@ -3,6 +3,7 @@ import * as z from "zod";
 
 import { idea } from "@/db/schema";
 
+import { ideasListSchema } from "../../ideas-lists/entities/ideas-list";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 import { ideasRegistry } from "../registry";
 
@@ -16,6 +17,7 @@ export type Idea = z.infer<typeof ideaSchema>;
 
 export const ideaExtendedSchema = ideaSchema
   .extend({
+    ideasList: ideasListSchema,
     videoType: videoTypeSchema,
   })
   .register(ideasRegistry, {

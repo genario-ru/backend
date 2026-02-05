@@ -54,11 +54,9 @@ getIdeaRoute.get(
       });
     }
 
-    const { ideasList: _, ...ideaData } = foundIdea;
-
     return c.json<GetIdeaResponse>(
       getIdeaResponseSchema.parse({
-        data: ideaData,
+        data: foundIdea,
       }),
     );
   },
