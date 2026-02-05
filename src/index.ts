@@ -16,6 +16,7 @@ import {
 } from "./routes/v1/archive";
 import {
   deleteIdeaRoute,
+  getIdeaRoute,
   saveIdeaRoute,
   updateIdeaRoute,
 } from "./routes/v1/ideas";
@@ -72,6 +73,7 @@ const appAPIV1Routes = appAPI.basePath("/v1");
 
 const appAPIv1RoutesList = [
   deleteIdeaRoute,
+  getIdeaRoute,
   updateIdeaRoute,
   saveIdeaRoute,
   createIdeasListRoute,
