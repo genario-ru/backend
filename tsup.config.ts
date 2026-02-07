@@ -1,10 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/server.ts"], // Your entry file
-  format: ["esm"], // Output ESM (modern Node.js default; use 'cjs' if needed for older setups)
-  clean: true, // Clean dist folder before build
-  minify: true, // Minify for production
-  sourcemap: false, // Disable sourcemaps for smaller builds (enable if debugging needed)
+  entry: ["src/entrypoints/server.ts", "src/entrypoints/workers.ts"], // Your entryfiles here
+  format: ["esm"], // Output format
+  clean: true, // Clean the output directory before building
+  minify: true, // Minify the output
+  sourcemap: false, // Generate sourcemaps
   outDir: "dist", // Output directory
 });

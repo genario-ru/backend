@@ -1,6 +1,7 @@
 services:
   server:
     build: .
+    command: pnpm run start
     ports:
       - "3000:3000"
     environment:
@@ -8,3 +9,16 @@ services:
       - POSTGRES_URL=${POSTGRES_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - POLZA_AI_BASE_URL=${POLZA_AI_BASE_URL}
+      - POLZA_AI_API_KEY=${POLZA_AI_API_KEY}
+      - REDIS_URL=${REDIS_URL}
+
+  workers:
+    build: .
+    command: pnpm run start:workers
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POLZA_AI_BASE_URL=${POLZA_AI_BASE_URL}
+      - POLZA_AI_API_KEY=${POLZA_AI_API_KEY}
+      - REDIS_URL=${REDIS_URL}

@@ -5,4 +5,5 @@ export const polza = createOpenAICompatible({
   baseURL: process.env.POLZA_AI_BASE_URL!,
   apiKey: process.env.POLZA_AI_API_KEY,
   includeUsage: true,
+  supportsStructuredOutputs: true,
 });

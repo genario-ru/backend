@@ -36,6 +36,20 @@
       "when": 1769950150451,
       "tag": "0004_freezing_dakota_north",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770397464226,
+      "tag": "0005_reflective_serpent_society",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770493972113,
+      "tag": "0006_daily_shiva",
+      "breakpoints": true
     }
   ]
 }

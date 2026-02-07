@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { enqueueIdeasGeneration } from "@/mq/queues/ideas-generation-queue";
 import { createIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/body";
 import {
   type CreateIdeasListResponse,
@@ -64,6 +65,13 @@ createIdeasListRoute.post(
       }
 
       return createdIdeasList;
+    });
+
+    await enqueueIdeasGeneration({
+      ideasListId: createdIdeasList.id,
+      userId: user.id,
+      count: 4,
+      source: "create",
     });
 
     return c.json<CreateIdeasListResponse>(

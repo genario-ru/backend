@@ -1,0 +1,1 @@
+ALTER TABLE "ai_generation_log" ALTER COLUMN "cost" DROP NOT NULL;

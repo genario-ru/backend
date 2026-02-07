@@ -1,0 +1,131 @@
+import { generateText, Output } from "ai";
+import { Worker } from "bullmq";
+import { eq } from "drizzle-orm";
+import * as z from "zod";
+
+import { db } from "@/db";
+import { aiGenerationLog, idea, ideasList } from "@/db/schema";
+import { polza } from "@/lib/ai/providers/polza";
+import { redis } from "@/lib/redis";
+import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
+import { systemPrompt } from "@/prompts/system/system-prompt";
+import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
+
+import {
+  IDEAS_GENERATION_QUEUE_NAME,
+  type IdeasGenerationJobData,
+} from "../queues/ideas-generation-queue";
+
+export const ideasGenerationWorker = new Worker<IdeasGenerationJobData>(
+  IDEAS_GENERATION_QUEUE_NAME,
+  async (job) => {
+    const { ideasListId, count } = job.data;
+    const safeCount = Math.min(count, 20);
+
+    const foundIdeasList = await db.query.ideasList.findFirst({
+      where: (ideasList, { eq }) => eq(ideasList.id, ideasListId),
+      with: {
+        profile: true,
+        template: true,
+        ideasListToTone: {
+          with: { tone: true },
+        },
+        ideasListToVideoType: {
+          with: { videoType: true },
+        },
+      },
+    });
+
+    if (!foundIdeasList) {
+      return;
+    }
+
+    await db
+      .update(ideasList)
+      .set({ status: "generation" })
+      .where(eq(ideasList.id, ideasListId));
+
+    const prompt = generateIdeasListPrompt({
+      settings: {
+        ideasCount: safeCount,
+      },
+      context: {
+        name: foundIdeasList.name,
+        description: foundIdeasList.description,
+        targetAudience: foundIdeasList.targetAudience,
+        templateName: foundIdeasList.template?.name,
+        templateDescription: foundIdeasList.template?.description,
+        profileName: foundIdeasList.profile?.name,
+        profileDescription: foundIdeasList.profile?.description,
+        tones: foundIdeasList.ideasListToTone.map(({ tone }) => tone.name),
+        videoTypes: foundIdeasList.ideasListToVideoType.map(
+          ({ videoType }) => ({
+            id: videoType.id,
+            name: videoType.name,
+          }),
+        ),
+      },
+    });
+
+    const modelId = "google/gemini-2.5-flash";
+
+    try {
+      const { output: generatedIdeasRaw, usage } = await generateText({
+        model: polza.languageModel(modelId),
+        output: Output.object({
+          schema: z.array(ideaGeneratedSchema),
+        }),
+        system: systemPrompt(),
+        prompt,
+      });
+
+      console.log("Ideas generation worker object", generatedIdeasRaw);
+
+      const generatedIdeas = generatedIdeasRaw.slice(0, safeCount);
+      const totalTokens = usage?.totalTokens ?? 0;
+
+      await db.transaction(async (tx) => {
+        const createdIdeas = await tx
+          .insert(idea)
+          .values(
+            generatedIdeas.map((generatedIdea) => ({
+              ideasListId,
+              videoTypeId: generatedIdea.videoTypeId,
+              name: generatedIdea.name ?? "Идея",
+              description: generatedIdea.description ?? null,
+            })),
+          )
+          .returning();
+
+        if (createdIdeas.length > 0) {
+          const entityType = "idea" as const;
+
+          await tx.insert(aiGenerationLog).values({
+            entityType,
+            entityId: foundIdeasList.id,
+            prompt,
+            model: modelId,
+            tokens: totalTokens,
+          });
+        }
+
+        await tx
+          .update(ideasList)
+          .set({ status: "ready" })
+          .where(eq(ideasList.id, ideasListId));
+      });
+    } catch (error) {
+      console.error("Ideas generation worker error", error);
+
+      await db
+        .update(ideasList)
+        .set({ status: "failed" })
+        .where(eq(ideasList.id, ideasListId));
+
+      throw error;
+    }
+  },
+  {
+    connection: redis,
+  },
+);

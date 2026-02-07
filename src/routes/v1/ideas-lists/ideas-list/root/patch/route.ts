@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { enqueueIdeasGeneration } from "@/mq/queues/ideas-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/body";
 import { updateIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/params";
@@ -70,18 +71,43 @@ updateIdeasListRoute.patch(
       });
     }
 
+    const updateValues = Object.fromEntries(
+      Object.entries(updateIdeasListParams).filter(
+        ([, value]) => value !== undefined,
+      ),
+    );
+    const hasParamChanges = Object.keys(updateValues).length > 0;
+
+    const oldToneIds = foundIdeasList.ideasListToTone.map(
+      ({ toneId }) => toneId,
+    );
+    const createToneIds = newToneIds ? difference(newToneIds, oldToneIds) : [];
+    const deleteToneIds = newToneIds ? difference(oldToneIds, newToneIds) : [];
+    const hasToneChanges =
+      newToneIds !== undefined &&
+      (createToneIds.length > 0 || deleteToneIds.length > 0);
+
+    const oldVideoTypeIds = foundIdeasList.ideasListToVideoType.map(
+      ({ videoTypeId }) => videoTypeId,
+    );
+    const createVideoTypeIds = newVideoTypeIds
+      ? difference(newVideoTypeIds, oldVideoTypeIds)
+      : [];
+    const deleteVideoTypeIds = newVideoTypeIds
+      ? difference(oldVideoTypeIds, newVideoTypeIds)
+      : [];
+    const hasVideoTypeChanges =
+      newVideoTypeIds !== undefined &&
+      (createVideoTypeIds.length > 0 || deleteVideoTypeIds.length > 0);
+
+    const shouldRegenerate =
+      hasParamChanges || hasToneChanges || hasVideoTypeChanges;
+
     const updatedIdeasList = await db.transaction(async (tx) => {
       const updateLinkingTablePromises: Promise<any>[] = [];
 
       // Добавляем и удаляем тона, связанные с списком идей
       if (newToneIds) {
-        const oldToneIds = foundIdeasList.ideasListToTone.map(
-          ({ toneId }) => toneId,
-        );
-
-        const createToneIds = difference(newToneIds, oldToneIds);
-        const deleteToneIds = difference(oldToneIds, newToneIds);
-
         if (createToneIds.length > 0) {
           updateLinkingTablePromises.push(
             tx.insert(ideasListToTone).values(
@@ -109,13 +135,6 @@ updateIdeasListRoute.patch(
 
       // Добавляем и удаляем типы видео, связанные с списком идей
       if (newVideoTypeIds) {
-        const oldVideoTypeIds = foundIdeasList.ideasListToVideoType.map(
-          ({ videoTypeId }) => videoTypeId,
-        );
-
-        const createVideoTypeIds = difference(newVideoTypeIds, oldVideoTypeIds);
-        const deleteVideoTypeIds = difference(oldVideoTypeIds, newVideoTypeIds);
-
         if (createVideoTypeIds.length > 0) {
           updateLinkingTablePromises.push(
             tx.insert(ideasListToVideoType).values(
@@ -144,7 +163,10 @@ updateIdeasListRoute.patch(
       const [[updatedIdeasList]] = await Promise.all([
         tx
           .update(ideasList)
-          .set(updateIdeasListParams)
+          .set({
+            ...updateIdeasListParams,
+            ...(shouldRegenerate ? { status: "pending" } : {}),
+          })
           .where(
             and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)),
           )
@@ -154,6 +176,15 @@ updateIdeasListRoute.patch(
 
       return updatedIdeasList;
     });
+
+    if (shouldRegenerate) {
+      await enqueueIdeasGeneration({
+        ideasListId,
+        userId: user.id,
+        count: 4,
+        source: "update",
+      });
+    }
 
     return c.json<UpdateIdeasListResponse>(
       updateIdeasListResponseSchema.parse({

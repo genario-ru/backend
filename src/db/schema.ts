@@ -3,6 +3,9 @@ export * from "./schemas/auth/account";
 export * from "./schemas/auth/session";
 export * from "./schemas/auth/verification";
 
+// AI
+export * from "./schemas/ai/ai-generation-log";
+
 // Billing
 export * from "./schemas/billing/credits-batch";
 export * from "./schemas/billing/credits-cost";

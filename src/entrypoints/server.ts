@@ -1,35 +1,41 @@
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { HonoAdapter } from "@bull-board/hono";
+import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Scalar } from "@scalar/hono-api-reference";
 import { cors } from "hono/cors";
+import { showRoutes } from "hono/dev";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
 import { openAPIRouteHandler } from "hono-openapi";
 
+import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
+import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
+import { ideasGenerationQueue } from "@/mq/queues/ideas-generation-queue";
 import { authRoute } from "@/routes/auth/route";
-import { createHonoApp } from "@/utils/server/create-hono-app";
-
-import { TRUSTED_ORIGINS } from "./constants/api/trusted-origins";
-import { errorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
-} from "./routes/v1/archive";
+} from "@/routes/v1/archive";
 import {
   deleteIdeaRoute,
   getIdeaRoute,
   saveIdeaRoute,
   updateIdeaRoute,
-} from "./routes/v1/ideas";
+} from "@/routes/v1/ideas";
 import {
   createIdeaRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
+  generateIdeasListRoute,
   getIdeasListRoute,
   getIdeasRoute,
   getMyIdeasListsRoute,
   updateIdeasListRoute,
-} from "./routes/v1/ideas-lists";
-import { getPlatformsRoute } from "./routes/v1/platforms";
+} from "@/routes/v1/ideas-lists";
+import { getPlatformsRoute } from "@/routes/v1/platforms";
 import {
   createProfileRoute,
   deleteProfileRoute,
@@ -37,12 +43,12 @@ import {
   getProfileRoute,
   getProfileTypesRoute,
   updateProfileRoute,
-} from "./routes/v1/profiles";
+} from "@/routes/v1/profiles";
 import {
   getMyReferralCodesRoute,
   getMyReferralInvitesRoute,
   getReferralInfoRoute,
-} from "./routes/v1/referral";
+} from "@/routes/v1/referral";
 import {
   createScenarioRoute,
   deleteScenarioChapterRoute,
@@ -61,15 +67,28 @@ import {
   updateScenarioRoute,
   updateScenarioSceneComponentRoute,
   updateScenarioSceneRoute,
-} from "./routes/v1/scenarios";
-import { getTemplatesRoute } from "./routes/v1/templates";
-import { getTonesRoute } from "./routes/v1/tones";
-import { getVideoDurationsRoute } from "./routes/v1/video-durations";
-import { getVideoTypesRoute } from "./routes/v1/video-types";
+} from "@/routes/v1/scenarios";
+import { getTemplatesRoute } from "@/routes/v1/templates";
+import { getTonesRoute } from "@/routes/v1/tones";
+import { getVideoDurationsRoute } from "@/routes/v1/video-durations";
+import { getVideoTypesRoute } from "@/routes/v1/video-types";
+import { addGracefulShutdown } from "@/utils/server/add-graceful-shutdown";
+import { createHonoApp } from "@/utils/server/create-hono-app";
 
 const app = createHonoApp();
 const appAPI = app.basePath("/api");
 const appAPIV1Routes = appAPI.basePath("/v1");
+
+const bullBoardAdapter = new HonoAdapter(serveStatic);
+const bullBoardBasePath = "/admin/queues";
+
+createBullBoard({
+  queues: [new BullMQAdapter(ideasGenerationQueue)],
+  serverAdapter: bullBoardAdapter,
+});
+
+bullBoardAdapter.setBasePath(bullBoardBasePath);
+app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
 const appAPIv1RoutesList = [
   deleteIdeaRoute,
@@ -78,6 +97,7 @@ const appAPIv1RoutesList = [
   saveIdeaRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
+  generateIdeasListRoute,
   getIdeasListRoute,
   getIdeasRoute,
   createIdeaRoute,
@@ -170,4 +190,18 @@ app.get(
   }),
 );
 
-export default app;
+showRoutes(app, {
+  verbose: true,
+});
+
+const server = serve(
+  {
+    fetch: app.fetch,
+    port: 3000,
+  },
+  (info) => {
+    console.log(`Server is running on http://localhost:${info.port}`);
+  },
+);
+
+addGracefulShutdown(server);

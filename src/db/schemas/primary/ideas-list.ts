@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { ideasListToTone } from "../linking/ideas-list-to-tone";
@@ -8,6 +8,13 @@ import { idea } from "./idea";
 import { profile } from "./profile";
 import { template } from "./template";
 import { user } from "./user";
+
+export const ideasListStatus = pgEnum("ideas_list_status", [
+  "pending",
+  "generation",
+  "failed",
+  "ready",
+]);
 
 export const ideasList = pgTable("ideas_list", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -22,6 +29,7 @@ export const ideasList = pgTable("ideas_list", {
     onUpdate: "cascade",
     onDelete: "set null",
   }),
+  status: ideasListStatus("status").default("pending").notNull(),
   name: text("name"),
   description: text("description"),
   targetAudience: text("target_audience"),

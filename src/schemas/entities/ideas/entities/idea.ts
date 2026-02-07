@@ -19,6 +19,14 @@ export const ideaSchema = createSelectSchema(idea)
 
 export type Idea = z.infer<typeof ideaSchema>;
 
+export const ideaGeneratedSchema = ideaSchema.pick({
+  name: true,
+  description: true,
+  videoTypeId: true,
+});
+
+export type IdeaGenerated = z.infer<typeof ideaGeneratedSchema>;
+
 export const ideaExtendedSchema = ideaSchema
   .extend({
     ideasList: ideasListExtendedSchema,

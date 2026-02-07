@@ -6,7 +6,7 @@ import {
 import { PgTransaction } from "drizzle-orm/pg-core";
 import { Pool } from "pg";
 
-import { schema } from ".";
+import * as schema from "./schema";
 
 export type DB = NodePgDatabase<typeof schema> & {
   $client: Pool;
