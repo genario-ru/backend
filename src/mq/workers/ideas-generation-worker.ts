@@ -19,7 +19,7 @@ import {
 export const ideasGenerationWorker = new Worker<IdeasGenerationJobData>(
   IDEAS_GENERATION_QUEUE_NAME,
   async (job) => {
-    const { ideasListId, count } = job.data;
+    const { ideasListId, userPrompt, count } = job.data;
     const safeCount = Math.min(count, 20);
 
     const foundIdeasList = await db.query.ideasList.findFirst({
@@ -46,6 +46,7 @@ export const ideasGenerationWorker = new Worker<IdeasGenerationJobData>(
       .where(eq(ideasList.id, ideasListId));
 
     const prompt = generateIdeasListPrompt({
+      userPrompt,
       settings: {
         ideasCount: safeCount,
       },

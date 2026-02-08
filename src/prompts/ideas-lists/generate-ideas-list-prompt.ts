@@ -1,4 +1,5 @@
 type GenerateIdeasListPromptProps = {
+  userPrompt?: string | null;
   context: {
     name?: string | null;
     description?: string | null;
@@ -19,6 +20,7 @@ type GenerateIdeasListPromptProps = {
 };
 
 export function generateIdeasListPrompt({
+  userPrompt,
   settings,
   context,
 }: GenerateIdeasListPromptProps) {
@@ -49,6 +51,8 @@ export function generateIdeasListPrompt({
     Profile description: "${profileDescription}";
     Tones: ${tones?.join(", ")};
     Video types: ${videoTypes?.map(({ id, name }) => `- ${id}: ${name}`).join("\n")}.
+
+    User prompt: "${userPrompt}";
 
     Instructions:
     - Do NOT invent new tones or video types;

@@ -9,38 +9,38 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { enqueueIdeasGeneration } from "@/mq/queues/ideas-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { generateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/generate-ideas-list/body";
+import { generateMoreIdeasBodySchema } from "@/schemas/entities/ideas-lists/handlers/generate-more-ideas/body";
 import {
-  type GenerateIdeasListResponse,
-  generateIdeasListResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/generate-ideas-list/response";
+  type GenerateMoreIdeasResponse,
+  generateMoreIdeasResponseSchema,
+} from "@/schemas/entities/ideas-lists/handlers/generate-more-ideas/response";
 import { updateIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/params";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
-export const generateIdeasListRoute = createHonoApp().basePath(
-  "/ideas-lists/:ideasListId/generate",
+export const generateMoreIdeasRoute = createHonoApp().basePath(
+  "/ideas-lists/:ideasListId/more-ideas",
 );
 
-// POST /api/v1/ideas-lists/{ideasListId}/generate
-generateIdeasListRoute.post(
+// POST /api/v1/ideas-lists/{ideasListId}/more-ideas
+generateMoreIdeasRoute.post(
   "/",
   sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {
       [HTTPStatusCode.Accepted]: createOpenAPIResponse({
-        description: "Ideas list generation queued successfully",
-        schema: generateIdeasListResponseSchema,
+        description: "More ideas generation queued successfully",
+        schema: generateMoreIdeasResponseSchema,
       }),
     },
   }),
   validator("param", updateIdeasListParamsSchema),
-  validator("json", generateIdeasListBodySchema),
+  validator("json", generateMoreIdeasBodySchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");
-    const { count } = c.req.valid("json");
+    const { userPrompt } = c.req.valid("json");
     const user = c.get("user");
 
     const foundIdeasList = await db.query.ideasList.findFirst({
@@ -56,26 +56,24 @@ generateIdeasListRoute.post(
       });
     }
 
-    await db
+    const [updatedIdeasList] = await db
       .update(ideasList)
       .set({ status: "pending" })
-      .where(and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)));
+      .where(and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)))
+      .returning();
 
-    const job = await enqueueIdeasGeneration({
+    await enqueueIdeasGeneration({
       ideasListId,
       userId: user.id,
-      count: count ?? 4,
-      source: "manual",
+      userPrompt,
+      count: 4,
+      source: "update",
     });
 
-    return c.json<GenerateIdeasListResponse>(
-      generateIdeasListResponseSchema.parse({
-        data: {
-          jobId: String(job.id),
-          status: "queued",
-        },
+    return c.json<GenerateMoreIdeasResponse>(
+      generateMoreIdeasResponseSchema.parse({
+        data: updatedIdeasList,
       }),
-      HTTPStatusCode.Accepted,
     );
   },
 );

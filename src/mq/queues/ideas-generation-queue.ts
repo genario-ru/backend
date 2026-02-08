@@ -7,6 +7,7 @@ export const IDEAS_GENERATION_QUEUE_NAME = "ideas-generation";
 export type IdeasGenerationJobData = {
   ideasListId: string;
   userId: string;
+  userPrompt?: string | null;
   count: number;
   source: "create" | "update" | "manual";
 };
