@@ -79,8 +79,6 @@ export const ideasGenerationWorker = new Worker<IdeasGenerationJobData>(
         prompt,
       });
 
-      console.log("Ideas generation worker object", generatedIdeasRaw);
-
       const generatedIdeas = generatedIdeasRaw.slice(0, safeCount);
       const totalTokens = usage?.totalTokens ?? 0;
 

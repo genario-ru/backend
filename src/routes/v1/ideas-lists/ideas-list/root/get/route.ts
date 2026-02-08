@@ -7,6 +7,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list/params";
+import { getIdeasListQuerySchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list/query";
 import {
   type GetIdeasListResponse,
   getIdeasListResponseSchema,
@@ -33,8 +34,10 @@ getIdeasListRoute.get(
     },
   }),
   validator("param", getIdeasListParamsSchema),
+  validator("query", getIdeasListQuerySchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");
+    const { saved } = c.req.valid("query");
     const user = c.get("user");
 
     const foundIdeasList = await db.query.ideasList.findFirst({
@@ -45,8 +48,17 @@ getIdeasListRoute.get(
         );
       },
       with: {
-        profile: true,
+        ideas: {
+          where: (idea, { eq }) => {
+            if (saved !== undefined) {
+              return eq(idea.saved, saved);
+            }
+
+            return undefined;
+          },
+        },
         template: true,
+        profile: true,
         ideasListToTone: {
           with: { tone: true },
         },
@@ -60,7 +72,7 @@ getIdeasListRoute.get(
       return throwAPIError({
         code: APIErrorCode.NotFound,
         message:
-          "Данный список идей не существует или у вас нет возможности просматривать его",
+          "Данный список идей не существует или у вас нет возможности просматривать идеи внутри него",
       });
     }
 

@@ -31,7 +31,6 @@ import {
   deleteIdeasListRoute,
   generateIdeasListRoute,
   getIdeasListRoute,
-  getIdeasRoute,
   getMyIdeasListsRoute,
   updateIdeasListRoute,
 } from "@/routes/v1/ideas-lists";
@@ -99,7 +98,6 @@ const appAPIv1RoutesList = [
   deleteIdeasListRoute,
   generateIdeasListRoute,
   getIdeasListRoute,
-  getIdeasRoute,
   createIdeaRoute,
   getMyIdeasListsRoute,
   getMyArchiveItemsRoute,
