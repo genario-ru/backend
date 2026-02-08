@@ -7,15 +7,11 @@ import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
 import { ideasRegistry } from "../registry";
 
-export const ideaSchema = createSelectSchema(idea)
-  .register(ideasRegistry, {
-    title: "Idea",
-    description: "Idea description",
-    ref: "IdeaSchema",
-  })
-  .extend({
-    videoType: videoTypeSchema,
-  });
+export const ideaSchema = createSelectSchema(idea).register(ideasRegistry, {
+  title: "Idea",
+  description: "Idea description",
+  ref: "IdeaSchema",
+});
 
 export type Idea = z.infer<typeof ideaSchema>;
 

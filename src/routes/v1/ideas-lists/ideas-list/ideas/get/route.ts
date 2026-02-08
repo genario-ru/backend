@@ -68,7 +68,6 @@ getIdeasRoute.get(
     const foundIdeas = await db.query.idea.findMany({
       where: and(...ideasWhereConditions),
       orderBy: (idea, { desc }) => [desc(idea.createdAt)],
-      with: { videoType: true },
     });
 
     return c.json<GetIdeasResponse>(
