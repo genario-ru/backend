@@ -13,7 +13,10 @@ import { openAPIRouteHandler } from "hono-openapi";
 
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
-import { ideasGenerationQueue } from "@/mq/queues/ideas-generation-queue";
+import { ideasListGenerationQueue } from "@/mq/queues/ideas-list-generation-queue";
+import { scenarioChaptersGenerationQueue } from "@/mq/queues/scenario-chapters-generation-queue";
+import { scenarioSceneComponentsGenerationQueue } from "@/mq/queues/scenario-scene-components-generation-queue";
+import { scenarioScenesGenerationQueue } from "@/mq/queues/scenario-scenes-generation-queue";
 import { authRoute } from "@/routes/auth/route";
 import {
   getArchiveFiltersRoute,
@@ -82,7 +85,12 @@ const bullBoardAdapter = new HonoAdapter(serveStatic);
 const bullBoardBasePath = "/admin/queues";
 
 createBullBoard({
-  queues: [new BullMQAdapter(ideasGenerationQueue)],
+  queues: [
+    new BullMQAdapter(ideasListGenerationQueue),
+    new BullMQAdapter(scenarioChaptersGenerationQueue),
+    new BullMQAdapter(scenarioScenesGenerationQueue),
+    new BullMQAdapter(scenarioSceneComponentsGenerationQueue),
+  ],
   serverAdapter: bullBoardAdapter,
 });
 

@@ -16,3 +16,14 @@ export const scenarioSceneComponentSchema = createSelectSchema(
 export type ScenarioSceneComponent = z.infer<
   typeof scenarioSceneComponentSchema
 >;
+
+export const scenarioSceneComponentGeneratedSchema =
+  scenarioSceneComponentSchema.pick({
+    name: true,
+    content: true,
+    typeId: true,
+  });
+
+export type ScenarioSceneComponentGenerated = z.infer<
+  typeof scenarioSceneComponentGeneratedSchema
+>;

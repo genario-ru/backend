@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { enqueueScenarioVersionGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
 import { createScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,
@@ -34,6 +35,7 @@ createScenarioRoute.post(
   async (c) => {
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
     const user = c.get("user");
+    let createdScenarioVersionId: string | null = null;
 
     const createdScenario = await db.transaction(async (tx) => {
       const [createdScenario] = await tx
@@ -48,6 +50,8 @@ createScenarioRoute.post(
         .insert(scenarioVersion)
         .values({ scenarioId: createdScenario.id })
         .returning();
+
+      createdScenarioVersionId = createdScenarioVersion.id;
 
       const scenarioPromises: Promise<any>[] = [
         tx
@@ -69,10 +73,16 @@ createScenarioRoute.post(
 
       await Promise.all(scenarioPromises);
 
-      // TODO: Запускаем процесс генерации версии сценария на основе введенных параметров
-
       return createdScenario;
     });
+
+    if (createdScenarioVersionId) {
+      await enqueueScenarioVersionGeneration({
+        userId: user.id,
+        scenarioVersionId: createdScenarioVersionId,
+        source: "create",
+      });
+    }
 
     return c.json<CreateScenarioResponse>(
       createScenarioResponseSchema.parse({

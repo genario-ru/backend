@@ -17,6 +17,22 @@ export const scenarioSceneSchema = createSelectSchema(scenarioScene).register(
 
 export type ScenarioScene = z.infer<typeof scenarioSceneSchema>;
 
+export const scenarioSceneGeneratedSchema = scenarioSceneSchema
+  .pick({
+    name: true,
+    description: true,
+    startTime: true,
+    endTime: true,
+    badges: true,
+  })
+  .refine((scene) => scene.endTime > scene.startTime, {
+    message: "End time must be greater than start time",
+  });
+
+export type ScenarioSceneGenerated = z.infer<
+  typeof scenarioSceneGeneratedSchema
+>;
+
 export const scenarioSceneExtendedSchema = scenarioSceneSchema
   .extend({
     components: z.array(scenarioSceneComponentSchema),

@@ -2,9 +2,9 @@ import { Queue } from "bullmq";
 
 import { redis } from "../../lib/redis";
 
-export const IDEAS_GENERATION_QUEUE_NAME = "ideas-generation";
+export const IDEAS_LIST_GENERATION_QUEUE_NAME = "ideas-list-generation";
 
-export type IdeasGenerationJobData = {
+export type IdeasListGenerationJobData = {
   ideasListId: string;
   userId: string;
   userPrompt?: string | null;
@@ -12,8 +12,8 @@ export type IdeasGenerationJobData = {
   source: "create" | "update" | "manual";
 };
 
-export const ideasGenerationQueue = new Queue<IdeasGenerationJobData>(
-  IDEAS_GENERATION_QUEUE_NAME,
+export const ideasListGenerationQueue = new Queue<IdeasListGenerationJobData>(
+  IDEAS_LIST_GENERATION_QUEUE_NAME,
   {
     connection: redis,
     defaultJobOptions: {
@@ -28,6 +28,6 @@ export const ideasGenerationQueue = new Queue<IdeasGenerationJobData>(
   },
 );
 
-export function enqueueIdeasGeneration(data: IdeasGenerationJobData) {
-  return ideasGenerationQueue.add("generate-ideas", data);
+export function enqueueIdeasListGeneration(data: IdeasListGenerationJobData) {
+  return ideasListGenerationQueue.add("generate-ideas-list", data);
 }

@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { enqueueScenarioVersionGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario/body";
 import { updateScenarioParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario/params";
@@ -60,6 +61,8 @@ updateScenarioRoute.patch(
       });
     }
 
+    let createdScenarioVersionId: string | null = null;
+
     const updatedScenario = await db.transaction(async (tx) => {
       const updateScenarioPromises: Promise<any>[] = [];
 
@@ -106,10 +109,18 @@ updateScenarioRoute.patch(
         ...updateScenarioPromises,
       ]);
 
-      // TODO: Запустить процесс генерации новой версии сценария на основе введенных параметров
+      createdScenarioVersionId = _newScenarioVersion.id;
 
       return updatedScenario;
     });
+
+    if (createdScenarioVersionId) {
+      await enqueueScenarioVersionGeneration({
+        userId: user.id,
+        scenarioVersionId: createdScenarioVersionId,
+        source: "update",
+      });
+    }
 
     return c.json<UpdateScenarioResponse>(
       updateScenarioResponseSchema.parse({

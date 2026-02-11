@@ -38,6 +38,7 @@ export * from "./schemas/primary/scenario";
 export * from "./schemas/primary/scenario-chapter";
 export * from "./schemas/primary/scenario-scene";
 export * from "./schemas/primary/scenario-scene-component";
+export * from "./schemas/primary/scenario-scene-component-type";
 export * from "./schemas/primary/scenario-version";
 export * from "./schemas/primary/scenario-video-reference";
 export * from "./schemas/primary/template";

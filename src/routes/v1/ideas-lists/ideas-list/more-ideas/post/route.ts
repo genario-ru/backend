@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueIdeasGeneration } from "@/mq/queues/ideas-generation-queue";
+import { enqueueIdeasListGeneration } from "@/mq/queues/ideas-list-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { generateMoreIdeasBodySchema } from "@/schemas/entities/ideas-lists/handlers/generate-more-ideas/body";
 import {
@@ -62,7 +62,7 @@ generateMoreIdeasRoute.post(
       .where(and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)))
       .returning();
 
-    await enqueueIdeasGeneration({
+    await enqueueIdeasListGeneration({
       ideasListId,
       userId: user.id,
       userPrompt,

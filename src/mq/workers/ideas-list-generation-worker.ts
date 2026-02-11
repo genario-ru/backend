@@ -12,12 +12,12 @@ import { systemPrompt } from "@/prompts/system/system-prompt";
 import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import {
-  IDEAS_GENERATION_QUEUE_NAME,
-  type IdeasGenerationJobData,
-} from "../queues/ideas-generation-queue";
+  IDEAS_LIST_GENERATION_QUEUE_NAME,
+  type IdeasListGenerationJobData,
+} from "../queues/ideas-list-generation-queue";
 
-export const ideasGenerationWorker = new Worker<IdeasGenerationJobData>(
-  IDEAS_GENERATION_QUEUE_NAME,
+export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
+  IDEAS_LIST_GENERATION_QUEUE_NAME,
   async (job) => {
     const { ideasListId, userPrompt, count } = job.data;
     const safeCount = Math.min(count, 20);

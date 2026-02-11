@@ -50,6 +50,20 @@
       "when": 1770493972113,
       "tag": "0006_daily_shiva",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770832261193,
+      "tag": "0007_elite_slipstream",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1770833676699,
+      "tag": "0008_last_ironclad",
+      "breakpoints": true
     }
   ]
 }
