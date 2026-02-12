@@ -8,7 +8,7 @@ import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueScenarioVersionGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
+import { enqueueScenarioChaptersGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario/body";
 import { updateScenarioParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario/params";
@@ -115,7 +115,7 @@ updateScenarioRoute.patch(
     });
 
     if (createdScenarioVersionId) {
-      await enqueueScenarioVersionGeneration({
+      await enqueueScenarioChaptersGeneration({
         userId: user.id,
         scenarioVersionId: createdScenarioVersionId,
         source: "update",

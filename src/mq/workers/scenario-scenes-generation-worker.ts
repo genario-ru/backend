@@ -68,6 +68,8 @@ export const scenarioScenesGenerationWorker =
         },
       });
 
+      console.log("Scenario scenes generation prompt", prompt);
+
       try {
         const { output: generatedScenarioScenes, usage } = await generateText({
           model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
@@ -77,6 +79,11 @@ export const scenarioScenesGenerationWorker =
           system: systemPrompt(),
           prompt,
         });
+
+        console.log(
+          "Scenario scenes generation output",
+          generatedScenarioScenes,
+        );
 
         const createdScenarioScenes = await db.transaction(async (tx) => {
           const createdScenarioScenes = await tx
@@ -127,6 +134,8 @@ export const scenarioScenesGenerationWorker =
           ),
         );
       } catch (error) {
+        console.error("Scenario scenes generation worker error", error);
+
         await db
           .update(scenarioChapter)
           .set({ status: "failed" })

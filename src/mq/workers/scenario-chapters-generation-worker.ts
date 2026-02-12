@@ -72,6 +72,8 @@ export const scenarioChaptersGenerationWorker =
         },
       });
 
+      console.log("Scenario chapters generation prompt", prompt);
+
       try {
         const { output: generatedChapters, usage } = await generateText({
           model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
@@ -81,6 +83,8 @@ export const scenarioChaptersGenerationWorker =
           system: systemPrompt(),
           prompt,
         });
+
+        console.log("Scenario chapters generation output", generatedChapters);
 
         const scenarioChapters = await db.transaction(async (tx) => {
           const createdScenarioChapters = await tx
@@ -129,6 +133,8 @@ export const scenarioChaptersGenerationWorker =
           ),
         );
       } catch (error) {
+        console.error("Scenario chapters generation worker error", error);
+
         await db
           .update(scenarioVersion)
           .set({ status: "failed" })

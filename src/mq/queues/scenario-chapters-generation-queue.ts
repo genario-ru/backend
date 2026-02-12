@@ -3,7 +3,7 @@ import { Queue } from "bullmq";
 import { redis } from "../../lib/redis";
 
 export const SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME =
-  "scenario-version-generation";
+  "scenario-chapters-generation";
 
 export type ScenarioChaptersGenerationJobData = {
   userId: string;
@@ -28,7 +28,7 @@ export const scenarioChaptersGenerationQueue =
     },
   );
 
-export function enqueueScenarioVersionGeneration(
+export function enqueueScenarioChaptersGeneration(
   data: ScenarioChaptersGenerationJobData,
 ) {
   return scenarioChaptersGenerationQueue.add(
