@@ -6,9 +6,8 @@ export const SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME =
   "scenario-chapters-generation";
 
 export type ScenarioChaptersGenerationJobData = {
-  userId: string;
+  scenarioId: string;
   scenarioVersionId: string;
-  source: "create" | "update" | "manual";
 };
 
 export const scenarioChaptersGenerationQueue =

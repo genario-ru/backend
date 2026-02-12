@@ -3,7 +3,6 @@ type GenerateScenarioSceneComponentsPromptProps = {
     scenarioName: string;
     scenarioDescription: string;
     scenarioTargetAudience: string;
-    scenarioTones: string[];
     chapterName: string;
     chapterDescription: string;
     chapterStartTime: number;
@@ -28,7 +27,6 @@ export function generateScenarioSceneComponentsPrompt({
     scenarioName,
     scenarioDescription,
     scenarioTargetAudience,
-    scenarioTones,
     chapterName,
     chapterDescription,
     chapterStartTime,
@@ -46,7 +44,6 @@ export function generateScenarioSceneComponentsPrompt({
     Scenario name: "${scenarioName}";
     Scenario description: "${scenarioDescription}";
     Target audience: "${scenarioTargetAudience}";
-    Tones: ${scenarioTones?.join(", ")};
 
     Chapter:
     Name: "${chapterName}";

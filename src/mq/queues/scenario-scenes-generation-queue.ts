@@ -6,8 +6,6 @@ export const SCENARIO_SCENES_GENERATION_QUEUE_NAME =
   "scenario-scenes-generation";
 
 export type ScenarioScenesGenerationJobData = {
-  userId: string;
-  scenarioVersionId: string;
   scenarioChapterId: string;
 };
 

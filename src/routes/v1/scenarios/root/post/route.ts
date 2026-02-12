@@ -36,54 +36,61 @@ createScenarioRoute.post(
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
     const user = c.get("user");
 
-    const createdScenario = await db.transaction(async (tx) => {
-      const [createdScenario] = await tx
-        .insert(scenario)
-        .values({
-          userId: user.id,
-          ...createScenarioParams,
-        })
-        .returning();
+    const { createdScenario, createdScenarioVersion } = await db.transaction(
+      async (tx) => {
+        const [createdScenario] = await tx
+          .insert(scenario)
+          .values({
+            userId: user.id,
+            ...createScenarioParams,
+          })
+          .returning();
 
-      const [createdScenarioVersion] = await tx
-        .insert(scenarioVersion)
-        .values({ scenarioId: createdScenario.id })
-        .returning();
+        const [createdScenarioVersion] = await tx
+          .insert(scenarioVersion)
+          .values({ scenarioId: createdScenario.id })
+          .returning();
 
-      const scenarioPromises: Promise<any>[] = [
-        tx
-          .update(scenario)
-          .set({ currentVersionId: createdScenarioVersion.id })
-          .where(eq(scenario.id, createdScenario.id)),
-      ];
+        const scenarioPromises: Promise<any>[] = [
+          tx
+            .update(scenario)
+            .set({ currentVersionId: createdScenarioVersion.id })
+            .where(eq(scenario.id, createdScenario.id)),
+        ];
 
-      if (toneIds && toneIds.length > 0) {
-        scenarioPromises.push(
-          tx.insert(scenarioToTone).values(
-            toneIds.map((toneId) => ({
-              scenarioId: createdScenario.id,
-              toneId,
-            })),
-          ),
-        );
-      }
+        if (toneIds && toneIds.length > 0) {
+          scenarioPromises.push(
+            tx.insert(scenarioToTone).values(
+              toneIds.map((toneId) => ({
+                scenarioId: createdScenario.id,
+                toneId,
+              })),
+            ),
+          );
+        }
 
-      await Promise.all(scenarioPromises);
+        await Promise.all(scenarioPromises);
 
-      return createdScenario;
-    });
+        return {
+          createdScenario,
+          createdScenarioVersion,
+        };
+      },
+    );
 
-    if (createdScenario.currentVersionId) {
+    if (createdScenarioVersion) {
       await enqueueScenarioChaptersGeneration({
-        userId: user.id,
-        scenarioVersionId: createdScenario.currentVersionId,
-        source: "create",
+        scenarioId: createdScenario.id,
+        scenarioVersionId: createdScenarioVersion.id,
       });
     }
 
     return c.json<CreateScenarioResponse>(
       createScenarioResponseSchema.parse({
-        data: createdScenario,
+        data: {
+          ...createdScenario,
+          currentVersionId: createdScenarioVersion.id,
+        },
       }),
       HTTPStatusCode.Created,
     );

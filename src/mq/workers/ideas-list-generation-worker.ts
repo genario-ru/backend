@@ -3,6 +3,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import * as z from "zod";
 
+import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
 import { polza } from "@/lib/ai/providers/polza";
@@ -22,59 +23,62 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
     const { ideasListId, userPrompt, count } = job.data;
     const safeCount = Math.min(count, 20);
 
-    const foundIdeasList = await db.query.ideasList.findFirst({
-      where: (ideasList, { eq }) => eq(ideasList.id, ideasListId),
-      with: {
-        profile: true,
-        template: true,
-        ideasListToTone: {
-          with: { tone: true },
-        },
-        ideasListToVideoType: {
-          with: { videoType: true },
-        },
-      },
-    });
-
-    if (!foundIdeasList) {
-      return;
-    }
-
-    await db
-      .update(ideasList)
-      .set({ status: "generation" })
-      .where(eq(ideasList.id, ideasListId));
-
-    const prompt = generateIdeasListPrompt({
-      userPrompt,
-      settings: {
-        ideasCount: safeCount,
-      },
-      context: {
-        name: foundIdeasList.name,
-        description: foundIdeasList.description,
-        targetAudience: foundIdeasList.targetAudience,
-        templateName: foundIdeasList.template?.name,
-        templateDescription: foundIdeasList.template?.description,
-        profileName: foundIdeasList.profile?.name,
-        profileDescription: foundIdeasList.profile?.description,
-        tones: foundIdeasList.ideasListToTone.map(({ tone }) => tone.name),
-        videoTypes: foundIdeasList.ideasListToVideoType.map(
-          ({ videoType }) => ({
-            id: videoType.id,
-            name: videoType.name,
-          }),
-        ),
-      },
-    });
-
-    const modelId = "google/gemini-2.5-flash";
-
     try {
-      const { output: generatedIdeasRaw, usage } = await generateText({
-        model: polza.languageModel(modelId),
+      const foundIdeasList = await db.query.ideasList.findFirst({
+        where: (ideasList, { eq }) => eq(ideasList.id, ideasListId),
+        with: {
+          profile: true,
+          template: true,
+          ideasListToTone: {
+            with: { tone: true },
+          },
+          ideasListToVideoType: {
+            with: { videoType: true },
+          },
+        },
+      });
+
+      if (!foundIdeasList) {
+        return;
+      }
+
+      await db
+        .update(ideasList)
+        .set({ status: "generation" })
+        .where(eq(ideasList.id, ideasListId));
+
+      const prompt = generateIdeasListPrompt({
+        userPrompt,
+        settings: {
+          ideasCount: safeCount,
+        },
+        context: {
+          name: foundIdeasList.name,
+          description: foundIdeasList.description,
+          targetAudience: foundIdeasList.targetAudience,
+          templateName: foundIdeasList.template?.name,
+          templateDescription: foundIdeasList.template?.description,
+          profileName: foundIdeasList.profile?.name,
+          profileDescription: foundIdeasList.profile?.description,
+          tones: foundIdeasList.ideasListToTone.map(({ tone }) => tone.name),
+          videoTypes: foundIdeasList.ideasListToVideoType.map(
+            ({ videoType }) => ({
+              id: videoType.id,
+              name: videoType.name,
+            }),
+          ),
+        },
+      });
+
+      const {
+        output: { ideas: generatedIdeasRaw },
+        usage,
+      } = await generateText({
+        model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
         output: Output.object({
-          schema: z.array(ideaGeneratedSchema),
+          schema: z.object({
+            ideas: z.array(ideaGeneratedSchema),
+          }),
         }),
         system: systemPrompt(),
         prompt,
@@ -103,7 +107,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             entityType,
             entityId: foundIdeasList.id,
             prompt,
-            model: modelId,
+            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
             tokens: totalTokens,
           });
         }
@@ -116,10 +120,17 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
     } catch (error) {
       console.error("Ideas generation worker error", error);
 
-      await db
-        .update(ideasList)
-        .set({ status: "failed" })
-        .where(eq(ideasList.id, ideasListId));
+      try {
+        await db
+          .update(ideasList)
+          .set({ status: "failed" })
+          .where(eq(ideasList.id, ideasListId));
+      } catch (updateError) {
+        console.error(
+          "Ideas generation worker failed to update status",
+          updateError,
+        );
+      }
 
       throw error;
     }

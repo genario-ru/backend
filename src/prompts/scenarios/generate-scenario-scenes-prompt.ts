@@ -3,7 +3,6 @@ type GenerateScenarioScenesPromptProps = {
     scenarioName?: string | null;
     scenarioDescription?: string | null;
     scenarioTargetAudience?: string | null;
-    scenarioTones?: string[];
     chapterName: string;
     chapterDescription?: string | null;
     chapterStartTime: number;
@@ -18,7 +17,6 @@ export function generateScenarioScenesPrompt({
     scenarioName,
     scenarioDescription,
     scenarioTargetAudience,
-    scenarioTones,
     chapterName,
     chapterDescription,
     chapterStartTime,
@@ -32,7 +30,6 @@ export function generateScenarioScenesPrompt({
     Scenario name: "${scenarioName}";
     Scenario description: "${scenarioDescription}";
     Target audience: "${scenarioTargetAudience}";
-    Tones: ${scenarioTones?.join(", ")};
 
     Chapter:
     Name: "${chapterName}";

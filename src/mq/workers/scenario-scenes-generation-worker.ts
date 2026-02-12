@@ -24,57 +24,51 @@ export const scenarioScenesGenerationWorker =
     async (job) => {
       const { scenarioChapterId } = job.data;
 
-      const foundChapter = await db.query.scenarioChapter.findFirst({
-        where: (scenarioChapter, { eq }) =>
-          eq(scenarioChapter.id, scenarioChapterId),
-        with: {
-          scenarioVersion: {
-            with: {
-              scenario: {
-                with: {
-                  scenarioToTone: {
-                    with: { tone: true },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!foundChapter) {
-        return;
-      }
-
-      const { scenarioVersion } = foundChapter;
-
-      await db
-        .update(scenarioChapter)
-        .set({ status: "generation" })
-        .where(eq(scenarioChapter.id, scenarioChapterId));
-
-      const prompt = generateScenarioScenesPrompt({
-        context: {
-          scenarioName: scenarioVersion.scenario.name,
-          scenarioDescription: scenarioVersion.scenario.description,
-          scenarioTargetAudience: scenarioVersion.scenario.targetAudience,
-          scenarioTones: scenarioVersion.scenario.scenarioToTone.map(
-            ({ tone }) => tone.name,
-          ),
-          chapterName: foundChapter.name,
-          chapterDescription: foundChapter.description,
-          chapterStartTime: foundChapter.startTime,
-          chapterEndTime: foundChapter.endTime,
-        },
-      });
-
-      console.log("Scenario scenes generation prompt", prompt);
+      console.log("Scenario scenes generation worker started", job.data);
 
       try {
-        const { output: generatedScenarioScenes, usage } = await generateText({
+        const foundScenarioChapter = await db.query.scenarioChapter.findFirst({
+          where: (scenarioChapter, { eq }) =>
+            eq(scenarioChapter.id, scenarioChapterId),
+          with: {
+            scenarioVersion: {
+              with: { scenario: true },
+            },
+          },
+        });
+
+        if (!foundScenarioChapter) {
+          return;
+        }
+
+        await db
+          .update(scenarioChapter)
+          .set({ status: "generation" })
+          .where(eq(scenarioChapter.id, scenarioChapterId));
+
+        const prompt = generateScenarioScenesPrompt({
+          context: {
+            scenarioName: foundScenarioChapter.scenarioVersion.scenario.name,
+            scenarioDescription:
+              foundScenarioChapter.scenarioVersion.scenario.description,
+            scenarioTargetAudience:
+              foundScenarioChapter.scenarioVersion.scenario.targetAudience,
+            chapterName: foundScenarioChapter.name,
+            chapterDescription: foundScenarioChapter.description,
+            chapterStartTime: foundScenarioChapter.startTime,
+            chapterEndTime: foundScenarioChapter.endTime,
+          },
+        });
+
+        const {
+          output: { scenes: generatedScenarioScenes },
+          usage,
+        } = await generateText({
           model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
-            schema: z.array(scenarioSceneGeneratedSchema),
+            schema: z.object({
+              scenes: z.array(scenarioSceneGeneratedSchema),
+            }),
           }),
           system: systemPrompt(),
           prompt,
@@ -126,9 +120,6 @@ export const scenarioScenesGenerationWorker =
         await Promise.all(
           createdScenarioScenes.map((scene) =>
             enqueueScenarioSceneComponentsGeneration({
-              userId: scenarioVersion.scenario.userId,
-              scenarioVersionId: scenarioVersion.id,
-              scenarioChapterId: scene.scenarioChapterId,
               scenarioSceneId: scene.id,
             }),
           ),
@@ -136,10 +127,17 @@ export const scenarioScenesGenerationWorker =
       } catch (error) {
         console.error("Scenario scenes generation worker error", error);
 
-        await db
-          .update(scenarioChapter)
-          .set({ status: "failed" })
-          .where(eq(scenarioChapter.id, scenarioChapterId));
+        try {
+          await db
+            .update(scenarioChapter)
+            .set({ status: "failed" })
+            .where(eq(scenarioChapter.id, scenarioChapterId));
+        } catch (updateError) {
+          console.error(
+            "Scenario scenes generation worker failed to update status",
+            updateError,
+          );
+        }
 
         throw error;
       }

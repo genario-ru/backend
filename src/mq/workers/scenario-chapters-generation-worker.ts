@@ -22,63 +22,65 @@ export const scenarioChaptersGenerationWorker =
   new Worker<ScenarioChaptersGenerationJobData>(
     SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME,
     async (job) => {
-      const { scenarioVersionId, userId } = job.data;
+      const { scenarioId, scenarioVersionId } = job.data;
 
-      const foundScenarioVersion = await db.query.scenarioVersion.findFirst({
-        where: (scenarioVersion, { eq }) =>
-          eq(scenarioVersion.id, scenarioVersionId),
-        with: {
-          scenario: {
-            with: {
-              profile: true,
-              template: true,
-              platform: true,
-              videoType: true,
-              videoDuration: true,
-              scenarioToTone: {
-                with: { tone: true },
-              },
-            },
-          },
-        },
-      });
-
-      if (!foundScenarioVersion) {
-        return;
-      }
-
-      const { scenario } = foundScenarioVersion;
-
-      await db
-        .update(scenarioVersion)
-        .set({ status: "generation" })
-        .where(eq(scenarioVersion.id, scenarioVersionId));
-
-      const prompt = generateScenarioChaptersPrompt({
-        context: {
-          scenarioName: scenario.name,
-          scenarioDescription: scenario.description,
-          scenarioTargetAudience: scenario.targetAudience,
-          scenarioTemplateName: scenario.template?.name,
-          scenarioTemplateDescription: scenario.template?.description,
-          scenarioProfileName: scenario.profile?.name,
-          scenarioProfileDescription: scenario.profile?.description,
-          scenarioPlatformName: scenario.platform?.name,
-          scenarioVideoTypeName: scenario.videoType?.name,
-          scenarioVideoDurationName: scenario.videoDuration?.name,
-          scenarioMinimumDurationSeconds: scenario.videoDuration?.minSeconds,
-          scenarioMaximumDurationSeconds: scenario.videoDuration?.maxSeconds,
-          scenarioTones: scenario.scenarioToTone.map(({ tone }) => tone.name),
-        },
-      });
-
-      console.log("Scenario chapters generation prompt", prompt);
+      console.log("Scenario chapters generation worker started", job.data);
 
       try {
-        const { output: generatedChapters, usage } = await generateText({
+        const foundScenario = await db.query.scenario.findFirst({
+          where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+          with: {
+            profile: true,
+            template: true,
+            platform: true,
+            videoType: true,
+            videoDuration: true,
+            scenarioToTone: {
+              with: { tone: true },
+            },
+          },
+        });
+
+        if (!foundScenario) {
+          return;
+        }
+
+        await db
+          .update(scenarioVersion)
+          .set({ status: "generation" })
+          .where(eq(scenarioVersion.id, scenarioVersionId));
+
+        const prompt = generateScenarioChaptersPrompt({
+          context: {
+            scenarioName: foundScenario.name,
+            scenarioDescription: foundScenario.description,
+            scenarioTargetAudience: foundScenario.targetAudience,
+            scenarioTemplateName: foundScenario.template?.name,
+            scenarioTemplateDescription: foundScenario.template?.description,
+            scenarioProfileName: foundScenario.profile?.name,
+            scenarioProfileDescription: foundScenario.profile?.description,
+            scenarioPlatformName: foundScenario.platform?.name,
+            scenarioVideoTypeName: foundScenario.videoType?.name,
+            scenarioVideoDurationName: foundScenario.videoDuration?.name,
+            scenarioMinimumDurationSeconds:
+              foundScenario.videoDuration?.minSeconds,
+            scenarioMaximumDurationSeconds:
+              foundScenario.videoDuration?.maxSeconds,
+            scenarioTones: foundScenario.scenarioToTone.map(
+              ({ tone }) => tone.name,
+            ),
+          },
+        });
+
+        const {
+          output: { chapters: generatedChapters },
+          usage,
+        } = await generateText({
           model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
-            schema: z.array(scenarioChapterGeneratedSchema),
+            schema: z.object({
+              chapters: z.array(scenarioChapterGeneratedSchema),
+            }),
           }),
           system: systemPrompt(),
           prompt,
@@ -126,8 +128,6 @@ export const scenarioChaptersGenerationWorker =
         await Promise.all(
           scenarioChapters.map((chapter) =>
             enqueueScenarioScenesGeneration({
-              userId,
-              scenarioVersionId,
               scenarioChapterId: chapter.id,
             }),
           ),
@@ -135,10 +135,17 @@ export const scenarioChaptersGenerationWorker =
       } catch (error) {
         console.error("Scenario chapters generation worker error", error);
 
-        await db
-          .update(scenarioVersion)
-          .set({ status: "failed" })
-          .where(eq(scenarioVersion.id, scenarioVersionId));
+        try {
+          await db
+            .update(scenarioVersion)
+            .set({ status: "failed" })
+            .where(eq(scenarioVersion.id, scenarioVersionId));
+        } catch (updateError) {
+          console.error(
+            "Scenario chapters generation worker failed to update status",
+            updateError,
+          );
+        }
 
         throw error;
       }

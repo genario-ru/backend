@@ -27,85 +27,93 @@ export const scenarioSceneComponentsGenerationWorker =
     async (job) => {
       const { scenarioSceneId } = job.data;
 
-      const foundScenarioScene = await db.query.scenarioScene.findFirst({
-        where: (scenarioScene, { eq }) => eq(scenarioScene.id, scenarioSceneId),
-        with: {
-          scenarioChapter: {
-            with: {
-              scenarioVersion: {
-                with: {
-                  scenario: {
-                    with: {
-                      scenarioToTone: { with: { tone: true } },
-                    },
+      console.log(
+        "Scenario scene components generation worker started",
+        job.data,
+      );
+
+      try {
+        const foundScenarioScene = await db.query.scenarioScene.findFirst({
+          where: (scenarioScene, { eq }) =>
+            eq(scenarioScene.id, scenarioSceneId),
+          with: {
+            scenarioChapter: {
+              with: {
+                scenarioVersion: {
+                  with: {
+                    scenario: true,
                   },
                 },
               },
             },
           },
-        },
-      });
+        });
 
-      if (!foundScenarioScene) {
-        console.warn(`Scenario scene not found: ${scenarioSceneId}`);
+        if (!foundScenarioScene) {
+          console.warn(`Scenario scene not found: ${scenarioSceneId}`);
 
-        return;
-      }
+          return;
+        }
 
-      const scenarioSceneComponentTypes =
-        await db.query.scenarioSceneComponentType.findMany();
+        const scenarioSceneComponentTypes =
+          await db.query.scenarioSceneComponentType.findMany();
 
-      if (!scenarioSceneComponentTypes.length) {
-        console.warn(`Scenario scene component types not found`);
+        if (!scenarioSceneComponentTypes.length) {
+          console.warn(`Scenario scene component types not found`);
 
-        return;
-      }
+          return;
+        }
 
-      const availableSceneComponentTypes = scenarioSceneComponentTypes.map(
-        ({ id, name, description, optional }) => ({
-          id,
-          name,
-          description,
-          optional,
-        }),
-      );
+        const availableSceneComponentTypes = scenarioSceneComponentTypes.map(
+          ({ id, name, description, optional }) => ({
+            id,
+            name,
+            description,
+            optional,
+          }),
+        );
 
-      const { scenarioChapter: foundScenarioChapter } = foundScenarioScene;
+        const { scenarioChapter: foundScenarioChapter } = foundScenarioScene;
 
-      const prompt = generateScenarioSceneComponentsPrompt({
-        context: {
-          scenarioName:
-            foundScenarioChapter.scenarioVersion.scenario.name ?? "",
-          scenarioDescription:
-            foundScenarioChapter.scenarioVersion.scenario.description ?? "",
-          scenarioTargetAudience:
-            foundScenarioChapter.scenarioVersion.scenario.targetAudience ?? "",
-          scenarioTones:
-            foundScenarioChapter.scenarioVersion.scenario.scenarioToTone.map(
-              ({ tone }) => tone.name,
-            ) ?? [],
-          chapterName: foundScenarioChapter.name ?? "",
-          chapterDescription: foundScenarioChapter.description ?? "",
-          chapterStartTime: foundScenarioChapter.startTime ?? 0,
-          chapterEndTime: foundScenarioChapter.endTime ?? 0,
-          sceneName: foundScenarioScene.name ?? "",
-          sceneDescription: foundScenarioScene.description ?? "",
-          sceneStartTime: foundScenarioScene.startTime ?? 0,
-          sceneEndTime: foundScenarioScene.endTime ?? 0,
-          availableSceneComponentTypes,
-        },
-      });
+        const prompt = generateScenarioSceneComponentsPrompt({
+          context: {
+            scenarioName:
+              foundScenarioChapter.scenarioVersion.scenario.name ?? "",
+            scenarioDescription:
+              foundScenarioChapter.scenarioVersion.scenario.description ?? "",
+            scenarioTargetAudience:
+              foundScenarioChapter.scenarioVersion.scenario.targetAudience ??
+              "",
+            chapterName: foundScenarioChapter.name ?? "",
+            chapterDescription: foundScenarioChapter.description ?? "",
+            chapterStartTime: foundScenarioChapter.startTime ?? 0,
+            chapterEndTime: foundScenarioChapter.endTime ?? 0,
+            sceneName: foundScenarioScene.name ?? "",
+            sceneDescription: foundScenarioScene.description ?? "",
+            sceneStartTime: foundScenarioScene.startTime ?? 0,
+            sceneEndTime: foundScenarioScene.endTime ?? 0,
+            availableSceneComponentTypes,
+          },
+        });
 
-      try {
-        const { output: generatedScenarioSceneComponents, usage } =
-          await generateText({
-            model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
-            output: Output.object({
-              schema: z.array(scenarioSceneComponentGeneratedSchema),
+        const {
+          output: { components: generatedScenarioSceneComponents },
+          usage,
+        } = await generateText({
+          model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
+          output: Output.object({
+            schema: z.object({
+              components: z.array(scenarioSceneComponentGeneratedSchema),
             }),
-            system: systemPrompt(),
-            prompt,
-          });
+          }),
+          system: systemPrompt(),
+          prompt,
+        });
+
+        console.log(
+          "Scenario scene components generation output",
+          generatedScenarioSceneComponents,
+        );
 
         await db.transaction(async (tx) => {
           const createdScenarioSceneComponents = await tx
@@ -140,10 +148,17 @@ export const scenarioSceneComponentsGenerationWorker =
             .where(eq(scenarioScene.id, scenarioSceneId));
         });
       } catch (error) {
-        await db
-          .update(scenarioScene)
-          .set({ status: "failed" })
-          .where(eq(scenarioScene.id, scenarioSceneId));
+        try {
+          await db
+            .update(scenarioScene)
+            .set({ status: "failed" })
+            .where(eq(scenarioScene.id, scenarioSceneId));
+        } catch (updateError) {
+          console.error(
+            "Scenario scene components generation worker failed to update status",
+            updateError,
+          );
+        }
 
         throw error;
       }

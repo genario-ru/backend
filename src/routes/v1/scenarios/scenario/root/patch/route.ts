@@ -40,10 +40,11 @@ updateScenarioRoute.patch(
   validator("param", updateScenarioParamsSchema),
   validator("json", updateScenarioBodySchema),
   async (c) => {
+    const user = c.get("user");
     const { scenarioId } = c.req.valid("param");
+
     const { toneIds: newToneIds, ...updateScenarioParams } =
       c.req.valid("json");
-    const user = c.get("user");
 
     const foundScenario = await db.query.scenario.findFirst({
       where: (scenario, { eq, and }) =>
@@ -61,70 +62,77 @@ updateScenarioRoute.patch(
       });
     }
 
-    let createdScenarioVersionId: string | null = null;
+    const { updatedScenario, createdScenarioVersion } = await db.transaction(
+      async (tx) => {
+        const updateScenarioPromises: Promise<any>[] = [];
 
-    const updatedScenario = await db.transaction(async (tx) => {
-      const updateScenarioPromises: Promise<any>[] = [];
+        if (newToneIds) {
+          const oldToneIds = foundScenario.scenarioToTone.map(
+            ({ toneId }) => toneId,
+          );
 
-      if (newToneIds) {
-        const oldToneIds = foundScenario.scenarioToTone.map(
-          ({ toneId }) => toneId,
+          const createToneIds = difference(newToneIds, oldToneIds);
+          const deleteToneIds = difference(oldToneIds, newToneIds);
+
+          if (createToneIds.length > 0) {
+            updateScenarioPromises.push(
+              tx.insert(scenarioToTone).values(
+                createToneIds.map((toneId) => ({
+                  scenarioId,
+                  toneId,
+                })),
+              ),
+            );
+          }
+
+          if (deleteToneIds.length > 0) {
+            updateScenarioPromises.push(
+              tx
+                .delete(scenarioToTone)
+                .where(
+                  and(
+                    eq(scenarioToTone.scenarioId, scenarioId),
+                    inArray(scenarioToTone.toneId, deleteToneIds),
+                  ),
+                ),
+            );
+          }
+        }
+
+        const [[updatedScenario], [createdScenarioVersion]] = await Promise.all(
+          [
+            tx
+              .update(scenario)
+              .set(updateScenarioParams)
+              .where(
+                and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
+              )
+              .returning(),
+            tx.insert(scenarioVersion).values({ scenarioId }).returning(),
+            ...updateScenarioPromises,
+          ],
         );
 
-        const createToneIds = difference(newToneIds, oldToneIds);
-        const deleteToneIds = difference(oldToneIds, newToneIds);
+        return {
+          updatedScenario,
+          createdScenarioVersion,
+        };
+      },
+    );
 
-        if (createToneIds.length > 0) {
-          updateScenarioPromises.push(
-            tx.insert(scenarioToTone).values(
-              createToneIds.map((toneId) => ({
-                scenarioId,
-                toneId,
-              })),
-            ),
-          );
-        }
-
-        if (deleteToneIds.length > 0) {
-          updateScenarioPromises.push(
-            tx
-              .delete(scenarioToTone)
-              .where(
-                and(
-                  eq(scenarioToTone.scenarioId, scenarioId),
-                  inArray(scenarioToTone.toneId, deleteToneIds),
-                ),
-              ),
-          );
-        }
-      }
-
-      const [[updatedScenario], [_newScenarioVersion]] = await Promise.all([
-        tx
-          .update(scenario)
-          .set(updateScenarioParams)
-          .where(and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)))
-          .returning(),
-        tx.insert(scenarioVersion).values({ scenarioId }).returning(),
-        ...updateScenarioPromises,
-      ]);
-
-      createdScenarioVersionId = _newScenarioVersion.id;
-
-      return updatedScenario;
-    });
-
-    if (createdScenarioVersionId) {
+    if (createdScenarioVersion) {
       await enqueueScenarioChaptersGeneration({
-        userId: user.id,
-        scenarioVersionId: createdScenarioVersionId,
-        source: "update",
+        scenarioId: foundScenario.id,
+        scenarioVersionId: createdScenarioVersion.id,
       });
     }
 
     return c.json<UpdateScenarioResponse>(
       updateScenarioResponseSchema.parse({
-        data: updatedScenario,
+        data: {
+          ...updatedScenario,
+          currentVersionId: createdScenarioVersion.id,
+        },
       }),
     );
   },
