@@ -4,6 +4,7 @@ import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/common/app-info";
+import { envs } from "@/constants/common/envs";
 import { db, schema } from "@/db";
 
 export type AuthType = {
@@ -11,7 +12,7 @@ export type AuthType = {
   session: typeof auth.$Infer.Session.session;
 };
 
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = envs.NODE_ENV === "production";
 
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,

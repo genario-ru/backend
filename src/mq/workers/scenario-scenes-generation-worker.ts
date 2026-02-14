@@ -117,12 +117,10 @@ export const scenarioScenesGenerationWorker =
           return createdScenarioScenes;
         });
 
-        await Promise.all(
-          createdScenarioScenes.map((scene) =>
-            enqueueScenarioSceneComponentsGeneration({
-              scenarioSceneId: scene.id,
-            }),
-          ),
+        createdScenarioScenes.map((scene) =>
+          enqueueScenarioSceneComponentsGeneration({
+            scenarioSceneId: scene.id,
+          }),
         );
       } catch (error) {
         console.error("Scenario scenes generation worker error", error);
@@ -146,3 +144,11 @@ export const scenarioScenesGenerationWorker =
       connection: redis,
     },
   );
+
+scenarioScenesGenerationWorker.on("error", (error) => {
+  console.error("Scenario scenes generation worker error", error);
+});
+
+scenarioScenesGenerationWorker.on("completed", (job) => {
+  console.log("Scenario scenes generation worker completed", job.id);
+});

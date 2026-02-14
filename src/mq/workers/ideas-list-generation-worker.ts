@@ -84,6 +84,8 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         prompt,
       });
 
+      console.log("Ideas list generation output", generatedIdeasRaw);
+
       const generatedIdeas = generatedIdeasRaw.slice(0, safeCount);
       const totalTokens = usage?.totalTokens ?? 0;
 
@@ -139,3 +141,11 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
     connection: redis,
   },
 );
+
+ideasListGenerationWorker.on("error", (error) => {
+  console.error("Ideas list generation worker error", error);
+});
+
+ideasListGenerationWorker.on("completed", (job) => {
+  console.log("Ideas list generation worker completed", job.id);
+});

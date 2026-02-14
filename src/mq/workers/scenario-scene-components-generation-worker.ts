@@ -167,3 +167,11 @@ export const scenarioSceneComponentsGenerationWorker =
       connection: redis,
     },
   );
+
+scenarioSceneComponentsGenerationWorker.on("error", (error) => {
+  console.error("Scenario scene components generation worker error", error);
+});
+
+scenarioSceneComponentsGenerationWorker.on("completed", (job) => {
+  console.log("Scenario scene components generation worker completed", job.id);
+});

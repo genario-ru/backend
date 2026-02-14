@@ -1,3 +1,4 @@
+import { envs } from "@/constants/common/envs";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
@@ -38,7 +39,7 @@ getMyReferralCodesRoute.get(
 
     const referralCodesWithUrl = referralCodes.map((referralCode) => ({
       ...referralCode,
-      referralUrl: `${process.env.WEB_APP_BASE_URL}/?referralCode=${referralCode.code}`,
+      referralUrl: `${envs.WEB_APP_BASE_URL}/?referralCode=${referralCode.code}`,
     }));
 
     return c.json<GetMyReferralCodesResponse>(

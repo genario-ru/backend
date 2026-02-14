@@ -1,9 +1,11 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
+import { envs } from "@/constants/common/envs";
+
 export const polza = createOpenAICompatible({
   name: "polza",
-  baseURL: process.env.POLZA_AI_BASE_URL!,
-  apiKey: process.env.POLZA_AI_API_KEY,
+  baseURL: envs.POLZA_AI_BASE_URL,
+  apiKey: envs.POLZA_AI_API_KEY,
   includeUsage: true,
   supportsStructuredOutputs: true,
 });

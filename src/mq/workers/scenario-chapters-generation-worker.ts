@@ -125,12 +125,10 @@ export const scenarioChaptersGenerationWorker =
           return createdScenarioChapters;
         });
 
-        await Promise.all(
-          scenarioChapters.map((chapter) =>
-            enqueueScenarioScenesGeneration({
-              scenarioChapterId: chapter.id,
-            }),
-          ),
+        scenarioChapters.map((chapter) =>
+          enqueueScenarioScenesGeneration({
+            scenarioChapterId: chapter.id,
+          }),
         );
       } catch (error) {
         console.error("Scenario chapters generation worker error", error);
@@ -154,3 +152,11 @@ export const scenarioChaptersGenerationWorker =
       connection: redis,
     },
   );
+
+scenarioChaptersGenerationWorker.on("error", (error) => {
+  console.error("Scenario chapters generation worker error", error);
+});
+
+scenarioChaptersGenerationWorker.on("completed", (job) => {
+  console.log("Scenario chapters generation worker completed", job.id);
+});
