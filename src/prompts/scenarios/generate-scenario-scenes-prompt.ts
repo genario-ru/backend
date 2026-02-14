@@ -24,10 +24,10 @@ export function generateScenarioScenesPrompt({
   } = context;
 
   return `
-    Instructions:
+    # Instructions:
     - Generate scenario scenes for the chapter based on provided context and data.
 
-    Context:
+    # Context:
     - Scenario name: "${scenarioName}";
     - Scenario description: "${scenarioDescription}";
     - Scenario target audience: "${scenarioTargetAudience}";
@@ -36,7 +36,7 @@ export function generateScenarioScenesPrompt({
     - Chapter start time: ${chapterStartTime};
     - Chapter end time: ${chapterEndTime}.
 
-    Rules:
+    # Rules:
     - First scene must start at ${chapterStartTime}, last scene must end at ${chapterEndTime};
     - Each scene must have a unique angle;
     - Start/end time must be integers in seconds within chapter range;

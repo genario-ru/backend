@@ -39,33 +39,34 @@ export function generateIdeasListPrompt({
   const { ideasCount } = settings;
 
   const prompt = `
-    Generate ${ideasCount} video ideas.
+    # Instructions:
+    - Generate ${ideasCount} video ideas based on provided context and data.
 
-    Context:
-    Ideas list name: "${name}";
-    Ideas list description: "${description}";
-    Target audience: "${targetAudience}";
-    Template name: "${templateName}";
-    Template description: "${templateDescription}";
-    Profile name: "${profileName}";
-    Profile description: "${profileDescription}";
-    Tones: ${tones?.join(", ")};
-    Video types: ${videoTypes?.map(({ id, name }) => `- ${id}: ${name}`).join("\n")}.
+    # Context:
+    - Ideas list user prompt: "${userPrompt}";
+    - Ideas list name: "${name}";
+    - Ideas list description: "${description}";
+    - Ideas list description: "${description}";
+    - Ideas list target audience: "${targetAudience}";
+    - Ideas list template name: "${templateName}";
+    - Ideas list template description: "${templateDescription}";
+    - Ideas list profile name: "${profileName}";
+    - Ideas list profile description: "${profileDescription}";
+    - Ideas list tones: ${tones?.join(", ")};
+    - Ideas list video types: ${videoTypes?.map((videoType) => videoType.name).join("\n")};
 
-    User prompt: "${userPrompt}";
+    # Data:
+    - Available video types: ${JSON.stringify(videoTypes)};
 
-    Instructions:
-    - Do NOT invent new tones or video types;
-    - Do NOT reuse the same video type for all ideas;
-    - Do NOT return explanations or comments;
-    - Do NOT wrap the response in markdown or other formatting;
-    - Do NOT ask any additional questions;
-    - Follow the provided output schema exactly;
+    # Rules:
     - Each idea must have a unique angle;
     - Title must be short (max 80 chars);
     - Description must explain the core hook and be detailed;
-    - Choose the MOST relevant video type for each idea;
-    - If you see that some field value has value null, undefined, empty string, etc., just ignore such field;
+    - Choose the MOST relevant video type for each idea.
+
+    # Constraints:
+    - Do NOT invent new tones or video types;
+    - Do NOT reuse the same video type for all ideas;
   `;
 
   return prompt;

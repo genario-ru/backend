@@ -84,9 +84,10 @@ export const scenarioChaptersGenerationWorker =
           }),
           system: systemPrompt(),
           prompt,
+          onFinish: (data) => {
+            console.log("Scenario chapters generation finished", data.response);
+          },
         });
-
-        console.log("Scenario chapters generation output", generatedChapters);
 
         const scenarioChapters = await db.transaction(async (tx) => {
           const createdScenarioChapters = await tx
@@ -155,6 +156,14 @@ export const scenarioChaptersGenerationWorker =
 
 scenarioChaptersGenerationWorker.on("error", (error) => {
   console.error("Scenario chapters generation worker error", error);
+});
+
+scenarioChaptersGenerationWorker.on("failed", (job, error) => {
+  console.error(
+    "Scenario chapters generation worker failed",
+    job?.toJSON(),
+    error,
+  );
 });
 
 scenarioChaptersGenerationWorker.on("completed", (job) => {

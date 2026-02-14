@@ -49,7 +49,11 @@ getScenarioChapterRoute.get(
         scenes: {
           orderBy: (scenarioScene, { asc }) => [asc(scenarioScene.startTime)],
           with: {
-            components: true,
+            components: {
+              with: {
+                type: true,
+              },
+            },
           },
         },
       },

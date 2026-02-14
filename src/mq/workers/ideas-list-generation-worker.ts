@@ -82,9 +82,10 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         }),
         system: systemPrompt(),
         prompt,
+        onFinish: (data) => {
+          console.log("Ideas list generation finished", data.response);
+        },
       });
-
-      console.log("Ideas list generation output", generatedIdeasRaw);
 
       const generatedIdeas = generatedIdeasRaw.slice(0, safeCount);
       const totalTokens = usage?.totalTokens ?? 0;
@@ -144,6 +145,10 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
 ideasListGenerationWorker.on("error", (error) => {
   console.error("Ideas list generation worker error", error);
+});
+
+ideasListGenerationWorker.on("failed", (job, error) => {
+  console.error("Ideas list generation worker failed", job?.toJSON(), error);
 });
 
 ideasListGenerationWorker.on("completed", (job) => {

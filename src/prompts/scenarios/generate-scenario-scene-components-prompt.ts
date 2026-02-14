@@ -39,10 +39,10 @@ export function generateScenarioSceneComponentsPrompt({
   } = context;
 
   return `
-    Instructions:
+    # Instructions:
     - Generate components for the scene based on provided context and data.
 
-    Context:
+    # Context:
     - Scenario name: "${scenarioName}";
     - Scenario description: "${scenarioDescription}";
     - Scenario target audience: "${scenarioTargetAudience}";
@@ -55,10 +55,10 @@ export function generateScenarioSceneComponentsPrompt({
     - Scene start time: ${sceneStartTime};
     - Scene end time: ${sceneEndTime}.
 
-    Data:
+    # Data:
     - Available scene component types: ${JSON.stringify(availableSceneComponentTypes)};
 
-    Rules:
+    # Rules:
     - Each component must have a unique name;
     - Only return components that are available in the available scene component types list;
     - If scene component is optional, it can be omitted.

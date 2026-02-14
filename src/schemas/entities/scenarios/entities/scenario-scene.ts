@@ -4,7 +4,7 @@ import * as z from "zod";
 import { scenarioScene } from "@/db/schema";
 
 import { scenariosRegistry } from "../registry";
-import { scenarioSceneComponentSchema } from "./scenario-scene-component";
+import { scenarioSceneComponentExtendedSchema } from "./scenario-scene-component";
 
 export const scenarioSceneSchema = createSelectSchema(scenarioScene).register(
   scenariosRegistry,
@@ -35,7 +35,7 @@ export type ScenarioSceneGenerated = z.infer<
 
 export const scenarioSceneExtendedSchema = scenarioSceneSchema
   .extend({
-    components: z.array(scenarioSceneComponentSchema),
+    components: z.array(scenarioSceneComponentExtendedSchema),
   })
   .register(scenariosRegistry, {
     title: "Scenario scene extended",

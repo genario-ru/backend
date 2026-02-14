@@ -108,12 +108,13 @@ export const scenarioSceneComponentsGenerationWorker =
           }),
           system: systemPrompt(),
           prompt,
+          onFinish: (data) => {
+            console.log(
+              "Scenario scene components generation finished",
+              data.response,
+            );
+          },
         });
-
-        console.log(
-          "Scenario scene components generation output",
-          generatedScenarioSceneComponents,
-        );
 
         await db.transaction(async (tx) => {
           const createdScenarioSceneComponents = await tx
@@ -170,6 +171,14 @@ export const scenarioSceneComponentsGenerationWorker =
 
 scenarioSceneComponentsGenerationWorker.on("error", (error) => {
   console.error("Scenario scene components generation worker error", error);
+});
+
+scenarioSceneComponentsGenerationWorker.on("failed", (job, error) => {
+  console.error(
+    "Scenario scene components generation worker failed",
+    job?.toJSON(),
+    error,
+  );
 });
 
 scenarioSceneComponentsGenerationWorker.on("completed", (job) => {

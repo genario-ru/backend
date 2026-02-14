@@ -36,10 +36,10 @@ export function generateScenarioChaptersPrompt({
   } = context;
 
   return `
-    Instructions:
+    # Instructions:
     - Generate scenario chapters based on provided context and data.
 
-    Context:
+    # Context:
     - Scenario name: "${scenarioName}";
     - Scenario description: "${scenarioDescription}";
     - Scenario target audience: "${scenarioTargetAudience}";
@@ -54,7 +54,7 @@ export function generateScenarioChaptersPrompt({
     - Scenario maximum duration seconds: ${scenarioMaximumDurationSeconds};
     - Scenario tones: ${scenarioTones?.join(", ")}.
 
-    Rules:
+    # Rules:
     - First chapter must start at ${scenarioMinimumDurationSeconds}, last chapter must end at ${scenarioMaximumDurationSeconds};
     - Each chapter must have a unique angle;
     - Chapters must be in chronological order and not overlap.
