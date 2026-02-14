@@ -24,27 +24,22 @@ export function generateScenarioScenesPrompt({
   } = context;
 
   return `
-    Generate scenes for the chapter.
+    Instructions:
+    - Generate scenario scenes for the chapter based on provided context and data.
 
     Context:
-    Scenario name: "${scenarioName}";
-    Scenario description: "${scenarioDescription}";
-    Target audience: "${scenarioTargetAudience}";
+    - Scenario name: "${scenarioName}";
+    - Scenario description: "${scenarioDescription}";
+    - Scenario target audience: "${scenarioTargetAudience}";
+    - Chapter name: "${chapterName}";
+    - Chapter description: "${chapterDescription}";
+    - Chapter start time: ${chapterStartTime};
+    - Chapter end time: ${chapterEndTime}.
 
-    Chapter:
-    Name: "${chapterName}";
-    Description: "${chapterDescription}";
-    Start time: ${chapterStartTime};
-    End time: ${chapterEndTime};
-
-    Instructions:
-    - Do NOT return explanations or comments.
-    - Do NOT wrap the response in markdown.
-    - Each scene must have a unique angle.
-    - Start/end time must be integers in seconds within chapter range.
+    Rules:
+    - First scene must start at ${chapterStartTime}, last scene must end at ${chapterEndTime};
+    - Each scene must have a unique angle;
+    - Start/end time must be integers in seconds within chapter range;
     - Scenes must be in chronological order and not overlap.
-    - First scene must start at ${chapterStartTime}, last scene must end at ${chapterEndTime}.
-    - Return valid JSON only with shape:
-      {"scenes":[{"name": "...","description": "...","startTime": 0,"endTime": 10,"badges": null}]}
   `;
 }

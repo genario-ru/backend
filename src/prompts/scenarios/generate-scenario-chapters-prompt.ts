@@ -36,29 +36,27 @@ export function generateScenarioChaptersPrompt({
   } = context;
 
   return `
-    Generate scenario chapters.
+    Instructions:
+    - Generate scenario chapters based on provided context and data.
 
     Context:
-    Scenario name: "${scenarioName}";
-    Scenario description: "${scenarioDescription}";
-    Target audience: "${scenarioTargetAudience}";
-    Template name: "${scenarioTemplateName}";
-    Template description: "${scenarioTemplateDescription}";
-    Profile name: "${scenarioProfileName}";
-    Profile description: "${scenarioProfileDescription}";
-    Platform: "${scenarioPlatformName}";
-    Video type: "${scenarioVideoTypeName}";
-    Video duration: "${scenarioVideoDurationName}";
-    Tones: ${scenarioTones?.join(", ")};
-    Minimum duration seconds: ${scenarioMinimumDurationSeconds};
-    Maximum duration seconds: ${scenarioMaximumDurationSeconds};
+    - Scenario name: "${scenarioName}";
+    - Scenario description: "${scenarioDescription}";
+    - Scenario target audience: "${scenarioTargetAudience}";
+    - Scenario template name: "${scenarioTemplateName}";
+    - Scenario template description: "${scenarioTemplateDescription}";
+    - Scenario profile name: "${scenarioProfileName}";
+    - Scenario profile description: "${scenarioProfileDescription}";
+    - Scenario platform name: "${scenarioPlatformName}";
+    - Scenario video type name: "${scenarioVideoTypeName}";
+    - Scenario video duration name: "${scenarioVideoDurationName}";
+    - Scenario minimum duration seconds: ${scenarioMinimumDurationSeconds};
+    - Scenario maximum duration seconds: ${scenarioMaximumDurationSeconds};
+    - Scenario tones: ${scenarioTones?.join(", ")}.
 
-    Instructions:
-    - Do NOT invent new tones or options.
-    - Do NOT return explanations or comments.
-    - Do NOT wrap the response in markdown.
-    - Each chapter must have a unique angle.
+    Rules:
+    - First chapter must start at ${scenarioMinimumDurationSeconds}, last chapter must end at ${scenarioMaximumDurationSeconds};
+    - Each chapter must have a unique angle;
     - Chapters must be in chronological order and not overlap.
-    - Return valid JSON only.
   `;
 }

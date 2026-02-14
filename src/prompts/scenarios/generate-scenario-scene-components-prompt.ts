@@ -35,35 +35,32 @@ export function generateScenarioSceneComponentsPrompt({
     sceneDescription,
     sceneStartTime,
     sceneEndTime,
+    availableSceneComponentTypes,
   } = context;
 
   return `
-    Generate components for the scene.
+    Instructions:
+    - Generate components for the scene based on provided context and data.
 
     Context:
-    Scenario name: "${scenarioName}";
-    Scenario description: "${scenarioDescription}";
-    Target audience: "${scenarioTargetAudience}";
+    - Scenario name: "${scenarioName}";
+    - Scenario description: "${scenarioDescription}";
+    - Scenario target audience: "${scenarioTargetAudience}";
+    - Chapter name: "${chapterName}";
+    - Chapter description: "${chapterDescription}";
+    - Chapter start time: ${chapterStartTime};
+    - Chapter end time: ${chapterEndTime};
+    - Scene name: "${sceneName}";
+    - Scene description: "${sceneDescription}";
+    - Scene start time: ${sceneStartTime};
+    - Scene end time: ${sceneEndTime}.
 
-    Chapter:
-    Name: "${chapterName}";
-    Description: "${chapterDescription}";
-    Start time: ${chapterStartTime};
-    End time: ${chapterEndTime};
+    Data:
+    - Available scene component types: ${JSON.stringify(availableSceneComponentTypes)};
 
-    Scene:
-    Name: "${sceneName}";
-    Description: "${sceneDescription}";
-    Start time: ${sceneStartTime};
-    End time: ${sceneEndTime};
-
-    Instructions:
-    - Do NOT return explanations or comments.
-    - Do NOT wrap the response in markdown.
-    - Each component must have a unique name.
-    - Components must be in chronological order and not overlap.
-    - Only return components that are available in the availableSceneComponentTypes array.
-    - If component is optional, it can be omitted.
-    - Return valid JSON only.
+    Rules:
+    - Each component must have a unique name;
+    - Only return components that are available in the available scene component types list;
+    - If scene component is optional, it can be omitted.
   `;
 }
