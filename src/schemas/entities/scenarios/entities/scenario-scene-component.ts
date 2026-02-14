@@ -1,10 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 
-import {
-  scenarioSceneComponent,
-  scenarioSceneComponentType,
-} from "@/db/schema";
+import { scenarioSceneComponent } from "@/db/schema";
 
 import { scenariosRegistry } from "../registry";
 import { scenarioSceneComponentTypeSchema } from "./scenario-scene-component-type";
@@ -33,7 +30,7 @@ export type ScenarioSceneComponentGenerated = z.infer<
 >;
 
 export const scenarioSceneComponentExtendedSchema = createSelectSchema(
-  scenarioSceneComponentType,
+  scenarioSceneComponent,
 )
   .extend({
     type: scenarioSceneComponentTypeSchema,
