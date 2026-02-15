@@ -55,6 +55,11 @@ export const scenarioSceneComponentsGenerationWorker =
           return;
         }
 
+        await db
+          .update(scenarioScene)
+          .set({ status: "generation" })
+          .where(eq(scenarioScene.id, scenarioSceneId));
+
         const scenarioSceneComponentTypes =
           await db.query.scenarioSceneComponentType.findMany();
 
