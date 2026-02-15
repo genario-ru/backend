@@ -99,7 +99,6 @@ export const scenarioChaptersGenerationWorker =
                 description: chapter.description,
                 startTime: chapter.startTime,
                 endTime: chapter.endTime,
-                status: "generation" as const,
               })),
             )
             .returning();

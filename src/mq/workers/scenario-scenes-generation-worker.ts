@@ -88,7 +88,6 @@ export const scenarioScenesGenerationWorker =
                 startTime: scene.startTime,
                 endTime: scene.endTime,
                 badges: scene.badges ?? null,
-                status: "ready" as const,
               })),
             )
             .returning();
