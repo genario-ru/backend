@@ -1,0 +1,112 @@
+import { validator } from "hono-openapi";
+
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
+import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { APIErrorCode } from "@/schemas/common/api-error";
+import { getScenarioCurrentVersionParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-current-version/params";
+import {
+  type GetScenarioCurrentVersionResponse,
+  getScenarioCurrentVersionResponseSchema,
+} from "@/schemas/entities/scenarios/handlers/get-scenario-current-version/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
+
+export const getScenarioCurrentVersionRoute = createHonoApp().basePath(
+  "/scenarios/:scenarioId/current-version",
+);
+
+// GET /api/v1/scenarios/{scenarioId}/current-version
+getScenarioCurrentVersionRoute.get(
+  "/",
+  sessionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Scenarios],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Scenario current version retrieved successfully",
+        schema: getScenarioCurrentVersionResponseSchema,
+      }),
+    },
+  }),
+  validator("param", getScenarioCurrentVersionParamsSchema),
+  async (c) => {
+    const { scenarioId } = c.req.valid("param");
+    const user = c.get("user");
+
+    const scenario = await db.query.scenario.findFirst({
+      where: (scenario, { eq, and }) =>
+        and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
+    });
+
+    if (!scenario) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный сценарий не существует или у вас нет возможности просматривать его",
+      });
+    }
+
+    const currentVersionId = scenario.currentVersionId;
+
+    if (!currentVersionId) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Текущая версия сценария не найдена",
+      });
+    }
+
+    const version = await db.query.scenarioVersion.findFirst({
+      where: (scenarioVersion, { eq, and }) =>
+        and(
+          eq(scenarioVersion.id, currentVersionId),
+          eq(scenarioVersion.scenarioId, scenarioId),
+        ),
+      with: {
+        scenario: {
+          with: {
+            profile: true,
+            platform: true,
+            videoType: true,
+            videoDuration: true,
+            scenarioToTone: {
+              with: { tone: true },
+            },
+          },
+        },
+        chapters: {
+          orderBy: (scenarioChapter, { asc }) => [
+            asc(scenarioChapter.startTime),
+          ],
+        },
+      },
+    });
+
+    if (!version) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Версия сценария не найдена",
+      });
+    }
+
+    const { scenarioToTone, ...scenarioData } = version.scenario;
+    const { scenario: _scenario, ...versionData } = version;
+
+    return c.json<GetScenarioCurrentVersionResponse>(
+      getScenarioCurrentVersionResponseSchema.parse({
+        data: {
+          ...versionData,
+          profile: scenarioData.profile,
+          platform: scenarioData.platform,
+          videoType: scenarioData.videoType,
+          videoDuration: scenarioData.videoDuration,
+          tones: scenarioToTone.map((item) => item.tone),
+          scenarioChapters: versionData.chapters,
+        },
+      }),
+    );
+  },
+);
