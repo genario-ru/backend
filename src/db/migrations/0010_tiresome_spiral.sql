@@ -1,0 +1,2 @@
+ALTER TABLE "scenario_scene_component_type" ALTER COLUMN "slug" DROP DEFAULT;--> statement-breakpoint
+ALTER TABLE "scenario_scene_component_type" ADD CONSTRAINT "scenario_scene_component_type_slug_unique" UNIQUE("slug");

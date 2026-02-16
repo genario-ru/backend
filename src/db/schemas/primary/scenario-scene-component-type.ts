@@ -8,7 +8,7 @@ export const scenarioSceneComponentType = pgTable(
   "scenario_scene_component_type",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    slug: text("slug").default("slug").notNull(),
+    slug: text("slug").unique().notNull(),
     name: text("name").notNull(),
     description: text("description"),
     icon: text("icon"),
