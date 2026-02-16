@@ -1,0 +1,1 @@
+ALTER TABLE "scenario_scene_component_type" ADD COLUMN "slug" text DEFAULT 'slug' NOT NULL;

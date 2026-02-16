@@ -64,6 +64,13 @@
       "when": 1770833676699,
       "tag": "0008_last_ironclad",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1771248811596,
+      "tag": "0009_deep_zeigeist",
+      "breakpoints": true
     }
   ]
 }
