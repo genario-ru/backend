@@ -19,11 +19,17 @@ export type ScenarioSceneComponent = z.infer<
 >;
 
 export const scenarioSceneComponentGeneratedSchema =
-  scenarioSceneComponentSchema.pick({
-    name: true,
-    content: true,
-    typeId: true,
-  });
+  scenarioSceneComponentSchema
+    .pick({
+      name: true,
+      content: true,
+      typeId: true,
+    })
+    .extend({
+      content: scenarioSceneComponentSchema.shape.content.describe(
+        "Markdown formatted text for the scene component content.",
+      ),
+    });
 
 export type ScenarioSceneComponentGenerated = z.infer<
   typeof scenarioSceneComponentGeneratedSchema

@@ -42,6 +42,9 @@ export const scenarioSceneComponentsGenerationWorker =
                 scenarioVersion: {
                   with: {
                     scenario: true,
+                    chapters: {
+                      with: { scenes: { with: { components: true } } },
+                    },
                   },
                 },
               },
@@ -80,6 +83,18 @@ export const scenarioSceneComponentsGenerationWorker =
 
         const { scenarioChapter: foundScenarioChapter } = foundScenarioScene;
 
+        const {
+          scenarioChaptersTimeline,
+          chapterScenesTimeline,
+          scenePositionInChapter,
+          alreadyGeneratedComponentsFromPreviousScenes,
+        } = buildSceneComponentsGenerationContext({
+          chapters: foundScenarioChapter.scenarioVersion.chapters,
+          currentChapterId: foundScenarioChapter.id,
+          currentSceneId: foundScenarioScene.id,
+          currentSceneStartTime: foundScenarioScene.startTime,
+        });
+
         const prompt = generateScenarioSceneComponentsPrompt({
           context: {
             scenarioName:
@@ -97,6 +112,10 @@ export const scenarioSceneComponentsGenerationWorker =
             sceneDescription: foundScenarioScene.description ?? "",
             sceneStartTime: foundScenarioScene.startTime ?? 0,
             sceneEndTime: foundScenarioScene.endTime ?? 0,
+            scenarioChaptersTimeline,
+            chapterScenesTimeline,
+            scenePositionInChapter,
+            alreadyGeneratedComponentsFromPreviousScenes,
             availableSceneComponentTypes,
           },
         });
@@ -189,3 +208,91 @@ scenarioSceneComponentsGenerationWorker.on("failed", (job, error) => {
 scenarioSceneComponentsGenerationWorker.on("completed", (job) => {
   console.log("Scenario scene components generation worker completed", job.id);
 });
+
+type ChapterWithScenesAndComponents = {
+  id: string;
+  name: string;
+  startTime: number;
+  endTime: number;
+  scenes: {
+    id: string;
+    name: string;
+    description: string | null;
+    startTime: number;
+    endTime: number;
+    components: {
+      name: string;
+      typeId: string;
+      content: string | null;
+    }[];
+  }[];
+};
+
+function buildSceneComponentsGenerationContext({
+  chapters,
+  currentChapterId,
+  currentSceneId,
+  currentSceneStartTime,
+}: {
+  chapters: ChapterWithScenesAndComponents[];
+  currentChapterId: string;
+  currentSceneId: string;
+  currentSceneStartTime: number;
+}) {
+  const scenarioChaptersTimeline = chapters
+    .map((chapter) => ({
+      id: chapter.id,
+      name: chapter.name,
+      startTime: chapter.startTime,
+      endTime: chapter.endTime,
+    }))
+    .sort((a, b) => a.startTime - b.startTime);
+
+  const currentChapter = chapters.find(
+    (chapter) => chapter.id === currentChapterId,
+  );
+  const chapterScenes = currentChapter?.scenes ?? [];
+
+  const chapterScenesTimeline = chapterScenes
+    .map((scene) => ({
+      id: scene.id,
+      name: scene.name,
+      description: scene.description,
+      startTime: scene.startTime,
+      endTime: scene.endTime,
+    }))
+    .sort((a, b) => a.startTime - b.startTime);
+
+  const currentSceneIndex = chapterScenesTimeline.findIndex(
+    (scene) => scene.id === currentSceneId,
+  );
+
+  const scenePositionInChapter =
+    currentSceneIndex >= 0
+      ? {
+          index: currentSceneIndex + 1,
+          total: chapterScenesTimeline.length,
+        }
+      : undefined;
+
+  const alreadyGeneratedComponentsFromPreviousScenes = chapterScenes
+    .filter((scene) => scene.startTime < currentSceneStartTime)
+    .sort((a, b) => a.startTime - b.startTime)
+    .map((scene) => ({
+      sceneId: scene.id,
+      sceneName: scene.name,
+      components: scene.components.map((component) => ({
+        name: component.name,
+        typeId: component.typeId,
+        content: component.content,
+      })),
+    }))
+    .filter((scene) => scene.components.length > 0);
+
+  return {
+    scenarioChaptersTimeline,
+    chapterScenesTimeline,
+    scenePositionInChapter,
+    alreadyGeneratedComponentsFromPreviousScenes,
+  };
+}

@@ -32,7 +32,10 @@ export const scenarioScenesGenerationWorker =
             eq(scenarioChapter.id, scenarioChapterId),
           with: {
             scenarioVersion: {
-              with: { scenario: true },
+              with: {
+                scenario: true,
+                chapters: { with: { scenes: true } },
+              },
             },
           },
         });
@@ -46,6 +49,12 @@ export const scenarioScenesGenerationWorker =
           .set({ status: "generation" })
           .where(eq(scenarioChapter.id, scenarioChapterId));
 
+        const { scenarioChaptersTimeline, alreadyGeneratedScenesByChapter } =
+          buildScenesGenerationContext(
+            foundScenarioChapter.scenarioVersion.chapters,
+            foundScenarioChapter.id,
+          );
+
         const prompt = generateScenarioScenesPrompt({
           context: {
             scenarioName: foundScenarioChapter.scenarioVersion.scenario.name,
@@ -57,6 +66,8 @@ export const scenarioScenesGenerationWorker =
             chapterDescription: foundScenarioChapter.description,
             chapterStartTime: foundScenarioChapter.startTime,
             chapterEndTime: foundScenarioChapter.endTime,
+            scenarioChaptersTimeline,
+            alreadyGeneratedScenesByChapter,
           },
         });
 
@@ -157,3 +168,55 @@ scenarioScenesGenerationWorker.on("failed", (job, error) => {
 scenarioScenesGenerationWorker.on("completed", (job) => {
   console.log("Scenario scenes generation worker completed", job.id);
 });
+
+type ChapterWithScenes = {
+  id: string;
+  name: string;
+  description: string | null;
+  startTime: number;
+  endTime: number;
+  scenes: {
+    id: string;
+    name: string;
+    description: string | null;
+    startTime: number;
+    endTime: number;
+  }[];
+};
+
+function buildScenesGenerationContext(
+  chapters: ChapterWithScenes[],
+  currentChapterId: string,
+) {
+  const scenarioChaptersTimeline = chapters
+    .map((chapter) => ({
+      id: chapter.id,
+      name: chapter.name,
+      description: chapter.description,
+      startTime: chapter.startTime,
+      endTime: chapter.endTime,
+    }))
+    .sort((a, b) => a.startTime - b.startTime);
+
+  const alreadyGeneratedScenesByChapter = chapters
+    .filter((chapter) => chapter.id !== currentChapterId)
+    .map((chapter) => ({
+      chapterId: chapter.id,
+      chapterName: chapter.name,
+      scenes: chapter.scenes
+        .map((scene) => ({
+          id: scene.id,
+          name: scene.name,
+          description: scene.description,
+          startTime: scene.startTime,
+          endTime: scene.endTime,
+        }))
+        .sort((a, b) => a.startTime - b.startTime),
+    }))
+    .filter((chapter) => chapter.scenes.length > 0);
+
+  return {
+    scenarioChaptersTimeline,
+    alreadyGeneratedScenesByChapter,
+  };
+}

@@ -7,6 +7,24 @@ type GenerateScenarioScenesPromptProps = {
     chapterDescription?: string | null;
     chapterStartTime: number;
     chapterEndTime: number;
+    scenarioChaptersTimeline?: {
+      id: string;
+      name: string;
+      description?: string | null;
+      startTime: number;
+      endTime: number;
+    }[];
+    alreadyGeneratedScenesByChapter?: {
+      chapterId: string;
+      chapterName: string;
+      scenes: {
+        id: string;
+        name: string;
+        description?: string | null;
+        startTime: number;
+        endTime: number;
+      }[];
+    }[];
   };
 };
 
@@ -21,6 +39,8 @@ export function generateScenarioScenesPrompt({
     chapterDescription,
     chapterStartTime,
     chapterEndTime,
+    scenarioChaptersTimeline,
+    alreadyGeneratedScenesByChapter,
   } = context;
 
   return `
@@ -36,10 +56,15 @@ export function generateScenarioScenesPrompt({
     - Chapter start time: ${chapterStartTime};
     - Chapter end time: ${chapterEndTime}.
 
+    # Data:
+    - Scenario chapters timeline: ${JSON.stringify(scenarioChaptersTimeline ?? [])};
+    - Already generated scenes for other chapters: ${JSON.stringify(alreadyGeneratedScenesByChapter ?? [])};
+
     # Rules:
     - First scene must start at ${chapterStartTime}, last scene must end at ${chapterEndTime};
     - Each scene must have a unique angle;
     - Start/end time must be integers in seconds within chapter range;
-    - Scenes must be in chronological order and not overlap.
+    - Scenes must be in chronological order and not overlap;
+    - Keep narrative continuity with full scenario timeline and avoid repeating the same scene intent that already exists in other chapters.
   `;
 }
