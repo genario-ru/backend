@@ -8,8 +8,8 @@ import { db } from "@/db";
 import { aiGenerationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
 import { polza } from "@/lib/ai/providers/polza";
 import { redis } from "@/lib/redis";
-import { generateScenarioChaptersPrompt } from "@/prompts/scenarios/generate-scenario-chapters-prompt";
-import { systemPrompt } from "@/prompts/system/system-prompt";
+import { generateScenarioChaptersPrompt } from "@/prompts/en/scenarios/generate-scenario-chapters-prompt";
+import { systemPrompt } from "@/prompts/ru/system/system-prompt";
 import { scenarioChapterGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-chapter";
 
 import {
