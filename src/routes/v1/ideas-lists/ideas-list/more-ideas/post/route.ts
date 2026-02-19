@@ -66,8 +66,6 @@ generateMoreIdeasRoute.post(
       ideasListId,
       userId: user.id,
       userPrompt,
-      count: 4,
-      source: "update",
     });
 
     return c.json<GenerateMoreIdeasResponse>(

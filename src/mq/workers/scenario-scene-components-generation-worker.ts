@@ -13,7 +13,7 @@ import {
 import { polza } from "@/lib/ai/providers/polza";
 import { redis } from "@/lib/redis";
 import { generateScenarioSceneComponentsPrompt } from "@/prompts/en/scenarios/generate-scenario-scene-components-prompt";
-import { systemPrompt } from "@/prompts/ru/system/system-prompt";
+import { systemPrompt } from "@/prompts/en/system/system-prompt";
 import { scenarioSceneComponentGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-scene-component";
 
 import {
@@ -43,7 +43,11 @@ export const scenarioSceneComponentsGenerationWorker =
                   with: {
                     scenario: true,
                     chapters: {
-                      with: { scenes: { with: { components: true } } },
+                      with: {
+                        scenes: {
+                          with: { components: true },
+                        },
+                      },
                     },
                   },
                 },
@@ -58,11 +62,6 @@ export const scenarioSceneComponentsGenerationWorker =
           return;
         }
 
-        await db
-          .update(scenarioScene)
-          .set({ status: "generation" })
-          .where(eq(scenarioScene.id, scenarioSceneId));
-
         const scenarioSceneComponentTypes =
           await db.query.scenarioSceneComponentType.findMany();
 
@@ -72,51 +71,40 @@ export const scenarioSceneComponentsGenerationWorker =
           return;
         }
 
-        const availableSceneComponentTypes = scenarioSceneComponentTypes.map(
-          ({ id, name, description, optional }) => ({
-            id,
-            name,
-            description,
-            optional,
-          }),
-        );
+        await db
+          .update(scenarioScene)
+          .set({ status: "generation" })
+          .where(eq(scenarioScene.id, scenarioSceneId));
 
-        const { scenarioChapter: foundScenarioChapter } = foundScenarioScene;
-
-        const {
-          scenarioChaptersTimeline,
-          chapterScenesTimeline,
-          scenePositionInChapter,
-          alreadyGeneratedComponentsFromPreviousScenes,
-        } = buildSceneComponentsGenerationContext({
-          chapters: foundScenarioChapter.scenarioVersion.chapters,
-          currentChapterId: foundScenarioChapter.id,
-          currentSceneId: foundScenarioScene.id,
-          currentSceneStartTime: foundScenarioScene.startTime,
-        });
+        const previousGeneratedScenes =
+          foundScenarioScene.scenarioChapter.scenarioVersion.chapters
+            .flatMap((chapter) => chapter.scenes)
+            .filter((scene) => scene.id !== scenarioSceneId)
+            .sort((a, b) => a.startTime - b.startTime)
+            .slice(-3);
 
         const prompt = generateScenarioSceneComponentsPrompt({
           context: {
             scenarioName:
-              foundScenarioChapter.scenarioVersion.scenario.name ?? "",
+              foundScenarioScene.scenarioChapter.scenarioVersion.scenario
+                .name ?? "",
             scenarioDescription:
-              foundScenarioChapter.scenarioVersion.scenario.description ?? "",
+              foundScenarioScene.scenarioChapter.scenarioVersion.scenario
+                .description ?? "",
             scenarioTargetAudience:
-              foundScenarioChapter.scenarioVersion.scenario.targetAudience ??
-              "",
-            chapterName: foundScenarioChapter.name ?? "",
-            chapterDescription: foundScenarioChapter.description ?? "",
-            chapterStartTime: foundScenarioChapter.startTime ?? 0,
-            chapterEndTime: foundScenarioChapter.endTime ?? 0,
+              foundScenarioScene.scenarioChapter.scenarioVersion.scenario
+                .targetAudience ?? "",
+            chapterName: foundScenarioScene.scenarioChapter.name ?? "",
+            chapterDescription:
+              foundScenarioScene.scenarioChapter.description ?? "",
+            chapterStartTime: foundScenarioScene.scenarioChapter.startTime ?? 0,
+            chapterEndTime: foundScenarioScene.scenarioChapter.endTime ?? 0,
             sceneName: foundScenarioScene.name ?? "",
             sceneDescription: foundScenarioScene.description ?? "",
             sceneStartTime: foundScenarioScene.startTime ?? 0,
             sceneEndTime: foundScenarioScene.endTime ?? 0,
-            scenarioChaptersTimeline,
-            chapterScenesTimeline,
-            scenePositionInChapter,
-            alreadyGeneratedComponentsFromPreviousScenes,
-            availableSceneComponentTypes,
+            availableSceneComponentTypes: scenarioSceneComponentTypes,
+            previousGeneratedScenes,
           },
         });
 
@@ -208,95 +196,3 @@ scenarioSceneComponentsGenerationWorker.on("failed", (job, error) => {
 scenarioSceneComponentsGenerationWorker.on("completed", (job) => {
   console.log("Scenario scene components generation worker completed", job.id);
 });
-
-type ChapterWithScenesAndComponents = {
-  id: string;
-  name: string;
-  startTime: number;
-  endTime: number;
-  scenes: {
-    id: string;
-    name: string;
-    description: string | null;
-    startTime: number;
-    endTime: number;
-    components: {
-      name: string;
-      typeId: string;
-      content: string | null;
-    }[];
-  }[];
-};
-
-const MAX_PREVIOUS_SCENES_FOR_CONTINUITY = 3;
-const MAX_COMPONENT_CONTENT_CHARS = 800;
-
-function buildSceneComponentsGenerationContext({
-  chapters,
-  currentChapterId,
-  currentSceneId,
-  currentSceneStartTime,
-}: {
-  chapters: ChapterWithScenesAndComponents[];
-  currentChapterId: string;
-  currentSceneId: string;
-  currentSceneStartTime: number;
-}) {
-  const scenarioChaptersTimeline = chapters
-    .map((chapter) => ({
-      id: chapter.id,
-      name: chapter.name,
-      startTime: chapter.startTime,
-      endTime: chapter.endTime,
-    }))
-    .sort((a, b) => a.startTime - b.startTime);
-
-  const currentChapter = chapters.find(
-    (chapter) => chapter.id === currentChapterId,
-  );
-  const chapterScenes = currentChapter?.scenes ?? [];
-
-  const chapterScenesTimeline = chapterScenes
-    .map((scene) => ({
-      id: scene.id,
-      name: scene.name,
-      description: scene.description,
-      startTime: scene.startTime,
-      endTime: scene.endTime,
-    }))
-    .sort((a, b) => a.startTime - b.startTime);
-
-  const currentSceneIndex = chapterScenesTimeline.findIndex(
-    (scene) => scene.id === currentSceneId,
-  );
-
-  const scenePositionInChapter =
-    currentSceneIndex >= 0
-      ? {
-        index: currentSceneIndex + 1,
-        total: chapterScenesTimeline.length,
-      }
-      : undefined;
-
-  const alreadyGeneratedComponentsFromPreviousScenes = chapterScenes
-    .filter((scene) => scene.startTime < currentSceneStartTime)
-    .sort((a, b) => a.startTime - b.startTime)
-    .slice(-MAX_PREVIOUS_SCENES_FOR_CONTINUITY)
-    .map((scene) => ({
-      sceneId: scene.id,
-      sceneName: scene.name,
-      components: scene.components.map((component) => ({
-        name: component.name,
-        typeId: component.typeId,
-        content: component.content?.slice(0, MAX_COMPONENT_CONTENT_CHARS) ?? null,
-      })),
-    }))
-    .filter((scene) => scene.components.length > 0);
-
-  return {
-    scenarioChaptersTimeline,
-    chapterScenesTimeline,
-    scenePositionInChapter,
-    alreadyGeneratedComponentsFromPreviousScenes,
-  };
-}

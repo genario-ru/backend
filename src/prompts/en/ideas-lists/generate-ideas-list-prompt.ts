@@ -1,62 +1,62 @@
 type GenerateIdeasListPromptProps = {
   userPrompt?: string | null;
-  context: {
-    name?: string | null;
-    description?: string | null;
-    targetAudience?: string | null;
-    templateName?: string | null;
-    templateDescription?: string | null;
-    profileName?: string | null;
-    profileDescription?: string | null;
-    tones?: string[];
-    videoTypes?: {
+  ideasCount?: number | null;
+  ideasListName?: string | null;
+  ideasListDescription?: string | null;
+  ideasListTargetAudience?: string | null;
+  ideasListTemplateName?: string | null;
+  ideasListTemplateDescription?: string | null;
+  ideasListProfileName?: string | null;
+  ideasListProfileDescription?: string | null;
+  ideasListTones?: string[] | null;
+  ideasListVideoTypes?: {
+    id: string;
+    name: string;
+  }[];
+  previousGeneratedIdeas?: {
+    name: string | null;
+    description: string | null;
+    videoType: {
       id: string;
       name: string;
-    }[];
-  };
-  settings: {
-    ideasCount: number;
-  };
+    };
+  }[];
 };
 
 export function generateIdeasListPrompt({
   userPrompt,
-  settings,
-  context,
+  ideasCount,
+  ideasListName,
+  ideasListDescription,
+  ideasListTargetAudience,
+  ideasListTemplateName,
+  ideasListTemplateDescription,
+  ideasListProfileName,
+  ideasListProfileDescription,
+  ideasListTones,
+  ideasListVideoTypes,
+  previousGeneratedIdeas,
 }: GenerateIdeasListPromptProps) {
-  const {
-    name,
-    description,
-    targetAudience,
-    templateName,
-    templateDescription,
-    profileName,
-    profileDescription,
-    tones,
-    videoTypes,
-  } = context;
-
-  const { ideasCount } = settings;
-
   const prompt = `
     # Instructions:
-    - Generate ${ideasCount} video ideas based on provided context and data.
+    - Generate ${ideasCount} video ideas based on the provided context and data.
+    - Ideas must be unique and different from the previous generated ideas.
 
     # Context:
     - Ideas list user prompt: "${userPrompt}";
-    - Ideas list name: "${name}";
-    - Ideas list description: "${description}";
-    - Ideas list description: "${description}";
-    - Ideas list target audience: "${targetAudience}";
-    - Ideas list template name: "${templateName}";
-    - Ideas list template description: "${templateDescription}";
-    - Ideas list profile name: "${profileName}";
-    - Ideas list profile description: "${profileDescription}";
-    - Ideas list tones: ${tones?.join(", ")};
-    - Ideas list video types: ${videoTypes?.map((videoType) => videoType.name).join("\n")};
+    - Ideas list name: "${ideasListName}";
+    - Ideas list description: "${ideasListDescription}";
+    - Ideas list target audience: "${ideasListTargetAudience}";
+    - Ideas list template name: "${ideasListTemplateName}";
+    - Ideas list template description: "${ideasListTemplateDescription}";
+    - Ideas list profile name: "${ideasListProfileName}";
+    - Ideas list profile description: "${ideasListProfileDescription}";
+    - Ideas list tones: ${ideasListTones?.join(", ")};
+    - Ideas list video types: ${ideasListVideoTypes?.map((videoType) => videoType.name).join(", ")};
 
     # Data:
-    - Available video types: ${JSON.stringify(videoTypes)};
+    - Available video types: ${JSON.stringify(ideasListVideoTypes)};
+    - Previous generated ideas: ${JSON.stringify(previousGeneratedIdeas)};
 
     # Rules:
     - Each idea must have a unique angle;

@@ -11,37 +11,24 @@ type GenerateScenarioSceneComponentsPromptProps = {
     sceneDescription: string;
     sceneStartTime: number;
     sceneEndTime: number;
-    scenarioChaptersTimeline?: {
-      id: string;
-      name: string;
-      startTime: number;
-      endTime: number;
-    }[];
-    chapterScenesTimeline?: {
-      id: string;
-      name: string;
-      description?: string | null;
-      startTime: number;
-      endTime: number;
-    }[];
-    scenePositionInChapter?: {
-      index: number;
-      total: number;
-    };
-    alreadyGeneratedComponentsFromPreviousScenes?: {
-      sceneId: string;
-      sceneName: string;
-      components: {
-        name: string;
-        typeId: string;
-        content?: string | null;
-      }[];
-    }[];
     availableSceneComponentTypes: {
       id: string;
       name: string;
       description: string | null;
       optional: boolean;
+    }[];
+    previousGeneratedScenes?: {
+      id: string;
+      name: string;
+      description?: string | null;
+      startTime: number;
+      endTime: number;
+      components?: {
+        id: string;
+        name: string;
+        typeId: string;
+        content?: string | null;
+      }[];
     }[];
   };
 };
@@ -61,11 +48,8 @@ export function generateScenarioSceneComponentsPrompt({
     sceneDescription,
     sceneStartTime,
     sceneEndTime,
-    scenarioChaptersTimeline,
-    chapterScenesTimeline,
-    scenePositionInChapter,
-    alreadyGeneratedComponentsFromPreviousScenes,
     availableSceneComponentTypes,
+    previousGeneratedScenes,
   } = context;
 
   return `
@@ -89,10 +73,7 @@ export function generateScenarioSceneComponentsPrompt({
     - Scene end time: ${sceneEndTime}.
 
     # Data:
-    - Scenario chapters timeline: ${JSON.stringify(scenarioChaptersTimeline ?? [])};
-    - Chapter scenes timeline: ${JSON.stringify(chapterScenesTimeline ?? [])};
-    - Current scene position in chapter: ${JSON.stringify(scenePositionInChapter ?? null)};
-    - Already generated components from previous scenes: ${JSON.stringify(alreadyGeneratedComponentsFromPreviousScenes ?? [])};
+    - Previous generated scenes: ${JSON.stringify(previousGeneratedScenes ?? [])};
     - Available scene component types: ${JSON.stringify(availableSceneComponentTypes)};
 
     # Rules:

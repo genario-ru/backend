@@ -8,8 +8,8 @@ import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
 import { polza } from "@/lib/ai/providers/polza";
 import { redis } from "@/lib/redis";
+import { generateIdeasListPrompt } from "@/prompts/en/ideas-lists/generate-ideas-list-prompt";
 import { systemPrompt } from "@/prompts/en/system/system-prompt";
-import { generateIdeasListPrompt } from "@/prompts/ru/ideas-lists/generate-ideas-list-prompt";
 import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import {
@@ -17,11 +17,12 @@ import {
   type IdeasListGenerationJobData,
 } from "../queues/ideas-list-generation-queue";
 
+const IDEAS_PER_LIST_COUNT = 4;
+
 export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
   IDEAS_LIST_GENERATION_QUEUE_NAME,
   async (job) => {
-    const { ideasListId, userPrompt, count } = job.data;
-    const safeCount = Math.min(count, 20);
+    const { ideasListId, userPrompt } = job.data;
 
     try {
       const foundIdeasList = await db.query.ideasList.findFirst({
@@ -29,6 +30,9 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         with: {
           profile: true,
           template: true,
+          ideas: {
+            with: { videoType: true },
+          },
           ideasListToTone: {
             with: { tone: true },
           },
@@ -39,6 +43,8 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       });
 
       if (!foundIdeasList) {
+        console.warn(`Ideas list with id ${ideasListId} was not found`);
+
         return;
       }
 
@@ -49,29 +55,35 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
       const prompt = generateIdeasListPrompt({
         userPrompt,
-        settings: {
-          ideasCount: safeCount,
-        },
-        context: {
-          name: foundIdeasList.name,
-          description: foundIdeasList.description,
-          targetAudience: foundIdeasList.targetAudience,
-          templateName: foundIdeasList.template?.name,
-          templateDescription: foundIdeasList.template?.description,
-          profileName: foundIdeasList.profile?.name,
-          profileDescription: foundIdeasList.profile?.description,
-          tones: foundIdeasList.ideasListToTone.map(({ tone }) => tone.name),
-          videoTypes: foundIdeasList.ideasListToVideoType.map(
-            ({ videoType }) => ({
-              id: videoType.id,
-              name: videoType.name,
-            }),
-          ),
-        },
+        ideasCount: IDEAS_PER_LIST_COUNT,
+        ideasListName: foundIdeasList.name,
+        ideasListDescription: foundIdeasList.description,
+        ideasListTargetAudience: foundIdeasList.targetAudience,
+        ideasListTemplateName: foundIdeasList.template?.name,
+        ideasListTemplateDescription: foundIdeasList.template?.description,
+        ideasListProfileName: foundIdeasList.profile?.name,
+        ideasListProfileDescription: foundIdeasList.profile?.description,
+        ideasListTones: foundIdeasList.ideasListToTone.map(
+          ({ tone }) => tone.name,
+        ),
+        ideasListVideoTypes: foundIdeasList.ideasListToVideoType.map(
+          ({ videoType }) => ({
+            id: videoType.id,
+            name: videoType.name,
+          }),
+        ),
+        previousGeneratedIdeas: foundIdeasList.ideas.map((idea) => ({
+          name: idea.name,
+          description: idea.description,
+          videoType: {
+            id: idea.videoTypeId,
+            name: idea.videoType?.name,
+          },
+        })),
       });
 
       const {
-        output: { ideas: generatedIdeasRaw },
+        output: { ideas: generatedIdeas },
         usage,
       } = await generateText({
         model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
@@ -87,9 +99,6 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         },
       });
 
-      const generatedIdeas = generatedIdeasRaw.slice(0, safeCount);
-      const totalTokens = usage?.totalTokens ?? 0;
-
       await db.transaction(async (tx) => {
         const createdIdeas = await tx
           .insert(idea)
@@ -97,21 +106,19 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             generatedIdeas.map((generatedIdea) => ({
               ideasListId,
               videoTypeId: generatedIdea.videoTypeId,
-              name: generatedIdea.name ?? "Идея",
-              description: generatedIdea.description ?? null,
+              name: generatedIdea.name,
+              description: generatedIdea.description,
             })),
           )
           .returning();
 
         if (createdIdeas.length > 0) {
-          const entityType = "idea" as const;
-
           await tx.insert(aiGenerationLog).values({
-            entityType,
+            entityType: "idea" as const,
             entityId: foundIdeasList.id,
             prompt,
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            tokens: totalTokens,
+            tokens: usage?.totalTokens ?? 0,
           });
         }
 

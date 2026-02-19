@@ -70,8 +70,6 @@ createIdeasListRoute.post(
     await enqueueIdeasListGeneration({
       ideasListId: createdIdeasList.id,
       userId: user.id,
-      count: 4,
-      source: "create",
     });
 
     return c.json<CreateIdeasListResponse>(

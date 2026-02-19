@@ -7,17 +7,13 @@ type GenerateScenarioScenesPromptProps = {
     chapterDescription?: string | null;
     chapterStartTime: number;
     chapterEndTime: number;
-    scenarioChaptersTimeline?: {
+    previousGeneratedChapters?: {
       id: string;
       name: string;
       description?: string | null;
       startTime: number;
       endTime: number;
-    }[];
-    alreadyGeneratedScenesByChapter?: {
-      chapterId: string;
-      chapterName: string;
-      scenes: {
+      scenes?: {
         id: string;
         name: string;
         description?: string | null;
@@ -39,8 +35,7 @@ export function generateScenarioScenesPrompt({
     chapterDescription,
     chapterStartTime,
     chapterEndTime,
-    scenarioChaptersTimeline,
-    alreadyGeneratedScenesByChapter,
+    previousGeneratedChapters,
   } = context;
 
   return `
@@ -57,8 +52,7 @@ export function generateScenarioScenesPrompt({
     - Chapter end time: ${chapterEndTime}.
 
     # Data:
-    - Scenario chapters timeline: ${JSON.stringify(scenarioChaptersTimeline ?? [])};
-    - Already generated scenes for other chapters: ${JSON.stringify(alreadyGeneratedScenesByChapter ?? [])};
+    - Previous generated chapters: ${JSON.stringify(previousGeneratedChapters)};
 
     # Rules:
     - First scene must start at ${chapterStartTime}, last scene must end at ${chapterEndTime};

@@ -8,8 +8,6 @@ export type IdeasListGenerationJobData = {
   ideasListId: string;
   userId: string;
   userPrompt?: string | null;
-  count: number;
-  source: "create" | "update" | "manual";
 };
 
 export const ideasListGenerationQueue = new Queue<IdeasListGenerationJobData>(

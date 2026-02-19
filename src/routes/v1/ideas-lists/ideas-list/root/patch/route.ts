@@ -181,8 +181,6 @@ updateIdeasListRoute.patch(
       await enqueueIdeasListGeneration({
         ideasListId,
         userId: user.id,
-        count: 4,
-        source: "update",
       });
     }
 
