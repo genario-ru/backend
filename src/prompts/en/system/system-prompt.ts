@@ -84,6 +84,9 @@ export function systemPrompt() {
     - If output field requires selection from a list, choose ONLY from the provided list in "Data" section;
     - Generated content must be in the same language as the language of the input data;
     - Generated content must be natural for the target audience and not sound like a translation;
+    - If you generate scenes and/or scene components, preserve continuous narrative flow between adjacent scenes without noticeable "thought resets";
+    - For voice-over, host speech and subtitles, avoid repeated greetings, repeated intro phrases, and the same templated opening for every scene;
+    - For text that will be spoken or shown to the viewer, prioritize natural conversational flow over rigid template-like structure;
     - If you see that some field value has value null, undefined, empty string, etc., just ignore such field;
     - Return valid JSON only based on the provided output schema;
 

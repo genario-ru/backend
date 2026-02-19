@@ -228,6 +228,9 @@ type ChapterWithScenesAndComponents = {
   }[];
 };
 
+const MAX_PREVIOUS_SCENES_FOR_CONTINUITY = 3;
+const MAX_COMPONENT_CONTENT_CHARS = 800;
+
 function buildSceneComponentsGenerationContext({
   chapters,
   currentChapterId,
@@ -270,21 +273,22 @@ function buildSceneComponentsGenerationContext({
   const scenePositionInChapter =
     currentSceneIndex >= 0
       ? {
-          index: currentSceneIndex + 1,
-          total: chapterScenesTimeline.length,
-        }
+        index: currentSceneIndex + 1,
+        total: chapterScenesTimeline.length,
+      }
       : undefined;
 
   const alreadyGeneratedComponentsFromPreviousScenes = chapterScenes
     .filter((scene) => scene.startTime < currentSceneStartTime)
     .sort((a, b) => a.startTime - b.startTime)
+    .slice(-MAX_PREVIOUS_SCENES_FOR_CONTINUITY)
     .map((scene) => ({
       sceneId: scene.id,
       sceneName: scene.name,
       components: scene.components.map((component) => ({
         name: component.name,
         typeId: component.typeId,
-        content: component.content,
+        content: component.content?.slice(0, MAX_COMPONENT_CONTENT_CHARS) ?? null,
       })),
     }))
     .filter((scene) => scene.components.length > 0);
