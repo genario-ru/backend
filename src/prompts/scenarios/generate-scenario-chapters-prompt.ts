@@ -55,8 +55,11 @@ export function generateScenarioChaptersPrompt({
     - Scenario tones: ${scenarioTones?.join(", ")}.
 
     # Rules:
-    - First chapter must start at ${scenarioMinimumDurationSeconds}, last chapter must end at ${scenarioMaximumDurationSeconds};
+    - Scenario timeline always starts at 0 seconds, so first chapter must start at 0;
+    - Last chapter must end at ${scenarioMaximumDurationSeconds};
+    - Every chapter start/end must be an integer number of seconds within [0, ${scenarioMaximumDurationSeconds}];
     - Each chapter must have a unique angle;
-    - Chapters must be in chronological order and not overlap.
+    - Chapters must be in chronological order and not overlap;
+    - Use ONLY one language consistently inside the whole output: the same dominant language as the input context, without mixing languages inside chapter names/descriptions.
   `;
 }

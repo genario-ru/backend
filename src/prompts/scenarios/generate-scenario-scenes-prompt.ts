@@ -59,6 +59,7 @@ export function generateScenarioScenesPrompt({
     - Each scene must have a unique angle;
     - Start/end time must be integers in seconds within chapter range;
     - Scenes must be in chronological order and not overlap;
-    - Keep narrative continuity with full scenario timeline and avoid repeating the same scene intent that already exists in other chapters.
+    - Keep narrative continuity with full scenario timeline and avoid repeating the same scene intent that already exists in other chapters;
+    - Use ONLY one language consistently inside the whole output: the same dominant language as the input context, without mixing languages inside scene names/descriptions.
   `;
 }

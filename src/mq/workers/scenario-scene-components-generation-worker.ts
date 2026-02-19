@@ -12,8 +12,8 @@ import {
 } from "@/db/schema";
 import { polza } from "@/lib/ai/providers/polza";
 import { redis } from "@/lib/redis";
-import { generateScenarioSceneComponentsPrompt } from "@/prompts/en/scenarios/generate-scenario-scene-components-prompt";
-import { systemPrompt } from "@/prompts/en/system/system-prompt";
+import { generateScenarioSceneComponentsPrompt } from "@/prompts/scenarios/generate-scenario-scene-components-prompt";
+import { systemPrompt } from "@/prompts/system/system-prompt";
 import { scenarioSceneComponentGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-scene-component";
 
 import {

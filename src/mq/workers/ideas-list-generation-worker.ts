@@ -8,8 +8,8 @@ import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
 import { polza } from "@/lib/ai/providers/polza";
 import { redis } from "@/lib/redis";
-import { generateIdeasListPrompt } from "@/prompts/en/ideas-lists/generate-ideas-list-prompt";
-import { systemPrompt } from "@/prompts/en/system/system-prompt";
+import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
+import { systemPrompt } from "@/prompts/system/system-prompt";
 import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import {

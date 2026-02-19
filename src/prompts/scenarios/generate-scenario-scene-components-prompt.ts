@@ -80,12 +80,15 @@ export function generateScenarioSceneComponentsPrompt({
     - Each component must have a unique name;
     - Only return components that are available in the available scene component types list;
     - If scene component is optional, it can be omitted;
-    - For text components that are spoken or shown to the viewer (voice-over / narration / subtitles), content must be natural flowing prose in 1-3 paragraphs, not checklists, not headings, not templates;
+    - Use ONLY one language consistently in every generated component content: the same dominant language as the input context; never mix languages in one component;
+    - For text components that are spoken or shown to the viewer (voice-over / narration / subtitles), content must be natural flowing prose in 2-4 short paragraphs separated by empty lines in Markdown, not checklists, not headings, not templates;
+    - Each spoken/shown paragraph should contain 1-3 sentences and be readable out loud without rewriting;
     - For those spoken/shown text components, NEVER restart the communication with greetings or repeated intro phrases ("hello", "welcome back", etc.) unless current scene is explicitly the first scene in chapter;
     - For those spoken/shown text components, first sentence should smoothly continue the previous thought if previous scene data exists;
     - Avoid repetitive sentence skeletons across neighboring scenes: vary openings, syntax, rhythm, and transition words;
     - Do not re-explain the same point from previous scenes unless adding a new angle, contrast, consequence, or example;
     - Keep wording concrete and vivid for the target audience; avoid bureaucratic or generic filler;
+    - Do not return components with empty or whitespace-only content; if you cannot produce meaningful content for a component, omit this component entirely;
     - For non-spoken utility components (for example goals, checklists, production notes), Markdown structure can be used.
   `;
 }
