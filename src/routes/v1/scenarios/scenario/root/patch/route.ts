@@ -9,7 +9,6 @@ import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
-// import { enqueueScenarioScenePreviewGeneration } from "@/mq/queues/scenario-scene-preview-generation-queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario/body";
 import { updateScenarioParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario/params";
@@ -126,11 +125,6 @@ updateScenarioRoute.patch(
         scenarioId: foundScenario.id,
         scenarioVersionId: createdScenarioVersion.id,
       });
-
-      // await enqueueScenarioScenePreviewGeneration({
-      //   scenarioId: foundScenario.id,
-      //   scenarioVersionId: createdScenarioVersion.id,
-      // });
     }
 
     return c.json<UpdateScenarioResponse>(

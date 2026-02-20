@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { profileAttachment } from "./profile-attachment";
-import { scenarioScene } from "./scenario-scene";
+import { scenarioScenePreview } from "./scenario-scene-preview";
 import { user } from "./user";
 
 export const attachment = pgTable("attachment", {
@@ -11,12 +11,9 @@ export const attachment = pgTable("attachment", {
   userId: uuid("user_id")
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
-  storageProvider: text("storage_provider").notNull(),
-  storageBucket: text("storage_bucket").notNull(),
-  storageKey: text("storage_key").notNull(),
-  fileName: text("file_name").notNull(),
-  fileBytesSize: integer("file_bytes_size").notNull(),
-  fileMimeType: text("file_mime_type").notNull(),
+  key: text("key").notNull(),
+  bucketName: text("bucket_name").notNull(),
+  mimeType: text("mime_type").notNull(),
   ...timestamps,
 });
 
@@ -26,5 +23,5 @@ export const attachmentRelations = relations(attachment, ({ one, many }) => ({
     references: [user.id],
   }),
   profileAttachments: many(profileAttachment),
-  scenarioScenes: many(scenarioScene),
+  scenarioScenePreviews: many(scenarioScenePreview),
 }));

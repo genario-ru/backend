@@ -1,11 +1,15 @@
 import { generateImage } from "ai";
 import { Worker } from "bullmq";
+import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
+import { attachment, scenarioScenePreview } from "@/db/schema";
 import { vsellm } from "@/lib/ai/providers/vsellm";
 import { redis } from "@/lib/redis";
-import { generateScenarioPreviewPrompt } from "@/prompts/scenarios/generate-scenario-scene-preview-prompt";
+import { createS3Key } from "@/lib/s3/utils/create-s3-key";
+import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";
+import { generateScenarioScenePreviewPrompt } from "@/prompts/scenarios/generate-scenario-scene-preview-prompt";
 
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
@@ -16,49 +20,116 @@ export const scenarioScenePreviewsGenerationWorker =
   new Worker<ScenarioScenePreviewGenerationJobData>(
     SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
     async (job) => {
-      const { scenarioId, scenarioVersionId } = job.data;
+      const { scenarioScenePreviewId } = job.data;
 
-      console.log("Scenario preview generation worker started", job.data);
+      console.log("Scenario scene preview generation worker started", job.data);
 
       try {
-        const foundScenario = await db.query.scenario.findFirst({
-          where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+        const foundPreview = await db.query.scenarioScenePreview.findFirst({
+          where: (preview, { eq }) => eq(preview.id, scenarioScenePreviewId),
+          with: {
+            scenarioScene: {
+              with: {
+                scenarioChapter: {
+                  with: {
+                    scenarioVersion: {
+                      with: {
+                        scenario: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         });
 
-        if (!foundScenario) {
-          console.warn(`Scenario not found: ${scenarioId}`);
+        if (!foundPreview) {
+          console.warn(
+            `Scenario scene preview not found: ${scenarioScenePreviewId}`,
+          );
 
           return;
         }
 
-        const prompt = generateScenarioPreviewPrompt({
-          context: {
-            scenarioName: foundScenario.name ?? "",
-            scenarioDescription: foundScenario.description ?? "",
-            scenarioTargetAudience: foundScenario.targetAudience ?? "",
-          },
+        const scene = foundPreview.scenarioScene;
+        const scenario = scene.scenarioChapter.scenarioVersion.scenario;
+
+        await db
+          .update(scenarioScenePreview)
+          .set({ status: "generation" })
+          .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
+
+        const prompt = generateScenarioScenePreviewPrompt({
+          scenarioName: scenario.name,
+          scenarioDescription: scenario.description,
+          scenarioTargetAudience: scenario.targetAudience,
+          chapterName: scene.scenarioChapter.name,
+          chapterDescription: scene.scenarioChapter.description,
+          sceneName: scene.name,
+          sceneDescription: scene.description,
+          sceneStartTime: scene.startTime,
+          sceneEndTime: scene.endTime,
         });
 
-        const { image, usage } = await generateImage({
+        const { image } = await generateImage({
           model: vsellm.imageModel(envs.VSELLM_IMAGE_MODEL),
           prompt,
           n: 1,
         });
 
-        console.log("Scenario preview generated:", {
-          scenarioId,
-          scenarioVersionId,
-          prompt,
-          usage,
-          imageBase64: image?.base64,
-          mediaType: image?.mediaType,
+        const s3Key = createS3Key({
+          userId: scenario.userId,
+          folderName: "scenario-scene-previews",
+          fileName: `${scenarioScenePreviewId}.png`,
+        });
+
+        await uploadBase64ToS3({
+          key: s3Key,
+          mimeType: image.mediaType,
+          base64: image.base64,
+        });
+
+        const [createdAttachment] = await db
+          .insert(attachment)
+          .values({
+            userId: scenario.userId,
+            key: s3Key,
+            bucketName: envs.S3_BUCKET_NAME,
+            mimeType: image.mediaType,
+          })
+          .returning();
+
+        await db
+          .update(scenarioScenePreview)
+          .set({
+            attachmentId: createdAttachment.id,
+            status: "ready",
+          })
+          .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
+
+        console.log("Scenario scene preview generated:", {
+          scenarioScenePreviewId,
+          attachmentId: createdAttachment.id,
         });
       } catch (error) {
         console.error(
-          "Scenario preview generation worker error",
-          scenarioId,
+          "Scenario scene preview generation worker error",
+          scenarioScenePreviewId,
           error,
         );
+
+        try {
+          await db
+            .update(scenarioScenePreview)
+            .set({ status: "failed" })
+            .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
+        } catch (updateError) {
+          console.error(
+            "Scenario scene preview generation worker failed to update status",
+            updateError,
+          );
+        }
 
         throw error;
       }

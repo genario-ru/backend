@@ -7,20 +7,15 @@ import { s3 } from "../client";
 
 type UploadBase64ToS3Params = {
   key: string;
-  base64Url: string;
+  mimeType: string;
+  base64: string;
 };
 
 export async function uploadBase64ToS3({
   key,
-  base64Url,
-}: UploadBase64ToS3Params) {
-  const matches = base64Url.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-
-  if (matches?.length !== 3) {
-    throw new Error("Invalid base64 URL");
-  }
-
-  const [, mimeType, base64] = matches;
+  mimeType,
+  base64,
+}: UploadBase64ToS3Params): Promise<string> {
   const buffer = Buffer.from(base64, "base64");
 
   const command = new PutObjectCommand({
@@ -32,7 +27,9 @@ export async function uploadBase64ToS3({
 
   await s3.send(command);
 
-  return getSignedUrl(s3, command, {
+  const url = await getSignedUrl(s3, command, {
     expiresIn: 3600 * 24,
   });
+
+  return url;
 }

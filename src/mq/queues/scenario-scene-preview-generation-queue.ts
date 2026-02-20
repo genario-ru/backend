@@ -6,8 +6,7 @@ export const SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME =
   "scenario-scene-preview-generation";
 
 export type ScenarioScenePreviewGenerationJobData = {
-  scenarioId: string;
-  scenarioVersionId: string;
+  scenarioScenePreviewId: string;
 };
 
 export const scenarioScenePreviewGenerationQueue =

@@ -2,9 +2,9 @@ import { relations } from "drizzle-orm";
 import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
-import { attachment } from "./attachment";
 import { scenarioChapter } from "./scenario-chapter";
 import { scenarioSceneComponent } from "./scenario-scene-component";
+import { scenarioScenePreview } from "./scenario-scene-preview";
 
 export const scenarioSceneStatus = pgEnum("scenario_scene_status", [
   "pending",
@@ -21,10 +21,6 @@ export const scenarioScene = pgTable("scenario_scene", {
       onDelete: "cascade",
     })
     .notNull(),
-  previewId: uuid("preview_id").references(() => attachment.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
   status: scenarioSceneStatus("status").default("pending").notNull(),
   name: text("name").notNull(),
   description: text("description"),
@@ -41,10 +37,7 @@ export const scenarioSceneRelations = relations(
       fields: [scenarioScene.scenarioChapterId],
       references: [scenarioChapter.id],
     }),
-    preview: one(attachment, {
-      fields: [scenarioScene.previewId],
-      references: [attachment.id],
-    }),
+    preview: one(scenarioScenePreview),
     components: many(scenarioSceneComponent),
   }),
 );

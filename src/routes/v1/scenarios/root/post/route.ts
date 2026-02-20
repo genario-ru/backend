@@ -8,7 +8,6 @@ import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
-// import { enqueueScenarioScenePreviewGeneration } from "@/mq/queues/scenario-scene-preview-generation-queue";
 import { createScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,
@@ -84,11 +83,6 @@ createScenarioRoute.post(
         scenarioId: createdScenario.id,
         scenarioVersionId: createdScenarioVersion.id,
       });
-
-      // await enqueueScenarioScenePreviewGeneration({
-      //   scenarioId: createdScenario.id,
-      //   scenarioVersionId: createdScenarioVersion.id,
-      // });
     }
 
     return c.json<CreateScenarioResponse>(

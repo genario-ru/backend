@@ -54,6 +54,7 @@ import {
 } from "@/routes/v1/referral";
 import {
   createScenarioRoute,
+  createScenarioScenePreviewRoute,
   deleteScenarioChapterRoute,
   deleteScenarioRoute,
   deleteScenarioSceneComponentRoute,
@@ -135,6 +136,7 @@ const appAPIv1RoutesList = [
   deleteScenarioChapterRoute,
   getScenarioChapterRoute,
   updateScenarioChapterRoute,
+  createScenarioScenePreviewRoute,
   deleteScenarioSceneRoute,
   updateScenarioSceneRoute,
   deleteScenarioSceneComponentRoute,
