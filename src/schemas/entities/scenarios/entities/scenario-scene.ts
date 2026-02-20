@@ -36,7 +36,7 @@ export type ScenarioSceneGenerated = z.infer<
 
 export const scenarioSceneExtendedSchema = scenarioSceneSchema
   .extend({
-    preview: scenarioScenePreviewSchema,
+    preview: scenarioScenePreviewSchema.nullable(),
     components: z.array(scenarioSceneComponentExtendedSchema),
   })
   .register(scenariosRegistry, {
