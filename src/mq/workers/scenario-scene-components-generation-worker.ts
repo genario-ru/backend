@@ -10,7 +10,7 @@ import {
   scenarioScene,
   scenarioSceneComponent,
 } from "@/db/schema";
-import { polza } from "@/lib/ai/providers/polza";
+import { vsellm } from "@/lib/ai/providers/vsellm";
 import { redis } from "@/lib/redis";
 import { generateScenarioSceneComponentsPrompt } from "@/prompts/scenarios/generate-scenario-scene-components-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -112,7 +112,7 @@ export const scenarioSceneComponentsGenerationWorker =
           output: { components: generatedScenarioSceneComponents },
           usage,
         } = await generateText({
-          model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
+          model: vsellm.languageModel(envs.VSELLM_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
             schema: z.object({
               components: z.array(scenarioSceneComponentGeneratedSchema),
@@ -123,7 +123,7 @@ export const scenarioSceneComponentsGenerationWorker =
           onFinish: (data) => {
             console.log(
               "Scenario scene components generation finished",
-              data.response,
+              data.response.id,
             );
           },
         });

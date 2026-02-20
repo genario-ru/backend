@@ -6,7 +6,7 @@ import * as z from "zod";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, scenarioChapter, scenarioScene } from "@/db/schema";
-import { polza } from "@/lib/ai/providers/polza";
+import { vsellm } from "@/lib/ai/providers/vsellm";
 import { redis } from "@/lib/redis";
 import { generateScenarioScenesPrompt } from "@/prompts/scenarios/generate-scenario-scenes-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -73,7 +73,7 @@ export const scenarioScenesGenerationWorker =
           output: { scenes: generatedScenarioScenes },
           usage,
         } = await generateText({
-          model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
+          model: vsellm.languageModel(envs.VSELLM_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
             schema: z.object({
               scenes: z.array(scenarioSceneGeneratedSchema),
@@ -82,7 +82,10 @@ export const scenarioScenesGenerationWorker =
           system: systemPrompt(),
           prompt,
           onFinish: (data) => {
-            console.log("Scenario scenes generation finished", data.response);
+            console.log(
+              "Scenario scenes generation finished",
+              data.response.id,
+            );
           },
         });
 

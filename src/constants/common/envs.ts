@@ -1,16 +1,38 @@
 import "dotenv/config";
 
 export const envs = {
+  // Env
   NODE_ENV: process.env.NODE_ENV ?? "development",
+
+  // Storage
   POSTGRES_URL: process.env.POSTGRES_URL,
   REDIS_URL: process.env.REDIS_URL,
+
+  // Auth
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+
+  // Polza AI
   POLZA_AI_BASE_URL: process.env.POLZA_AI_BASE_URL,
   POLZA_AI_API_KEY: process.env.POLZA_AI_API_KEY,
   POLZA_AI_STRUCTURED_OUTPUT_MODEL:
     process.env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
   POLZA_AI_IMAGE_MODEL: process.env.POLZA_AI_IMAGE_MODEL,
+
+  // Router AI
+  ROUTER_AI_BASE_URL: process.env.ROUTER_AI_BASE_URL,
+  ROUTER_AI_API_KEY: process.env.ROUTER_AI_API_KEY,
+  ROUTER_AI_STRUCTURED_OUTPUT_MODEL:
+    process.env.ROUTER_AI_STRUCTURED_OUTPUT_MODEL,
+  ROUTER_AI_IMAGE_MODEL: process.env.ROUTER_AI_IMAGE_MODEL,
+
+  // VseLLM
+  VSELLM_BASE_URL: process.env.VSELLM_BASE_URL,
+  VSELLM_API_KEY: process.env.VSELLM_API_KEY,
+  VSELLM_STRUCTURED_OUTPUT_MODEL: process.env.VSELLM_STRUCTURED_OUTPUT_MODEL,
+  VSELLM_IMAGE_MODEL: process.env.VSELLM_IMAGE_MODEL,
+
+  // Web urls
   WEB_APP_BASE_URL: process.env.WEB_APP_BASE_URL,
   LANDING_BASE_URL: process.env.LANDING_BASE_URL,
 } as Record<string, string>;

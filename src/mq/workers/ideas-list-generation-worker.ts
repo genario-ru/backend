@@ -6,7 +6,7 @@ import * as z from "zod";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
-import { polza } from "@/lib/ai/providers/polza";
+import { vsellm } from "@/lib/ai/providers/vsellm";
 import { redis } from "@/lib/redis";
 import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -86,7 +86,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         output: { ideas: generatedIdeas },
         usage,
       } = await generateText({
-        model: polza.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
+        model: vsellm.languageModel(envs.VSELLM_STRUCTURED_OUTPUT_MODEL),
         output: Output.object({
           schema: z.object({
             ideas: z.array(ideaGeneratedSchema),
@@ -95,7 +95,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         system: systemPrompt(),
         prompt,
         onFinish: (data) => {
-          console.log("Ideas list generation finished", data.response);
+          console.log("Ideas list generation finished", data.response.id);
         },
       });
 
