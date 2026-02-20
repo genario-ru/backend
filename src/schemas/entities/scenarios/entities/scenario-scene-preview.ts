@@ -7,10 +7,14 @@ import { scenariosRegistry } from "../registry";
 
 export const scenarioScenePreviewSchema = createSelectSchema(
   scenarioScenePreview,
-).register(scenariosRegistry, {
-  title: "Scenario scene preview",
-  description: "Scenario scene preview description",
-  ref: "ScenarioScenePreviewSchema",
-});
+)
+  .extend({
+    url: z.string().nullable(),
+  })
+  .register(scenariosRegistry, {
+    title: "Scenario scene preview",
+    description: "Scenario scene preview description",
+    ref: "ScenarioScenePreviewSchema",
+  });
 
 export type ScenarioScenePreview = z.infer<typeof scenarioScenePreviewSchema>;

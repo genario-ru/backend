@@ -78,7 +78,10 @@ createScenarioScenePreviewRoute.post(
     if (existingScene.preview) {
       return c.json<CreateScenarioScenePreviewResponse>(
         createScenarioScenePreviewResponseSchema.parse({
-          data: existingScene.preview,
+          data: {
+            ...existingScene.preview,
+            url: null,
+          },
         }),
         HTTPStatusCode.Ok,
       );

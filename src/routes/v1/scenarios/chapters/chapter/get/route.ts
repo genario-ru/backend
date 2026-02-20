@@ -3,6 +3,7 @@ import { validator } from "hono-openapi";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
@@ -49,7 +50,11 @@ getScenarioChapterRoute.get(
         scenes: {
           orderBy: (scenarioScene, { asc }) => [asc(scenarioScene.startTime)],
           with: {
-            preview: true,
+            preview: {
+              with: {
+                attachment: true,
+              },
+            },
             components: {
               with: {
                 type: true,
@@ -78,9 +83,31 @@ getScenarioChapterRoute.get(
     // Убираем вложенные данные для response
     const { scenarioVersion: _scenarioVersion, ...chapterData } = chapter;
 
+    const scenes = await Promise.all(
+      chapterData.scenes.map(async (scene) => {
+        if (!scene.preview?.attachment) {
+          return scene;
+        }
+
+        const { attachment: _attachment, ...preparedScenePreview } =
+          scene.preview;
+
+        return {
+          ...scene,
+          preview: {
+            ...preparedScenePreview,
+            url: await getSignedS3Url(scene.preview.attachment.key),
+          },
+        };
+      }),
+    );
+
     return c.json<GetScenarioChapterResponse>(
       getScenarioChapterResponseSchema.parse({
-        data: chapterData,
+        data: {
+          ...chapterData,
+          scenes,
+        },
       }),
     );
   },
