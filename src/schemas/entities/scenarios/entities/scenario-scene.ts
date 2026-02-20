@@ -5,6 +5,7 @@ import { scenarioScene } from "@/db/schema";
 
 import { scenariosRegistry } from "../registry";
 import { scenarioSceneComponentExtendedSchema } from "./scenario-scene-component";
+import { scenarioScenePreviewSchema } from "./scenario-scene-preview";
 
 export const scenarioSceneSchema = createSelectSchema(scenarioScene).register(
   scenariosRegistry,
@@ -35,6 +36,7 @@ export type ScenarioSceneGenerated = z.infer<
 
 export const scenarioSceneExtendedSchema = scenarioSceneSchema
   .extend({
+    preview: scenarioScenePreviewSchema,
     components: z.array(scenarioSceneComponentExtendedSchema),
   })
   .register(scenariosRegistry, {
