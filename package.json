@@ -20,6 +20,7 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "2.0.28",
     "@aws-sdk/client-s3": "^3.994.0",
+    "@aws-sdk/s3-request-presigner": "^3.995.0",
     "@bull-board/api": "^6.16.4",
     "@bull-board/hono": "^6.16.4",
     "@hono/node-server": "^1.19.3",

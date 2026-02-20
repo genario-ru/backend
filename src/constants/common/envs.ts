@@ -8,6 +8,13 @@ export const envs = {
   POSTGRES_URL: process.env.POSTGRES_URL,
   REDIS_URL: process.env.REDIS_URL,
 
+  // S3
+  S3_BUCKET_BASE_URL: process.env.S3_BUCKET_BASE_URL,
+  S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
+  S3_REGION: process.env.S3_REGION,
+  S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
+  S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+
   // Auth
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
