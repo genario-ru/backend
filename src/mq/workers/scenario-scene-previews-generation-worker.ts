@@ -32,11 +32,7 @@ export const scenarioScenePreviewsGenerationWorker =
               with: {
                 scenarioChapter: {
                   with: {
-                    scenarioVersion: {
-                      with: {
-                        scenario: true,
-                      },
-                    },
+                    scenarioVersion: true,
                   },
                 },
               },
@@ -53,7 +49,17 @@ export const scenarioScenePreviewsGenerationWorker =
         }
 
         const scene = foundPreview.scenarioScene;
-        const scenario = scene.scenarioChapter.scenarioVersion.scenario;
+        const scenarioId = scene.scenarioChapter.scenarioVersion.scenarioId;
+
+        const scenario = await db.query.scenario.findFirst({
+          where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+        });
+
+        if (!scenario) {
+          console.warn(`Scenario not found: ${scenarioId}`);
+
+          return;
+        }
 
         await db
           .update(scenarioScenePreview)
