@@ -4,15 +4,12 @@ import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/common/app-info";
-import { envs } from "@/constants/common/envs";
 import { db, schema } from "@/db";
 
 export type AuthType = {
   user: typeof auth.$Infer.Session.user;
   session: typeof auth.$Infer.Session.session;
 };
-
-const isProduction = envs.NODE_ENV === "production";
 
 export const auth = betterAuth({
   appName: APP_NAME_CAPITALIZED,
@@ -76,7 +73,7 @@ export const auth = betterAuth({
       generateId: false,
     },
     defaultCookieAttributes: {
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "none",
     },
     crossSubDomainCookies: {
       enabled: true,
