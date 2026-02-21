@@ -6,9 +6,11 @@ import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { attachment, scenarioScenePreview } from "@/db/schema";
 import { vsellm } from "@/lib/ai/providers/vsellm";
+import { compressBase64Image } from "@/lib/image/compress-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";
+import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { generateScenarioScenePreviewPrompt } from "@/prompts/scenarios/generate-scenario-scene-preview-prompt";
 
 import {
@@ -84,32 +86,60 @@ export const scenarioScenePreviewsGenerationWorker =
           n: 1,
         });
 
-        const s3Key = createS3Key({
+        const s3KeyOriginal = createS3Key({
           userId: scenario.userId,
           folderName: "scenario-scene-previews",
           fileName: `${scenarioScenePreviewId}.png`,
         });
 
+        const s3KeyCompressed = createS3Key({
+          userId: scenario.userId,
+          folderName: "scenario-scene-previews",
+          fileName: `${scenarioScenePreviewId}-compressed.webp`,
+        });
+
         await uploadBase64ToS3({
-          key: s3Key,
+          key: s3KeyOriginal,
           mimeType: image.mediaType,
           base64: image.base64,
         });
 
-        const [createdAttachment] = await db
-          .insert(attachment)
-          .values({
-            userId: scenario.userId,
-            key: s3Key,
-            bucketName: envs.S3_BUCKET_NAME,
-            mimeType: image.mediaType,
-          })
-          .returning();
+        const { buffer: compressedBuffer, mimeType: compressedMimeType } =
+          await compressBase64Image(image.base64);
+
+        await uploadBufferToS3({
+          key: s3KeyCompressed,
+          mimeType: compressedMimeType,
+          buffer: compressedBuffer,
+        });
+
+        const [[createdAttachment], [createdCompressedAttachment]] =
+          await Promise.all([
+            db
+              .insert(attachment)
+              .values({
+                userId: scenario.userId,
+                key: s3KeyOriginal,
+                bucketName: envs.S3_BUCKET_NAME,
+                mimeType: image.mediaType,
+              })
+              .returning(),
+            db
+              .insert(attachment)
+              .values({
+                userId: scenario.userId,
+                key: s3KeyCompressed,
+                bucketName: envs.S3_BUCKET_NAME,
+                mimeType: compressedMimeType,
+              })
+              .returning(),
+          ]);
 
         await db
           .update(scenarioScenePreview)
           .set({
             attachmentId: createdAttachment.id,
+            compressedAttachmentId: createdCompressedAttachment.id,
             status: "ready",
           })
           .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
@@ -117,6 +147,7 @@ export const scenarioScenePreviewsGenerationWorker =
         console.log("Scenario scene preview generated:", {
           scenarioScenePreviewId,
           attachmentId: createdAttachment.id,
+          compressedAttachmentId: createdCompressedAttachment.id,
         });
       } catch (error) {
         console.error(

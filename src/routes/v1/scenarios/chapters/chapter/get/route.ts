@@ -53,6 +53,7 @@ getScenarioChapterRoute.get(
             preview: {
               with: {
                 attachment: true,
+                compressedAttachment: true,
               },
             },
             components: {
@@ -89,25 +90,22 @@ getScenarioChapterRoute.get(
           return scene;
         }
 
-        const { attachment, ...preparedScenePreview } = scene.preview;
+        const { attachment, compressedAttachment, ...preparedScenePreview } =
+          scene.preview;
 
-        if (!attachment) {
-          return {
-            ...scene,
-            preview: {
-              ...preparedScenePreview,
-              url: null,
-            },
-          };
-        }
-
-        const url = await getSignedS3Url(attachment.key);
+        const [url, urlCompressed] = await Promise.all([
+          attachment ? getSignedS3Url(attachment.key) : null,
+          compressedAttachment
+            ? getSignedS3Url(compressedAttachment.key)
+            : null,
+        ]);
 
         return {
           ...scene,
           preview: {
             ...preparedScenePreview,
             url,
+            urlCompressed,
           },
         };
       }),

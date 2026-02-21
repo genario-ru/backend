@@ -10,6 +10,7 @@ export const scenarioScenePreviewSchema = createSelectSchema(
 )
   .extend({
     url: z.string().nullable(),
+    urlCompressed: z.string().nullable(),
   })
   .register(scenariosRegistry, {
     title: "Scenario scene preview",

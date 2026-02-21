@@ -23,5 +23,10 @@ export const attachmentRelations = relations(attachment, ({ one, many }) => ({
     references: [user.id],
   }),
   profileAttachments: many(profileAttachment),
-  scenarioScenePreviews: many(scenarioScenePreview),
+  scenarioScenePreviews: many(scenarioScenePreview, {
+    relationName: "previewOriginal",
+  }),
+  scenarioScenePreviewsCompressed: many(scenarioScenePreview, {
+    relationName: "previewCompressed",
+  }),
 }));

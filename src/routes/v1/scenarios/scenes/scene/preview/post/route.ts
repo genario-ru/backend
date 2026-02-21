@@ -55,6 +55,7 @@ createScenarioScenePreviewRoute.post(
         preview: {
           with: {
             attachment: true,
+            compressedAttachment: true,
           },
         },
       },
@@ -84,13 +85,20 @@ createScenarioScenePreviewRoute.post(
     }
 
     if (existingScene.preview) {
-      const { attachment, ...preparedPreview } = existingScene.preview;
+      const { attachment, compressedAttachment, ...preparedPreview } =
+        existingScene.preview;
+
+      const [url, urlCompressed] = await Promise.all([
+        attachment ? getSignedS3Url(attachment.key) : null,
+        compressedAttachment ? getSignedS3Url(compressedAttachment.key) : null,
+      ]);
 
       return c.json<CreateScenarioScenePreviewResponse>(
         createScenarioScenePreviewResponseSchema.parse({
           data: {
             ...preparedPreview,
-            url: attachment ? getSignedS3Url(attachment.key) : null,
+            url,
+            urlCompressed,
           },
         }),
         HTTPStatusCode.Ok,
@@ -111,6 +119,7 @@ createScenarioScenePreviewRoute.post(
         data: {
           ...createdPreview,
           url: null,
+          urlCompressed: null,
         },
       }),
       HTTPStatusCode.Created,

@@ -23,6 +23,13 @@ export const scenarioScenePreview = pgTable("scenario_scene_preview", {
     onUpdate: "cascade",
     onDelete: "cascade",
   }),
+  compressedAttachmentId: uuid("compressed_attachment_id").references(
+    () => attachment.id,
+    {
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    },
+  ),
   status: scenarioScenePreviewStatus("status").default("pending").notNull(),
   ...timestamps,
 });
@@ -37,6 +44,12 @@ export const scenarioScenePreviewRelations = relations(
     attachment: one(attachment, {
       fields: [scenarioScenePreview.attachmentId],
       references: [attachment.id],
+      relationName: "previewOriginal",
+    }),
+    compressedAttachment: one(attachment, {
+      fields: [scenarioScenePreview.compressedAttachmentId],
+      references: [attachment.id],
+      relationName: "previewCompressed",
     }),
   }),
 );
