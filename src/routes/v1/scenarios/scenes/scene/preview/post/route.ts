@@ -48,11 +48,7 @@ createScenarioScenePreviewRoute.post(
       with: {
         scenarioChapter: {
           with: {
-            scenarioVersion: {
-              with: {
-                scenario: true,
-              },
-            },
+            scenarioVersion: true,
           },
         },
         preview: true,
@@ -66,9 +62,16 @@ createScenarioScenePreviewRoute.post(
       });
     }
 
-    if (
-      existingScene.scenarioChapter.scenarioVersion.scenario.userId !== user.id
-    ) {
+    const foundScenario = await db.query.scenario.findFirst({
+      where: (scenario, { eq }) =>
+        eq(
+          scenario.id,
+          existingScene.scenarioChapter.scenarioVersion.scenarioId,
+        ),
+      columns: { userId: true },
+    });
+
+    if (!foundScenario || foundScenario.userId !== user.id) {
       return throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этой сцене",
