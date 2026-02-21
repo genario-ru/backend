@@ -4,6 +4,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioScenePreview } from "@/db/schema";
+import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { enqueueScenarioScenePreviewGeneration } from "@/mq/queues/scenario-scene-preview-generation-queue";
@@ -51,7 +52,11 @@ createScenarioScenePreviewRoute.post(
             scenarioVersion: true,
           },
         },
-        preview: true,
+        preview: {
+          with: {
+            attachment: true,
+          },
+        },
       },
     });
 
@@ -79,11 +84,13 @@ createScenarioScenePreviewRoute.post(
     }
 
     if (existingScene.preview) {
+      const { attachment, ...preparedPreview } = existingScene.preview;
+
       return c.json<CreateScenarioScenePreviewResponse>(
         createScenarioScenePreviewResponseSchema.parse({
           data: {
-            ...existingScene.preview,
-            url: null,
+            ...preparedPreview,
+            url: attachment ? getSignedS3Url(attachment.key) : null,
           },
         }),
         HTTPStatusCode.Ok,
@@ -101,7 +108,10 @@ createScenarioScenePreviewRoute.post(
 
     return c.json<CreateScenarioScenePreviewResponse>(
       createScenarioScenePreviewResponseSchema.parse({
-        data: createdPreview,
+        data: {
+          ...createdPreview,
+          url: null,
+        },
       }),
       HTTPStatusCode.Created,
     );

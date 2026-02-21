@@ -85,18 +85,29 @@ getScenarioChapterRoute.get(
 
     const scenes = await Promise.all(
       chapterData.scenes.map(async (scene) => {
-        if (!scene.preview?.attachment) {
+        if (!scene.preview) {
           return scene;
         }
 
-        const { attachment: _attachment, ...preparedScenePreview } =
-          scene.preview;
+        const { attachment, ...preparedScenePreview } = scene.preview;
+
+        if (!attachment) {
+          return {
+            ...scene,
+            preview: {
+              ...preparedScenePreview,
+              url: null,
+            },
+          };
+        }
+
+        const url = await getSignedS3Url(attachment.key);
 
         return {
           ...scene,
           preview: {
             ...preparedScenePreview,
-            url: await getSignedS3Url(scene.preview.attachment.key),
+            url,
           },
         };
       }),
