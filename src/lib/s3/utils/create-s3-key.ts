@@ -9,5 +9,5 @@ export function createS3Key({
   folderName,
   fileName,
 }: CreateS3KeyParams) {
-  return `${userId}/${folderName}/${fileName}`;
+  return `user-files/${userId}/${folderName}/${fileName}`;
 }
