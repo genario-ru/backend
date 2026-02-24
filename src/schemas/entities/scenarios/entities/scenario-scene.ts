@@ -27,7 +27,6 @@ export const scenarioSceneGeneratedSchema = scenarioSceneSchema
     description: true,
     startTime: true,
     endTime: true,
-    badges: true,
   })
   .refine((scene) => scene.endTime > scene.startTime, {
     message: "End time must be greater than start time",
