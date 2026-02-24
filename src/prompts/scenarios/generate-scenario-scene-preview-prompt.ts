@@ -10,16 +10,51 @@ type GenerateScenarioScenePreviewPromptProps = {
   sceneEndTime: number;
 };
 
-export function generateScenarioScenePreviewPrompt({
-  scenarioName,
-  scenarioDescription,
-  scenarioTargetAudience,
-  chapterName,
-  chapterDescription,
-  sceneName,
-  sceneDescription,
-  sceneStartTime,
-  sceneEndTime,
-}: GenerateScenarioScenePreviewPromptProps): string {
-  return `Cinematic preview image for video scene: "${sceneName}". ${sceneDescription}. Part of "${scenarioName}" - ${scenarioDescription}. Chapter: "${chapterName}" - ${chapterDescription}. Professional thumbnail quality, no text, single focal point, mood matching the scene. Target audience: ${scenarioTargetAudience}. Start time: ${sceneStartTime}s, end time: ${sceneEndTime}s.`;
+function buildSceneContext(
+  props: GenerateScenarioScenePreviewPromptProps,
+): string {
+  const {
+    scenarioName,
+    scenarioDescription,
+    scenarioTargetAudience,
+    chapterName,
+    chapterDescription,
+    sceneName,
+    sceneDescription,
+    sceneStartTime,
+    sceneEndTime,
+  } = props;
+
+  const parts: string[] = [];
+
+  if (sceneName) parts.push(`Scene: "${sceneName}".`);
+  if (sceneDescription) parts.push(sceneDescription);
+  parts.push(`Timestamp: ${sceneStartTime}s–${sceneEndTime}s.`);
+  if (chapterName) parts.push(`Chapter: "${chapterName}".`);
+  if (chapterDescription) parts.push(chapterDescription);
+  if (scenarioName)
+    parts.push(
+      `Video: "${scenarioName}"${scenarioDescription ? ` — ${scenarioDescription}` : ""}.`,
+    );
+  if (scenarioTargetAudience)
+    parts.push(`Target audience: ${scenarioTargetAudience}.`);
+
+  return parts.join(" ");
+}
+
+export function generateScenarioScenePreviewPrompt(
+  props: GenerateScenarioScenePreviewPromptProps,
+): string {
+  return `
+    Create a cinematic preview image for this video scene.
+
+    ${buildSceneContext(props)}
+
+    Style:
+    - Single clear focal point that captures the scene's emotional core.
+    - Mood, lighting, and color palette matching the scene's tone.
+    - Photorealistic or high-quality illustration style.
+    - Composition works for both 16:9 and square crops.
+    - No text, watermarks, logos, or UI elements.
+      `.trim();
 }

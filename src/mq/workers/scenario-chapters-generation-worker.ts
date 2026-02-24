@@ -84,6 +84,7 @@ export const scenarioChaptersGenerationWorker =
               chapters: z.array(scenarioChapterGeneratedSchema),
             }),
           }),
+          temperature: 0,
           system: systemPrompt(),
           prompt,
           onFinish: (data) => {

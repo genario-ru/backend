@@ -8,8 +8,8 @@ import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
 import { vsellm } from "@/lib/ai/providers/vsellm";
 import { redis } from "@/lib/redis";
-import { generateIdeasListPromptV2 } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
-import { systemPromptV2 } from "@/prompts/system/system-prompt";
+import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
+import { systemPrompt } from "@/prompts/system/system-prompt";
 import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import {
@@ -53,7 +53,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         .set({ status: "generation" })
         .where(eq(ideasList.id, ideasListId));
 
-      const prompt = generateIdeasListPromptV2({
+      const prompt = generateIdeasListPrompt({
         userPrompt,
         ideasCount: IDEAS_PER_LIST_COUNT,
         ideasListName: foundIdeasList.name,
@@ -92,7 +92,8 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             ideas: z.array(ideaGeneratedSchema),
           }),
         }),
-        system: systemPromptV2(),
+        temperature: 0,
+        system: systemPrompt(),
         prompt,
         onFinish: (data) => {
           console.log("Ideas list generation finished", data.response.id);

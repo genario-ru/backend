@@ -1,3 +1,29 @@
+import {
+  buildContextLines,
+  formatPreviousItems,
+} from "@/prompts/utils/build-context-lines";
+
+type ComponentType = {
+  id: string;
+  name: string;
+  description: string | null;
+  optional: boolean;
+};
+
+type PreviousScene = {
+  id: string;
+  name: string;
+  description?: string | null;
+  startTime: number;
+  endTime: number;
+  components?: {
+    id: string;
+    name: string;
+    typeId: string;
+    content?: string | null;
+  }[];
+};
+
 type GenerateScenarioSceneComponentsPromptProps = {
   context: {
     scenarioName: string;
@@ -11,27 +37,45 @@ type GenerateScenarioSceneComponentsPromptProps = {
     sceneDescription: string;
     sceneStartTime: number;
     sceneEndTime: number;
-    availableSceneComponentTypes: {
-      id: string;
-      name: string;
-      description: string | null;
-      optional: boolean;
-    }[];
-    previousGeneratedScenes?: {
-      id: string;
-      name: string;
-      description?: string | null;
-      startTime: number;
-      endTime: number;
-      components?: {
-        id: string;
-        name: string;
-        typeId: string;
-        content?: string | null;
-      }[];
-    }[];
+    availableSceneComponentTypes: ComponentType[];
+    previousGeneratedScenes?: PreviousScene[];
   };
 };
+
+function buildComponentTypesBlock(types: ComponentType[]): string {
+  return types
+    .map((ct) => {
+      const badge = ct.optional ? "[optional]" : "[required]";
+      const desc = ct.description ? `: ${ct.description}` : "";
+      return `- "${ct.name}" (id: ${ct.id}) ${badge}${desc}`;
+    })
+    .join("\n");
+}
+
+function buildPreviousScenesBlock(scenes?: PreviousScene[]): string {
+  return formatPreviousItems(scenes, (scene, i) => {
+    const components =
+      scene.components && scene.components.length > 0
+        ? scene.components
+          .map((c) => {
+            const preview =
+              c.content && c.content.length > 150
+                ? c.content.slice(0, 150) + "…"
+                : (c.content ?? "(empty)");
+            return `    [${c.name}]: ${preview}`;
+          })
+          .join("\n")
+        : "    (no components)";
+    return `${i + 1}. "${scene.name}" (${scene.startTime}s–${scene.endTime}s)\n${components}`;
+  });
+}
+
+function buildContinuityRule(isFirstScene: boolean): string {
+  if (isFirstScene) {
+    return "This is the first scene — open with a hook or a question that grabs attention immediately. A greeting is acceptable only if it's natural for the format.";
+  }
+  return "Continue from where the previous scene left off. The first sentence must bridge naturally from the previous scene's last thought — never re-greet the viewer or repeat the opening.";
+}
 
 export function generateScenarioSceneComponentsPrompt({
   context,
@@ -52,43 +96,80 @@ export function generateScenarioSceneComponentsPrompt({
     previousGeneratedScenes,
   } = context;
 
+  const sceneDuration = sceneEndTime - sceneStartTime;
+  const isFirstScene =
+    !previousGeneratedScenes || previousGeneratedScenes.length === 0;
+
+  const contextLines = buildContextLines([
+    ["Scenario", `${scenarioName} — ${scenarioDescription}`],
+    ["Target audience", scenarioTargetAudience],
+    [
+      "Chapter",
+      `${chapterName} (${chapterStartTime}s–${chapterEndTime}s) — ${chapterDescription}`,
+    ],
+    [
+      "Current scene",
+      `${sceneName} (${sceneStartTime}s–${sceneEndTime}s, ${sceneDuration}s) — ${sceneDescription}`,
+    ],
+  ]);
+
   return `
-    # Instructions:
-    - Generate scene components based on provided context and data.
-    - Treat this scene as part of one continuous video narrative. The viewer should not feel "hard cuts" between scenes.
-    - For components that include spoken/on-screen text (voice-over, narration, subtitles, text read by host), output production-ready text that can be used as-is without rewriting.
-    - Reuse context from previous scenes to keep continuity of topic, tone and rhythm, while still moving the story forward.
+    Generate components for scene "${sceneName}" (${sceneStartTime}s–${sceneEndTime}s).
 
-    # Context:
-    - Scenario name: "${scenarioName}";
-    - Scenario description: "${scenarioDescription}";
-    - Scenario target audience: "${scenarioTargetAudience}";
-    - Chapter name: "${chapterName}";
-    - Chapter description: "${chapterDescription}";
-    - Chapter start time: ${chapterStartTime};
-    - Chapter end time: ${chapterEndTime};
-    - Scene name: "${sceneName}";
-    - Scene description: "${sceneDescription}";
-    - Scene start time: ${sceneStartTime};
-    - Scene end time: ${sceneEndTime}.
+    ## Task
+    Write production-ready content for each component of this scene. The content goes directly into the video production pipeline — no rewriting, no placeholders. This scene is part of a continuous video; the viewer must not feel a hard cut or a topic restart.
 
-    # Data:
-    - Previous generated scenes: ${JSON.stringify(previousGeneratedScenes ?? [])};
-    - Available scene component types: ${JSON.stringify(availableSceneComponentTypes)};
+    ## Rules for spoken and on-screen text (voice-over, narration, host speech, subtitles)
 
-    # Rules:
-    - Each component must have a unique name;
-    - Only return components that are available in the available scene component types list;
-    - If scene component is optional, it can be omitted;
-    - Use ONLY one language consistently in every generated component content: the same dominant language as the input context; never mix languages in one component;
-    - For text components that are spoken or shown to the viewer (voice-over / narration / subtitles), content must be natural flowing prose in 2-4 short paragraphs separated by empty lines in Markdown, not checklists, not headings, not templates;
-    - Each spoken/shown paragraph should contain 1-3 sentences and be readable out loud without rewriting;
-    - For those spoken/shown text components, NEVER restart the communication with greetings or repeated intro phrases ("hello", "welcome back", etc.) unless current scene is explicitly the first scene in chapter;
-    - For those spoken/shown text components, first sentence should smoothly continue the previous thought if previous scene data exists;
-    - Avoid repetitive sentence skeletons across neighboring scenes: vary openings, syntax, rhythm, and transition words;
-    - Do not re-explain the same point from previous scenes unless adding a new angle, contrast, consequence, or example;
-    - Keep wording concrete and vivid for the target audience; avoid bureaucratic or generic filler;
-    - Do not return components with empty or whitespace-only content; if you cannot produce meaningful content for a component, omit this component entirely;
-    - For non-spoken utility components (for example goals, checklists, production notes), Markdown structure can be used.
-  `;
+    1. ${buildContinuityRule(isFirstScene)}
+    2. Write in natural, flowing prose — 2–4 short paragraphs separated by blank lines. Each paragraph is 1–3 sentences readable aloud without editing.
+    3. Vary openings, sentence length, and rhythm. Mix short punchy statements with longer explanatory ones.
+    4. Every paragraph must advance the narrative — new information, a new angle, or a concrete example. No restating what was already said unless adding a contrast or consequence.
+    5. Use specific, vivid language for the target audience. Replace filler phrases like "в этом видео мы поговорим о..." with direct, engaging speech.
+
+    ## Component types
+    ${buildComponentTypesBlock(availableSceneComponentTypes)}
+
+    ## Field requirements
+
+    name:
+    - A descriptive label for this component instance.
+    - Good: "Голос за кадром: иллюзия прогресса"
+    - Bad: "Компонент 1" / "Голос"
+
+    typeId:
+    - Use the exact "id" from the component types list above.
+    - Include all required components. Include optional ones only when they meaningfully enrich the scene.
+
+    content:
+    - Spoken/on-screen text: flowing prose per the rules above.
+    - Utility components (goals, production notes, checklists): structured Markdown is fine.
+    - Omit the component entirely if you cannot produce meaningful content for it.
+
+    ## Context
+    ${contextLines}
+
+    ## Previous scenes (maintain flow — read content to avoid repetition)
+    ${buildPreviousScenesBlock(previousGeneratedScenes)}
+
+    ## Example
+
+    Scenario: "Почему 90% людей бросают спортзал" | Scene: "Иллюзия прогресса в первые две недели" (7s–15s, first scene in chapter "Проблема")
+
+    Voice-over component example:
+    - name: "Голос за кадром: иллюзия прогресса"
+    - content:
+      "Первые две недели в зале — это кайф. Мышцы болят, значит, что-то происходит. Весы показали минус два — значит, всё идёт по плану.
+
+      Но вот в чём штука. Этот минус два — не жир. Это вода. И когда тело адаптируется к нагрузке, прогресс внешне замирает. А человек думает, что сломался он."
+
+    Scenario: "Почему 90% людей бросают спортзал" | Scene: "Психология отказа — почему мозг говорит «стоп»" (21s–28s, continues from previous scenes)
+
+    Voice-over component example:
+    - name: "Голос за кадром: механизм отказа"
+    - content:
+      "Это не вопрос силы воли. Мозг буквально получает сигнал: стресс есть, а вознаграждения нет. И он делает единственное разумное, с его точки зрения, решение — останавливает тебя.
+
+      Именно поэтому в спорте выигрывают не те, кто сильнее мотивирован. А те, кто убрал момент принятия решения из уравнения."
+  `.trim();
 }

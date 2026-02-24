@@ -79,6 +79,7 @@ export const scenarioScenesGenerationWorker =
               scenes: z.array(scenarioSceneGeneratedSchema),
             }),
           }),
+          temperature: 0,
           system: systemPrompt(),
           prompt,
           onFinish: (data) => {
