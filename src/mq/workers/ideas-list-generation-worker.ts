@@ -6,7 +6,7 @@ import * as z from "zod";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, idea, ideasList } from "@/db/schema";
-import { routerAI } from "@/lib/ai/providers/router-ai";
+import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
 import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -86,7 +86,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         output: { ideas: generatedIdeas },
         usage,
       } = await generateText({
-        model: routerAI.languageModel(envs.ROUTER_AI_STRUCTURED_OUTPUT_MODEL),
+        model: polzaAI.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
         output: Output.object({
           schema: z.object({
             ideas: z.array(ideaGeneratedSchema),
