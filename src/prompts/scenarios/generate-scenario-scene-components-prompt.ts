@@ -133,7 +133,7 @@ export function generateScenarioSceneComponentsPrompt({
     ## Field requirements
 
     name:
-    - A descriptive label for this component instance.
+    - Provided name of the scene component type.
     - Good: "Голос за кадром: иллюзия прогресса"
     - Bad: "Компонент 1" / "Голос"
 

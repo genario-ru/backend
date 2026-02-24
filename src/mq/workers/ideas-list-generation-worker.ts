@@ -92,7 +92,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             ideas: z.array(ideaGeneratedSchema),
           }),
         }),
-        temperature: 0,
+        temperature: 0.2,
         system: systemPrompt(),
         prompt,
         onFinish: (data) => {
