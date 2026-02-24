@@ -6,7 +6,7 @@ import * as z from "zod";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
-import { polzaAI } from "@/lib/ai/providers/polza-ai";
+import { routerAI } from "@/lib/ai/providers/router-ai";
 import { redis } from "@/lib/redis";
 import { generateScenarioChaptersPrompt } from "@/prompts/scenarios/generate-scenario-chapters-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -78,7 +78,7 @@ export const scenarioChaptersGenerationWorker =
           output: { chapters: generatedChapters },
           usage,
         } = await generateText({
-          model: polzaAI.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
+          model: routerAI.languageModel(envs.ROUTER_AI_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
             schema: z.object({
               chapters: z.array(scenarioChapterGeneratedSchema),
