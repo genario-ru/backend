@@ -172,6 +172,7 @@ export const scenarioScenePreviewsGenerationWorker =
       }
     },
     {
+      concurrency: 50,
       connection: redis,
     },
   );

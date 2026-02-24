@@ -148,6 +148,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
     }
   },
   {
+    concurrency: 50,
     connection: redis,
   },
 );

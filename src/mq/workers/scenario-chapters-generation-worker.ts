@@ -155,6 +155,7 @@ export const scenarioChaptersGenerationWorker =
       }
     },
     {
+      concurrency: 50,
       connection: redis,
     },
   );
