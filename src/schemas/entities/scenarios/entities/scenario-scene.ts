@@ -4,7 +4,10 @@ import * as z from "zod";
 import { scenarioScene } from "@/db/schema";
 
 import { scenariosRegistry } from "../registry";
-import { scenarioSceneComponentExtendedSchema } from "./scenario-scene-component";
+import {
+  scenarioSceneComponentExtendedSchema,
+  scenarioSceneComponentGeneratedSchema,
+} from "./scenario-scene-component";
 import { scenarioScenePreviewSchema } from "./scenario-scene-preview";
 
 export const scenarioSceneSchema = createSelectSchema(scenarioScene).register(
@@ -32,6 +35,22 @@ export const scenarioSceneGeneratedSchema = scenarioSceneSchema
 
 export type ScenarioSceneGenerated = z.infer<
   typeof scenarioSceneGeneratedSchema
+>;
+
+export const scenarioSceneWithComponentsGeneratedSchema = z
+  .object({
+    name: z.string(),
+    description: z.string().nullable(),
+    startTime: z.number(),
+    endTime: z.number(),
+    components: z.array(scenarioSceneComponentGeneratedSchema),
+  })
+  .refine((scene) => scene.endTime > scene.startTime, {
+    message: "End time must be greater than start time",
+  });
+
+export type ScenarioSceneWithComponentsGenerated = z.infer<
+  typeof scenarioSceneWithComponentsGeneratedSchema
 >;
 
 export const scenarioSceneExtendedSchema = scenarioSceneSchema

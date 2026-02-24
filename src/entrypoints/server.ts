@@ -15,7 +15,6 @@ import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import { ideasListGenerationQueue } from "@/mq/queues/ideas-list-generation-queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/queues/scenario-chapters-generation-queue";
-import { scenarioSceneComponentsGenerationQueue } from "@/mq/queues/scenario-scene-components-generation-queue";
 import { scenarioScenePreviewGenerationQueue } from "@/mq/queues/scenario-scene-preview-generation-queue";
 import { scenarioScenesGenerationQueue } from "@/mq/queues/scenario-scenes-generation-queue";
 import { authRoute } from "@/routes/auth/route";
@@ -92,7 +91,6 @@ createBullBoard({
     new BullMQAdapter(ideasListGenerationQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
-    new BullMQAdapter(scenarioSceneComponentsGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
   ],
   serverAdapter: bullBoardAdapter,

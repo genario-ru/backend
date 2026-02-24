@@ -32,10 +32,13 @@ function buildSceneContext(
   parts.push(`Timestamp: ${sceneStartTime}s–${sceneEndTime}s.`);
   if (chapterName) parts.push(`Chapter: "${chapterName}".`);
   if (chapterDescription) parts.push(chapterDescription);
-  if (scenarioName)
-    parts.push(
-      `Video: "${scenarioName}"${scenarioDescription ? ` — ${scenarioDescription}` : ""}.`,
-    );
+  if (scenarioName) {
+    let videoPart = `Video: "${scenarioName}"`;
+    if (scenarioDescription) {
+      videoPart += ` — ${scenarioDescription}`;
+    }
+    parts.push(`${videoPart}.`);
+  }
   if (scenarioTargetAudience)
     parts.push(`Target audience: ${scenarioTargetAudience}.`);
 
