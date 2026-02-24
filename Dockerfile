@@ -1,7 +1,6 @@
 FROM node:22-alpine AS base
 
-# Установка pnpm версии 9.x (совместимо с lockfileVersion 6.0)
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN npm install -g pnpm@9
 
 FROM base AS builder
 
