@@ -23,6 +23,7 @@ export const idea = pgTable("idea", {
   liked: boolean("liked"),
   name: text("name"),
   description: text("description"),
+  reason: text("reason"),
   ...timestamps,
 });
 

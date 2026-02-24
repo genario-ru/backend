@@ -18,6 +18,7 @@ export type Idea = z.infer<typeof ideaSchema>;
 export const ideaGeneratedSchema = ideaSchema.pick({
   name: true,
   description: true,
+  reason: true,
   videoTypeId: true,
 });
 

@@ -1,0 +1,3 @@
+ALTER TABLE "idea" ADD COLUMN "reason" text;--> statement-breakpoint
+ALTER TABLE "scenario_scene_preview" ADD COLUMN "compressed_attachment_id" uuid;--> statement-breakpoint
+ALTER TABLE "scenario_scene_preview" ADD CONSTRAINT "scenario_scene_preview_compressed_attachment_id_attachment_id_fk" FOREIGN KEY ("compressed_attachment_id") REFERENCES "public"."attachment"("id") ON DELETE cascade ON UPDATE cascade;
