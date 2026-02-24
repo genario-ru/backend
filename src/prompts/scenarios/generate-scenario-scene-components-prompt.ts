@@ -126,6 +126,7 @@ export function generateScenarioSceneComponentsPrompt({
     3. Vary openings, sentence length, and rhythm. Mix short punchy statements with longer explanatory ones.
     4. Every paragraph must advance the narrative — new information, a new angle, or a concrete example. No restating what was already said unless adding a contrast or consequence.
     5. Use specific, vivid language for the target audience. Replace filler phrases like "в этом видео мы поговорим о..." with direct, engaging speech.
+    6. The size of the content should correspond to the duration of the scene.
 
     ## Component types
     ${buildComponentTypesBlock(availableSceneComponentTypes)}
@@ -134,8 +135,6 @@ export function generateScenarioSceneComponentsPrompt({
 
     name:
     - Provided name of the scene component type.
-    - Good: "Голос за кадром: иллюзия прогресса"
-    - Bad: "Компонент 1" / "Голос"
 
     typeId:
     - Use the exact "id" from the component types list above.

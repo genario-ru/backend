@@ -10,7 +10,7 @@ import {
   scenarioScene,
   scenarioSceneComponent,
 } from "@/db/schema";
-import { vsellm } from "@/lib/ai/providers/vsellm";
+import { routerAI } from "@/lib/ai/providers/router-ai";
 import { redis } from "@/lib/redis";
 import { generateScenarioSceneComponentsPrompt } from "@/prompts/scenarios/generate-scenario-scene-components-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -112,7 +112,7 @@ export const scenarioSceneComponentsGenerationWorker =
           output: { components: generatedScenarioSceneComponents },
           usage,
         } = await generateText({
-          model: vsellm.languageModel(envs.VSELLM_STRUCTURED_OUTPUT_MODEL),
+          model: routerAI.languageModel(envs.ROUTER_AI_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
             schema: z.object({
               components: z.array(scenarioSceneComponentGeneratedSchema),

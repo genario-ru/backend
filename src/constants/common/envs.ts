@@ -1,8 +1,10 @@
 import "dotenv/config";
 
-export const envs = {
+import { envsSchema } from "@/schemas/common/envs";
+
+export const envs = envsSchema.parse({
   // Env
-  NODE_ENV: process.env.NODE_ENV ?? "development",
+  NODE_ENV: process.env.NODE_ENV,
 
   // Storage
   POSTGRES_URL: process.env.POSTGRES_URL,
@@ -42,4 +44,4 @@ export const envs = {
   // Web urls
   WEB_APP_BASE_URL: process.env.WEB_APP_BASE_URL,
   LANDING_BASE_URL: process.env.LANDING_BASE_URL,
-} as Record<string, string>;
+});

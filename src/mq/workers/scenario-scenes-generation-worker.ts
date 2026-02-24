@@ -6,7 +6,7 @@ import * as z from "zod";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, scenarioChapter, scenarioScene } from "@/db/schema";
-import { vsellm } from "@/lib/ai/providers/vsellm";
+import { routerAI } from "@/lib/ai/providers/router-ai";
 import { redis } from "@/lib/redis";
 import { generateScenarioScenesPrompt } from "@/prompts/scenarios/generate-scenario-scenes-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
@@ -73,7 +73,7 @@ export const scenarioScenesGenerationWorker =
           output: { scenes: generatedScenarioScenes },
           usage,
         } = await generateText({
-          model: vsellm.languageModel(envs.VSELLM_STRUCTURED_OUTPUT_MODEL),
+          model: routerAI.languageModel(envs.ROUTER_AI_STRUCTURED_OUTPUT_MODEL),
           output: Output.object({
             schema: z.object({
               scenes: z.array(scenarioSceneGeneratedSchema),
