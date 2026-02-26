@@ -23,6 +23,8 @@ export const envsSchema = z.object({
   VSELLM_API_KEY: z.string(),
   VSELLM_STRUCTURED_OUTPUT_MODEL: z.string(),
   VSELLM_IMAGE_MODEL: z.string(),
-  WEB_APP_BASE_URL: z.string(),
-  LANDING_BASE_URL: z.string(),
+  FRONTEND_BASE_URL: z.string(),
+  BACKEND_BASE_URL: z.string(),
 });
+
+export type EnvsSchema = z.infer<typeof envsSchema>;

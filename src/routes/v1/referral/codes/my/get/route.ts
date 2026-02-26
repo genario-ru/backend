@@ -39,7 +39,7 @@ getMyReferralCodesRoute.get(
 
     const referralCodesWithUrl = referralCodes.map((referralCode) => ({
       ...referralCode,
-      referralUrl: `${envs.WEB_APP_BASE_URL}/?referralCode=${referralCode.code}`,
+      referralUrl: `${envs.FRONTEND_BASE_URL}/sign-in?referralCode=${referralCode.code}`,
     }));
 
     return c.json<GetMyReferralCodesResponse>(

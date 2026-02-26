@@ -42,6 +42,6 @@ export const envs = envsSchema.parse({
   VSELLM_IMAGE_MODEL: process.env.VSELLM_IMAGE_MODEL,
 
   // Web urls
-  WEB_APP_BASE_URL: process.env.WEB_APP_BASE_URL,
-  LANDING_BASE_URL: process.env.LANDING_BASE_URL,
+  FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
+  BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
 });
