@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -25,6 +26,7 @@ export const tariff = pgTable("tariff", {
   oldPrice: integer("old_price"),
   creditsAmount: integer("credits_amount").notNull(),
   billingPeriod: tariffBillingPeriod("billing_period").default("month"),
+  priority: boolean("priority").default(false).notNull(),
   ...timestamps,
 });
 

@@ -24,11 +24,21 @@ getTariffsRoute.get(
     },
   }),
   async (c) => {
-    const foundTariffs = await db.query.tariff.findMany();
+    const [foundTariffs, foundTariffTrials] = await Promise.all([
+      db.query.tariff.findMany(),
+      db.query.tariffTrial.findMany(),
+    ]);
+
+    const preparedTariffs = foundTariffs.map((tariff) => ({
+      ...tariff,
+      trial: foundTariffTrials.find(
+        (tariffTrial) => tariffTrial.tariffId === tariff.id,
+      ),
+    }));
 
     return c.json<GetTariffsResponse>(
       getTariffsResponseSchema.parse({
-        data: foundTariffs,
+        data: preparedTariffs,
       }),
     );
   },

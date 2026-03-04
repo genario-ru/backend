@@ -1,0 +1,1 @@
+ALTER TABLE "tariff" ADD COLUMN "priority" boolean DEFAULT false NOT NULL;
