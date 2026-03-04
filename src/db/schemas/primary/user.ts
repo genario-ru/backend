@@ -12,8 +12,8 @@ import { timestamps } from "../../constants/timestamps";
 import { account } from "../auth/account";
 import { session } from "../auth/session";
 import { creditsBatch } from "../billing/credits-batch";
-import { planDiscount } from "../billing/plan-discount";
 import { subscription } from "../billing/subscription";
+import { tariffDiscount } from "../billing/tariff-discount";
 import { referralCode } from "../referral/referral-code";
 import { referralInvite } from "../referral/referral-invite";
 import { attachment } from "./attachment";
@@ -46,7 +46,7 @@ export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session, { relationName: "session" }),
   impersonatedSessions: many(session, { relationName: "impersonatedSession" }),
   creditsBatches: many(creditsBatch),
-  planDiscounts: many(planDiscount),
+  tariffDiscounts: many(tariffDiscount),
   profiles: many(profile),
   ideasLists: many(ideasList),
   scenarios: many(scenario),

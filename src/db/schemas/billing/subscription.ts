@@ -3,7 +3,7 @@ import { boolean, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
-import { plan } from "./plan";
+import { tariff } from "./tariff";
 
 export const subscriptionStatus = pgEnum("subscription_status", [
   "active",
@@ -19,8 +19,8 @@ export const subscription = pgTable("subscription", {
       onUpdate: "cascade",
     })
     .notNull(),
-  planId: uuid("plan_id")
-    .references(() => plan.id, {
+  tariffId: uuid("tariff_id")
+    .references(() => tariff.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     })
@@ -51,8 +51,8 @@ export const subscriptionRelations = relations(subscription, ({ one }) => ({
     fields: [subscription.userId],
     references: [user.id],
   }),
-  plan: one(plan, {
-    fields: [subscription.planId],
-    references: [plan.id],
+  tariff: one(tariff, {
+    fields: [subscription.tariffId],
+    references: [tariff.id],
   }),
 }));

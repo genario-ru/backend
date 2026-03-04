@@ -4,7 +4,7 @@ import { integer, interval, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../../constants/timestamps";
 import { subscription } from "./subscription";
 
-export const plan = pgTable("plan", {
+export const tariff = pgTable("tariff", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
@@ -14,6 +14,6 @@ export const plan = pgTable("plan", {
   ...timestamps,
 });
 
-export const planRelations = relations(plan, ({ many }) => ({
+export const tariffRelations = relations(tariff, ({ many }) => ({
   subscriptions: many(subscription),
 }));

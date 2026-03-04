@@ -4,7 +4,7 @@ import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { creditsBatch } from "../billing/credits-batch";
-import { planDiscount } from "../billing/plan-discount";
+import { tariffDiscount } from "../billing/tariff-discount";
 import { user } from "../primary/user";
 import { referralCode } from "./referral-code";
 
@@ -39,10 +39,13 @@ export const referralInvite = pgTable("referral_invite", {
     onUpdate: "cascade",
     onDelete: "cascade",
   }),
-  planDiscountId: uuid("plan_discount_id").references(() => planDiscount.id, {
-    onUpdate: "cascade",
-    onDelete: "cascade",
-  }),
+  tariffDiscountId: uuid("tariff_discount_id").references(
+    () => tariffDiscount.id,
+    {
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    },
+  ),
   ...timestamps,
 });
 
@@ -65,8 +68,8 @@ export const referralInviteRelations = relations(referralInvite, ({ one }) => ({
     fields: [referralInvite.creditsBatchId],
     references: [creditsBatch.id],
   }),
-  planDiscount: one(planDiscount, {
-    fields: [referralInvite.planDiscountId],
-    references: [planDiscount.id],
+  tariffDiscount: one(tariffDiscount, {
+    fields: [referralInvite.tariffDiscountId],
+    references: [tariffDiscount.id],
   }),
 }));

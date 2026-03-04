@@ -72,7 +72,7 @@ getMyReferralInvitesRoute.get(
           referralTargetUser: true,
           referralCode: true,
           creditsBatch: true,
-          planDiscount: true,
+          tariffDiscount: true,
         },
       }),
     ]);

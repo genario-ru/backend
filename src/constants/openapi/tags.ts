@@ -3,7 +3,7 @@ export enum OpenAPITags {
   Credits = "Credits",
   Ideas = "Ideas",
   IdeasLists = "Ideas lists",
-  Plans = "Plans",
+  Tariffs = "Tariffs",
   Platforms = "Platforms",
   Profiles = "Profiles",
   Referral = "Referral",

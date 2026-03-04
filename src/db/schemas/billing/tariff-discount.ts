@@ -5,14 +5,14 @@ import { timestamps } from "@/db/constants/timestamps";
 
 import { user } from "../primary/user";
 import { referralInvite } from "../referral/referral-invite";
-import { plan } from "./plan";
+import { tariff } from "./tariff";
 
-export const planDiscountType = pgEnum("plan_discount_type", [
+export const tariffDiscountType = pgEnum("tariff_discount_type", [
   "fixed",
   "percentage",
 ]);
 
-export const planDiscount = pgTable("plan_discount", {
+export const tariffDiscount = pgTable("tariff_discount", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
     .references(() => user.id, {
@@ -20,11 +20,11 @@ export const planDiscount = pgTable("plan_discount", {
       onDelete: "cascade",
     })
     .notNull(),
-  planId: uuid("plan_id").references(() => plan.id, {
+  tariffId: uuid("tariff_id").references(() => tariff.id, {
     onUpdate: "cascade",
     onDelete: "cascade",
   }),
-  type: planDiscountType("type").notNull(),
+  type: tariffDiscountType("type").notNull(),
   value: integer("value").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
@@ -33,14 +33,14 @@ export const planDiscount = pgTable("plan_discount", {
   ...timestamps,
 });
 
-export const planDiscountRelations = relations(planDiscount, ({ one }) => ({
+export const tariffDiscountRelations = relations(tariffDiscount, ({ one }) => ({
   user: one(user, {
-    fields: [planDiscount.userId],
+    fields: [tariffDiscount.userId],
     references: [user.id],
   }),
-  plan: one(plan, {
-    fields: [planDiscount.planId],
-    references: [plan.id],
+  tariff: one(tariff, {
+    fields: [tariffDiscount.tariffId],
+    references: [tariff.id],
   }),
   referralInvite: one(referralInvite),
 }));

@@ -32,7 +32,7 @@ getMySubscriptionsRoute.get(
 
     const foundSubscriptions = await db.query.subscription.findMany({
       where: (subscription, { eq }) => eq(subscription.userId, user.id),
-      with: { plan: true },
+      with: { tariff: true },
     });
 
     return c.json<GetMySubscriptionsResponse>(

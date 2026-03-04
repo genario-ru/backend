@@ -4,7 +4,7 @@ import * as z from "zod";
 import { referralInvite } from "@/db/schema";
 
 import { creditsBatchSchema } from "../../billing/entities/credits-batch";
-import { planDiscountSchema } from "../../billing/entities/plan-discount";
+import { tariffDiscountSchema } from "../../tariffs/entities/tariff-discout";
 import { userSchema } from "../../users/entities/user";
 import { referralRegistry } from "../registry";
 import { referralCodeSchema } from "./referral-code";
@@ -26,7 +26,7 @@ export const referralInviteExtendedSchema = referralInviteSchema
     referralTargetUser: userSchema,
     referralCode: referralCodeSchema,
     creditsBatch: creditsBatchSchema.nullish(),
-    planDiscount: planDiscountSchema.nullish(),
+    tariffDiscount: tariffDiscountSchema.nullish(),
   })
   .register(referralRegistry, {
     title: "Referral invite extended",

@@ -3,7 +3,7 @@ import * as z from "zod";
 
 import { subscription } from "@/db/schema";
 
-import { planSchema } from "../../plans/entities/plan";
+import { tariffSchema } from "../../tariffs/entities/tariff";
 import { subscriptionsRegistry } from "../registry";
 
 export const subscriptionSchema = createSelectSchema(subscription).register(
@@ -19,7 +19,7 @@ export type Subscription = z.infer<typeof subscriptionSchema>;
 
 export const subscriptionExtendedSchema = subscriptionSchema
   .extend({
-    plan: planSchema,
+    tariff: tariffSchema,
   })
   .register(subscriptionsRegistry, {
     title: "Subscription extended",

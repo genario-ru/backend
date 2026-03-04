@@ -6,7 +6,7 @@ import { referralCode } from "./referral-code";
 
 export const referralRewardType = pgEnum("referral_reward_type", [
   "credits",
-  "plan_discount",
+  "tariff_discount",
 ]);
 
 export const referralRewardUserType = pgEnum("referral_reward_user_type", [

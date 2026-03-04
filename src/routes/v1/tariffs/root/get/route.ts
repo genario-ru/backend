@@ -3,32 +3,32 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import {
-  type GetPlansResponse,
-  getPlansResponseSchema,
-} from "@/schemas/entities/plans/handlers/get-plans/response";
+  type GetTariffsResponse,
+  getTariffsResponseSchema,
+} from "@/schemas/entities/tariffs/handlers/get-tariffs/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
-export const getPlansRoute = createHonoApp().basePath("/plans");
+export const getTariffsRoute = createHonoApp().basePath("/tariffs");
 
-// GET /api/v1/plans
-getPlansRoute.get(
+// GET /api/v1/tariffs
+getTariffsRoute.get(
   "/",
   openAPIResponseMiddleware({
-    tags: [OpenAPITags.Plans],
+    tags: [OpenAPITags.Tariffs],
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
-        description: "Plans retrieved successfully",
-        schema: getPlansResponseSchema,
+        description: "Tariffs retrieved successfully",
+        schema: getTariffsResponseSchema,
       }),
     },
   }),
   async (c) => {
-    const foundPlans = await db.query.plan.findMany();
+    const foundTariffs = await db.query.tariff.findMany();
 
-    return c.json<GetPlansResponse>(
-      getPlansResponseSchema.parse({
-        data: foundPlans,
+    return c.json<GetTariffsResponse>(
+      getTariffsResponseSchema.parse({
+        data: foundTariffs,
       }),
     );
   },
