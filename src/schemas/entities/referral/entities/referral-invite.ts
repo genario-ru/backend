@@ -3,7 +3,7 @@ import * as z from "zod";
 
 import { referralInvite } from "@/db/schema";
 
-import { creditsBatchSchema } from "../../billing/entities/credits-batch";
+import { creditsBatchSchema } from "../../credits/entities/credits-batch";
 import { tariffDiscountSchema } from "../../tariffs/entities/tariff-discout";
 import { userSchema } from "../../users/entities/user";
 import { referralRegistry } from "../registry";
