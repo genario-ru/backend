@@ -3,10 +3,10 @@ import * as z from "zod";
 
 import { creditsPackage } from "@/db/schema";
 
-import { billingRegistry } from "../registry";
+import { creditsRegistry } from "../registry";
 
 export const creditsPackageSchema = createSelectSchema(creditsPackage).register(
-  billingRegistry,
+  creditsRegistry,
   {
     title: "Credits package",
     description: "Credits package description",

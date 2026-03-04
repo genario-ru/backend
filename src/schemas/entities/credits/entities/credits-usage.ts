@@ -4,12 +4,11 @@ import * as z from "zod";
 import { creditsUsage } from "@/db/schema";
 
 import { userSchema } from "../../users/entities/user";
-import { billingRegistry } from "../registry";
+import { creditsRegistry } from "../registry";
 import { creditsBatchSchema } from "./credits-batch";
-import { creditsCostSchema } from "./credits-cost";
 
 export const creditsUsageSchema = createSelectSchema(creditsUsage).register(
-  billingRegistry,
+  creditsRegistry,
   {
     title: "Credits usage",
     description: "Credits usage description",
@@ -23,9 +22,8 @@ export const creditsUsageExtendedSchema = creditsUsageSchema
   .extend({
     user: userSchema,
     creditsBatch: creditsBatchSchema,
-    creditsCost: creditsCostSchema,
   })
-  .register(billingRegistry, {
+  .register(creditsRegistry, {
     title: "Credits usage extended",
     description: "Credits usage extended description",
     ref: "CreditsUsageExtendedSchema",

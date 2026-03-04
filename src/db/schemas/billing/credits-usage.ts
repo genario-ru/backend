@@ -1,28 +1,31 @@
 import { relations } from "drizzle-orm";
-import { pgTable, uuid } from "drizzle-orm/pg-core";
+import { decimal, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { creditsBatch } from "./credits-batch";
-import { creditsCost } from "./credits-cost";
+
+export const creditsUsageEntity = pgEnum("credits_usage_entity", [
+  "ideas-list",
+  "scenario-version",
+  "scenario-version-chapter",
+  "scenario-scene-preview",
+]);
 
 export const creditsUsage = pgTable("credits_usage", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
-  creditsBatchId: uuid("credits_batch_id")
+  batchId: uuid("credits_batch_id")
     .references(() => creditsBatch.id, {
       onUpdate: "cascade",
       onDelete: "cascade",
     })
     .notNull(),
-  creditsCostId: uuid("credits_cost_id")
-    .references(() => creditsCost.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
+  entityId: uuid("entity_id"),
+  entity: creditsUsageEntity("entity").notNull(),
+  amount: decimal("amount").notNull(),
   ...timestamps,
 });
 
@@ -31,12 +34,8 @@ export const creditsUsageRelations = relations(creditsUsage, ({ one }) => ({
     fields: [creditsUsage.userId],
     references: [user.id],
   }),
-  creditsBatch: one(creditsBatch, {
-    fields: [creditsUsage.creditsBatchId],
+  batch: one(creditsBatch, {
+    fields: [creditsUsage.batchId],
     references: [creditsBatch.id],
-  }),
-  creditsCost: one(creditsCost, {
-    fields: [creditsUsage.creditsCostId],
-    references: [creditsCost.id],
   }),
 }));
