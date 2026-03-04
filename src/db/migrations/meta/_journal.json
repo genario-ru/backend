@@ -99,6 +99,13 @@
       "when": 1771974003438,
       "tag": "0013_bumpy_scarlet_spider",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1772640123356,
+      "tag": "0014_wet_thunderbird",
+      "breakpoints": true
     }
   ]
 }
