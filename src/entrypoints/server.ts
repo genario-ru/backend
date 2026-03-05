@@ -72,7 +72,7 @@ import {
   updateScenarioSceneComponentRoute,
   updateScenarioSceneRoute,
 } from "@/routes/v1/scenarios";
-import { getTariffsRoute } from "@/routes/v1/tariffs";
+import { getTariffsRoute, getTrialTariffRoute } from "@/routes/v1/tariffs";
 import { getTemplatesRoute } from "@/routes/v1/templates";
 import { getTonesRoute } from "@/routes/v1/tones";
 import { getVideoDurationsRoute } from "@/routes/v1/video-durations";
@@ -144,6 +144,7 @@ const appAPIv1RoutesList = [
   getMyReferralInvitesRoute,
   getReferralInfoRoute,
   getTariffsRoute,
+  getTrialTariffRoute,
   getTemplatesRoute,
   getTonesRoute,
   getVideoDurationsRoute,

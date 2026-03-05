@@ -24,21 +24,13 @@ getTariffsRoute.get(
     },
   }),
   async (c) => {
-    const [foundTariffs, foundTariffTrials] = await Promise.all([
-      db.query.tariff.findMany(),
-      db.query.tariffTrial.findMany(),
-    ]);
-
-    const preparedTariffs = foundTariffs.map((tariff) => ({
-      ...tariff,
-      trial: foundTariffTrials.find(
-        (tariffTrial) => tariffTrial.tariffId === tariff.id,
-      ),
-    }));
+    const foundTariffs = await db.query.tariff.findMany({
+      where: (tariff, { eq }) => eq(tariff.isRenewable, false),
+    });
 
     return c.json<GetTariffsResponse>(
       getTariffsResponseSchema.parse({
-        data: preparedTariffs,
+        data: foundTariffs,
       }),
     );
   },

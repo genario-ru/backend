@@ -1,17 +1,9 @@
 import { relations } from "drizzle-orm";
-import {
-  boolean,
-  date,
-  pgEnum,
-  pgTable,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { date, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { tariff } from "./tariff";
-import { tariffTrial } from "./tariff-trial";
 
 export const subscriptionStatus = pgEnum("subscription_status", [
   "active",
@@ -33,10 +25,6 @@ export const subscription = pgTable("subscription", {
       onUpdate: "cascade",
     })
     .notNull(),
-  tariffTrialId: uuid("tariff_trial_id").references(() => tariffTrial.id, {
-    onDelete: "set null",
-    onUpdate: "cascade",
-  }),
   startsAt: timestamp("starts_at", {
     withTimezone: true,
     mode: "string",
@@ -53,7 +41,6 @@ export const subscription = pgTable("subscription", {
     mode: "string",
   }),
   status: subscriptionStatus("status").default("active"),
-  isTrial: boolean("is_trial").notNull(),
   ...timestamps,
 });
 
@@ -65,9 +52,5 @@ export const subscriptionRelations = relations(subscription, ({ one }) => ({
   tariff: one(tariff, {
     fields: [subscription.tariffId],
     references: [tariff.id],
-  }),
-  tariffTrial: one(tariffTrial, {
-    fields: [subscription.tariffTrialId],
-    references: [tariffTrial.id],
   }),
 }));

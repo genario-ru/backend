@@ -13,7 +13,6 @@ export * from "./schemas/billing/credits-usage";
 export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/tariff";
 export * from "./schemas/billing/tariff-discount";
-export * from "./schemas/billing/tariff-trial";
 export * from "./schemas/billing/transaction";
 
 // Linking
