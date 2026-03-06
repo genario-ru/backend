@@ -6,6 +6,7 @@ import { user } from "../primary/user";
 import { tariff } from "./tariff";
 
 export const subscriptionStatus = pgEnum("subscription_status", [
+  "pending",
   "active",
   "overdue",
   "cancelled",
@@ -40,7 +41,7 @@ export const subscription = pgTable("subscription", {
   nextBillingAt: date("next_billing_at", {
     mode: "string",
   }),
-  status: subscriptionStatus("status").default("active"),
+  status: subscriptionStatus("status").default("pending"),
   ...timestamps,
 });
 
