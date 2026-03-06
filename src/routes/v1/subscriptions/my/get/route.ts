@@ -3,7 +3,6 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getMyScenariosResponseSchema } from "@/schemas/entities/scenarios/handlers/get-my-scenarios/response";
 import {
   type GetMySubscriptionsResponse,
   getMySubscriptionsResponseSchema,
@@ -23,7 +22,7 @@ getMySubscriptionsRoute.get(
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
         description: "My subscriptions retrieved successfully",
-        schema: getMyScenariosResponseSchema,
+        schema: getMySubscriptionsResponseSchema,
       }),
     },
   }),
