@@ -2,7 +2,6 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
-import { sessionMiddleware } from "@/middleware/session-middleware";
 import {
   type GetTemplatesResponse,
   getTemplatesResponseSchema,
@@ -15,7 +14,6 @@ export const getTemplatesRoute = createHonoApp().basePath("/templates");
 // GET /api/v1/templates
 getTemplatesRoute.get(
   "/",
-  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Templates],
     responses: {
