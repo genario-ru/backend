@@ -25,7 +25,7 @@ getTariffsRoute.get(
   }),
   async (c) => {
     const foundTariffs = await db.query.tariff.findMany({
-      where: (tariff, { eq }) => eq(tariff.isRenewable, false),
+      where: (tariff, { eq }) => eq(tariff.isRenewable, true),
     });
 
     return c.json<GetTariffsResponse>(
