@@ -11,7 +11,8 @@ import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
-import { prepareTariffFeaturesForUI } from "../../utils";
+import { defaultFeatures } from "../../constants";
+import { prepareTariffFeatures } from "../../utils";
 
 export const getTrialTariffRoute = createHonoApp().basePath("/tariffs/trial");
 
@@ -44,7 +45,10 @@ getTrialTariffRoute.get(
       getTrialTariffResponseSchema.parse({
         data: {
           ...lastUpdatedTrialTariff,
-          features: prepareTariffFeaturesForUI(lastUpdatedTrialTariff),
+          features: [
+            ...prepareTariffFeatures(lastUpdatedTrialTariff),
+            ...defaultFeatures,
+          ].sort((a, b) => Number(b.included) - Number(a.included)),
         },
       }),
     );

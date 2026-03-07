@@ -9,7 +9,8 @@ import {
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
-import { prepareTariffFeaturesForUI } from "../../utils";
+import { defaultFeatures } from "../../constants";
+import { prepareTariffFeatures } from "../../utils";
 
 export const getTariffsRoute = createHonoApp().basePath("/tariffs");
 
@@ -34,7 +35,9 @@ getTariffsRoute.get(
       getTariffsResponseSchema.parse({
         data: foundTariffs.map((tariff) => ({
           ...tariff,
-          features: prepareTariffFeaturesForUI(tariff),
+          features: [...prepareTariffFeatures(tariff), ...defaultFeatures].sort(
+            (a, b) => Number(b.included) - Number(a.included),
+          ),
         })),
       }),
     );

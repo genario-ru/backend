@@ -2,7 +2,7 @@ import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
 import type { TariffFeature } from "@/schemas/entities/tariffs/entities/tariff-feature";
 import { ruPluralForm } from "@/utils/intl/ru-plural-form";
 
-type PrepareTariffFeaturesForUIParams = Pick<
+type PrepareTariffFeaturesParams = Pick<
   Tariff,
   | "creditsAmount"
   | "maxProfilesAmount"
@@ -12,17 +12,17 @@ type PrepareTariffFeaturesForUIParams = Pick<
   | "versionHistoryAvailable"
 >;
 
-type PrepareTariffFeaturesForUIReturn = TariffFeature[];
+type PrepareTariffFeaturesReturn = TariffFeature[];
 
-export function prepareTariffFeaturesForUI({
+export function prepareTariffFeatures({
   creditsAmount,
   maxProfilesAmount,
   durationDays,
   exportAvailable,
   generationPriority,
   versionHistoryAvailable,
-}: PrepareTariffFeaturesForUIParams): PrepareTariffFeaturesForUIReturn {
-  const features: PrepareTariffFeaturesForUIReturn = [
+}: PrepareTariffFeaturesParams): PrepareTariffFeaturesReturn {
+  const features: PrepareTariffFeaturesReturn = [
     {
       text: ruPluralForm({
         count: creditsAmount,
