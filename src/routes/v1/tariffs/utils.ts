@@ -62,24 +62,16 @@ export function prepareTariffFeaturesForUI({
       included: true,
     },
     {
-      text: getExportAvailableText(exportAvailable),
+      text: "Экспорт результатов генераций",
       included: exportAvailable,
     },
     {
-      text: getVersionHistoryAvailableText(versionHistoryAvailable),
+      text: "История версий сценария",
       included: versionHistoryAvailable,
     },
   );
 
   return features;
-}
-
-function getExportAvailableText(exportAvailable: Tariff["exportAvailable"]) {
-  if (exportAvailable) {
-    return "Доступен экспорт результатов генераций";
-  }
-
-  return "Экспорт результатов генераций недоступен";
 }
 
 function getGenerationPriorityText(
@@ -95,14 +87,4 @@ function getGenerationPriorityText(
     default:
       return "Базовый приоритет генераций";
   }
-}
-
-function getVersionHistoryAvailableText(
-  versionHistoryAvailable: Tariff["versionHistoryAvailable"],
-) {
-  if (versionHistoryAvailable) {
-    return "Доступна история версий сценария";
-  }
-
-  return "История версий сценария недоступна";
 }
