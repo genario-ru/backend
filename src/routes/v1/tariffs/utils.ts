@@ -2,6 +2,8 @@ import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
 import type { TariffFeature } from "@/schemas/entities/tariffs/entities/tariff-feature";
 import { ruPluralForm } from "@/utils/intl/ru-plural-form";
 
+import { defaultFeatures } from "./constants";
+
 type PrepareTariffFeaturesParams = Pick<
   Tariff,
   | "creditsAmount"
@@ -57,6 +59,7 @@ export function prepareTariffFeatures({
   }
 
   features.push(
+    ...defaultFeatures,
     {
       text: getGenerationPriorityText(generationPriority),
       included: true,
