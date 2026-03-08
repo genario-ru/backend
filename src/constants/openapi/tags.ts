@@ -1,5 +1,6 @@
 export enum OpenAPITags {
   Archive = "Archive",
+  Billing = "Billing",
   Credits = "Credits",
   Ideas = "Ideas",
   IdeasLists = "Ideas lists",

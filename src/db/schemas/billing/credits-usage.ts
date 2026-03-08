@@ -25,7 +25,9 @@ export const creditsUsage = pgTable("credits_usage", {
     .notNull(),
   entityId: uuid("entity_id"),
   entityType: creditsUsageEntityType("entity_type").notNull(),
-  amount: decimal("amount").notNull(),
+  creditsAmount: decimal("credits_amount").notNull(),
+  creditPrice: decimal("credit_price").notNull(),
+  totalPrice: decimal("total_price").notNull(),
   ...timestamps,
 });
 

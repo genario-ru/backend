@@ -41,6 +41,10 @@ export const envs = envsSchema.parse({
   VSELLM_STRUCTURED_OUTPUT_MODEL: process.env.VSELLM_STRUCTURED_OUTPUT_MODEL,
   VSELLM_IMAGE_MODEL: process.env.VSELLM_IMAGE_MODEL,
 
+  // Tochka
+  TOCHKA_OPENAPI_URL: process.env.TOCHKA_OPENAPI_URL,
+  TOCHKA_BASE_API_URL: process.env.TOCHKA_BASE_API_URL,
+
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
   BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
