@@ -5,7 +5,7 @@ import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { creditsBatch } from "./credits-batch";
 
-export const creditsUsageEntity = pgEnum("credits_usage_entity", [
+export const creditsUsageEntityType = pgEnum("credits_usage_entity", [
   "ideas-list",
   "scenario-version",
   "scenario-version-chapter",
@@ -24,7 +24,7 @@ export const creditsUsage = pgTable("credits_usage", {
     })
     .notNull(),
   entityId: uuid("entity_id"),
-  entity: creditsUsageEntity("entity").notNull(),
+  entityType: creditsUsageEntityType("entity_type").notNull(),
   amount: decimal("amount").notNull(),
   ...timestamps,
 });

@@ -134,6 +134,13 @@
       "when": 1772824281649,
       "tag": "0018_glorious_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1772991405723,
+      "tag": "0019_omniscient_madame_masque",
+      "breakpoints": true
     }
   ]
 }

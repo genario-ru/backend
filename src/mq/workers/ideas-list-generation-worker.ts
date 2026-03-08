@@ -116,7 +116,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
         if (createdIdeas.length > 0) {
           await tx.insert(aiGenerationLog).values({
-            entityType: "idea" as const,
+            entityType: "ideas-list" as const,
             entityId: foundIdeasList.id,
             prompt,
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,

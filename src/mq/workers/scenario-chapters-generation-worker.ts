@@ -110,15 +110,13 @@ export const scenarioChaptersGenerationWorker =
             .returning();
 
           if (createdScenarioChapters.length > 0) {
-            await tx.insert(aiGenerationLog).values(
-              createdScenarioChapters.map((chapter) => ({
-                entityType: "scenario-chapter" as const,
-                entityId: chapter.id,
-                prompt,
-                model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-                tokens: usage?.totalTokens ?? 0,
-              })),
-            );
+            await tx.insert(aiGenerationLog).values({
+              entityType: "scenario-version" as const,
+              entityId: scenarioVersionId,
+              prompt,
+              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              tokens: usage?.totalTokens ?? 0,
+            });
           } else {
             console.warn(`No scenario chapters generated`);
           }

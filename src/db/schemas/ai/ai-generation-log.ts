@@ -10,10 +10,10 @@ import {
 import { timestamps } from "../../constants/timestamps";
 
 export const aiGenerationLogType = pgEnum("ai_generation_log_entity_type", [
-  "idea",
-  "scenario-chapter",
-  "scenario-scene",
-  "scenario-scene-component",
+  "ideas-list",
+  "scenario-version",
+  "scenario-version-chapter",
+  "scenario-scene-preview",
 ]);
 
 export const aiGenerationLog = pgTable("ai_generation_log", {

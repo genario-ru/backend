@@ -141,7 +141,7 @@ export const scenarioScenesGenerationWorker =
 
           if (generatedScenes.length > 0) {
             await tx.insert(aiGenerationLog).values({
-              entityType: "scenario-chapter" as const,
+              entityType: "scenario-version-chapter" as const,
               entityId: scenarioChapterId,
               prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,

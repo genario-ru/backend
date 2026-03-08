@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
-import { attachment, scenarioScenePreview } from "@/db/schema";
+import { aiGenerationLog, attachment, scenarioScenePreview } from "@/db/schema";
 import { vsellm } from "@/lib/ai/providers/vsellm";
 import { compressBase64Image } from "@/lib/image/compress-base64-image";
 import { redis } from "@/lib/redis";
@@ -80,7 +80,7 @@ export const scenarioScenePreviewsGenerationWorker =
           sceneEndTime: scene.endTime,
         });
 
-        const { image } = await generateImage({
+        const { image, usage } = await generateImage({
           model: vsellm.imageModel(envs.VSELLM_IMAGE_MODEL),
           prompt,
           n: 1,
@@ -113,36 +113,53 @@ export const scenarioScenePreviewsGenerationWorker =
           buffer: compressedBuffer,
         });
 
-        const [[createdAttachment], [createdCompressedAttachment]] =
-          await Promise.all([
-            db
-              .insert(attachment)
-              .values({
-                userId: scenario.userId,
-                key: s3KeyOriginal,
-                bucketName: envs.S3_BUCKET_NAME,
-                mimeType: image.mediaType,
-              })
-              .returning(),
-            db
-              .insert(attachment)
-              .values({
-                userId: scenario.userId,
-                key: s3KeyCompressed,
-                bucketName: envs.S3_BUCKET_NAME,
-                mimeType: compressedMimeType,
-              })
-              .returning(),
-          ]);
+        const { createdAttachment, createdCompressedAttachment } =
+          await db.transaction(async (tx) => {
+            const [[createdAttachment], [createdCompressedAttachment]] =
+              await Promise.all([
+                tx
+                  .insert(attachment)
+                  .values({
+                    userId: scenario.userId,
+                    key: s3KeyOriginal,
+                    bucketName: envs.S3_BUCKET_NAME,
+                    mimeType: image.mediaType,
+                  })
+                  .returning(),
+                tx
+                  .insert(attachment)
+                  .values({
+                    userId: scenario.userId,
+                    key: s3KeyCompressed,
+                    bucketName: envs.S3_BUCKET_NAME,
+                    mimeType: compressedMimeType,
+                  })
+                  .returning(),
+              ]);
 
-        await db
-          .update(scenarioScenePreview)
-          .set({
-            attachmentId: createdAttachment.id,
-            compressedAttachmentId: createdCompressedAttachment.id,
-            status: "ready",
-          })
-          .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
+            await Promise.all([
+              tx
+                .update(scenarioScenePreview)
+                .set({
+                  attachmentId: createdAttachment.id,
+                  compressedAttachmentId: createdCompressedAttachment.id,
+                  status: "ready",
+                })
+                .where(eq(scenarioScenePreview.id, scenarioScenePreviewId)),
+              tx.insert(aiGenerationLog).values({
+                entityType: "scenario-scene-preview" as const,
+                entityId: scenarioScenePreviewId,
+                prompt,
+                model: envs.POLZA_AI_IMAGE_MODEL,
+                tokens: usage?.totalTokens ?? 0,
+              }),
+            ]);
+
+            return {
+              createdAttachment,
+              createdCompressedAttachment,
+            };
+          });
 
         console.log("Scenario scene preview generated:", {
           scenarioScenePreviewId,
