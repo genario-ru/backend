@@ -1,7 +1,7 @@
 import { z } from "@/lib/zod";
-import { metaQuerySchema } from "@/schemas/common/meta";
+import { queryMetaSchema } from "@/schemas/common/meta";
 
-export const getMyIdeasListsQuerySchema = metaQuerySchema
+export const getMyIdeasListsQuerySchema = queryMetaSchema
   .extend({
     profileId: z.uuid().optional(),
     sortBy: z.enum(["createdAt", "updatedAt"]).optional(),

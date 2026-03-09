@@ -1,7 +1,7 @@
 import { z } from "@/lib/zod";
-import { metaQuerySchema } from "@/schemas/common/meta";
+import { queryMetaSchema } from "@/schemas/common/meta";
 
-export const getMyReferralInvitesQuerySchema = metaQuerySchema
+export const getMyReferralInvitesQuerySchema = queryMetaSchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
     sort: z.string().optional(),

@@ -1,6 +1,6 @@
 import { z } from "@/lib/zod";
 
-export const metaQuerySchema = z
+export const queryMetaSchema = z
   .object({
     q: z.string().optional().describe("Строка поиска"),
     page: z.coerce.number().optional().describe("Номер страницы"),
@@ -12,12 +12,12 @@ export const metaQuerySchema = z
     sortBy: z.string().optional().describe("Поле для сортировки"),
   })
   .meta({
-    title: "Meta query",
-    description: "Meta query description",
-    ref: "MetaQuerySchema",
+    title: "Query meta",
+    description: "Query meta description",
+    ref: "QueryMetaSchema",
   });
 
-export const metaResponseSchema = z
+export const responseMetaSchema = z
   .object({
     previousPage: z.number().nullable().describe("Номер предыдущей страницы"),
     currentPage: z.number().describe("Номер текущей страницы"),
@@ -32,7 +32,7 @@ export const metaResponseSchema = z
     q: z.string().optional().describe("Строка поиска"),
   })
   .meta({
-    title: "Meta response",
-    description: "Meta response description",
-    ref: "MetaResponseSchema",
+    title: "Response meta",
+    description: "Response meta description",
+    ref: "ResponseMetaSchema",
   });

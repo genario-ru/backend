@@ -1,22 +1,30 @@
 import { z } from "@/lib/zod";
-import { metaResponseSchema } from "@/schemas/common/meta";
+import { responseMetaSchema } from "@/schemas/common/meta";
 
 import { archiveItemSchema } from "../../entities/archive-item";
-export const archiveMetaResponseSchema = metaResponseSchema
+
+export const getMyArchiveItemsResponseMetaSchema = responseMetaSchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
     entity: z.string().optional(),
     ideasListsTotalItems: z.number(),
     scenariosTotalItems: z.number(),
     sort: z.string(),
+  })
+  .meta({
+    title: "Get my archive items response meta",
+    description: "Get my archive items response meta description",
+    ref: "GetMyArchiveItemsResponseMetaSchema",
   });
 
-export type ArchiveMetaResponse = z.infer<typeof archiveMetaResponseSchema>;
+export type GetMyArchiveItemsResponseMeta = z.infer<
+  typeof getMyArchiveItemsResponseMetaSchema
+>;
 
 export const getMyArchiveItemsResponseSchema = z
   .object({
     data: z.array(archiveItemSchema),
-    meta: archiveMetaResponseSchema,
+    meta: getMyArchiveItemsResponseMetaSchema,
   })
   .meta({
     title: "Get my archive items response",
