@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { scenarioExtendedSchema } from "../../scenarios/entities/scenario";

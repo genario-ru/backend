@@ -1,5 +1,4 @@
-import * as z from "zod";
-
+import { z } from "@/lib/zod";
 import { ideaSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import { ideasListExtendedSchema } from "../../entities/ideas-list";

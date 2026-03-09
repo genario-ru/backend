@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const notFoundResponseSchema = z.string().meta({
   title: "Not found response",

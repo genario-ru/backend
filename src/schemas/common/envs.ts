@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const envsSchema = z.object({
   NODE_ENV: z.enum(["development", "production"]),

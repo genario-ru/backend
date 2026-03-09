@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { subscription } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { tariffSchema } from "../../tariffs/entities/tariff";
 import { subscriptionsRegistry } from "../registry";

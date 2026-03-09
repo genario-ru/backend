@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const badRequestResponseSchema = z.string().meta({
   title: "Bad request response",

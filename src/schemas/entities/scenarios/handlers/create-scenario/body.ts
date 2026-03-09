@@ -1,7 +1,7 @@
 import { createInsertSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { scenario } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { scenariosRegistry } from "../../registry";
 

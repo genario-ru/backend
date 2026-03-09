@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { alert } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 export const alertSchema = createSelectSchema(alert).meta({
   title: "Alert",

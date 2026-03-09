@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const tariffFeature = z.object({
   text: z.string(),

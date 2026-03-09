@@ -1,7 +1,6 @@
 import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
-import * as z from "zod";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
@@ -13,6 +12,7 @@ import {
 } from "@/db/schema";
 import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
+import { z } from "@/lib/zod";
 import { generateScenarioScenesPrompt } from "@/prompts/scenarios/generate-scenario-scenes-with-components-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
 import { scenarioSceneWithComponentsGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-scene";

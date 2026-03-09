@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { ideasList } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { profileSchema } from "../../profiles/entities/profile";
 import { templateSchema } from "../../templates/entities/template";

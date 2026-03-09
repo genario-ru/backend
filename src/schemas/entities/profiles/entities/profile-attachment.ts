@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { profileAttachment } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { attachmentSchema } from "../../attachments/entities/attachment";
 import { profilesRegistry } from "../registry";

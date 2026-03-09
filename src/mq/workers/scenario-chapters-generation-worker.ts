@@ -1,13 +1,13 @@
 import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
-import * as z from "zod";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { aiGenerationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
 import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
+import { z } from "@/lib/zod";
 import { generateScenarioChaptersPrompt } from "@/prompts/scenarios/generate-scenario-chapters-prompt";
 import { systemPrompt } from "@/prompts/system/system-prompt";
 import { scenarioChapterGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-chapter";

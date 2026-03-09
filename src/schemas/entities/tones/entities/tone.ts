@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { tone } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { tonesRegistry } from "../registry";
 

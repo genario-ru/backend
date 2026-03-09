@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { idea } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { videoTypeSchema } from "../../video-types/entities/video-type";

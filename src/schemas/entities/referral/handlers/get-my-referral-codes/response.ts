@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { referralCodeExtendedSchema } from "../../entities/referral-code";
 import { referralRegistry } from "../../registry";

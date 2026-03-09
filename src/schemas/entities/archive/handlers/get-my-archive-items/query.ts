@@ -1,5 +1,4 @@
-import * as z from "zod";
-
+import { z } from "@/lib/zod";
 import { metaQuerySchema } from "@/schemas/common/meta";
 
 import { archiveRegistry } from "../../registry";

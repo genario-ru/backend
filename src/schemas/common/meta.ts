@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const metaQuerySchema = z.object({
   q: z.string().optional().describe("Строка поиска"),

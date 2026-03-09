@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { profileTypeSchema } from "../../entities/profile-type";
 import { profilesRegistry } from "../../registry";

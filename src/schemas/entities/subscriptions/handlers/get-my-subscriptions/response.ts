@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { subscriptionExtendedSchema } from "../../entities/subscription";
 import { subscriptionsRegistry } from "../../registry";

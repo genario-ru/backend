@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { videoTypeSchema } from "../../entities/video-type";
 import { videoTypesRegistry } from "../../registry";

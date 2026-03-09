@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { templateSchema } from "../../entities/template";
 import { templatesRegistry } from "../../registry";

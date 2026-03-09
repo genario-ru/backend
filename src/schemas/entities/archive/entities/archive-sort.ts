@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 export const ARCHIVE_SORT_VALUES = [
   "createdAtDesc",

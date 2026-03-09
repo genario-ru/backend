@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { scenario } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { platformSchema } from "../../platforms/entities/platform";
 import { profileSchema } from "../../profiles/entities/profile";

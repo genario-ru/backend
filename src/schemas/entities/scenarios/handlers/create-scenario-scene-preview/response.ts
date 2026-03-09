@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { scenarioScenePreviewSchema } from "../../entities/scenario-scene-preview";
 import { scenariosRegistry } from "../../registry";

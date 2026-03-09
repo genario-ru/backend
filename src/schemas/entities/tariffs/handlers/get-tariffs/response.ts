@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { tariffExtendedSchema } from "../../entities/tariff";
 import { tariffsRegistry } from "../../registry";

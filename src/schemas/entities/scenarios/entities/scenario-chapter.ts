@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { scenarioChapter } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { scenariosRegistry } from "../registry";
 import { scenarioSceneExtendedSchema } from "./scenario-scene";

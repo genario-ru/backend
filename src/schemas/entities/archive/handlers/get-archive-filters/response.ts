@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { archiveFiltersSchema } from "../../entities/archive-filter";
 import { archiveRegistry } from "../../registry";

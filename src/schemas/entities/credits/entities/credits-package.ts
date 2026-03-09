@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
-import * as z from "zod";
 
 import { creditsPackage } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 import { creditsRegistry } from "../registry";
 

@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { ideaSchema } from "../../entities/idea";
 import { ideasRegistry } from "../../registry";

@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { platformExtendedSchema } from "../../entities/platform";
 import { platformsRegistry } from "../../registry";

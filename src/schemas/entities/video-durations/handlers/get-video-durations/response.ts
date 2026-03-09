@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "@/lib/zod";
 
 import { videoDurationSchema } from "../../entities/video-duration";
 import { videoDurationsRegistry } from "../../registry";
