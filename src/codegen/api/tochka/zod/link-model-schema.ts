@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 export const linkModelSchema = z.object({
   self: z.url().min(1).max(2083),

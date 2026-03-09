@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { measureSchema } from "./measure-schema.ts";
 import { paymentMethodSchema } from "./payment-method-schema.ts";

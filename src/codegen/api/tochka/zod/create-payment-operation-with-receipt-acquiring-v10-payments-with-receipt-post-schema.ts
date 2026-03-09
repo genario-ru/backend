@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { acquiringCreatePaymentOperationWithReceiptRequestDataModelSchema } from "./acquiring-create-payment-operation-with-receipt-request-data-model-schema.ts";
 import { acquiringCreatePaymentOperationWithReceiptResponseDataModelSchema } from "./acquiring-create-payment-operation-with-receipt-response-data-model-schema.ts";

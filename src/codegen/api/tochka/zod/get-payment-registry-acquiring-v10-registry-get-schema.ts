@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { acquiringPaymentRegistryResponseDataModelSchema } from "./acquiring-payment-registry-response-data-model-schema.ts";
 import { badRequestErrorResponseSchema } from "./bad-request-error-response-schema.ts";

@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { acquiringPaymentRegistryItemModelSchema } from "./acquiring-payment-registry-item-model-schema.ts";
 

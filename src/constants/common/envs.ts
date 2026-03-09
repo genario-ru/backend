@@ -46,6 +46,11 @@ export const envs = envsSchema.parse({
   TOCHKA_BASE_API_URL: process.env.TOCHKA_BASE_API_URL,
   TOCHKA_JWT_TOKEN: process.env.TOCHKA_JWT_TOKEN,
 
+  // YooKassa
+  YOOKASSA_OPENAPI_URL: process.env.YOOKASSA_OPENAPI_URL,
+  YOOKASSA_BASE_URL: process.env.YOOKASSA_BASE_URL,
+  YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY,
+
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
   BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,

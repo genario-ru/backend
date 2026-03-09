@@ -17,6 +17,7 @@
     "db:drop": "drizzle-kit drop",
     "db:push": "drizzle-kit push",
     "api:download:tochka": "tsx scripts/download-tochka-openapi.ts",
+    "api:download:yookassa": "tsx scripts/download-yookassa-openapi.ts",
     "api:generate": "kubb generate"
   },
   "dependencies": {
@@ -69,6 +70,7 @@
     "prettier": "^3.6.2",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.46.1"
+    "typescript-eslint": "^8.46.1",
+    "yaml": "^2.8.2"
   }
 }

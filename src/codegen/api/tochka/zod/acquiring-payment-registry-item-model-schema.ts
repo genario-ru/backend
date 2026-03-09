@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { externalAcquiringPaymentTypeEnumSchema } from "./external-acquiring-payment-type-enum-schema.ts";
 import { paymentItemModelSchema } from "./payment-item-model-schema.ts";

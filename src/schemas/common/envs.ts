@@ -26,6 +26,9 @@ export const envsSchema = z.object({
   TOCHKA_OPENAPI_URL: z.string(),
   TOCHKA_BASE_API_URL: z.string(),
   TOCHKA_JWT_TOKEN: z.string(),
+  YOOKASSA_OPENAPI_URL: z.string(),
+  YOOKASSA_BASE_URL: z.string(),
+  YOOKASSA_SECRET_KEY: z.string(),
   FRONTEND_BASE_URL: z.string(),
   BACKEND_BASE_URL: z.string(),
 });

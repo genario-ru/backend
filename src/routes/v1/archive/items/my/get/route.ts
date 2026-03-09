@@ -134,35 +134,35 @@ getMyArchiveItemsRoute.get(
     const [foundIdeasLists, foundScenarios] = await Promise.all([
       shouldLoadIdeasLists
         ? db.query.ideasList.findMany({
-          where: and(...ideasListsWhereConditions),
-          orderBy: ideasListOrderBy,
-          with: {
-            profile: true,
-            template: true,
-            ideasListToTone: {
-              with: { tone: true },
+            where: and(...ideasListsWhereConditions),
+            orderBy: ideasListOrderBy,
+            with: {
+              profile: true,
+              template: true,
+              ideasListToTone: {
+                with: { tone: true },
+              },
+              ideasListToVideoType: {
+                with: { videoType: true },
+              },
             },
-            ideasListToVideoType: {
-              with: { videoType: true },
-            },
-          },
-        })
+          })
         : Promise.resolve([]),
       shouldLoadScenarios
         ? db.query.scenario.findMany({
-          where: and(...scenariosWhereConditions),
-          orderBy: scenarioOrderBy,
-          with: {
-            profile: true,
-            template: true,
-            platform: true,
-            videoType: true,
-            videoDuration: true,
-            scenarioToTone: {
-              with: { tone: true },
+            where: and(...scenariosWhereConditions),
+            orderBy: scenarioOrderBy,
+            with: {
+              profile: true,
+              template: true,
+              platform: true,
+              videoType: true,
+              videoDuration: true,
+              scenarioToTone: {
+                with: { tone: true },
+              },
             },
-          },
-        })
+          })
         : Promise.resolve([]),
     ]);
 

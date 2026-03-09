@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { booleanResponseSchema } from "./boolean-response-schema.ts";
 import { linkModelSchema } from "./link-model-schema.ts";

@@ -17,19 +17,34 @@ type CreateConfigParams = {
 };
 
 export default defineConfig(() => {
-  return createConfig({
-    input: `${API_DIR}/tochka.json`,
-    output: `${API_OUTPUT_DIR}/tochka`,
-    clientConfig: {
-      parser: "zod",
-      pathParamsType: "object",
-      paramsType: "object",
-      importPath: "@/lib/tochka/api/client.ts",
-      transformers: {
-        name: kebabCaseTransformer,
+  return [
+    createConfig({
+      input: `${API_DIR}/tochka.json`,
+      output: `${API_OUTPUT_DIR}/tochka`,
+      clientConfig: {
+        parser: "zod",
+        pathParamsType: "object",
+        paramsType: "object",
+        importPath: "@/lib/tochka/api/client.ts",
+        transformers: {
+          name: kebabCaseTransformer,
+        },
       },
-    },
-  });
+    }),
+    createConfig({
+      input: `${API_DIR}/yookassa.json`,
+      output: `${API_OUTPUT_DIR}/yookassa`,
+      clientConfig: {
+        parser: "zod",
+        pathParamsType: "object",
+        paramsType: "object",
+        importPath: "@/lib/tochka/api/client.ts",
+        transformers: {
+          name: kebabCaseTransformer,
+        },
+      },
+    }),
+  ];
 });
 
 function kebabCaseTransformer(
@@ -75,6 +90,7 @@ function createConfig({
         },
       }),
       pluginZod({
+        importPath: "@/lib/zod/index.ts",
         output: {
           path: "zod",
         },

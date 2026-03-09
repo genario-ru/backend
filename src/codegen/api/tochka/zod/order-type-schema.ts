@@ -3,6 +3,6 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 export const orderTypeSchema = z.enum(["refund", "approval", "authorized"]);

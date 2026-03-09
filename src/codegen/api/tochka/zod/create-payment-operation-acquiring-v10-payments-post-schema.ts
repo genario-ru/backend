@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { z } from "zod/v4";
+import { z } from "@/lib/zod/index.ts";
 
 import { acquiringCreatePaymentOperationRequestDataModelSchema } from "./acquiring-create-payment-operation-request-data-model-schema.ts";
 import { acquiringCreatePaymentOperationResponseDataModelSchema } from "./acquiring-create-payment-operation-response-data-model-schema.ts";
