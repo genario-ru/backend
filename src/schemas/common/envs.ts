@@ -25,6 +25,7 @@ export const envsSchema = z.object({
   VSELLM_IMAGE_MODEL: z.string(),
   TOCHKA_OPENAPI_URL: z.string(),
   TOCHKA_BASE_API_URL: z.string(),
+  TOCHKA_JWT_TOKEN: z.string(),
   FRONTEND_BASE_URL: z.string(),
   BACKEND_BASE_URL: z.string(),
 });

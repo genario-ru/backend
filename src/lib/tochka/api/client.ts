@@ -1,42 +1,17 @@
-import { documentTypes } from "@/constants/api/document-types";
 import { envs } from "@/constants/common/envs";
 import { prepareQueryString } from "@/utils/api/prepare-query-string";
 
-export type APIErrorInfo = {
-  url: string;
-  status: number;
-  statusText: string;
-  data?: unknown;
-};
+type Method = "GET" | "PUT" | "PATCH" | "POST" | "DELETE";
+type ResponseType = "json" | "text";
 
-export class APIError extends Error {
-  constructor(
-    message: string,
-    public cause: APIErrorInfo,
-  ) {
-    super(message);
-    this.name = "FetchFnError";
-  }
-}
-
-type Method = "GET" | "PUT" | "PATCH" | "POST" | "DELETE" | "OPTIONS" | "HEAD";
-
-type ResponseType =
-  | "arraybuffer"
-  | "blob"
-  | "document"
-  | "json"
-  | "text"
-  | "stream";
-
-export type RequestConfig<TData = unknown> = {
-  url?: string;
+export type RequestConfig<TVariables = unknown> = {
   method: Method;
-  params?: object;
-  data?: TData | FormData;
-  responseType?: ResponseType;
-  signal?: AbortSignal;
+  url: string;
+  params?: Record<string, string | number | boolean | null | undefined>;
+  data?: TVariables | FormData;
   headers?: HeadersInit;
+  signal?: AbortSignal;
+  responseType?: ResponseType;
 };
 
 export type ResponseConfig<TData = unknown> = {
@@ -45,29 +20,34 @@ export type ResponseConfig<TData = unknown> = {
   statusText: string;
 };
 
-export type Client = <TData, _TError = unknown, TVariables = unknown>(
+export type ResponseErrorConfig<TError = unknown> = TError & {
+  status: number;
+  statusText: string;
+  url: string;
+  data?: unknown;
+};
+
+export type Client = <
+  TData = unknown,
+  _TError = ResponseErrorConfig,
+  TVariables = unknown,
+>(
   config: RequestConfig<TVariables>,
 ) => Promise<ResponseConfig<TData>>;
 
-export type ResponseErrorConfig<TError = unknown> = TError;
+// ──────────────────────────────────────────────
+// Основной клиент (Kubb-compatible)
+// ──────────────────────────────────────────────
 
-export default async function client<
-  TData,
-  _TError = APIErrorInfo,
-  TVariables = unknown,
->({
+export const client: Client = async ({
   url,
   method,
   params,
-  data: body,
+  data,
   signal,
   headers: initialHeaders,
-}: RequestConfig<TVariables>): Promise<ResponseConfig<TData>> {
-  const headers = new Headers({
-    "Content-Type": "application/json",
-    ...initialHeaders,
-  });
-
+  responseType = "json",
+}) => {
   const urlWithBase = `${envs.TOCHKA_BASE_API_URL}${url}`;
 
   const queryString = prepareQueryString({
@@ -75,65 +55,64 @@ export default async function client<
     includeQuestionmark: true,
   });
 
+  const headers = new Headers({
+    Authorization: `Bearer ${envs.TOCHKA_JWT_TOKEN}`,
+    ...initialHeaders,
+  });
+
   const fullUrl = `${urlWithBase}${queryString}`;
+  const isFormData = data instanceof FormData;
 
-  try {
-    const response = await fetch(fullUrl, {
-      method,
-      body: JSON.stringify(body),
-      signal,
-      headers,
-    });
+  if (!isFormData && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
 
-    const contentType = response.headers.get("Content-Type");
+  const response = await fetch(fullUrl.toString(), {
+    method,
+    headers,
+    body: isFormData ? data : data ? JSON.stringify(data) : undefined,
+    signal,
+  });
 
-    if (!contentType?.includes(documentTypes.json)) {
-      throw new APIError("Non-JSON response is not supported", {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-      });
+  if (!response.ok) {
+    let errorData: unknown;
+
+    try {
+      if (responseType === "json") {
+        errorData = await response.json();
+      }
+
+      errorData = await response.text();
+    } catch {
+      errorData = null;
     }
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new APIError(`HTTP Error ${response.status}`, {
-        url: response.url,
-        status: response.status,
-        statusText: response.statusText,
-        data,
-      });
-    }
-
-    return {
-      data,
+    const error: ResponseErrorConfig = {
       status: response.status,
       statusText: response.statusText,
+      url: fullUrl.toString(),
+      data: errorData,
     };
-  } catch (error) {
-    console.log("error", error);
 
-    if (error instanceof APIError) {
-      throw error;
-    }
-
-    // Process network errors
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      throw new APIError("Network error", {
-        status: 0,
-        statusText: "Network request failed",
-        url: fullUrl,
-        data: error.cause,
-      });
-    }
-
-    // Process unknown errors
-    throw new APIError("Unknown error", {
-      status: 0,
-      statusText: "Unknown error occurred",
-      url: fullUrl,
-      data: error instanceof Error ? error.cause : error,
-    });
+    throw error;
   }
-}
+
+  let responseData;
+
+  switch (responseType) {
+    case "text":
+      responseData = await response.text();
+      break;
+
+    default:
+      responseData = await response.json();
+  }
+
+  return {
+    data: responseData,
+    status: response.status,
+    statusText: response.statusText,
+  };
+};
+
+export default client;

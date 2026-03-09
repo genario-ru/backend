@@ -44,6 +44,7 @@ export const envs = envsSchema.parse({
   // Tochka
   TOCHKA_OPENAPI_URL: process.env.TOCHKA_OPENAPI_URL,
   TOCHKA_BASE_API_URL: process.env.TOCHKA_BASE_API_URL,
+  TOCHKA_JWT_TOKEN: process.env.TOCHKA_JWT_TOKEN,
 
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
