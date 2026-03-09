@@ -4,11 +4,9 @@ import { profileAttachment } from "@/db/schema";
 import { z } from "@/lib/zod";
 
 import { attachmentSchema } from "../../attachments/entities/attachment";
-import { profilesRegistry } from "../registry";
-
 export const profileAttachmentSchema = createSelectSchema(
   profileAttachment,
-).register(profilesRegistry, {
+).meta({
   title: "Profile attachment",
   description: "Profile attachment description",
   ref: "ProfileAttachmentSchema",
@@ -20,7 +18,7 @@ export const ProfileAttachmentExtendedSchema = profileAttachmentSchema
   .extend({
     attachment: attachmentSchema,
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Profile attachment extended",
     description: "Profile attachment extended description",
     ref: "ProfileAttachmentExtendedSchema",

@@ -3,12 +3,9 @@ import { createSelectSchema } from "drizzle-zod";
 import { scenarioChapter } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../registry";
 import { scenarioSceneExtendedSchema } from "./scenario-scene";
 
-export const scenarioChapterSchema = createSelectSchema(
-  scenarioChapter,
-).register(scenariosRegistry, {
+export const scenarioChapterSchema = createSelectSchema(scenarioChapter).meta({
   title: "Scenario chapter",
   description: "Scenario chapter description",
   ref: "ScenarioChapterSchema",
@@ -25,6 +22,11 @@ export const scenarioChapterGeneratedSchema = scenarioChapterSchema
   })
   .refine((chapter) => chapter.endTime > chapter.startTime, {
     message: "End time must be greater than start time",
+  })
+  .meta({
+    title: "Scenario chapter generated",
+    description: "Scenario chapter generated description",
+    ref: "ScenarioChapterGeneratedSchema",
   });
 
 export type ScenarioChapterGenerated = z.infer<
@@ -35,7 +37,7 @@ export const scenarioChapterExtendedSchema = scenarioChapterSchema
   .extend({
     scenes: z.array(scenarioSceneExtendedSchema),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Scenario chapter extended",
     description: "Scenario chapter extended description",
     ref: "ScenarioChapterExtendedSchema",

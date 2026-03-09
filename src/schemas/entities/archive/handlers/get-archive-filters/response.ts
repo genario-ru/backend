@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { archiveFiltersSchema } from "../../entities/archive-filter";
-import { archiveRegistry } from "../../registry";
-
 export const getArchiveFiltersResponseSchema = z
   .object({
     data: archiveFiltersSchema,
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Get archive filters response",
     description: "Схема ответа с вариантами фильтров архива",
     ref: "GetArchiveFiltersResponseSchema",

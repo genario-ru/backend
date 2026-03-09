@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { ideasListSchema } from "../../entities/ideas-list";
-import { ideasListsRegistry } from "../../registry";
-
 export const updateIdeasListResponseSchema = z
   .object({
     data: ideasListSchema,
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Update ideas list response",
     description: "Update ideas list response description",
     ref: "UpdateIdeasListResponseSchema",

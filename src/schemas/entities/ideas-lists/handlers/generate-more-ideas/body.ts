@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { ideasListsRegistry } from "../../registry";
-
 export const generateMoreIdeasBodySchema = z
   .object({
     userPrompt: z.string().nullish(),
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Generate more ideas body",
     description: "Generate more ideas body description",
     ref: "GenerateMoreIdeasBodySchema",

@@ -3,8 +3,6 @@ import { z } from "zod";
 
 import { profile } from "@/db/schema";
 
-import { profilesRegistry } from "../../registry";
-
 export const updateProfileBodySchema = createUpdateSchema(profile)
   .pick({
     name: true,
@@ -16,7 +14,7 @@ export const updateProfileBodySchema = createUpdateSchema(profile)
     platformIds: z.array(z.uuid()).optional(),
     toneIds: z.array(z.uuid()).optional(),
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Update profile body",
     description: "Update profile body description",
     ref: "UpdateProfileBodySchema",

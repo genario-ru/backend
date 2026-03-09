@@ -3,8 +3,6 @@ import { z } from "zod";
 
 import { idea } from "@/db/schema";
 
-import { ideasRegistry } from "../../registry";
-
 export const updateIdeaBodySchema = createUpdateSchema(idea)
   .pick({
     name: true,
@@ -12,7 +10,7 @@ export const updateIdeaBodySchema = createUpdateSchema(idea)
     saved: true,
     liked: true,
   })
-  .register(ideasRegistry, {
+  .meta({
     title: "Update idea body",
     description: "Update idea body description",
     ref: "UpdateIdeaBodySchema",

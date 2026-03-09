@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { ideasListsRegistry } from "../../registry";
-
 export const deleteIdeasListParamsSchema = z
   .object({
     ideasListId: z.uuid(),
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Delete ideas list params",
     description: "Delete ideas list params description",
     ref: "DeleteIdeasListParamsSchema",

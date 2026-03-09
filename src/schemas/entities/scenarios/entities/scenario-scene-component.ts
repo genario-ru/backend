@@ -3,12 +3,11 @@ import { createSelectSchema } from "drizzle-zod";
 import { scenarioSceneComponent } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../registry";
 import { scenarioSceneComponentTypeSchema } from "./scenario-scene-component-type";
 
 export const scenarioSceneComponentSchema = createSelectSchema(
   scenarioSceneComponent,
-).register(scenariosRegistry, {
+).meta({
   title: "Scenario scene component",
   description: "Scenario scene component description",
   ref: "ScenarioSceneComponentSchema",
@@ -29,6 +28,11 @@ export const scenarioSceneComponentGeneratedSchema =
       content: scenarioSceneComponentSchema.shape.content.describe(
         "Markdown formatted text for the scene component content.",
       ),
+    })
+    .meta({
+      title: "Scenario scene component generated",
+      description: "Scenario scene component generated description",
+      ref: "ScenarioSceneComponentGeneratedSchema",
     });
 
 export type ScenarioSceneComponentGenerated = z.infer<
@@ -41,8 +45,8 @@ export const scenarioSceneComponentExtendedSchema = createSelectSchema(
   .extend({
     type: scenarioSceneComponentTypeSchema,
   })
-  .register(scenariosRegistry, {
-    title: "Scenario scene component type",
-    description: "Scenario scene component type description",
-    ref: "ScenarioSceneComponentTypeSchema",
+  .meta({
+    title: "Scenario scene component extend",
+    description: "Scenario scene component extend description",
+    ref: "ScenarioSceneComponentExtendedSchema",
   });

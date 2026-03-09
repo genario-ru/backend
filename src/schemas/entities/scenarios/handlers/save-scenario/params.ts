@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const saveScenarioParamsSchema = z
   .object({
     scenarioId: z.uuid(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Save scenario params",
     description: "Save scenario params description",
     ref: "SaveScenarioParamsSchema",

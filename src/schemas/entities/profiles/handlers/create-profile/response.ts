@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { profileSchema } from "../../entities/profile";
-import { profilesRegistry } from "../../registry";
-
 export const createProfileResponseSchema = z
   .object({
     data: profileSchema,
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Create profile response",
     description: "Create profile response description",
     ref: "CreateProfileResponseSchema",

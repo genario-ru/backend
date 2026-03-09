@@ -7,7 +7,11 @@ export const ARCHIVE_SORT_VALUES = [
   "updatedAtAsc",
 ] as const;
 
-export const archiveSortSchema = z.enum(ARCHIVE_SORT_VALUES);
+export const archiveSortSchema = z.enum(ARCHIVE_SORT_VALUES).meta({
+  title: "Archive sort",
+  description: "Archive sort description",
+  ref: "ArchiveSortSchema",
+});
 
 export type ArchiveSort = (typeof ARCHIVE_SORT_VALUES)[number];
 

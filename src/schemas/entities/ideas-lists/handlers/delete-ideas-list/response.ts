@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { ideasListSchema } from "../../entities/ideas-list";
-import { ideasListsRegistry } from "../../registry";
-
 export const deleteIdeasListResponseSchema = z
   .object({
     data: ideasListSchema,
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Delete ideas list response",
     description: "Delete ideas list response description",
     ref: "DeleteIdeasListResponseSchema",

@@ -3,9 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 import { user } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { usersRegistry } from "../registry";
-
-export const userSchema = createSelectSchema(user).register(usersRegistry, {
+export const userSchema = createSelectSchema(user).meta({
   title: "User",
   description: "User description",
   ref: "UserSchema",

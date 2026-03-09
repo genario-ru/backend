@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { subscriptionExtendedSchema } from "../../entities/subscription";
-import { subscriptionsRegistry } from "../../registry";
-
 export const getMySubscriptionsResponseSchema = z
   .object({
     data: z.array(subscriptionExtendedSchema),
   })
-  .register(subscriptionsRegistry, {
+  .meta({
     title: "Get my subscriptions response",
     description: "Get my subscriptions response description",
     ref: "GetMySubscriptionsResponseSchema",

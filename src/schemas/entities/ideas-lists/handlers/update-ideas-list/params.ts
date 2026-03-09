@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { ideasListsRegistry } from "../../registry";
-
 export const updateIdeasListParamsSchema = z
   .object({
     ideasListId: z.uuid(),
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Update ideas list params",
     description: "Update ideas list params description",
     ref: "UpdateIdeasListParamsSchema",

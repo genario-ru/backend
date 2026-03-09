@@ -3,8 +3,6 @@ import { createUpdateSchema } from "drizzle-zod";
 import { scenario } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const updateScenarioBodySchema = createUpdateSchema(scenario)
   .pick({
     name: true,
@@ -19,7 +17,7 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
   .extend({
     toneIds: z.array(z.uuid()).optional(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Update scenario body",
     description: "Update scenario body description",
     ref: "UpdateScenarioBodySchema",

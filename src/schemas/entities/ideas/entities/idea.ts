@@ -5,9 +5,7 @@ import { z } from "@/lib/zod";
 
 import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
-import { ideasRegistry } from "../registry";
-
-export const ideaSchema = createSelectSchema(idea).register(ideasRegistry, {
+export const ideaSchema = createSelectSchema(idea).meta({
   title: "Idea",
   description: "Idea description",
   ref: "IdeaSchema",
@@ -29,7 +27,7 @@ export const ideaExtendedSchema = ideaSchema
     ideasList: ideasListExtendedSchema,
     videoType: videoTypeSchema,
   })
-  .register(ideasRegistry, {
+  .meta({
     title: "Idea extended",
     description: "Idea extended description",
     ref: "IdeaExtendedSchema",

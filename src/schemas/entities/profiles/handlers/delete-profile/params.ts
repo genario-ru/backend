@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { profilesRegistry } from "../../registry";
-
 export const deleteProfileParamsSchema = z
   .object({
     profileId: z.uuid(),
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Delete profile params",
     description: "Delete profile params description",
     ref: "DeleteProfileParamsSchema",

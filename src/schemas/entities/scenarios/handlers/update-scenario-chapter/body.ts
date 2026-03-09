@@ -1,7 +1,5 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const updateScenarioChapterBodySchema = z
   .object({
     name: z.string().optional(),
@@ -10,7 +8,7 @@ export const updateScenarioChapterBodySchema = z
     startTime: z.number().int().optional(),
     endTime: z.number().int().optional(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Update scenario chapter body",
     description: "Update scenario chapter body description",
     ref: "UpdateScenarioChapterBodySchema",

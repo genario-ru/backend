@@ -2,8 +2,6 @@ import { z } from "@/lib/zod";
 import { metaResponseSchema } from "@/schemas/common/meta";
 
 import { archiveItemSchema } from "../../entities/archive-item";
-import { archiveRegistry } from "../../registry";
-
 export const archiveMetaResponseSchema = metaResponseSchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
@@ -20,7 +18,7 @@ export const getMyArchiveItemsResponseSchema = z
     data: z.array(archiveItemSchema),
     meta: archiveMetaResponseSchema,
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Get my archive items response",
     description: "Archive items response payload",
     ref: "GetMyArchiveItemsResponseSchema",

@@ -1,7 +1,5 @@
 import { z } from "@/lib/zod";
 
-import { archiveRegistry } from "../registry";
-
 export const ARCHIVE_FILTER_IDS = [
   "entity",
   "sort",
@@ -20,9 +18,9 @@ export const archiveFilterOptionSchema = z
     label: z.string(),
     value: z.string(),
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Archive filter option",
-    description: "Опция фильтра (значение и отображаемый текст)",
+    description: "Archive filter option description",
     ref: "ArchiveFilterOptionSchema",
   });
 
@@ -36,20 +34,18 @@ const archiveFilterSchema = z
     type: z.enum(["select", "multiselect"]),
     options: z.array(archiveFilterOptionSchema),
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Archive filter",
-    description: "Фильтр архива",
+    description: "Archive filter description",
     ref: "ArchiveFilterSchema",
   });
 
 export type ArchiveFilter = z.infer<typeof archiveFilterSchema>;
 
-export const archiveFiltersSchema = z
-  .array(archiveFilterSchema)
-  .register(archiveRegistry, {
-    title: "Archive filters",
-    description: "Набор доступных фильтров архива",
-    ref: "ArchiveFiltersSchema",
-  });
+export const archiveFiltersSchema = z.array(archiveFilterSchema).meta({
+  title: "Archive filters",
+  description: "Archive filters description",
+  ref: "ArchiveFiltersSchema",
+});
 
 export type ArchiveFilters = z.infer<typeof archiveFiltersSchema>;

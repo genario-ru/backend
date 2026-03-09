@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { videoDurationSchema } from "../../entities/video-duration";
-import { videoDurationsRegistry } from "../../registry";
-
 export const getVideoDurationsResponseSchema = z
   .object({
     data: z.array(videoDurationSchema),
   })
-  .register(videoDurationsRegistry, {
+  .meta({
     title: "Get video durations response",
     description: "Get video durations response description",
     ref: "GetVideoDurationsResponseSchema",

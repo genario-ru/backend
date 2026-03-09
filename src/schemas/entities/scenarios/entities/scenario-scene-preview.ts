@@ -3,8 +3,6 @@ import { createSelectSchema } from "drizzle-zod";
 import { scenarioScenePreview } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../registry";
-
 export const scenarioScenePreviewSchema = createSelectSchema(
   scenarioScenePreview,
 )
@@ -12,7 +10,7 @@ export const scenarioScenePreviewSchema = createSelectSchema(
     url: z.string().nullable(),
     urlCompressed: z.string().nullable(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Scenario scene preview",
     description: "Scenario scene preview description",
     ref: "ScenarioScenePreviewSchema",

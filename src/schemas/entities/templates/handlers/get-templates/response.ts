@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { templateSchema } from "../../entities/template";
-import { templatesRegistry } from "../../registry";
-
 export const getTemplatesResponseSchema = z
   .object({
     data: z.array(templateSchema),
   })
-  .register(templatesRegistry, {
+  .meta({
     title: "Get templates response",
     description: "Get templates response description",
     ref: "GetTemplatesResponseSchema",

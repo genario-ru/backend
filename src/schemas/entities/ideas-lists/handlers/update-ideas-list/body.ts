@@ -3,8 +3,6 @@ import { createUpdateSchema } from "drizzle-zod";
 import { ideasList } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { ideasListsRegistry } from "../../registry";
-
 export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
   .pick({
     profileId: true,
@@ -16,7 +14,7 @@ export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
     toneIds: z.array(z.uuid()).optional(),
     videoTypeIds: z.array(z.uuid()).optional(),
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Update ideas list body",
     description: "Update ideas list body description",
     ref: "UpdateIdeasListBodySchema",

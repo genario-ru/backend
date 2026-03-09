@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { profileSchema } from "../../entities/profile";
-import { profilesRegistry } from "../../registry";
-
 export const deleteProfileResponseSchema = z
   .object({
     data: profileSchema,
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Delete profile response",
     description: "Delete profile response description",
     ref: "DeleteProfileResponseSchema",

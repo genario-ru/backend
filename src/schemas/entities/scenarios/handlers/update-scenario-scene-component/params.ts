@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const updateScenarioSceneComponentParamsSchema = z
   .object({
     sceneComponentId: z.uuid(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Update scenario scene component params",
     description: "Update scenario scene component params description",
     ref: "UpdateScenarioSceneComponentParamsSchema",

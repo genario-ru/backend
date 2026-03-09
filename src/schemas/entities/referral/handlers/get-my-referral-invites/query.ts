@@ -1,14 +1,12 @@
 import { z } from "@/lib/zod";
 import { metaQuerySchema } from "@/schemas/common/meta";
 
-import { referralRegistry } from "../../registry";
-
 export const getMyReferralInvitesQuerySchema = metaQuerySchema
   .omit({ sortBy: true, sortOrder: true })
   .extend({
     sort: z.string().optional(),
   })
-  .register(referralRegistry, {
+  .meta({
     title: "Get my referral invites query",
     description: "Get my referral invites query description",
     ref: "GetMyReferralInvitesQuerySchema",

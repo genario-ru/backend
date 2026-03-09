@@ -9,17 +9,13 @@ import { templateSchema } from "../../templates/entities/template";
 import { toneSchema } from "../../tones/entities/tone";
 import { videoDurationSchema } from "../../video-durations/entities/video-duration";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
-import { scenariosRegistry } from "../registry";
 import { scenarioVersionExtendedSchema } from "./scenario-version";
 
-export const scenarioSchema = createSelectSchema(scenario).register(
-  scenariosRegistry,
-  {
-    title: "Scenario",
-    description: "Scenario description",
-    ref: "ScenarioSchema",
-  },
-);
+export const scenarioSchema = createSelectSchema(scenario).meta({
+  title: "Scenario",
+  description: "Scenario description",
+  ref: "ScenarioSchema",
+});
 
 export type Scenario = z.infer<typeof scenarioSchema>;
 
@@ -33,7 +29,7 @@ export const scenarioExtendedSchema = scenarioSchema
     videoDuration: videoDurationSchema.nullish(),
     tones: z.array(toneSchema).nullish(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Scenario extended",
     description: "Scenario extended description",
     ref: "ScenarioExtendedSchema",

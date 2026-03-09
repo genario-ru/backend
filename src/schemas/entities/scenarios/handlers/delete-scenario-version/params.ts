@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const deleteScenarioVersionParamsSchema = z
   .object({
     versionId: z.uuid(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Delete scenario version params",
     description: "Delete scenario version params description",
     ref: "DeleteScenarioVersionParamsSchema",

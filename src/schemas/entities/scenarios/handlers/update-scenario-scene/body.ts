@@ -1,7 +1,5 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const updateScenarioSceneBodySchema = z
   .object({
     previewId: z.uuid().nullish(),
@@ -12,7 +10,7 @@ export const updateScenarioSceneBodySchema = z
     endTime: z.number().int().optional(),
     badges: z.string().nullish(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Update scenario scene body",
     description: "Update scenario scene body description",
     ref: "UpdateScenarioSceneBodySchema",

@@ -4,17 +4,13 @@ import { tariffDiscount } from "@/db/schema";
 import { z } from "@/lib/zod";
 
 import { userSchema } from "../../users/entities/user";
-import { tariffsRegistry } from "../registry";
 import { tariffSchema } from "./tariff";
 
-export const tariffDiscountSchema = createSelectSchema(tariffDiscount).register(
-  tariffsRegistry,
-  {
-    title: "Tariff discount",
-    description: "Tariff discount description",
-    ref: "TariffDiscountSchema",
-  },
-);
+export const tariffDiscountSchema = createSelectSchema(tariffDiscount).meta({
+  title: "Tariff discount",
+  description: "Tariff discount description",
+  ref: "TariffDiscountSchema",
+});
 
 export type TariffDiscount = z.infer<typeof tariffDiscountSchema>;
 
@@ -23,7 +19,7 @@ export const tariffDiscountExtendedSchema = tariffDiscountSchema
     user: userSchema,
     tariff: tariffSchema,
   })
-  .register(tariffsRegistry, {
+  .meta({
     title: "Tariff discount extended",
     description: "Tariff discount extended description",
     ref: "TariffDiscountExtendedSchema",

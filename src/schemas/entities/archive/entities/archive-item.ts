@@ -2,15 +2,11 @@ import { z } from "@/lib/zod";
 
 import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { scenarioExtendedSchema } from "../../scenarios/entities/scenario";
-import { archiveRegistry } from "../registry";
-
-export const archiveEntitySchema = z
-  .enum(["ideasList", "scenario"])
-  .register(archiveRegistry, {
-    title: "Archive entity",
-    description: "Archive entity discriminator",
-    ref: "ArchiveEntitySchema",
-  });
+export const archiveEntitySchema = z.enum(["ideasList", "scenario"]).meta({
+  title: "Archive entity",
+  description: "Archive entity discriminator",
+  ref: "ArchiveEntitySchema",
+});
 
 export type ArchiveEntity = z.infer<typeof archiveEntitySchema>;
 
@@ -19,9 +15,9 @@ export const archiveIdeasListSchema = z
     entity: z.literal(archiveEntitySchema.enum.ideasList),
     data: ideasListExtendedSchema,
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Archive ideas list",
-    description: "Ideas list in archive",
+    description: "Archive ideas list description",
     ref: "ArchiveIdeasListSchema",
   });
 
@@ -32,9 +28,9 @@ export const archiveScenarioSchema = z
     entity: z.literal(archiveEntitySchema.enum.scenario),
     data: scenarioExtendedSchema,
   })
-  .register(archiveRegistry, {
+  .meta({
     title: "Archive scenario",
-    description: "Scenario in archive",
+    description: "Archive scenario description",
     ref: "ArchiveScenarioSchema",
   });
 
@@ -42,9 +38,9 @@ export type ArchiveScenario = z.infer<typeof archiveScenarioSchema>;
 
 export const archiveItemSchema = z
   .discriminatedUnion("entity", [archiveIdeasListSchema, archiveScenarioSchema])
-  .register(archiveRegistry, {
+  .meta({
     title: "Archive item",
-    description: "Archive item with discriminator",
+    description: "Archive item description",
     ref: "ArchiveItemSchema",
   });
 

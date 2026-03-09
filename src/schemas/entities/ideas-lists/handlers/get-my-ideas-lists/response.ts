@@ -2,8 +2,6 @@ import { z } from "@/lib/zod";
 import { metaResponseSchema } from "@/schemas/common/meta";
 
 import { ideasListExtendedSchema } from "../../entities/ideas-list";
-import { ideasListsRegistry } from "../../registry";
-
 export const getMyIdeasListsResponseSchema = z
   .object({
     data: z.array(ideasListExtendedSchema),
@@ -12,7 +10,7 @@ export const getMyIdeasListsResponseSchema = z
       sortBy: z.enum(["createdAt", "updatedAt"]),
     }),
   })
-  .register(ideasListsRegistry, {
+  .meta({
     title: "Get my ideas lists response",
     description: "Get my ideas lists response description",
     ref: "GetMyIdeasListsResponseSchema",

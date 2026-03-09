@@ -96,11 +96,17 @@ export const zAPIErrorStatusCode = z.enum(APIErrorStatusCode);
 export type APIErrorCodeType = `${APIErrorCode}`;
 export type APIErrorStatusCodeType = `${APIErrorStatusCode}`;
 
-export const zAPIErrorSchema = z.object({
-  code: zHTTPErrorCode.describe("Код ошибки"),
-  statusCode: zHTTPErrorStatusCode.describe("HTTP статус код"),
-  message: z.string().describe("Человеко-читаемое описание ошибки"),
-  details: z.unknown().optional().describe("Дополнительные данные об ошибке"),
-});
+export const zAPIErrorSchema = z
+  .object({
+    code: zHTTPErrorCode.describe("Код ошибки"),
+    statusCode: zHTTPErrorStatusCode.describe("HTTP статус код"),
+    message: z.string().describe("Человеко-читаемое описание ошибки"),
+    details: z.unknown().optional().describe("Дополнительные данные об ошибке"),
+  })
+  .meta({
+    title: "API error",
+    description: "API error description",
+    ref: "APIErrorSchema",
+  });
 
 export type APIErrorSchema = z.infer<typeof zAPIErrorSchema>;

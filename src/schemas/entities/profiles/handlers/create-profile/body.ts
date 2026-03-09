@@ -1,7 +1,5 @@
 import { z } from "@/lib/zod";
 
-import { profilesRegistry } from "../../registry";
-
 export const createProfileBodySchema = z
   .object({
     name: z
@@ -28,7 +26,7 @@ export const createProfileBodySchema = z
       .array(z.string().uuid("Некорректный формат идентификатора платформы"))
       .optional(),
   })
-  .register(profilesRegistry, {
+  .meta({
     title: "Create profile body",
     description: "Create profile body description",
     ref: "CreateProfileBodySchema",

@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { scenarioSchema } from "../../entities/scenario";
-import { scenariosRegistry } from "../../registry";
-
 export const createScenarioResponseSchema = z
   .object({
     data: scenarioSchema,
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Create scenario response",
     description: "Create scenario response description",
     ref: "CreateScenarioResponseSchema",

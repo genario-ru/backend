@@ -1,7 +1,5 @@
 import { z } from "@/lib/zod";
 
-import { referralRegistry } from "../../registry";
-
 export const getReferralInfoResponseSchema = z
   .object({
     data: z.object({
@@ -9,7 +7,7 @@ export const getReferralInfoResponseSchema = z
       referralDocumentLink: z.string(),
     }),
   })
-  .register(referralRegistry, {
+  .meta({
     title: "Get referral info response",
     description: "Get referral info response description",
     ref: "GetReferralInfoResponseSchema",

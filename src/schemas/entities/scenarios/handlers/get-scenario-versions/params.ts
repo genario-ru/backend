@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const getScenarioVersionsParamsSchema = z
   .object({
     scenarioId: z.uuid(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Get scenario versions params",
     description: "Get scenario versions params description",
     ref: "GetScenarioVersionsParamsSchema",

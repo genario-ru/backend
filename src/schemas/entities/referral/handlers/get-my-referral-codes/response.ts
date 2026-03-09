@@ -1,15 +1,13 @@
 import { z } from "@/lib/zod";
 
 import { referralCodeExtendedSchema } from "../../entities/referral-code";
-import { referralRegistry } from "../../registry";
-
 export const getMyReferralCodesResponseSchema = z
   .object({
     data: z.object({
       referralCodes: z.array(referralCodeExtendedSchema.omit({ user: true })),
     }),
   })
-  .register(referralRegistry, {
+  .meta({
     title: "Get my referral codes response",
     description: "Get my referral codes response description",
     ref: "GetMyReferralCodesResponseSchema",

@@ -1,12 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { scenariosRegistry } from "../../registry";
-
 export const saveScenarioBodySchema = z
   .object({
     saved: z.boolean(),
   })
-  .register(scenariosRegistry, {
+  .meta({
     title: "Save scenario body",
     description: "Save scenario body description",
     ref: "SaveScenarioBodySchema",

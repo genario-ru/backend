@@ -1,13 +1,11 @@
 import { z } from "@/lib/zod";
 
 import { tariffExtendedSchema } from "../../entities/tariff";
-import { tariffsRegistry } from "../../registry";
-
 export const getTrialTariffResponseSchema = z
   .object({
     data: tariffExtendedSchema,
   })
-  .register(tariffsRegistry, {
+  .meta({
     title: "Get trial tariff response",
     description: "Get trial tariff response description",
     ref: "GetTrialTariffResponseSchema",
