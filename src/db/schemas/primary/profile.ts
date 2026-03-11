@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { profileToPlatform } from "../linking/profile-to-platform";
 import { profileToTone } from "../linking/profile-to-tone";
 import { ideasList } from "./ideas-list";

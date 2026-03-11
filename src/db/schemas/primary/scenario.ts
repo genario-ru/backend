@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { scenarioToTone } from "../linking/scenario-to-tone";
 import { platform } from "./platform";
 import { profile } from "./profile";

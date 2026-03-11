@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { scenarioSceneComponent } from "./scenario-scene-component";
 
 export const scenarioSceneComponentType = pgTable(

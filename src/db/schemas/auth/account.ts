@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { user } from "../primary/user";
 
 export const account = pgTable("account", {

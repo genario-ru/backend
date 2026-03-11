@@ -8,7 +8,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { account } from "../auth/account";
 import { session } from "../auth/session";
 import { creditsBatch } from "../billing/credits-batch";

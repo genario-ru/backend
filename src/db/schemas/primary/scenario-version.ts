@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { type AnyPgColumn, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { scenario } from "./scenario";
 import { scenarioChapter } from "./scenario-chapter";
 import { scenarioVideoReference } from "./scenario-video-reference";

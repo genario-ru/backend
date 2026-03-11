@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
 
 export const verification = pgTable("verification", {
   id: uuid("id").defaultRandom().primaryKey(),

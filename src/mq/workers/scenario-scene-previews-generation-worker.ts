@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
-import { aiGenerationLog, attachment, scenarioScenePreview } from "@/db/schema";
+import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
 import { vsellm } from "@/lib/ai/providers/vsellm";
 import { compressBase64Image } from "@/lib/image/compress-base64-image";
 import { redis } from "@/lib/redis";
@@ -146,8 +146,8 @@ export const scenarioScenePreviewsGenerationWorker =
                   status: "ready",
                 })
                 .where(eq(scenarioScenePreview.id, scenarioScenePreviewId)),
-              tx.insert(aiGenerationLog).values({
-                entityType: "scenario-scene-preview" as const,
+              tx.insert(generationLog).values({
+                entity: "scenario-scene-preview" as const,
                 entityId: scenarioScenePreviewId,
                 prompt,
                 model: envs.POLZA_AI_IMAGE_MODEL,

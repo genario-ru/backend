@@ -148,6 +148,13 @@
       "when": 1773010578039,
       "tag": "0020_unique_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1773187371149,
+      "tag": "0021_shallow_moon_knight",
+      "breakpoints": true
     }
   ]
 }

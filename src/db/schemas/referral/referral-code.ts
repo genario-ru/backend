@@ -1,12 +1,12 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
+import { timestamps } from "@/db/constants/timestamps";
 import {
   generateReferralCode,
   REFERRAL_CODE_LENGTH,
 } from "@/db/utils/generate-referral-code";
 
-import { timestamps } from "../../constants/timestamps";
 import { user } from "../primary/user";
 import { referralInvite } from "./referral-invite";
 import { referralReward } from "./referral-reward";

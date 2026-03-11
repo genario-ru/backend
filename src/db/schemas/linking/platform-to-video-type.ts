@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { platform } from "../primary/platform";
 import { videoType } from "../primary/video-type";
 

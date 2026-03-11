@@ -1,6 +1,6 @@
 import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
 
 export const creditsPackage = pgTable("credits_package", {
   id: uuid("id").defaultRandom().primaryKey(),

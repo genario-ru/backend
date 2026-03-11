@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
-import { aiGenerationLog, idea, ideasList } from "@/db/schema";
+import { generationLog, idea, ideasList } from "@/db/schema";
 import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
@@ -115,8 +115,8 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
           .returning();
 
         if (createdIdeas.length > 0) {
-          await tx.insert(aiGenerationLog).values({
-            entityType: "ideas-list" as const,
+          await tx.insert(generationLog).values({
+            entity: "ideas-list" as const,
             entityId: foundIdeasList.id,
             prompt,
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,

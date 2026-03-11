@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import {
-  aiGenerationLog,
+  generationLog,
   scenarioChapter,
   scenarioScene,
   scenarioSceneComponent,
@@ -140,8 +140,8 @@ export const scenarioScenesGenerationWorker =
           }
 
           if (generatedScenes.length > 0) {
-            await tx.insert(aiGenerationLog).values({
-              entityType: "scenario-version-chapter" as const,
+            await tx.insert(generationLog).values({
+              entity: "scenario-chapter-scenes" as const,
               entityId: scenarioChapterId,
               prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,

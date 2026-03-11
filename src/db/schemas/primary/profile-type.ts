@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { profile } from "./profile";
 
 export const profileType = pgTable("profile_type", {

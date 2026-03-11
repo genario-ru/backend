@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { creditsBatch } from "../billing/credits-batch";
 import { subscription } from "../billing/subscription";
 

@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { scenarioChapter } from "./scenario-chapter";
 import { scenarioSceneComponent } from "./scenario-scene-component";
 import { scenarioScenePreview } from "./scenario-scene-preview";

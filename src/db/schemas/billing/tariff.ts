@@ -9,7 +9,8 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { subscription } from "./subscription";
 
 export const tariffBillingPeriod = pgEnum("tariff_billing_period", [

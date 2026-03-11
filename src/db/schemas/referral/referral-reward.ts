@@ -1,7 +1,8 @@
 import { relations } from "drizzle-orm";
 import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { timestamps } from "../../constants/timestamps";
+import { timestamps } from "@/db/constants/timestamps";
+
 import { referralCode } from "./referral-code";
 
 export const referralRewardType = pgEnum("referral_reward_type", [
