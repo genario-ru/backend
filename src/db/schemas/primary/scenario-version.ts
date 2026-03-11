@@ -5,6 +5,7 @@ import { timestamps } from "@/db/constants/timestamps";
 
 import { scenario } from "./scenario";
 import { scenarioChapter } from "./scenario-chapter";
+import { scenarioVersionExport } from "./scenario-version-export";
 import { scenarioVideoReference } from "./scenario-video-reference";
 
 export const scenarioVersionStatus = pgEnum("scenario_version_status", [
@@ -38,6 +39,7 @@ export const scenarioVersionRelations = relations(
       references: [scenario.id],
     }),
     chapters: many(scenarioChapter),
+    exports: many(scenarioVersionExport),
     videoReferences: many(scenarioVideoReference),
   }),
 );

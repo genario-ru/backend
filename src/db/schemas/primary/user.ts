@@ -19,8 +19,10 @@ import { referralCode } from "../referral/referral-code";
 import { referralInvite } from "../referral/referral-invite";
 import { attachment } from "./attachment";
 import { ideasList } from "./ideas-list";
+import { ideasListExport } from "./ideas-list-export";
 import { profile } from "./profile";
 import { scenario } from "./scenario";
+import { scenarioVersionExport } from "./scenario-version-export";
 
 export const userRole = pgEnum("user_role", ["user", "admin"]);
 
@@ -52,6 +54,8 @@ export const userRelations = relations(user, ({ many }) => ({
   ideasLists: many(ideasList),
   scenarios: many(scenario),
   attachments: many(attachment),
+  ideasListExports: many(ideasListExport),
+  scenarioVersionExports: many(scenarioVersionExport),
   subscriptions: many(subscription),
   referralCodes: many(referralCode),
   referralInvitesAsSource: many(referralInvite, {

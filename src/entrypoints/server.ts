@@ -12,11 +12,14 @@ import { requestId } from "hono/request-id";
 import { openAPIRouteHandler } from "hono-openapi";
 
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
+import { envs } from "@/constants/common/envs";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
+import { ideasListExportGenerationQueue } from "@/mq/queues/ideas-list-export-generation-queue";
 import { ideasListGenerationQueue } from "@/mq/queues/ideas-list-generation-queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/queues/scenario-chapters-generation-queue";
 import { scenarioScenePreviewGenerationQueue } from "@/mq/queues/scenario-scene-preview-generation-queue";
 import { scenarioScenesGenerationQueue } from "@/mq/queues/scenario-scenes-generation-queue";
+import { scenarioVersionExportGenerationQueue } from "@/mq/queues/scenario-version-export-generation-queue";
 import { authRoute } from "@/routes/auth/route";
 import {
   getArchiveFiltersRoute,
@@ -30,9 +33,11 @@ import {
 } from "@/routes/v1/ideas";
 import {
   createIdeaRoute,
+  createIdeasListExportRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
+  getIdeasListExportRoute,
   getIdeasListRoute,
   getMyIdeasListsRoute,
   updateIdeasListRoute,
@@ -54,6 +59,7 @@ import {
 import {
   createScenarioRoute,
   createScenarioScenePreviewRoute,
+  createScenarioVersionExportRoute,
   deleteScenarioChapterRoute,
   deleteScenarioRoute,
   deleteScenarioSceneComponentRoute,
@@ -63,6 +69,7 @@ import {
   getScenarioChapterRoute,
   getScenarioCurrentVersionRoute,
   getScenarioRoute,
+  getScenarioVersionExportRoute,
   getScenarioVersionRoute,
   getScenarioVersionsRoute,
   saveScenarioRoute,
@@ -91,9 +98,11 @@ const bullBoardBasePath = "/admin/queues";
 createBullBoard({
   queues: [
     new BullMQAdapter(ideasListGenerationQueue),
+    new BullMQAdapter(ideasListExportGenerationQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
+    new BullMQAdapter(scenarioVersionExportGenerationQueue),
   ],
   serverAdapter: bullBoardAdapter,
 });
@@ -106,9 +115,11 @@ const appAPIv1RoutesList = [
   getIdeaRoute,
   updateIdeaRoute,
   saveIdeaRoute,
+  createIdeasListExportRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
+  getIdeasListExportRoute,
   getIdeasListRoute,
   createIdeaRoute,
   getMyIdeasListsRoute,
@@ -126,6 +137,7 @@ const appAPIv1RoutesList = [
   getMyReferralInvitesRoute,
   getReferralInfoRoute,
   createScenarioRoute,
+  createScenarioVersionExportRoute,
   deleteScenarioRoute,
   getMyScenariosRoute,
   getScenarioRoute,
@@ -134,6 +146,7 @@ const appAPIv1RoutesList = [
   updateScenarioRoute,
   saveScenarioRoute,
   deleteScenarioVersionRoute,
+  getScenarioVersionExportRoute,
   getScenarioVersionRoute,
   getScenarioVersionsRoute,
   deleteScenarioChapterRoute,
@@ -186,7 +199,7 @@ app.get(
       },
       servers: [
         {
-          url: "https://api.genario.ru",
+          url: envs.BACKEND_BASE_URL,
         },
       ],
     },
