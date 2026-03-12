@@ -5,7 +5,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getScenarioChapterParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-chapter/params";
 import {
@@ -24,6 +26,12 @@ export const getScenarioChapterRoute = createHonoApp().basePath(
 getScenarioChapterRoute.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-scenario-chapter",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],
     responses: {

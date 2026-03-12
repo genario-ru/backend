@@ -2,6 +2,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import {
   type GetMySubscriptionsResponse,
@@ -17,6 +18,11 @@ export const getMySubscriptionsRoute =
 getMySubscriptionsRoute.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-my-subscriptions",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],
     responses: {

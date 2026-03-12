@@ -4,6 +4,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getPaymentInfoQuerySchema } from "@/schemas/entities/billing/handlers/get-payment-info/query";
@@ -21,6 +22,11 @@ export const getPaymentInfo = createHonoApp().basePath("/billing/payment-info");
 getPaymentInfo.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-payment-info",
+    windowMs: 60 * 1000,
+    limit: 3,
+  }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],
     responses: {
@@ -35,7 +41,7 @@ getPaymentInfo.get(
     const {
       tariffSlug,
       trialTariffSlug,
-      redirect: redirectPath,
+      redirect: _redirectPath,
     } = c.req.valid("query");
 
     const foundTariff = await db.query.tariff.findFirst({

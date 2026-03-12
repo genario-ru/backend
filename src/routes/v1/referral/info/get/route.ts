@@ -1,6 +1,7 @@
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetMyReferralCodesResponse,
   getMyReferralCodesResponseSchema,
@@ -16,6 +17,11 @@ export const getReferralInfoRoute = createHonoApp().basePath("/referral/info");
 // GET /api/v1/referral/info
 getReferralInfoRoute.get(
   "/",
+  rateLimitMiddleware({
+    keyPrefix: "get-referral-info",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Referral],
     responses: {

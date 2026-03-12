@@ -6,7 +6,9 @@ import { db } from "@/db";
 import { scenarioScenePreview } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioScenePreviewGeneration } from "@/mq/scenario/scenario-scene-preview-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createScenarioScenePreviewParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-scene-preview/params";
@@ -26,6 +28,12 @@ export const createScenarioScenePreviewRoute = createHonoApp().basePath(
 createScenarioScenePreviewRoute.post(
   "/preview",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "create-scenario-scene-preview",
+    windowMs: 60 * 1000,
+    limit: 3,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],
     responses: {

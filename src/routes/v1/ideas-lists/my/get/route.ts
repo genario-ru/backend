@@ -6,7 +6,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { getMyIdeasListsQuerySchema } from "@/schemas/entities/ideas-lists/handlers/get-my-ideas-lists/query";
 import {
   type GetMyIdeasListsResponse,
@@ -24,6 +26,12 @@ export const getMyIdeasListsRoute = createHonoApp().basePath("/ideas-lists/my");
 getMyIdeasListsRoute.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-my-ideas-lists",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {

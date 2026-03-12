@@ -6,7 +6,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { deleteIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/delete-ideas-list/params";
 import {
   type DeleteIdeasListResponse,
@@ -23,6 +25,12 @@ export const deleteIdeasListRoute = createHonoApp().basePath(
 deleteIdeasListRoute.delete(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "delete-ideas-list",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {

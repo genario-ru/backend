@@ -4,7 +4,9 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getIdeaParamsSchema } from "@/schemas/entities/ideas/handlers/get-idea/params";
 import {
@@ -21,6 +23,12 @@ export const getIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 getIdeaRoute.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-idea",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],
     responses: {

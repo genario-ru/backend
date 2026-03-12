@@ -7,7 +7,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListGeneration } from "@/mq/ideas-list/ideas-list-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/body";
@@ -28,6 +30,12 @@ export const updateIdeasListRoute = createHonoApp().basePath(
 updateIdeasListRoute.patch(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "update-ideas-list",
+    windowMs: 60 * 1000,
+    limit: 3,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {

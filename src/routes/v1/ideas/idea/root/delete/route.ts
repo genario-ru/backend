@@ -6,7 +6,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteIdeaParamsSchema } from "@/schemas/entities/ideas/handlers/delete-idea/params";
 import {
@@ -23,6 +25,12 @@ export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 deleteIdeaRoute.delete(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "delete-idea",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],
     responses: {

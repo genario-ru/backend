@@ -5,7 +5,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createIdeaBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-idea/body";
 import { createIdeaParamsSchema } from "@/schemas/entities/ideas-lists/handlers/create-idea/params";
@@ -25,6 +27,12 @@ export const createIdeaRoute = createHonoApp().basePath(
 createIdeaRoute.post(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "create-idea",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],
     responses: {

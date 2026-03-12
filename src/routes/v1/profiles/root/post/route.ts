@@ -5,7 +5,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { createProfileBodySchema } from "@/schemas/entities/profiles/handlers/create-profile/body";
 import {
   type CreateProfileResponse,
@@ -20,6 +22,12 @@ export const createProfileRoute = createHonoApp().basePath("/profiles");
 createProfileRoute.post(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "create-profile",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],
     responses: {

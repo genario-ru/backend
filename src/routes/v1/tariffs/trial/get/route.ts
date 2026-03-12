@@ -2,6 +2,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import {
   type GetTrialTariffResponse,
@@ -18,6 +19,11 @@ export const getTrialTariffRoute = createHonoApp().basePath("/tariffs/trial");
 // GET /api/v1/tariffs/trial
 getTrialTariffRoute.get(
   "/",
+  rateLimitMiddleware({
+    keyPrefix: "get-trial-tariff",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Tariffs],
     responses: {

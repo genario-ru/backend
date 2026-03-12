@@ -7,7 +7,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateProfileBodySchema } from "@/schemas/entities/profiles/handlers/update-profile/body";
 import { updateProfileParamsSchema } from "@/schemas/entities/profiles/handlers/update-profile/params";
@@ -27,6 +29,12 @@ export const updateProfileRoute = createHonoApp().basePath(
 updateProfileRoute.patch(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "update-profile",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],
     responses: {

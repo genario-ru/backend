@@ -7,7 +7,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { referralInvite } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { DEFAULT_REFERRAL_INVITE_SORT } from "@/schemas/entities/referral/entities/referral-invite-sort";
 import { getMyReferralInvitesQuerySchema } from "@/schemas/entities/referral/handlers/get-my-referral-invites/query";
 import {
@@ -30,6 +32,12 @@ export const getMyReferralInvitesRoute = createHonoApp().basePath(
 getMyReferralInvitesRoute.get(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-my-referral-invites",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Referral],
     responses: {

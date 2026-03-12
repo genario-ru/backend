@@ -7,7 +7,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/scenario/scenario-chapters-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/update-scenario/body";
@@ -28,6 +30,12 @@ export const updateScenarioRoute = createHonoApp().basePath(
 updateScenarioRoute.patch(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "update-scenario",
+    windowMs: 60 * 1000,
+    limit: 3,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],
     responses: {

@@ -6,7 +6,9 @@ import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { scenarioScene } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { deleteScenarioSceneParamsSchema } from "@/schemas/entities/scenarios/handlers/delete-scenario-scene/params";
 import {
@@ -25,6 +27,12 @@ export const deleteScenarioSceneRoute = createHonoApp().basePath(
 deleteScenarioSceneRoute.delete(
   "/",
   sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "delete-scenario-scene",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],
     responses: {

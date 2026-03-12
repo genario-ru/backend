@@ -2,6 +2,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetPlatformsResponse,
   getPlatformsResponseSchema,
@@ -14,6 +15,11 @@ export const getPlatformsRoute = createHonoApp().basePath("/platforms");
 // GET /api/v1/platforms
 getPlatformsRoute.get(
   "/",
+  rateLimitMiddleware({
+    keyPrefix: "get-platforms",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Platforms],
     responses: {
