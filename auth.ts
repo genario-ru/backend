@@ -1,3 +1,4 @@
+import { redisStorage } from "@better-auth/redis-storage";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
@@ -5,6 +6,7 @@ import { admin, emailOTP, openAPI } from "better-auth/plugins";
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/common/app-info";
 import { db, schema } from "@/db";
+import { redis } from "@/lib/redis";
 
 export type AuthType = {
   user: typeof auth.$Infer.Session.user;
@@ -36,14 +38,40 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  secondaryStorage: redisStorage({
+    client: redis,
+    keyPrefix: "auth-api-rate-limit:", // optional, defaults to "better-auth:"
+  }),
   rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 10,
     customRules: {
-      // Restrict the number of requests to send change email confirmation
       "/change-email": {
         window: 60,
         max: 1,
       },
+      "/delete-user": {
+        window: 60,
+        max: 1,
+      },
+      "/get-session": {
+        window: 60,
+        max: 20,
+      },
       "/email-otp/send-verification-otp": {
+        window: 60,
+        max: 1,
+      },
+      "/sign-in/email-otp": {
+        window: 60,
+        max: 3,
+      },
+      "/sign-out": {
+        window: 60,
+        max: 3,
+      },
+      "/update-user": {
         window: 60,
         max: 5,
       },
