@@ -14,12 +14,12 @@ import { openAPIRouteHandler } from "hono-openapi";
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { envs } from "@/constants/common/envs";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
-import { ideasListExportGenerationQueue } from "@/mq/queues/ideas-list-export-generation-queue";
-import { ideasListGenerationQueue } from "@/mq/queues/ideas-list-generation-queue";
-import { scenarioChaptersGenerationQueue } from "@/mq/queues/scenario-chapters-generation-queue";
-import { scenarioScenePreviewGenerationQueue } from "@/mq/queues/scenario-scene-preview-generation-queue";
-import { scenarioScenesGenerationQueue } from "@/mq/queues/scenario-scenes-generation-queue";
-import { scenarioVersionExportGenerationQueue } from "@/mq/queues/scenario-version-export-generation-queue";
+import { ideasListExportQueue } from "@/mq/ideas-list/ideas-list-export/queue";
+import { ideasListGenerationQueue } from "@/mq/ideas-list/ideas-list-generation/queue";
+import { scenarioChaptersGenerationQueue } from "@/mq/scenario/scenario-chapters-generation/queue";
+import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario/scenario-scene-preview-generation/queue";
+import { scenarioScenesGenerationQueue } from "@/mq/scenario/scenario-scenes-generation/queue";
+import { scenarioVersionExportQueue } from "@/mq/scenario/scenario-version-export/queue";
 import { authRoute } from "@/routes/auth/route";
 import {
   getArchiveFiltersRoute,
@@ -98,11 +98,11 @@ const bullBoardBasePath = "/admin/queues";
 createBullBoard({
   queues: [
     new BullMQAdapter(ideasListGenerationQueue),
-    new BullMQAdapter(ideasListExportGenerationQueue),
+    new BullMQAdapter(ideasListExportQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
-    new BullMQAdapter(scenarioVersionExportGenerationQueue),
+    new BullMQAdapter(scenarioVersionExportQueue),
   ],
   serverAdapter: bullBoardAdapter,
 });

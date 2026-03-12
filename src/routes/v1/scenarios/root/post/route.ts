@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueScenarioChaptersGeneration } from "@/mq/queues/scenario-chapters-generation-queue";
+import { enqueueScenarioChaptersGeneration } from "@/mq/scenario/scenario-chapters-generation/queue";
 import { createScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,

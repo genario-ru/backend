@@ -7,26 +7,23 @@ import { attachment, scenarioVersionExport } from "@/db/schema";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
+
+import {
+  SCENARIO_VERSION_EXPORT_QUEUE_NAME,
+  type ScenarioVersionExportJobData,
+} from "./queue";
 import {
   loadScenarioVersionExportData,
   renderScenarioVersionExport,
-} from "@/routes/v1/scenarios/versions/version/exports/utils";
+} from "./utils";
 
-import {
-  SCENARIO_VERSION_EXPORT_GENERATION_QUEUE_NAME,
-  type ScenarioVersionExportGenerationJobData,
-} from "../queues/scenario-version-export-generation-queue";
-
-export const scenarioVersionExportGenerationWorker =
-  new Worker<ScenarioVersionExportGenerationJobData>(
-    SCENARIO_VERSION_EXPORT_GENERATION_QUEUE_NAME,
+export const scenarioVersionExportWorker =
+  new Worker<ScenarioVersionExportJobData>(
+    SCENARIO_VERSION_EXPORT_QUEUE_NAME,
     async (job) => {
       const { scenarioVersionExportId } = job.data;
 
-      console.log(
-        "Scenario version export generation worker started",
-        job.data,
-      );
+      console.log("Scenario version export worker started", job.data);
 
       try {
         const foundScenarioVersionExport =
@@ -126,18 +123,14 @@ export const scenarioVersionExportGenerationWorker =
     },
   );
 
-scenarioVersionExportGenerationWorker.on("error", (error) => {
-  console.error("Scenario version export generation worker error", error);
+scenarioVersionExportWorker.on("error", (error) => {
+  console.error("Scenario version export worker error", error);
 });
 
-scenarioVersionExportGenerationWorker.on("failed", (job, error) => {
-  console.error(
-    "Scenario version export generation worker failed",
-    job?.toJSON(),
-    error,
-  );
+scenarioVersionExportWorker.on("failed", (job, error) => {
+  console.error("Scenario version export worker failed", job?.toJSON(), error);
 });
 
-scenarioVersionExportGenerationWorker.on("completed", (job) => {
-  console.log("Scenario version export generation worker completed", job.id);
+scenarioVersionExportWorker.on("completed", (job) => {
+  console.log("Scenario version export worker completed", job.id);
 });

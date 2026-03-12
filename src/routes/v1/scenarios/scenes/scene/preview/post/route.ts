@@ -7,7 +7,7 @@ import { scenarioScenePreview } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueScenarioScenePreviewGeneration } from "@/mq/queues/scenario-scene-preview-generation-queue";
+import { enqueueScenarioScenePreviewGeneration } from "@/mq/scenario/scenario-scene-preview-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createScenarioScenePreviewParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-scene-preview/params";
 import {

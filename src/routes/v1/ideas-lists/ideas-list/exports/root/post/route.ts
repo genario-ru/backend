@@ -1,4 +1,3 @@
-import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
@@ -7,7 +6,7 @@ import { db } from "@/db";
 import { ideasListExport } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueIdeasListExportGeneration } from "@/mq/queues/ideas-list-export-generation-queue";
+import { enqueueIdeasListExport } from "@/mq/ideas-list/ideas-list-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createIdeasListExportBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/body";
 import { createIdeasListExportParamsSchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/params";
@@ -69,7 +68,7 @@ createIdeasListExportRoute.post(
       })
       .returning();
 
-    await enqueueIdeasListExportGeneration({
+    await enqueueIdeasListExport({
       ideasListExportId: createdExportJob.id,
     });
 

@@ -16,7 +16,7 @@ import { generateScenarioScenePreviewPrompt } from "@/prompts/scenarios/generate
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
   type ScenarioScenePreviewGenerationJobData,
-} from "../queues/scenario-scene-preview-generation-queue";
+} from "./queue";
 
 export const scenarioScenePreviewsGenerationWorker =
   new Worker<ScenarioScenePreviewGenerationJobData>(

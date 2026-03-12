@@ -20,7 +20,7 @@ import { scenarioSceneWithComponentsGeneratedSchema } from "@/schemas/entities/s
 import {
   SCENARIO_SCENES_GENERATION_QUEUE_NAME,
   type ScenarioScenesGenerationJobData,
-} from "../queues/scenario-scenes-generation-queue";
+} from "./queue";
 
 export const scenarioScenesGenerationWorker =
   new Worker<ScenarioScenesGenerationJobData>(

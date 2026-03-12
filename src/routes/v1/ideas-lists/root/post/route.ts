@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueIdeasListGeneration } from "@/mq/queues/ideas-list-generation-queue";
+import { enqueueIdeasListGeneration } from "@/mq/ideas-list/ideas-list-generation/queue";
 import { createIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/body";
 import {
   type CreateIdeasListResponse,

@@ -8,7 +8,7 @@ import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueIdeasListGeneration } from "@/mq/queues/ideas-list-generation-queue";
+import { enqueueIdeasListGeneration } from "@/mq/ideas-list/ideas-list-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { updateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/body";
 import { updateIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/params";

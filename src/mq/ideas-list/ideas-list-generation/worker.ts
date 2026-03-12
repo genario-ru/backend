@@ -15,7 +15,7 @@ import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,
   type IdeasListGenerationJobData,
-} from "../queues/ideas-list-generation-queue";
+} from "./queue";
 
 const IDEAS_PER_LIST_COUNT = 4;
 

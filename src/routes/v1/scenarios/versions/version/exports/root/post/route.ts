@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { scenarioVersionExport } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueScenarioVersionExportGeneration } from "@/mq/queues/scenario-version-export-generation-queue";
+import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/body";
 import { createScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/params";
@@ -77,7 +77,7 @@ createScenarioVersionExportRoute.post(
       })
       .returning();
 
-    await enqueueScenarioVersionExportGeneration({
+    await enqueueScenarioVersionExport({
       scenarioVersionExportId: createdExportJob.id,
     });
 

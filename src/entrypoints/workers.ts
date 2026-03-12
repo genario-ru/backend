@@ -1,17 +1,17 @@
-import { ideasListExportGenerationWorker } from "@/mq/workers/ideas-list-export-generation-worker";
-import { ideasListGenerationWorker } from "@/mq/workers/ideas-list-generation-worker";
-import { scenarioChaptersGenerationWorker } from "@/mq/workers/scenario-chapters-generation-worker";
-import { scenarioScenePreviewsGenerationWorker } from "@/mq/workers/scenario-scene-previews-generation-worker";
-import { scenarioScenesGenerationWorker } from "@/mq/workers/scenario-scenes-generation-worker";
-import { scenarioVersionExportGenerationWorker } from "@/mq/workers/scenario-version-export-generation-worker";
+import { ideasListExportWorker } from "@/mq/ideas-list/ideas-list-export/worker";
+import { ideasListGenerationWorker } from "@/mq/ideas-list/ideas-list-generation/worker";
+import { scenarioChaptersGenerationWorker } from "@/mq/scenario/scenario-chapters-generation/worker";
+import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario/scenario-scene-preview-generation/worker";
+import { scenarioScenesGenerationWorker } from "@/mq/scenario/scenario-scenes-generation/worker";
+import { scenarioVersionExportWorker } from "@/mq/scenario/scenario-version-export/worker";
 
 const shutdown = async () => {
   await ideasListGenerationWorker.close();
-  await ideasListExportGenerationWorker.close();
+  await ideasListExportWorker.close();
   await scenarioChaptersGenerationWorker.close();
   await scenarioScenesGenerationWorker.close();
   await scenarioScenePreviewsGenerationWorker.close();
-  await scenarioVersionExportGenerationWorker.close();
+  await scenarioVersionExportWorker.close();
   process.exit(0);
 };
 

@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 
-import { redis } from "../../lib/redis";
+import { redis } from "@/lib/redis";
 
 export const IDEAS_LIST_GENERATION_QUEUE_NAME = "ideas-list-generation";
 

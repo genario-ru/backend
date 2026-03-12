@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 
-import { redis } from "../../lib/redis";
+import { redis } from "@/lib/redis";
 
 export const SCENARIO_SCENES_GENERATION_QUEUE_NAME =
   "scenario-scenes-generation";

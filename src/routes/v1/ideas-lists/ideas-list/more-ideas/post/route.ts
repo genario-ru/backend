@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { enqueueIdeasListGeneration } from "@/mq/queues/ideas-list-generation-queue";
+import { enqueueIdeasListGeneration } from "@/mq/ideas-list/ideas-list-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { generateMoreIdeasBodySchema } from "@/schemas/entities/ideas-lists/handlers/generate-more-ideas/body";
 import {

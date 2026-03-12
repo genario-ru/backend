@@ -12,11 +12,11 @@ import { generateScenarioChaptersPrompt } from "@/prompts/scenarios/generate-sce
 import { systemPrompt } from "@/prompts/system/system-prompt";
 import { scenarioChapterGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-chapter";
 
+import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
 import {
   SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME,
   type ScenarioChaptersGenerationJobData,
-} from "../queues/scenario-chapters-generation-queue";
-import { enqueueScenarioScenesGeneration } from "../queues/scenario-scenes-generation-queue";
+} from "./queue";
 
 export const scenarioChaptersGenerationWorker =
   new Worker<ScenarioChaptersGenerationJobData>(
