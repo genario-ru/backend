@@ -18,6 +18,7 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
     name: z.string().min(3).max(256),
     description: z.string().min(16).max(4096),
     toneIds: z.array(z.uuid()).nullish(),
+    regenerate: z.boolean().nullish(),
   })
   .meta({
     title: "Update scenario body",
