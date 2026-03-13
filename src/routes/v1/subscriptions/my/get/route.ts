@@ -21,7 +21,7 @@ getMySubscriptionsRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-my-subscriptions",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 20,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],
