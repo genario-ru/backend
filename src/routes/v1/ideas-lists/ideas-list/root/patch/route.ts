@@ -53,6 +53,7 @@ updateIdeasListRoute.patch(
     const {
       toneIds: newToneIds,
       videoTypeIds: newVideoTypeIds,
+      regenerate: shouldRegenerate,
       ...updateIdeasListParams
     } = c.req.valid("json");
 
@@ -79,93 +80,76 @@ updateIdeasListRoute.patch(
       });
     }
 
-    const updateValues = Object.fromEntries(
-      Object.entries(updateIdeasListParams).filter(
-        ([, value]) => value !== undefined,
-      ),
-    );
-    const hasParamChanges = Object.keys(updateValues).length > 0;
-
     const oldToneIds = foundIdeasList.ideasListToTone.map(
       ({ toneId }) => toneId,
     );
+
     const createToneIds = newToneIds ? difference(newToneIds, oldToneIds) : [];
     const deleteToneIds = newToneIds ? difference(oldToneIds, newToneIds) : [];
-    const hasToneChanges =
-      newToneIds !== undefined &&
-      (createToneIds.length > 0 || deleteToneIds.length > 0);
 
     const oldVideoTypeIds = foundIdeasList.ideasListToVideoType.map(
       ({ videoTypeId }) => videoTypeId,
     );
+
     const createVideoTypeIds = newVideoTypeIds
       ? difference(newVideoTypeIds, oldVideoTypeIds)
       : [];
+
     const deleteVideoTypeIds = newVideoTypeIds
       ? difference(oldVideoTypeIds, newVideoTypeIds)
       : [];
-    const hasVideoTypeChanges =
-      newVideoTypeIds !== undefined &&
-      (createVideoTypeIds.length > 0 || deleteVideoTypeIds.length > 0);
-
-    const shouldRegenerate =
-      hasParamChanges || hasToneChanges || hasVideoTypeChanges;
 
     const updatedIdeasList = await db.transaction(async (tx) => {
       const updateLinkingTablePromises: Promise<any>[] = [];
 
       // Добавляем и удаляем тона, связанные с списком идей
-      if (newToneIds) {
-        if (createToneIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx.insert(ideasListToTone).values(
-              createToneIds.map((toneId) => ({
-                ideasListId,
-                toneId,
-              })),
-            ),
-          );
-        }
+      if (createToneIds.length > 0) {
+        updateLinkingTablePromises.push(
+          tx.insert(ideasListToTone).values(
+            createToneIds.map((toneId) => ({
+              ideasListId,
+              toneId,
+            })),
+          ),
+        );
+      }
 
-        if (deleteToneIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx
-              .delete(ideasListToTone)
-              .where(
-                and(
-                  eq(ideasListToTone.ideasListId, ideasListId),
-                  inArray(ideasListToTone.toneId, deleteToneIds),
-                ),
+      if (deleteToneIds.length > 0) {
+        updateLinkingTablePromises.push(
+          tx
+            .delete(ideasListToTone)
+            .where(
+              and(
+                eq(ideasListToTone.ideasListId, ideasListId),
+                inArray(ideasListToTone.toneId, deleteToneIds),
               ),
-          );
-        }
+            ),
+        );
       }
 
       // Добавляем и удаляем типы видео, связанные с списком идей
-      if (newVideoTypeIds) {
-        if (createVideoTypeIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx.insert(ideasListToVideoType).values(
-              createVideoTypeIds.map((videoTypeId) => ({
-                ideasListId,
-                videoTypeId,
-              })),
-            ),
-          );
-        }
+      if (createVideoTypeIds.length > 0) {
+        updateLinkingTablePromises.push(
+          tx.insert(ideasListToVideoType).values(
+            createVideoTypeIds.map((videoTypeId) => ({
+              ideasListId,
+              videoTypeId,
+            })),
+          ),
+        );
+      }
 
-        if (deleteVideoTypeIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx
-              .delete(ideasListToVideoType)
-              .where(
-                and(
-                  eq(ideasListToVideoType.ideasListId, ideasListId),
-                  inArray(ideasListToVideoType.videoTypeId, deleteVideoTypeIds),
-                ),
+      if (deleteVideoTypeIds.length > 0) {
+        updateLinkingTablePromises.push(
+          tx
+            .delete(ideasListToVideoType)
+            .where(
+              and(
+                eq(ideasListToVideoType.ideasListId, ideasListId),
+                inArray(ideasListToVideoType.videoTypeId, deleteVideoTypeIds),
               ),
-          );
-        }
+            ),
+        );
       }
 
       const [[updatedIdeasList]] = await Promise.all([

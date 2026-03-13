@@ -6,8 +6,11 @@ import { z } from "@/lib/zod";
 export const createIdeaBodySchema = createInsertSchema(idea)
   .pick({
     videoTypeId: true,
-    name: true,
-    description: true,
+  })
+  .extend({
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
+    reason: z.string().min(16).max(4096).nullish(),
   })
   .meta({
     title: "Create idea body",

@@ -7,13 +7,13 @@ export const createIdeasListBodySchema = createInsertSchema(ideasList)
   .pick({
     templateId: true,
     profileId: true,
-    name: true,
-    description: true,
     targetAudience: true,
   })
   .extend({
-    toneIds: z.array(z.uuid()).optional(),
-    videoTypeIds: z.array(z.uuid()).optional(),
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
+    toneIds: z.array(z.uuid()).nullish(),
+    videoTypeIds: z.array(z.uuid()),
   })
   .meta({
     title: "Create ideas list body",

@@ -5,14 +5,16 @@ import { z } from "@/lib/zod";
 
 export const updateIdeasListBodySchema = createUpdateSchema(ideasList)
   .pick({
+    templateId: true,
     profileId: true,
-    name: true,
-    description: true,
     targetAudience: true,
   })
   .extend({
-    toneIds: z.array(z.uuid()).optional(),
-    videoTypeIds: z.array(z.uuid()).optional(),
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
+    toneIds: z.array(z.uuid()).nullish(),
+    videoTypeIds: z.array(z.uuid()),
+    regenerate: z.boolean().nullish(),
   })
   .meta({
     title: "Update ideas list body",

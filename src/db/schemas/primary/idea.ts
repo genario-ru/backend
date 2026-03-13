@@ -22,8 +22,8 @@ export const idea = pgTable("idea", {
     .notNull(),
   saved: boolean("saved").notNull().default(false),
   liked: boolean("liked"),
-  name: text("name"),
-  description: text("description"),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
   reason: text("reason"),
   ...timestamps,
 });
