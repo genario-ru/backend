@@ -3,13 +3,16 @@ import { validator } from "hono-openapi";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { scenarioVersionExport } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
+import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/params";
+import { getScenarioVersionExportQuerySchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/query";
 import {
   type GetScenarioVersionExportResponse,
   getScenarioVersionExportResponseSchema,
@@ -19,10 +22,10 @@ import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const getScenarioVersionExportRoute = createHonoApp().basePath(
-  "/scenarios/versions/:versionId/exports/:exportId",
+  "/scenarios/versions/:versionId/export",
 );
 
-// GET /api/v1/scenarios/versions/{versionId}/exports/{exportId}
+// GET /api/v1/scenarios/versions/{versionId}/export
 getScenarioVersionExportRoute.get(
   "/",
   sessionMiddleware,
@@ -42,37 +45,105 @@ getScenarioVersionExportRoute.get(
     },
   }),
   validator("param", getScenarioVersionExportParamsSchema),
+  validator("query", getScenarioVersionExportQuerySchema),
   async (c) => {
-    const { versionId, exportId } = c.req.valid("param");
+    const { versionId } = c.req.valid("param");
+    const { format } = c.req.valid("query");
     const user = c.get("user");
+    const tariff = c.get("tariff");
+
+    if (!tariff.exportAvailable) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message: "Экспорт сценариев не доступен по тарифу вашей подписки",
+      });
+    }
+
+    const foundVersion = await db.query.scenarioVersion.findFirst({
+      where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
+      with: { scenario: true },
+    });
+
+    if (!foundVersion) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Версия сценария не найдена",
+      });
+    }
+
+    if (foundVersion.scenario.userId !== user.id) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message:
+          "Данный сценарий не существует или у вас нет возможности экспортировать его",
+      });
+    }
 
     const foundScenarioVersionExport =
       await db.query.scenarioVersionExport.findFirst({
         where: (scenarioVersionExport, { eq, and }) =>
           and(
-            eq(scenarioVersionExport.id, exportId),
             eq(scenarioVersionExport.userId, user.id),
             eq(scenarioVersionExport.scenarioVersionId, versionId),
+            eq(scenarioVersionExport.format, format),
           ),
+        orderBy: (scenarioVersionExport, { desc }) => [
+          desc(scenarioVersionExport.createdAt),
+        ],
         with: {
           attachment: true,
         },
       });
 
     if (!foundScenarioVersionExport) {
-      return throwAPIError({
-        code: APIErrorCode.NotFound,
-        message: "Экспорт версии сценария не найден",
+      const [createdScenarioVersionExport] = await db
+        .insert(scenarioVersionExport)
+        .values({
+          userId: user.id,
+          scenarioVersionId: versionId,
+          format,
+        })
+        .returning();
+
+      await enqueueScenarioVersionExport({
+        scenarioVersionExportId: createdScenarioVersionExport.id,
       });
+
+      return c.json<GetScenarioVersionExportResponse>(
+        getScenarioVersionExportResponseSchema.parse({
+          data: {
+            ...createdScenarioVersionExport,
+            url: null,
+          },
+        }),
+        HTTPStatusCode.Ok,
+      );
+    }
+
+    if (
+      foundScenarioVersionExport.status === "ready" &&
+      foundScenarioVersionExport.attachment
+    ) {
+      const url = await getSignedS3Url(
+        foundScenarioVersionExport.attachment.key,
+      );
+
+      return c.json<GetScenarioVersionExportResponse>(
+        getScenarioVersionExportResponseSchema.parse({
+          data: {
+            ...foundScenarioVersionExport,
+            url,
+          },
+        }),
+        HTTPStatusCode.Ok,
+      );
     }
 
     return c.json<GetScenarioVersionExportResponse>(
       getScenarioVersionExportResponseSchema.parse({
         data: {
           ...foundScenarioVersionExport,
-          url: foundScenarioVersionExport.attachment
-            ? await getSignedS3Url(foundScenarioVersionExport.attachment.key)
-            : null,
+          url: null,
         },
       }),
       HTTPStatusCode.Ok,

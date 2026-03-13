@@ -16,6 +16,5 @@ export { createScenarioScenePreviewRoute } from "./scenes/scene/preview/post/rou
 export { deleteScenarioSceneRoute } from "./scenes/scene/root/delete/route";
 export { updateScenarioSceneRoute } from "./scenes/scene/root/patch/route";
 export { getScenarioVersionExportRoute } from "./versions/version/exports/export/get/route";
-export { createScenarioVersionExportRoute } from "./versions/version/exports/root/post/route";
 export { deleteScenarioVersionRoute } from "./versions/version/root/delete/route";
 export { getScenarioVersionRoute } from "./versions/version/root/get/route";

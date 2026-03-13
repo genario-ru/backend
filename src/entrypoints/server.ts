@@ -33,7 +33,6 @@ import {
 } from "@/routes/v1/ideas";
 import {
   createIdeaRoute,
-  createIdeasListExportRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
@@ -59,7 +58,6 @@ import {
 import {
   createScenarioRoute,
   createScenarioScenePreviewRoute,
-  createScenarioVersionExportRoute,
   deleteScenarioChapterRoute,
   deleteScenarioRoute,
   deleteScenarioSceneComponentRoute,
@@ -115,7 +113,6 @@ const appAPIv1RoutesList = [
   getIdeaRoute,
   updateIdeaRoute,
   saveIdeaRoute,
-  createIdeasListExportRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
@@ -137,7 +134,6 @@ const appAPIv1RoutesList = [
   getMyReferralInvitesRoute,
   getReferralInfoRoute,
   createScenarioRoute,
-  createScenarioVersionExportRoute,
   deleteScenarioRoute,
   getMyScenariosRoute,
   getScenarioRoute,
