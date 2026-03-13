@@ -113,7 +113,6 @@ export const scenarioScenesGenerationWorker =
               generatedScenes.map((scene) => ({
                 scenarioChapterId,
                 name: scene.name,
-                description: scene.description ?? null,
                 startTime: scene.startTime,
                 endTime: scene.endTime,
               })),

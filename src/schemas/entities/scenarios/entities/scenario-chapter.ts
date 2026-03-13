@@ -15,10 +15,12 @@ export type ScenarioChapter = z.infer<typeof scenarioChapterSchema>;
 
 export const scenarioChapterGeneratedSchema = scenarioChapterSchema
   .pick({
-    name: true,
-    description: true,
     startTime: true,
     endTime: true,
+  })
+  .extend({
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
   })
   .refine((chapter) => chapter.endTime > chapter.startTime, {
     message: "End time must be greater than start time",

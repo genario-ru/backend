@@ -75,7 +75,6 @@ export const scenarioScenePreviewsGenerationWorker =
           chapterName: scene.scenarioChapter.name,
           chapterDescription: scene.scenarioChapter.description,
           sceneName: scene.name,
-          sceneDescription: scene.description,
           sceneStartTime: scene.startTime,
           sceneEndTime: scene.endTime,
         });

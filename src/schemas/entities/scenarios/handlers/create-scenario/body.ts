@@ -5,8 +5,6 @@ import { z } from "@/lib/zod";
 
 export const createScenarioBodySchema = createInsertSchema(scenario)
   .pick({
-    name: true,
-    description: true,
     templateId: true,
     videoTypeId: true,
     videoDurationId: true,
@@ -15,7 +13,9 @@ export const createScenarioBodySchema = createInsertSchema(scenario)
     targetAudience: true,
   })
   .extend({
-    toneIds: z.array(z.uuid()).optional(),
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
+    toneIds: z.array(z.uuid()).nullish(),
   })
   .meta({
     title: "Create scenario body",

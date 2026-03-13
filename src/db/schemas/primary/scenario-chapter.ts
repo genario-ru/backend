@@ -22,7 +22,7 @@ export const scenarioChapter = pgTable("scenario_chapter", {
     })
     .notNull(),
   name: text("name").notNull(),
-  description: text("description"),
+  description: text("description").notNull(),
   status: scenarioChapterStatus("status").default("pending").notNull(),
   startTime: integer("start_time").notNull(),
   endTime: integer("end_time").notNull(),

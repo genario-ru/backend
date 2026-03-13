@@ -11,7 +11,7 @@ export const updateIdeaBodySchema = createUpdateSchema(idea)
   .extend({
     name: z.string().min(3).max(256),
     description: z.string().min(16).max(4096),
-    reason: z.string().min(16).max(4096).nullish(),
+    reason: z.string().max(4096).nullish(),
   })
   .meta({
     title: "Update idea body",

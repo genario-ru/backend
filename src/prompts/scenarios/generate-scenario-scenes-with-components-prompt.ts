@@ -19,7 +19,6 @@ type PreviousChapter = {
   scenes?: {
     id: string;
     name: string;
-    description?: string | null;
     startTime: number;
     endTime: number;
     components?: {
@@ -179,7 +178,7 @@ export function generateScenarioScenesPrompt({
 
     ## Part 1 — Scenes
 
-    Each scene: name, description, startTime, endTime.
+    Each scene: name, startTime, endTime.
     - Scenes must be contiguous (scene N endTime = scene N+1 startTime).
     - First scene starts at ${chapterStartTime}, last ends at ${chapterEndTime}.
     - Maintain narrative continuity with previous chapters.
@@ -196,7 +195,7 @@ export function generateScenarioScenesPrompt({
     ${buildComponentTypesBlock(availableSceneComponentTypes)}
 
     ## Output structure
-    For each scene: { name, description, startTime, endTime, components: [{ name, content, typeId }] }
+    For each scene: { name, startTime, endTime, components: [{ name, content, typeId }] }
     - name: use component type name exactly.
     - content: natural speech within word budget; Markdown for utility components.
     - typeId: exact id from the list above.
@@ -211,7 +210,7 @@ export function generateScenarioScenesPrompt({
 
     Chapter "Проблема: три причины" (7s–28s), 3 scenes:
 
-    Scene 1: name "Иллюзия прогресса", description "Автор в кадре о первых двух неделях...", startTime 7, endTime 15
+    Scene 1: name "Иллюзия прогресса", startTime 7, endTime 15
     components: [
       { name: "Цель и задачи сцены", content: "Создать момент узнавания...", typeId: "..." },
       { name: "Голосовое сопровождение", content: "Первые две недели — кайф. Мышцы болят, весы падают. Только этот минус два — не жир. Это вода.", typeId: "..." },

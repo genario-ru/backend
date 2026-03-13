@@ -5,6 +5,7 @@ import { z } from "@/lib/zod";
 
 import { ideasListExtendedSchema } from "../../ideas-lists/entities/ideas-list";
 import { videoTypeSchema } from "../../video-types/entities/video-type";
+
 export const ideaSchema = createSelectSchema(idea).meta({
   title: "Idea",
   description: "Idea description",
@@ -13,12 +14,20 @@ export const ideaSchema = createSelectSchema(idea).meta({
 
 export type Idea = z.infer<typeof ideaSchema>;
 
-export const ideaGeneratedSchema = ideaSchema.pick({
-  name: true,
-  description: true,
-  reason: true,
-  videoTypeId: true,
-});
+export const ideaGeneratedSchema = ideaSchema
+  .pick({
+    reason: true,
+    videoTypeId: true,
+  })
+  .extend({
+    name: z.string().min(3).max(256),
+    description: z.string().min(16).max(4096),
+  })
+  .meta({
+    title: "Idea generated",
+    description: "Idea generated description",
+    ref: "IdeaGeneratedSchema",
+  });
 
 export type IdeaGenerated = z.infer<typeof ideaGeneratedSchema>;
 

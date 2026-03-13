@@ -169,6 +169,13 @@
       "when": 1773415073083,
       "tag": "0023_melodic_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1773432034653,
+      "tag": "0024_loose_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }

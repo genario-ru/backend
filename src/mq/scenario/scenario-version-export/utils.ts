@@ -139,9 +139,6 @@ async function renderScenarioVersionPdf(data: ScenarioVersionExportData) {
       writer.addParagraph(
         `Сцена ${chapterIndex + 1}.${sceneIndex + 1}: ${scene.name} (${formatTimeRange(scene.startTime, scene.endTime)})`,
       );
-      writer.addParagraph(
-        `Описание сцены: ${scene.description || "Не указано"}`,
-      );
 
       if (scene.components.length === 0) {
         writer.addListItem("Компоненты отсутствуют.");
@@ -216,9 +213,6 @@ async function renderScenarioVersionDocx(data: ScenarioVersionExportData) {
         new Paragraph({
           text: `Сцена ${chapterIndex + 1}.${sceneIndex + 1}: ${scene.name} (${formatTimeRange(scene.startTime, scene.endTime)})`,
           heading: HeadingLevel.HEADING_3,
-        }),
-        new Paragraph({
-          text: `Описание сцены: ${scene.description || "Не указано"}`,
         }),
       );
 

@@ -19,15 +19,10 @@ export type ScenarioSceneComponent = z.infer<
 
 export const scenarioSceneComponentGeneratedSchema =
   scenarioSceneComponentSchema
-    .pick({
-      name: true,
-      content: true,
-      typeId: true,
-    })
+    .pick({ typeId: true })
     .extend({
-      content: scenarioSceneComponentSchema.shape.content.describe(
-        "Markdown formatted text for the scene component content.",
-      ),
+      name: z.string().min(3).max(256),
+      content: z.string().min(16).max(4096),
     })
     .meta({
       title: "Scenario scene component generated",

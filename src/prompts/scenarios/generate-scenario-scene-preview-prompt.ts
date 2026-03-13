@@ -5,7 +5,6 @@ type GenerateScenarioScenePreviewPromptProps = {
   chapterName: string | null;
   chapterDescription: string | null;
   sceneName: string | null;
-  sceneDescription: string | null;
   sceneStartTime: number;
   sceneEndTime: number;
 };
@@ -20,7 +19,6 @@ function buildSceneContext(
     chapterName,
     chapterDescription,
     sceneName,
-    sceneDescription,
     sceneStartTime,
     sceneEndTime,
   } = props;
@@ -28,7 +26,6 @@ function buildSceneContext(
   const parts: string[] = [];
 
   if (sceneName) parts.push(`Scene: "${sceneName}".`);
-  if (sceneDescription) parts.push(sceneDescription);
   parts.push(`Timestamp: ${sceneStartTime}s–${sceneEndTime}s.`);
   if (chapterName) parts.push(`Chapter: "${chapterName}".`);
   if (chapterDescription) parts.push(chapterDescription);

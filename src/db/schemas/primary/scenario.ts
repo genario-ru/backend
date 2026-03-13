@@ -51,8 +51,8 @@ export const scenario = pgTable("scenario", {
     },
   ),
   saved: boolean("saved").notNull().default(false),
-  name: text("name"),
-  description: text("description"),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
   targetAudience: text("target_audience"),
   ...timestamps,
 });

@@ -16,7 +16,6 @@ export const scenarioScene = pgTable("scenario_scene", {
     })
     .notNull(),
   name: text("name").notNull(),
-  description: text("description"),
   startTime: integer("start_time").notNull(),
   endTime: integer("end_time").notNull(),
   ...timestamps,
