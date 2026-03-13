@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+import { isNull } from "es-toolkit";
 import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
@@ -8,6 +10,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
+import { APIErrorCode } from "@/schemas/common/api-error";
 import { createProfileBodySchema } from "@/schemas/entities/profiles/handlers/create-profile/body";
 import {
   type CreateProfileResponse,
@@ -15,6 +18,7 @@ import {
 } from "@/schemas/entities/profiles/handlers/create-profile/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const createProfileRoute = createHonoApp().basePath("/profiles");
 
@@ -43,6 +47,21 @@ createProfileRoute.post(
       c.req.valid("json");
 
     const user = c.get("user");
+    const tariff = c.get("tariff");
+
+    if (!isNull(tariff.maxProfilesAmount)) {
+      const userProfiles = await db.query.profile.findMany({
+        where: (profile) => eq(profile.userId, user.id),
+      });
+
+      if (userProfiles.length >= tariff.maxProfilesAmount) {
+        return throwAPIError({
+          code: APIErrorCode.Forbidden,
+          message:
+            "Вы достигли максимального количества профилей по тарифу вашей подписки",
+        });
+      }
+    }
 
     const createdProfile = await db.transaction(async (tx) => {
       const [createdProfile] = await tx
