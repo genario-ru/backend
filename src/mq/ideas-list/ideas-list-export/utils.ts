@@ -1,54 +1,28 @@
 import { Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
 
-import { db } from "@/db";
-import { ideasListExport } from "@/db/schema";
 import { PDFWriter } from "@/lib/documents/pdf-writer";
 import { slugifyFileName } from "@/lib/documents/slugify-file-name";
 import { type RenderedDocumentFile } from "@/lib/documents/types";
 
-type IdeasListExportFormat = typeof ideasListExport.$inferSelect.format;
+type IdeasListExportFormat = "pdf" | "docx";
 
-type LoadIdeasListExportDataParams = {
-  ideasListId: string;
-  userId: string;
-  savedOnly: boolean;
+export type IdeasListExportData = {
+  id: string;
+  name: string;
+  description: string;
+  targetAudience: string | null;
+  profile: { name: string } | null;
+  template: { name: string } | null;
+  ideas: Array<{
+    name: string;
+    description: string;
+    reason: string | null;
+    saved: boolean;
+    videoType: { name: string };
+  }>;
+  ideasListToTone: Array<{ tone: { name: string } }>;
+  ideasListToVideoType: Array<{ videoType: { name: string } }>;
 };
-
-export async function loadIdeasListExportData({
-  ideasListId,
-  userId,
-  savedOnly,
-}: LoadIdeasListExportDataParams) {
-  return db.query.ideasList.findFirst({
-    where: (ideasList, { eq, and }) =>
-      and(eq(ideasList.id, ideasListId), eq(ideasList.userId, userId)),
-    with: {
-      ideas: {
-        where: (idea, { eq }) => (savedOnly ? eq(idea.saved, true) : undefined),
-        orderBy: (idea, { asc }) => [asc(idea.createdAt)],
-        with: {
-          videoType: true,
-        },
-      },
-      template: true,
-      profile: true,
-      ideasListToTone: {
-        with: {
-          tone: true,
-        },
-      },
-      ideasListToVideoType: {
-        with: {
-          videoType: true,
-        },
-      },
-    },
-  });
-}
-
-export type IdeasListExportData = NonNullable<
-  Awaited<ReturnType<typeof loadIdeasListExportData>>
->;
 
 type RenderIdeasListExportParams = {
   format: IdeasListExportFormat;

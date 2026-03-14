@@ -83,33 +83,27 @@ getScenarioVersionExportsRoute.get(
     }
 
     const foundScenarioVersionExports =
-      await db.query.scenarioVersionExport.findMany({
-        where: (scenarioVersionExport, { eq, and }) =>
-          and(
-            eq(scenarioVersionExport.userId, user.id),
-            eq(scenarioVersionExport.scenarioVersionId, versionId),
-          ),
-        orderBy: (scenarioVersionExport, { desc }) => [
-          desc(scenarioVersionExport.createdAt),
-        ],
+      await db.query.scenarioVersionToExportDocument.findMany({
+        where: (link, { eq }) => eq(link.scenarioVersionId, versionId),
+        orderBy: (link, { desc }) => [desc(link.createdAt)],
         with: {
-          attachment: true,
+          exportDocument: {
+            with: {
+              format: true,
+              attachment: true,
+            },
+          },
         },
       });
 
     const exportsData: ScenarioVersionExportItem[] = await Promise.all(
       scenarioVersionExportFormats.map(async ({ name, format }) => {
-        const latestExport = foundScenarioVersionExports.find(
-          (item) => item.format === format,
-        );
+        const latestExport = foundScenarioVersionExports
+          .map((item) => item.exportDocument)
+          .find((item) => item.format.slug === format);
 
         if (!latestExport) {
-          return {
-            name,
-            format,
-            state: "idle",
-            url: null,
-          };
+          return { name, format, status: "idle" as const, url: null };
         }
 
         const url =
@@ -117,12 +111,7 @@ getScenarioVersionExportsRoute.get(
             ? await getSignedS3Url(latestExport.attachment.key)
             : null;
 
-        return {
-          name,
-          format,
-          state: latestExport.status,
-          url,
-        };
+        return { name, format, status: latestExport.status, url };
       }),
     );
 

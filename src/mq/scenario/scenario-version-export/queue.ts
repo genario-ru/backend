@@ -5,7 +5,8 @@ import { redis } from "@/lib/redis";
 export const SCENARIO_VERSION_EXPORT_QUEUE_NAME = "scenario-version-export";
 
 export type ScenarioVersionExportJobData = {
-  scenarioVersionExportId: string;
+  exportDocumentId: string;
+  scenarioVersionId: string;
 };
 
 export const scenarioVersionExportQueue =

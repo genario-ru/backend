@@ -73,31 +73,28 @@ getIdeasListExportsRoute.get(
       });
     }
 
-    const foundIdeasListExports = await db.query.ideasListExport.findMany({
-      where: (ideasListExport, { eq, and }) =>
-        and(
-          eq(ideasListExport.userId, user.id),
-          eq(ideasListExport.ideasListId, ideasListId),
-        ),
-      orderBy: (ideasListExport, { desc }) => [desc(ideasListExport.createdAt)],
-      with: {
-        attachment: true,
-      },
-    });
+    const foundIdeasListExports =
+      await db.query.ideasListToExportDocument.findMany({
+        where: (link, { eq }) => eq(link.ideasListId, ideasListId),
+        orderBy: (link, { desc }) => [desc(link.createdAt)],
+        with: {
+          exportDocument: {
+            with: {
+              format: true,
+              attachment: true,
+            },
+          },
+        },
+      });
 
     const exportsData: IdeasListExportItem[] = await Promise.all(
       ideasListExportFormats.map(async ({ name, format }) => {
-        const latestExport = foundIdeasListExports.find(
-          (item) => item.format === format,
-        );
+        const latestExport = foundIdeasListExports
+          .map((item) => item.exportDocument)
+          .find((item) => item.format.slug === format);
 
         if (!latestExport) {
-          return {
-            name,
-            format,
-            state: "idle",
-            url: null,
-          };
+          return { name, format, status: "idle" as const, url: null };
         }
 
         const url =
@@ -105,12 +102,7 @@ getIdeasListExportsRoute.get(
             ? await getSignedS3Url(latestExport.attachment.key)
             : null;
 
-        return {
-          name,
-          format,
-          state: latestExport.status,
-          url,
-        };
+        return { name, format, status: latestExport.status, url };
       }),
     );
 

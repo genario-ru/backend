@@ -3,9 +3,9 @@ import { type AnyPgColumn, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { scenarioVersionToExportDocument } from "../linking/scenario-version-to-export-document";
 import { scenario } from "./scenario";
 import { scenarioChapter } from "./scenario-chapter";
-import { scenarioVersionExport } from "./scenario-version-export";
 import { scenarioVideoReference } from "./scenario-video-reference";
 
 export const scenarioVersionStatus = pgEnum("scenario_version_status", [
@@ -39,7 +39,7 @@ export const scenarioVersionRelations = relations(
       references: [scenario.id],
     }),
     chapters: many(scenarioChapter),
-    exports: many(scenarioVersionExport),
     videoReferences: many(scenarioVideoReference),
+    scenarioVersionToExportDocument: many(scenarioVersionToExportDocument),
   }),
 );

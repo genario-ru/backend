@@ -1,76 +1,40 @@
 import { Document, HeadingLevel, Packer, Paragraph } from "docx";
 
-import { db } from "@/db";
-import { scenarioVersionExport } from "@/db/schema";
 import { PDFWriter } from "@/lib/documents/pdf-writer";
 import { slugifyFileName } from "@/lib/documents/slugify-file-name";
 import { type RenderedDocumentFile } from "@/lib/documents/types";
 
-type ScenarioVersionExportFormat =
-  typeof scenarioVersionExport.$inferSelect.format;
+type ScenarioVersionExportFormat = "pdf" | "docx";
 
-type LoadScenarioVersionExportDataParams = {
-  versionId: string;
-  userId: string;
+export type ScenarioVersionExportData = {
+  id: string;
+  scenario: {
+    name: string;
+    description: string | null;
+    targetAudience: string | null;
+    profile: { name: string } | null;
+    platform: { name: string } | null;
+    videoType: { name: string } | null;
+    videoDuration: { name: string } | null;
+    scenarioToTone: Array<{ tone: { name: string } }>;
+  };
+  chapters: Array<{
+    name: string;
+    description: string | null;
+    startTime: number;
+    endTime: number;
+    scenes: Array<{
+      name: string;
+      startTime: number;
+      endTime: number;
+      components: Array<{
+        name: string;
+        content: string | null;
+        type: { name: string };
+      }>;
+    }>;
+  }>;
 };
-
-export async function loadScenarioVersionExportData({
-  versionId,
-  userId,
-}: LoadScenarioVersionExportDataParams) {
-  return db.query.scenarioVersion
-    .findFirst({
-      where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
-      with: {
-        scenario: {
-          with: {
-            profile: true,
-            platform: true,
-            videoType: true,
-            videoDuration: true,
-            scenarioToTone: {
-              with: {
-                tone: true,
-              },
-            },
-          },
-        },
-        chapters: {
-          orderBy: (scenarioChapter, { asc }) => [
-            asc(scenarioChapter.startTime),
-          ],
-          with: {
-            scenes: {
-              orderBy: (scenarioScene, { asc }) => [
-                asc(scenarioScene.startTime),
-              ],
-              with: {
-                components: {
-                  orderBy: (scenarioSceneComponent, { asc }) => [
-                    asc(scenarioSceneComponent.createdAt),
-                  ],
-                  with: {
-                    type: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    })
-    .then((version) => {
-      if (!version || version.scenario.userId !== userId) {
-        return null;
-      }
-
-      return version;
-    });
-}
-
-export type ScenarioVersionExportData = NonNullable<
-  Awaited<ReturnType<typeof loadScenarioVersionExportData>>
->;
 
 type RenderScenarioVersionExportParams = {
   format: ScenarioVersionExportFormat;

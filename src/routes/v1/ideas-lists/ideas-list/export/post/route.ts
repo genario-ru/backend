@@ -1,9 +1,10 @@
+import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { ideasListExport } from "@/db/schema";
+import { exportDocument, ideasListToExportDocument } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
@@ -48,7 +49,7 @@ getIdeasListExportRoute.post(
   validator("json", getIdeasListExportBodySchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");
-    const { format } = c.req.valid("json");
+    const { format, saved } = c.req.valid("json");
     const user = c.get("user");
     const tariff = c.get("tariff");
 
@@ -72,37 +73,66 @@ getIdeasListExportRoute.post(
       });
     }
 
-    const foundIdeasListExport = await db.query.ideasListExport.findFirst({
-      where: (ideasListExport, { eq, and }) =>
-        and(
-          eq(ideasListExport.userId, user.id),
-          eq(ideasListExport.ideasListId, ideasListId),
-          eq(ideasListExport.format, format),
-        ),
-      orderBy: (ideasListExport, { desc }) => [desc(ideasListExport.createdAt)],
+    const foundLinks = await db.query.ideasListToExportDocument.findMany({
+      where: (link, { eq, and }) =>
+        and(eq(link.ideasListId, ideasListId), eq(link.savedOnly, saved)),
+      orderBy: (link, { desc }) => [desc(link.createdAt)],
       with: {
-        attachment: true,
+        exportDocument: {
+          with: {
+            format: true,
+            attachment: true,
+          },
+        },
       },
     });
 
+    const foundIdeasListExport = foundLinks
+      .map((item) => item.exportDocument)
+      .find((doc) => doc.format.slug === format);
+
     if (!foundIdeasListExport) {
-      const [createdIdeasListExport] = await db
-        .insert(ideasListExport)
-        .values({
-          userId: user.id,
+      const foundFormat = await db.query.exportDocumentFormat.findFirst({
+        where: (documentFormat, { eq }) => eq(documentFormat.slug, format),
+      });
+
+      if (!foundFormat) {
+        return throwAPIError({
+          code: APIErrorCode.InternalServerError,
+          message: `Формат экспорта '${format}' не настроен в таблице export_document_format`,
+        });
+      }
+
+      const [createdIdeasListExport] = await db.transaction(async (tx) => {
+        const [doc] = await tx
+          .insert(exportDocument)
+          .values({
+            userId: user.id,
+            formatId: foundFormat.id,
+          })
+          .returning();
+
+        await tx.insert(ideasListToExportDocument).values({
           ideasListId,
-          format,
-        })
-        .returning();
+          exportDocumentId: doc.id,
+          savedOnly: saved,
+        });
+
+        return [doc];
+      });
 
       await enqueueIdeasListExport({
-        ideasListExportId: createdIdeasListExport.id,
+        exportDocumentId: createdIdeasListExport.id,
+        ideasListId,
+        savedOnly: saved,
       });
 
       return c.json<GetIdeasListExportResponse>(
         getIdeasListExportResponseSchema.parse({
           data: {
-            ...createdIdeasListExport,
+            name: foundFormat.name,
+            format: foundFormat.slug,
+            status: createdIdeasListExport.status,
             url: null,
           },
         }),
@@ -110,8 +140,33 @@ getIdeasListExportRoute.post(
       );
     }
 
-    const { attachment: _attachment, ...preparedIdeasListExport } =
-      foundIdeasListExport;
+    if (foundIdeasListExport.status === "failed") {
+      await db
+        .update(exportDocument)
+        .set({
+          status: "pending",
+          error: null,
+        })
+        .where(eq(exportDocument.id, foundIdeasListExport.id));
+
+      await enqueueIdeasListExport({
+        exportDocumentId: foundIdeasListExport.id,
+        ideasListId,
+        savedOnly: saved,
+      });
+
+      return c.json<GetIdeasListExportResponse>(
+        getIdeasListExportResponseSchema.parse({
+          data: {
+            name: foundIdeasListExport.format.name,
+            format: foundIdeasListExport.format.slug,
+            status: "pending",
+            url: null,
+          },
+        }),
+        HTTPStatusCode.Ok,
+      );
+    }
 
     if (
       foundIdeasListExport.status === "ready" &&
@@ -122,7 +177,9 @@ getIdeasListExportRoute.post(
       return c.json<GetIdeasListExportResponse>(
         getIdeasListExportResponseSchema.parse({
           data: {
-            ...preparedIdeasListExport,
+            name: foundIdeasListExport.format.name,
+            format: foundIdeasListExport.format.slug,
+            status: foundIdeasListExport.status,
             url,
           },
         }),
@@ -133,7 +190,9 @@ getIdeasListExportRoute.post(
     return c.json<GetIdeasListExportResponse>(
       getIdeasListExportResponseSchema.parse({
         data: {
-          ...preparedIdeasListExport,
+          name: foundIdeasListExport.format.name,
+          format: foundIdeasListExport.format.slug,
+          status: foundIdeasListExport.status,
           url: null,
         },
       }),

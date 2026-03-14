@@ -5,7 +5,7 @@ export const scenarioVersionExportItemSchema = z
   .object({
     name: z.string(),
     format: z.enum(["pdf", "docx"]),
-    state: generationStatusSchema,
+    status: generationStatusSchema,
     url: z.string().nullable(),
   })
   .meta({

@@ -5,7 +5,9 @@ import { redis } from "@/lib/redis";
 export const IDEAS_LIST_EXPORT_QUEUE_NAME = "ideas-list-export";
 
 export type IdeasListExportJobData = {
-  ideasListExportId: string;
+  exportDocumentId: string;
+  ideasListId: string;
+  savedOnly: boolean;
 };
 
 export const ideasListExportQueue = new Queue<IdeasListExportJobData>(

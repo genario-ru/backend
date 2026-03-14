@@ -3,10 +3,10 @@ import { pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { ideasListToExportDocument } from "../linking/ideas-list-to-export-document";
 import { ideasListToTone } from "../linking/ideas-list-to-tone";
 import { ideasListToVideoType } from "../linking/ideas-list-to-video-type";
 import { idea } from "./idea";
-import { ideasListExport } from "./ideas-list-export";
 import { profile } from "./profile";
 import { template } from "./template";
 import { user } from "./user";
@@ -51,8 +51,8 @@ export const ideasListRelations = relations(ideasList, ({ one, many }) => ({
     fields: [ideasList.templateId],
     references: [template.id],
   }),
-  exports: many(ideasListExport),
   ideas: many(idea),
   ideasListToTone: many(ideasListToTone),
   ideasListToVideoType: many(ideasListToVideoType),
+  ideasListToExportDocument: many(ideasListToExportDocument),
 }));

@@ -1,21 +1,22 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
-import { exportFormat } from "@/db/constants/export-format";
 import { generationStatus } from "@/db/constants/generation-status";
 import { timestamps } from "@/db/constants/timestamps";
 
+import { ideasListToExportDocument } from "../linking/ideas-list-to-export-document";
+import { scenarioVersionToExportDocument } from "../linking/scenario-version-to-export-document";
 import { attachment } from "./attachment";
-import { scenarioVersion } from "./scenario-version";
+import { exportDocumentFormat } from "./export-document-format";
 import { user } from "./user";
 
-export const scenarioVersionExport = pgTable("scenario_version_export", {
+export const exportDocument = pgTable("export_document", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
-  scenarioVersionId: uuid("scenario_version_id")
-    .references(() => scenarioVersion.id, {
+  formatId: uuid("format_id")
+    .references(() => exportDocumentFormat.id, {
       onUpdate: "cascade",
       onDelete: "cascade",
     })
@@ -24,26 +25,27 @@ export const scenarioVersionExport = pgTable("scenario_version_export", {
     onUpdate: "cascade",
     onDelete: "set null",
   }),
-  format: exportFormat("format").notNull(),
   status: generationStatus("status").default("pending").notNull(),
   error: text("error"),
   ...timestamps,
 });
 
-export const scenarioVersionExportRelations = relations(
-  scenarioVersionExport,
-  ({ one }) => ({
+export const exportDocumentRelations = relations(
+  exportDocument,
+  ({ one, many }) => ({
     user: one(user, {
-      fields: [scenarioVersionExport.userId],
+      fields: [exportDocument.userId],
       references: [user.id],
     }),
-    scenarioVersion: one(scenarioVersion, {
-      fields: [scenarioVersionExport.scenarioVersionId],
-      references: [scenarioVersion.id],
+    format: one(exportDocumentFormat, {
+      fields: [exportDocument.formatId],
+      references: [exportDocumentFormat.id],
     }),
     attachment: one(attachment, {
-      fields: [scenarioVersionExport.attachmentId],
+      fields: [exportDocument.attachmentId],
       references: [attachment.id],
     }),
+    ideasListToExportDocument: many(ideasListToExportDocument),
+    scenarioVersionToExportDocument: many(scenarioVersionToExportDocument),
   }),
 );

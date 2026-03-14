@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
-import { attachment, ideasListExport } from "@/db/schema";
+import { attachment, exportDocument } from "@/db/schema";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
@@ -12,38 +12,74 @@ import {
   IDEAS_LIST_EXPORT_QUEUE_NAME,
   type IdeasListExportJobData,
 } from "./queue";
-import { loadIdeasListExportData, renderIdeasListExport } from "./utils";
+import { renderIdeasListExport } from "./utils";
 
 export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
   IDEAS_LIST_EXPORT_QUEUE_NAME,
   async (job) => {
-    const { ideasListExportId } = job.data;
+    const { exportDocumentId, ideasListId, savedOnly } = job.data;
 
     console.log("Ideas list export worker started", job.data);
 
     try {
-      const foundIdeasListExport = await db.query.ideasListExport.findFirst({
-        where: (ideasListExport, { eq }) =>
-          eq(ideasListExport.id, ideasListExportId),
+      const foundExportDocument = await db.query.exportDocument.findFirst({
+        where: (document, { eq }) => eq(document.id, exportDocumentId),
+        with: {
+          format: true,
+        },
       });
 
-      if (!foundIdeasListExport) {
-        console.warn(`Ideas list export not found: ${ideasListExportId}`);
-        return;
+      if (!foundExportDocument) {
+        throw new Error(
+          `Ideas list export document not found: ${exportDocumentId}`,
+        );
+      }
+
+      if (
+        foundExportDocument.format.slug !== "pdf" &&
+        foundExportDocument.format.slug !== "docx"
+      ) {
+        throw new Error(
+          `Неподдерживаемый формат экспорта: ${foundExportDocument.format.slug}`,
+        );
       }
 
       await db
-        .update(ideasListExport)
+        .update(exportDocument)
         .set({
           status: "generation",
           error: null,
         })
-        .where(eq(ideasListExport.id, ideasListExportId));
+        .where(eq(exportDocument.id, exportDocumentId));
 
-      const ideasListData = await loadIdeasListExportData({
-        ideasListId: foundIdeasListExport.ideasListId,
-        userId: foundIdeasListExport.userId,
-        savedOnly: foundIdeasListExport.savedOnly,
+      const ideasListData = await db.query.ideasList.findFirst({
+        where: (ideasList, { eq, and }) =>
+          and(
+            eq(ideasList.id, ideasListId),
+            eq(ideasList.userId, foundExportDocument.userId),
+          ),
+        with: {
+          ideas: {
+            where: (idea, { eq }) =>
+              savedOnly ? eq(idea.saved, true) : undefined,
+            orderBy: (idea, { asc }) => [asc(idea.createdAt)],
+            with: {
+              videoType: true,
+            },
+          },
+          template: true,
+          profile: true,
+          ideasListToTone: {
+            with: {
+              tone: true,
+            },
+          },
+          ideasListToVideoType: {
+            with: {
+              videoType: true,
+            },
+          },
+        },
       });
 
       if (!ideasListData) {
@@ -51,15 +87,15 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
       }
 
       const renderedExportFile = await renderIdeasListExport({
-        format: foundIdeasListExport.format,
+        format: foundExportDocument.format.slug,
         data: ideasListData,
-        savedOnly: foundIdeasListExport.savedOnly,
+        savedOnly,
       });
 
       const s3Key = createS3Key({
-        userId: foundIdeasListExport.userId,
+        userId: foundExportDocument.userId,
         folderName: "ideas-list-exports",
-        fileName: `${ideasListExportId}-${renderedExportFile.fileName}`,
+        fileName: `${exportDocumentId}-${renderedExportFile.fileName}`,
       });
 
       await uploadBufferToS3({
@@ -71,7 +107,7 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
       const [createdAttachment] = await db
         .insert(attachment)
         .values({
-          userId: foundIdeasListExport.userId,
+          userId: foundExportDocument.userId,
           key: s3Key,
           bucketName: envs.S3_BUCKET_NAME,
           mimeType: renderedExportFile.mimeType,
@@ -79,33 +115,33 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         .returning();
 
       await db
-        .update(ideasListExport)
+        .update(exportDocument)
         .set({
           attachmentId: createdAttachment.id,
           status: "ready",
           error: null,
         })
-        .where(eq(ideasListExport.id, ideasListExportId));
+        .where(eq(exportDocument.id, exportDocumentId));
 
       console.log("Ideas list export generated", {
-        ideasListExportId,
+        exportDocumentId,
         attachmentId: createdAttachment.id,
       });
     } catch (error) {
       console.error(
         "Ideas list export generation worker error",
-        ideasListExportId,
+        exportDocumentId,
         error,
       );
 
       await db
-        .update(ideasListExport)
+        .update(exportDocument)
         .set({
           status: "failed",
           error:
             error instanceof Error ? error.message : "Unknown export error",
         })
-        .where(eq(ideasListExport.id, ideasListExportId));
+        .where(eq(exportDocument.id, exportDocumentId));
 
       throw error;
     }
