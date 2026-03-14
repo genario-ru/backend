@@ -176,6 +176,13 @@
       "when": 1773432034653,
       "tag": "0024_loose_stepford_cuckoos",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1773484146019,
+      "tag": "0025_mute_korvac",
+      "breakpoints": true
     }
   ]
 }

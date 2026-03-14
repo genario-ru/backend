@@ -1,11 +1,11 @@
-import { generationStatus } from "@/db/schema";
 import { z } from "@/lib/zod";
+import { generationStatusSchema } from "@/schemas/common/generation-status";
 
 export const scenarioVersionExportItemSchema = z
   .object({
     name: z.string(),
     format: z.enum(["pdf", "docx"]),
-    state: generationStatus,
+    state: generationStatusSchema,
     url: z.string().nullable(),
   })
   .meta({
