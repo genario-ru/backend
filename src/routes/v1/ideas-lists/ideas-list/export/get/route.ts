@@ -32,7 +32,7 @@ getIdeasListExportRoute.post(
   rateLimitMiddleware({
     keyPrefix: "post-ideas-list-export",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 20,
   }),
   subscriptionMiddleware,
   openAPIResponseMiddleware({

@@ -28,7 +28,7 @@ getScenarioCurrentVersionRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-scenario-current-version",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 20,
   }),
   subscriptionMiddleware,
   openAPIResponseMiddleware({
