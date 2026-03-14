@@ -3,34 +3,37 @@ import { validator } from "hono-openapi";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { scenarioVersionExport } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { getScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/body";
-import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/params";
+import { getScenarioVersionExportsParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-exports/params";
 import {
-  type GetScenarioVersionExportResponse,
-  getScenarioVersionExportResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/response";
+  type GetScenarioVersionExportsResponse,
+  getScenarioVersionExportsResponseSchema,
+  type ScenarioVersionExportItem,
+} from "@/schemas/entities/scenarios/handlers/get-scenario-version-exports/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
-export const getScenarioVersionExportRoute = createHonoApp().basePath(
-  "/scenarios/versions/:versionId/export",
+const scenarioVersionExportFormats = [
+  { name: "PDF", format: "pdf" as const },
+  { name: "DOCX", format: "docx" as const },
+];
+
+export const getScenarioVersionExportsRoute = createHonoApp().basePath(
+  "/scenarios/versions/:versionId/exports",
 );
 
-// POST /api/v1/scenarios/versions/{versionId}/export
-getScenarioVersionExportRoute.post(
+// GET /api/v1/scenarios/versions/{versionId}/exports
+getScenarioVersionExportsRoute.get(
   "/",
   sessionMiddleware,
   rateLimitMiddleware({
-    keyPrefix: "post-scenario-version-export",
+    keyPrefix: "get-scenario-version-exports",
     windowMs: 60 * 1000,
     limit: 20,
   }),
@@ -39,16 +42,14 @@ getScenarioVersionExportRoute.post(
     tags: [OpenAPITags.Scenarios],
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
-        description: "Scenario version export retrieved successfully",
-        schema: getScenarioVersionExportResponseSchema,
+        description: "Scenario version exports retrieved successfully",
+        schema: getScenarioVersionExportsResponseSchema,
       }),
     },
   }),
-  validator("param", getScenarioVersionExportParamsSchema),
-  validator("json", getScenarioVersionExportBodySchema),
+  validator("param", getScenarioVersionExportsParamsSchema),
   async (c) => {
     const { versionId } = c.req.valid("param");
-    const { format } = c.req.valid("json");
     const user = c.get("user");
     const tariff = c.get("tariff");
 
@@ -61,7 +62,9 @@ getScenarioVersionExportRoute.post(
 
     const foundVersion = await db.query.scenarioVersion.findFirst({
       where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
-      with: { scenario: true },
+      with: {
+        scenario: true,
+      },
     });
 
     if (!foundVersion) {
@@ -79,13 +82,12 @@ getScenarioVersionExportRoute.post(
       });
     }
 
-    const foundScenarioVersionExport =
-      await db.query.scenarioVersionExport.findFirst({
+    const foundScenarioVersionExports =
+      await db.query.scenarioVersionExport.findMany({
         where: (scenarioVersionExport, { eq, and }) =>
           and(
             eq(scenarioVersionExport.userId, user.id),
             eq(scenarioVersionExport.scenarioVersionId, versionId),
-            eq(scenarioVersionExport.format, format),
           ),
         orderBy: (scenarioVersionExport, { desc }) => [
           desc(scenarioVersionExport.createdAt),
@@ -95,56 +97,38 @@ getScenarioVersionExportRoute.post(
         },
       });
 
-    if (!foundScenarioVersionExport) {
-      const [createdScenarioVersionExport] = await db
-        .insert(scenarioVersionExport)
-        .values({
-          userId: user.id,
-          scenarioVersionId: versionId,
-          format,
-        })
-        .returning();
+    const exportsData: ScenarioVersionExportItem[] = await Promise.all(
+      scenarioVersionExportFormats.map(async ({ name, format }) => {
+        const latestExport = foundScenarioVersionExports.find(
+          (item) => item.format === format,
+        );
 
-      await enqueueScenarioVersionExport({
-        scenarioVersionExportId: createdScenarioVersionExport.id,
-      });
-
-      return c.json<GetScenarioVersionExportResponse>(
-        getScenarioVersionExportResponseSchema.parse({
-          data: {
-            ...createdScenarioVersionExport,
+        if (!latestExport) {
+          return {
+            name,
+            format,
+            state: "idle",
             url: null,
-          },
-        }),
-        HTTPStatusCode.Ok,
-      );
-    }
+          };
+        }
 
-    if (
-      foundScenarioVersionExport.status === "ready" &&
-      foundScenarioVersionExport.attachment
-    ) {
-      const url = await getSignedS3Url(
-        foundScenarioVersionExport.attachment.key,
-      );
+        const url =
+          latestExport.status === "ready" && latestExport.attachment
+            ? await getSignedS3Url(latestExport.attachment.key)
+            : null;
 
-      return c.json<GetScenarioVersionExportResponse>(
-        getScenarioVersionExportResponseSchema.parse({
-          data: {
-            ...foundScenarioVersionExport,
-            url,
-          },
-        }),
-        HTTPStatusCode.Ok,
-      );
-    }
+        return {
+          name,
+          format,
+          state: latestExport.status,
+          url,
+        };
+      }),
+    );
 
-    return c.json<GetScenarioVersionExportResponse>(
-      getScenarioVersionExportResponseSchema.parse({
-        data: {
-          ...foundScenarioVersionExport,
-          url: null,
-        },
+    return c.json<GetScenarioVersionExportsResponse>(
+      getScenarioVersionExportsResponseSchema.parse({
+        data: exportsData,
       }),
       HTTPStatusCode.Ok,
     );

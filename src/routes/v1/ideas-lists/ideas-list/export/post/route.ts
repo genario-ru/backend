@@ -110,6 +110,9 @@ getIdeasListExportRoute.post(
       );
     }
 
+    const { attachment: _attachment, ...preparedIdeasListExport } =
+      foundIdeasListExport;
+
     if (
       foundIdeasListExport.status === "ready" &&
       foundIdeasListExport.attachment
@@ -119,7 +122,7 @@ getIdeasListExportRoute.post(
       return c.json<GetIdeasListExportResponse>(
         getIdeasListExportResponseSchema.parse({
           data: {
-            ...foundIdeasListExport,
+            ...preparedIdeasListExport,
             url,
           },
         }),
@@ -130,7 +133,7 @@ getIdeasListExportRoute.post(
     return c.json<GetIdeasListExportResponse>(
       getIdeasListExportResponseSchema.parse({
         data: {
-          ...foundIdeasListExport,
+          ...preparedIdeasListExport,
           url: null,
         },
       }),
