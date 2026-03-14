@@ -11,8 +11,8 @@ import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListExport } from "@/mq/ideas-list/ideas-list-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
+import { getIdeasListExportBodySchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/body";
 import { getIdeasListExportParamsSchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/params";
-import { getIdeasListExportQuerySchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/query";
 import {
   type GetIdeasListExportResponse,
   getIdeasListExportResponseSchema,
@@ -25,12 +25,12 @@ export const getIdeasListExportRoute = createHonoApp().basePath(
   "/ideas-lists/:ideasListId/export",
 );
 
-// GET /api/v1/ideas-lists/{ideasListId}/export
-getIdeasListExportRoute.get(
+// POST /api/v1/ideas-lists/{ideasListId}/export
+getIdeasListExportRoute.post(
   "/",
   sessionMiddleware,
   rateLimitMiddleware({
-    keyPrefix: "get-ideas-list-export",
+    keyPrefix: "post-ideas-list-export",
     windowMs: 60 * 1000,
     limit: 10,
   }),
@@ -45,10 +45,10 @@ getIdeasListExportRoute.get(
     },
   }),
   validator("param", getIdeasListExportParamsSchema),
-  validator("query", getIdeasListExportQuerySchema),
+  validator("json", getIdeasListExportBodySchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");
-    const { format } = c.req.valid("query");
+    const { format } = c.req.valid("json");
     const user = c.get("user");
     const tariff = c.get("tariff");
 

@@ -11,8 +11,8 @@ import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
+import { getScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/body";
 import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/params";
-import { getScenarioVersionExportQuerySchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/query";
 import {
   type GetScenarioVersionExportResponse,
   getScenarioVersionExportResponseSchema,
@@ -25,12 +25,12 @@ export const getScenarioVersionExportRoute = createHonoApp().basePath(
   "/scenarios/versions/:versionId/export",
 );
 
-// GET /api/v1/scenarios/versions/{versionId}/export
-getScenarioVersionExportRoute.get(
+// POST /api/v1/scenarios/versions/{versionId}/export
+getScenarioVersionExportRoute.post(
   "/",
   sessionMiddleware,
   rateLimitMiddleware({
-    keyPrefix: "get-scenario-version-export",
+    keyPrefix: "post-scenario-version-export",
     windowMs: 60 * 1000,
     limit: 10,
   }),
@@ -45,10 +45,10 @@ getScenarioVersionExportRoute.get(
     },
   }),
   validator("param", getScenarioVersionExportParamsSchema),
-  validator("query", getScenarioVersionExportQuerySchema),
+  validator("json", getScenarioVersionExportBodySchema),
   async (c) => {
     const { versionId } = c.req.valid("param");
-    const { format } = c.req.valid("query");
+    const { format } = c.req.valid("json");
     const user = c.get("user");
     const tariff = c.get("tariff");
 

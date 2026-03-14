@@ -1,4 +1,4 @@
-export { getIdeasListExportRoute } from "./ideas-list/exports/export/get/route";
+export { getIdeasListExportRoute } from "./ideas-list/export/get/route";
 export { createIdeaRoute } from "./ideas-list/ideas/post/route";
 export { generateMoreIdeasRoute } from "./ideas-list/more-ideas/post/route";
 export { deleteIdeasListRoute } from "./ideas-list/root/delete/route";
