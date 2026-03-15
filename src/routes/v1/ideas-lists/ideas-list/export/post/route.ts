@@ -12,12 +12,12 @@ import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListExport } from "@/mq/ideas-list/ideas-list-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { getIdeasListExportBodySchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/body";
-import { getIdeasListExportParamsSchema } from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/params";
+import { createIdeasListExportBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/body";
+import { cerateIdeasListExportParamsSchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/params";
 import {
-  type GetIdeasListExportResponse,
-  getIdeasListExportResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/get-ideas-list-export/response";
+  type CreateIdeasListExportResponse,
+  createIdeasListExportResponseSchema,
+} from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
@@ -41,15 +41,15 @@ getIdeasListExportRoute.post(
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
         description: "Ideas list export retrieved successfully",
-        schema: getIdeasListExportResponseSchema,
+        schema: createIdeasListExportResponseSchema,
       }),
     },
   }),
-  validator("param", getIdeasListExportParamsSchema),
-  validator("json", getIdeasListExportBodySchema),
+  validator("param", cerateIdeasListExportParamsSchema),
+  validator("json", createIdeasListExportBodySchema),
   async (c) => {
     const { ideasListId } = c.req.valid("param");
-    const { format, saved } = c.req.valid("json");
+    const { format, savedOnly } = c.req.valid("json");
     const user = c.get("user");
     const tariff = c.get("tariff");
 
@@ -63,6 +63,20 @@ getIdeasListExportRoute.post(
     const foundIdeasList = await db.query.ideasList.findFirst({
       where: (ideasList, { eq, and }) =>
         and(eq(ideasList.id, ideasListId), eq(ideasList.userId, user.id)),
+      with: {
+        ideasListToExportDocument: {
+          where: (link, { eq }) => eq(link.savedOnly, savedOnly),
+          orderBy: (link, { desc }) => [desc(link.createdAt)],
+          with: {
+            exportDocument: {
+              with: {
+                format: true,
+                attachment: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!foundIdeasList) {
@@ -73,38 +87,24 @@ getIdeasListExportRoute.post(
       });
     }
 
-    const foundLinks = await db.query.ideasListToExportDocument.findMany({
-      where: (link, { eq, and }) =>
-        and(eq(link.ideasListId, ideasListId), eq(link.savedOnly, saved)),
-      orderBy: (link, { desc }) => [desc(link.createdAt)],
-      with: {
-        exportDocument: {
-          with: {
-            format: true,
-            attachment: true,
-          },
-        },
-      },
-    });
-
-    const foundIdeasListExport = foundLinks
+    const foundExportDocument = foundIdeasList.ideasListToExportDocument
       .map((item) => item.exportDocument)
       .find((doc) => doc.format.slug === format);
 
-    if (!foundIdeasListExport) {
+    if (!foundExportDocument) {
       const foundFormat = await db.query.exportDocumentFormat.findFirst({
         where: (documentFormat, { eq }) => eq(documentFormat.slug, format),
       });
 
       if (!foundFormat) {
         return throwAPIError({
-          code: APIErrorCode.InternalServerError,
-          message: `Формат экспорта '${format}' не настроен в таблице export_document_format`,
+          code: APIErrorCode.InvalidInput,
+          message: "Данный формат документа не поддерживается",
         });
       }
 
-      const [createdIdeasListExport] = await db.transaction(async (tx) => {
-        const [doc] = await tx
+      const createdExportDocument = await db.transaction(async (tx) => {
+        const [createdExportDocument] = await tx
           .insert(exportDocument)
           .values({
             userId: user.id,
@@ -114,54 +114,58 @@ getIdeasListExportRoute.post(
 
         await tx.insert(ideasListToExportDocument).values({
           ideasListId,
-          exportDocumentId: doc.id,
-          savedOnly: saved,
+          exportDocumentId: createdExportDocument.id,
+          savedOnly,
         });
 
-        return [doc];
+        return createdExportDocument;
       });
 
       await enqueueIdeasListExport({
-        exportDocumentId: createdIdeasListExport.id,
+        exportDocumentId: createdExportDocument.id,
         ideasListId,
-        savedOnly: saved,
       });
 
-      return c.json<GetIdeasListExportResponse>(
-        getIdeasListExportResponseSchema.parse({
+      return c.json<CreateIdeasListExportResponse>(
+        createIdeasListExportResponseSchema.parse({
           data: {
-            name: foundFormat.name,
-            format: foundFormat.slug,
-            status: createdIdeasListExport.status,
-            url: null,
+            formatName: foundFormat.name,
+            formatSlug: foundFormat.slug,
+            formatColor: foundFormat.color,
+            formatIcon: foundFormat.icon,
+            documentStatus: createdExportDocument.status,
+            documentStatusDetails: createdExportDocument.statusDetails,
+            documentUrl: null,
           },
         }),
         HTTPStatusCode.Created,
       );
     }
 
-    if (foundIdeasListExport.status === "failed") {
+    if (foundExportDocument.status === "failed") {
       await db
         .update(exportDocument)
         .set({
           status: "pending",
-          error: null,
+          statusDetails: null,
         })
-        .where(eq(exportDocument.id, foundIdeasListExport.id));
+        .where(eq(exportDocument.id, foundExportDocument.id));
 
       await enqueueIdeasListExport({
-        exportDocumentId: foundIdeasListExport.id,
+        exportDocumentId: foundExportDocument.id,
         ideasListId,
-        savedOnly: saved,
       });
 
-      return c.json<GetIdeasListExportResponse>(
-        getIdeasListExportResponseSchema.parse({
+      return c.json<CreateIdeasListExportResponse>(
+        createIdeasListExportResponseSchema.parse({
           data: {
-            name: foundIdeasListExport.format.name,
-            format: foundIdeasListExport.format.slug,
-            status: "pending",
-            url: null,
+            formatName: foundExportDocument.format.name,
+            formatSlug: foundExportDocument.format.slug,
+            formatColor: foundExportDocument.format.color,
+            formatIcon: foundExportDocument.format.icon,
+            documentStatus: foundExportDocument.status,
+            documentStatusDetails: foundExportDocument.statusDetails,
+            documentUrl: null,
           },
         }),
         HTTPStatusCode.Ok,
@@ -169,31 +173,37 @@ getIdeasListExportRoute.post(
     }
 
     if (
-      foundIdeasListExport.status === "ready" &&
-      foundIdeasListExport.attachment
+      foundExportDocument.status === "ready" &&
+      foundExportDocument.attachment
     ) {
-      const url = await getSignedS3Url(foundIdeasListExport.attachment.key);
+      const url = await getSignedS3Url(foundExportDocument.attachment.key);
 
-      return c.json<GetIdeasListExportResponse>(
-        getIdeasListExportResponseSchema.parse({
+      return c.json<CreateIdeasListExportResponse>(
+        createIdeasListExportResponseSchema.parse({
           data: {
-            name: foundIdeasListExport.format.name,
-            format: foundIdeasListExport.format.slug,
-            status: foundIdeasListExport.status,
-            url,
+            formatName: foundExportDocument.format.name,
+            formatSlug: foundExportDocument.format.slug,
+            formatColor: foundExportDocument.format.color,
+            formatIcon: foundExportDocument.format.icon,
+            documentStatus: foundExportDocument.status,
+            documentStatusDetails: foundExportDocument.statusDetails,
+            documentUrl: url,
           },
         }),
         HTTPStatusCode.Ok,
       );
     }
 
-    return c.json<GetIdeasListExportResponse>(
-      getIdeasListExportResponseSchema.parse({
+    return c.json<CreateIdeasListExportResponse>(
+      createIdeasListExportResponseSchema.parse({
         data: {
-          name: foundIdeasListExport.format.name,
-          format: foundIdeasListExport.format.slug,
-          status: foundIdeasListExport.status,
-          url: null,
+          formatName: foundExportDocument.format.name,
+          formatSlug: foundExportDocument.format.slug,
+          formatColor: foundExportDocument.format.color,
+          formatIcon: foundExportDocument.format.icon,
+          documentStatus: foundExportDocument.status,
+          documentStatusDetails: foundExportDocument.statusDetails,
+          documentUrl: null,
         },
       }),
       HTTPStatusCode.Ok,

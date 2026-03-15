@@ -12,12 +12,12 @@ import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { getScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/body";
-import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/params";
+import { getScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/body";
+import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/params";
 import {
   type GetScenarioVersionExportResponse,
   getScenarioVersionExportResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/get-scenario-version-export/response";
+} from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
@@ -62,7 +62,20 @@ getScenarioVersionExportRoute.post(
 
     const foundVersion = await db.query.scenarioVersion.findFirst({
       where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
-      with: { scenario: true },
+      with: {
+        scenario: true,
+        scenarioVersionToExportDocument: {
+          orderBy: (link, { desc }) => [desc(link.createdAt)],
+          with: {
+            exportDocument: {
+              with: {
+                format: true,
+                attachment: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!foundVersion) {
@@ -80,24 +93,11 @@ getScenarioVersionExportRoute.post(
       });
     }
 
-    const foundLinks = await db.query.scenarioVersionToExportDocument.findMany({
-      where: (link, { eq }) => eq(link.scenarioVersionId, versionId),
-      orderBy: (link, { desc }) => [desc(link.createdAt)],
-      with: {
-        exportDocument: {
-          with: {
-            format: true,
-            attachment: true,
-          },
-        },
-      },
-    });
-
-    const foundScenarioVersionExport = foundLinks
+    const foundExportDocument = foundVersion.scenarioVersionToExportDocument
       .map((item) => item.exportDocument)
       .find((item) => item.format.slug === format);
 
-    if (!foundScenarioVersionExport) {
+    if (!foundExportDocument) {
       const foundFormat = await db.query.exportDocumentFormat.findFirst({
         where: (documentFormat, { eq }) => eq(documentFormat.slug, format),
       });
@@ -109,64 +109,69 @@ getScenarioVersionExportRoute.post(
         });
       }
 
-      const [createdScenarioVersionExport] = await db.transaction(
-        async (tx) => {
-          const [doc] = await tx
-            .insert(exportDocument)
-            .values({
-              userId: user.id,
-              formatId: foundFormat.id,
-            })
-            .returning();
+      const createdExportDocument = await db.transaction(async (tx) => {
+        const [createdExportDocument] = await tx
+          .insert(exportDocument)
+          .values({
+            userId: user.id,
+            formatId: foundFormat.id,
+          })
+          .returning();
 
-          await tx.insert(scenarioVersionToExportDocument).values({
-            scenarioVersionId: versionId,
-            exportDocumentId: doc.id,
-          });
+        await tx.insert(scenarioVersionToExportDocument).values({
+          scenarioVersionId: versionId,
+          exportDocumentId: createdExportDocument.id,
+        });
 
-          return [doc];
-        },
-      );
+        return createdExportDocument;
+      });
 
       await enqueueScenarioVersionExport({
-        exportDocumentId: createdScenarioVersionExport.id,
+        exportDocumentId: createdExportDocument.id,
         scenarioVersionId: versionId,
       });
 
       return c.json<GetScenarioVersionExportResponse>(
         getScenarioVersionExportResponseSchema.parse({
           data: {
-            name: foundFormat.name,
-            format: foundFormat.slug,
-            status: createdScenarioVersionExport.status,
-            url: null,
+            formatName: foundFormat.name,
+            formatSlug: foundFormat.slug,
+            formatColor: foundFormat.color,
+            formatIcon: foundFormat.icon,
+            documentStatus: createdExportDocument.status,
+            documentStatusDetails: createdExportDocument.statusDetails,
+            documentUrl: null,
           },
         }),
         HTTPStatusCode.Created,
       );
     }
 
-    if (foundScenarioVersionExport.status === "failed") {
-      await db
+    if (foundExportDocument.status === "failed") {
+      const [updatedExportDocument] = await db
         .update(exportDocument)
         .set({
           status: "pending",
-          error: null,
+          statusDetails: null,
         })
-        .where(eq(exportDocument.id, foundScenarioVersionExport.id));
+        .where(eq(exportDocument.id, foundExportDocument.id))
+        .returning();
 
       await enqueueScenarioVersionExport({
-        exportDocumentId: foundScenarioVersionExport.id,
+        exportDocumentId: foundExportDocument.id,
         scenarioVersionId: versionId,
       });
 
       return c.json<GetScenarioVersionExportResponse>(
         getScenarioVersionExportResponseSchema.parse({
           data: {
-            name: foundScenarioVersionExport.format.name,
-            format: foundScenarioVersionExport.format.slug,
-            status: "pending",
-            url: null,
+            formatName: foundExportDocument.format.name,
+            formatSlug: foundExportDocument.format.slug,
+            formatColor: foundExportDocument.format.color,
+            formatIcon: foundExportDocument.format.icon,
+            documentStatus: updatedExportDocument.status,
+            documentStatusDetails: updatedExportDocument.statusDetails,
+            documentUrl: null,
           },
         }),
         HTTPStatusCode.Ok,
@@ -174,20 +179,21 @@ getScenarioVersionExportRoute.post(
     }
 
     if (
-      foundScenarioVersionExport.status === "ready" &&
-      foundScenarioVersionExport.attachment
+      foundExportDocument.status === "ready" &&
+      foundExportDocument.attachment
     ) {
-      const url = await getSignedS3Url(
-        foundScenarioVersionExport.attachment.key,
-      );
+      const url = await getSignedS3Url(foundExportDocument.attachment.key);
 
       return c.json<GetScenarioVersionExportResponse>(
         getScenarioVersionExportResponseSchema.parse({
           data: {
-            name: foundScenarioVersionExport.format.name,
-            format: foundScenarioVersionExport.format.slug,
-            status: foundScenarioVersionExport.status,
-            url,
+            formatName: foundExportDocument.format.name,
+            formatSlug: foundExportDocument.format.slug,
+            formatColor: foundExportDocument.format.color,
+            formatIcon: foundExportDocument.format.icon,
+            documentStatus: foundExportDocument.status,
+            documentStatusDetails: foundExportDocument.statusDetails,
+            documentUrl: url,
           },
         }),
         HTTPStatusCode.Ok,
@@ -197,10 +203,13 @@ getScenarioVersionExportRoute.post(
     return c.json<GetScenarioVersionExportResponse>(
       getScenarioVersionExportResponseSchema.parse({
         data: {
-          name: foundScenarioVersionExport.format.name,
-          format: foundScenarioVersionExport.format.slug,
-          status: foundScenarioVersionExport.status,
-          url: null,
+          formatName: foundExportDocument.format.name,
+          formatSlug: foundExportDocument.format.slug,
+          formatColor: foundExportDocument.format.color,
+          formatIcon: foundExportDocument.format.icon,
+          documentStatus: foundExportDocument.status,
+          documentStatusDetails: foundExportDocument.statusDetails,
+          documentUrl: null,
         },
       }),
       HTTPStatusCode.Ok,

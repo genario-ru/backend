@@ -2,6 +2,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
+import { SUPPORTED_EXPORT_FORMATS } from "@/constants/common/supported-export-format";
 import { db } from "@/db";
 import { attachment, exportDocument } from "@/db/schema";
 import { redis } from "@/lib/redis";
@@ -12,35 +13,45 @@ import {
   IDEAS_LIST_EXPORT_QUEUE_NAME,
   type IdeasListExportJobData,
 } from "./queue";
+import type { IdeasListExportData } from "./types";
 import { renderIdeasListExport } from "./utils";
 
 export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
   IDEAS_LIST_EXPORT_QUEUE_NAME,
   async (job) => {
-    const { exportDocumentId, ideasListId, savedOnly } = job.data;
+    const { exportDocumentId, ideasListId } = job.data;
 
     console.log("Ideas list export worker started", job.data);
 
     try {
-      const foundExportDocument = await db.query.exportDocument.findFirst({
-        where: (document, { eq }) => eq(document.id, exportDocumentId),
-        with: {
-          format: true,
-        },
-      });
+      const foundIdeasListToExportDocument =
+        await db.query.ideasListToExportDocument.findFirst({
+          where: (link, { eq, and }) =>
+            and(
+              eq(link.ideasListId, ideasListId),
+              eq(link.exportDocumentId, exportDocumentId),
+            ),
+          with: {
+            exportDocument: {
+              with: {
+                format: true,
+              },
+            },
+          },
+        });
 
-      if (!foundExportDocument) {
+      if (!foundIdeasListToExportDocument) {
         throw new Error(
-          `Ideas list export document not found: ${exportDocumentId}`,
+          `Связка списка идей и экспортного документа не найдена: ideasListId=${ideasListId}, exportDocumentId=${exportDocumentId}`,
         );
       }
 
-      if (
-        foundExportDocument.format.slug !== "pdf" &&
-        foundExportDocument.format.slug !== "docx"
-      ) {
+      const { exportDocument: foundExportDocument, savedOnly } =
+        foundIdeasListToExportDocument;
+
+      if (!SUPPORTED_EXPORT_FORMATS.includes(foundExportDocument.format.slug)) {
         throw new Error(
-          `Неподдерживаемый формат экспорта: ${foundExportDocument.format.slug}`,
+          `Неподдерживаемый формат документа: ${foundExportDocument.format.slug}`,
         );
       }
 
@@ -48,11 +59,11 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         .update(exportDocument)
         .set({
           status: "generation",
-          error: null,
+          statusDetails: null,
         })
         .where(eq(exportDocument.id, exportDocumentId));
 
-      const ideasListData = await db.query.ideasList.findFirst({
+      const foundIdeasList = await db.query.ideasList.findFirst({
         where: (ideasList, { eq, and }) =>
           and(
             eq(ideasList.id, ideasListId),
@@ -82,14 +93,22 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         },
       });
 
-      if (!ideasListData) {
+      if (!foundIdeasList) {
         throw new Error("Не удалось загрузить данные списка идей для экспорта");
       }
 
+      const { ideasListToTone, ideasListToVideoType, ...ideasListData } =
+        foundIdeasList;
+
+      const ideasListExportData: IdeasListExportData = {
+        ...ideasListData,
+        tones: ideasListToTone.map((item) => item.tone),
+        videoTypes: ideasListToVideoType.map((item) => item.videoType),
+      };
+
       const renderedExportFile = await renderIdeasListExport({
         format: foundExportDocument.format.slug,
-        data: ideasListData,
-        savedOnly,
+        data: ideasListExportData,
       });
 
       const s3Key = createS3Key({
@@ -104,24 +123,30 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         buffer: renderedExportFile.buffer,
       });
 
-      const [createdAttachment] = await db
-        .insert(attachment)
-        .values({
-          userId: foundExportDocument.userId,
-          key: s3Key,
-          bucketName: envs.S3_BUCKET_NAME,
-          mimeType: renderedExportFile.mimeType,
-        })
-        .returning();
+      const { createdAttachment } = await db.transaction(async (tx) => {
+        const [createdAttachment] = await tx
+          .insert(attachment)
+          .values({
+            userId: foundExportDocument.userId,
+            key: s3Key,
+            bucketName: envs.S3_BUCKET_NAME,
+            mimeType: renderedExportFile.mimeType,
+          })
+          .returning();
 
-      await db
-        .update(exportDocument)
-        .set({
-          attachmentId: createdAttachment.id,
-          status: "ready",
-          error: null,
-        })
-        .where(eq(exportDocument.id, exportDocumentId));
+        await tx
+          .update(exportDocument)
+          .set({
+            attachmentId: createdAttachment.id,
+            status: "ready",
+            statusDetails: null,
+          })
+          .where(eq(exportDocument.id, exportDocumentId));
+
+        return {
+          createdAttachment,
+        };
+      });
 
       console.log("Ideas list export generated", {
         exportDocumentId,
@@ -138,7 +163,7 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         .update(exportDocument)
         .set({
           status: "failed",
-          error:
+          statusDetails:
             error instanceof Error ? error.message : "Unknown export error",
         })
         .where(eq(exportDocument.id, exportDocumentId));

@@ -45,3 +45,7 @@ export const scenarioSceneComponentExtendedSchema = createSelectSchema(
     description: "Scenario scene component extend description",
     ref: "ScenarioSceneComponentExtendedSchema",
   });
+
+export type ScenarioSceneComponentExtended = z.infer<
+  typeof scenarioSceneComponentExtendedSchema
+>;

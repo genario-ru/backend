@@ -26,7 +26,7 @@ export const exportDocument = pgTable("export_document", {
     onDelete: "set null",
   }),
   status: generationStatus("status").default("pending").notNull(),
-  error: text("error"),
+  statusDetails: text("status_details"),
   ...timestamps,
 });
 

@@ -2,6 +2,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
 import { envs } from "@/constants/common/envs";
+import { SUPPORTED_EXPORT_FORMATS } from "@/constants/common/supported-export-format";
 import { db } from "@/db";
 import { attachment, exportDocument } from "@/db/schema";
 import { redis } from "@/lib/redis";
@@ -12,6 +13,7 @@ import {
   SCENARIO_VERSION_EXPORT_QUEUE_NAME,
   type ScenarioVersionExportJobData,
 } from "./queue";
+import type { ScenarioVersionExportData } from "./types";
 import { renderScenarioVersionExport } from "./utils";
 
 export const scenarioVersionExportWorker =
@@ -23,25 +25,36 @@ export const scenarioVersionExportWorker =
       console.log("Scenario version export worker started", job.data);
 
       try {
-        const foundExportDocument = await db.query.exportDocument.findFirst({
-          where: (document, { eq }) => eq(document.id, exportDocumentId),
-          with: {
-            format: true,
-          },
-        });
+        const foundScenarioVersionToExportDocument =
+          await db.query.scenarioVersionToExportDocument.findFirst({
+            where: (link, { eq, and }) =>
+              and(
+                eq(link.scenarioVersionId, scenarioVersionId),
+                eq(link.exportDocumentId, exportDocumentId),
+              ),
+            with: {
+              exportDocument: {
+                with: {
+                  format: true,
+                },
+              },
+            },
+          });
 
-        if (!foundExportDocument) {
+        if (!foundScenarioVersionToExportDocument) {
           throw new Error(
             `Scenario version export document not found: ${exportDocumentId}`,
           );
         }
 
+        const { exportDocument: foundExportDocument } =
+          foundScenarioVersionToExportDocument;
+
         if (
-          foundExportDocument.format.slug !== "pdf" &&
-          foundExportDocument.format.slug !== "docx"
+          !SUPPORTED_EXPORT_FORMATS.includes(foundExportDocument.format.slug)
         ) {
           throw new Error(
-            `Неподдерживаемый формат экспорта: ${foundExportDocument.format.slug}`,
+            `Неподдерживаемый формат документа: ${foundExportDocument.format.slug}`,
           );
         }
 
@@ -49,11 +62,11 @@ export const scenarioVersionExportWorker =
           .update(exportDocument)
           .set({
             status: "generation",
-            error: null,
+            statusDetails: null,
           })
           .where(eq(exportDocument.id, exportDocumentId));
 
-        const scenarioVersionData = await db.query.scenarioVersion.findFirst({
+        const foundScenarioVersion = await db.query.scenarioVersion.findFirst({
           where: (scenarioVersion, { eq }) =>
             eq(scenarioVersion.id, scenarioVersionId),
           with: {
@@ -95,23 +108,40 @@ export const scenarioVersionExportWorker =
           },
         });
 
-        if (!scenarioVersionData) {
+        if (!foundScenarioVersion) {
           throw new Error(
             "Не удалось загрузить данные версии сценария для экспорта",
           );
         }
 
         if (
-          scenarioVersionData.scenario.userId !== foundExportDocument.userId
+          foundScenarioVersion.scenario.userId !== foundExportDocument.userId
         ) {
           throw new Error(
             "Версия сценария не принадлежит владельцу экспортного документа",
           );
         }
 
+        const {
+          scenario: foundScenario,
+          chapters,
+          ...scenarioVersionData
+        } = foundScenarioVersion;
+
+        const { scenarioToTone, ...scenarioData } = foundScenario;
+
+        const scenarioVersionExportData: ScenarioVersionExportData = {
+          ...scenarioVersionData,
+          scenario: {
+            ...scenarioData,
+            tones: scenarioToTone.map((item) => item.tone),
+          },
+          chapters,
+        };
+
         const renderedExportFile = await renderScenarioVersionExport({
           format: foundExportDocument.format.slug,
-          data: scenarioVersionData,
+          data: scenarioVersionExportData,
         });
 
         const s3Key = createS3Key({
@@ -141,7 +171,7 @@ export const scenarioVersionExportWorker =
           .set({
             attachmentId: createdAttachment.id,
             status: "ready",
-            error: null,
+            statusDetails: null,
           })
           .where(eq(exportDocument.id, exportDocumentId));
 
@@ -160,7 +190,7 @@ export const scenarioVersionExportWorker =
           .update(exportDocument)
           .set({
             status: "failed",
-            error:
+            statusDetails:
               error instanceof Error ? error.message : "Unknown export error",
           })
           .where(eq(exportDocument.id, exportDocumentId));

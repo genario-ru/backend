@@ -1,26 +1,9 @@
 import { z } from "@/lib/zod";
-import { generationStatusSchema } from "@/schemas/common/generation-status";
-
-export const scenarioVersionExportItemSchema = z
-  .object({
-    name: z.string(),
-    format: z.enum(["pdf", "docx"]),
-    status: generationStatusSchema,
-    url: z.string().nullable(),
-  })
-  .meta({
-    title: "Scenario version export item",
-    description: "Scenario version export item description",
-    ref: "ScenarioVersionExportItemSchema",
-  });
-
-export type ScenarioVersionExportItem = z.infer<
-  typeof scenarioVersionExportItemSchema
->;
+import { exportDocumentShortSchema } from "@/schemas/entities/export-document/entities/export-document";
 
 export const getScenarioVersionExportsResponseSchema = z
   .object({
-    data: z.array(scenarioVersionExportItemSchema),
+    data: z.array(exportDocumentShortSchema),
   })
   .meta({
     title: "Get scenario version exports response",

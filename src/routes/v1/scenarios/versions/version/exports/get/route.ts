@@ -9,20 +9,15 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
+import type { ExportDocumentShort } from "@/schemas/entities/export-document/entities/export-document";
 import { getScenarioVersionExportsParamsSchema } from "@/schemas/entities/scenarios/handlers/get-scenario-version-exports/params";
 import {
   type GetScenarioVersionExportsResponse,
   getScenarioVersionExportsResponseSchema,
-  type ScenarioVersionExportItem,
 } from "@/schemas/entities/scenarios/handlers/get-scenario-version-exports/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
-
-const scenarioVersionExportFormats = [
-  { name: "PDF", format: "pdf" as const },
-  { name: "DOCX", format: "docx" as const },
-];
 
 export const getScenarioVersionExportsRoute = createHonoApp().basePath(
   "/scenarios/versions/:versionId/exports",
@@ -64,6 +59,17 @@ getScenarioVersionExportsRoute.get(
       where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
       with: {
         scenario: true,
+        scenarioVersionToExportDocument: {
+          orderBy: (link, { desc }) => [desc(link.createdAt)],
+          with: {
+            exportDocument: {
+              with: {
+                format: true,
+                attachment: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -82,36 +88,38 @@ getScenarioVersionExportsRoute.get(
       });
     }
 
-    const foundScenarioVersionExports =
-      await db.query.scenarioVersionToExportDocument.findMany({
-        where: (link, { eq }) => eq(link.scenarioVersionId, versionId),
-        orderBy: (link, { desc }) => [desc(link.createdAt)],
-        with: {
-          exportDocument: {
-            with: {
-              format: true,
-              attachment: true,
-            },
-          },
-        },
-      });
+    const foundExportDocumentFormats =
+      await db.query.exportDocumentFormat.findMany();
 
-    const exportsData: ScenarioVersionExportItem[] = await Promise.all(
-      scenarioVersionExportFormats.map(async ({ name, format }) => {
-        const latestExport = foundScenarioVersionExports
+    const exportsData: ExportDocumentShort[] = await Promise.all(
+      foundExportDocumentFormats.map(async (format) => {
+        const latestExport = foundVersion.scenarioVersionToExportDocument
           .map((item) => item.exportDocument)
-          .find((item) => item.format.slug === format);
+          .find((item) => item.format.slug === format.slug);
 
-        if (!latestExport) {
-          return { name, format, status: "idle" as const, url: null };
+        if (!latestExport?.attachment) {
+          return {
+            formatName: format.name,
+            formatSlug: format.slug,
+            formatColor: format.color,
+            formatIcon: format.icon,
+            documentStatus: latestExport?.status ?? "idle",
+            documentStatusDetails: latestExport?.statusDetails ?? null,
+            documentUrl: null,
+          };
         }
 
-        const url =
-          latestExport.status === "ready" && latestExport.attachment
-            ? await getSignedS3Url(latestExport.attachment.key)
-            : null;
+        const url = await getSignedS3Url(latestExport.attachment.key);
 
-        return { name, format, status: latestExport.status, url };
+        return {
+          formatName: format.name,
+          formatSlug: format.slug,
+          formatColor: format.color,
+          formatIcon: format.icon,
+          documentStatus: latestExport.status,
+          documentStatusDetails: latestExport.statusDetails,
+          documentUrl: url,
+        };
       }),
     );
 

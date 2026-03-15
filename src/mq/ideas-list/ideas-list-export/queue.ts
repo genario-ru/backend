@@ -7,7 +7,6 @@ export const IDEAS_LIST_EXPORT_QUEUE_NAME = "ideas-list-export";
 export type IdeasListExportJobData = {
   exportDocumentId: string;
   ideasListId: string;
-  savedOnly: boolean;
 };
 
 export const ideasListExportQueue = new Queue<IdeasListExportJobData>(

@@ -4,66 +4,63 @@ import { PDFWriter } from "@/lib/documents/pdf-writer";
 import { slugifyFileName } from "@/lib/documents/slugify-file-name";
 import { type RenderedDocumentFile } from "@/lib/documents/types";
 
-type IdeasListExportFormat = "pdf" | "docx";
-
-export type IdeasListExportData = {
-  id: string;
-  name: string;
-  description: string;
-  targetAudience: string | null;
-  profile: { name: string } | null;
-  template: { name: string } | null;
-  ideas: Array<{
-    name: string;
-    description: string;
-    reason: string | null;
-    saved: boolean;
-    videoType: { name: string };
-  }>;
-  ideasListToTone: Array<{ tone: { name: string } }>;
-  ideasListToVideoType: Array<{ videoType: { name: string } }>;
-};
+import type { IdeasListExportData } from "./types";
 
 type RenderIdeasListExportParams = {
-  format: IdeasListExportFormat;
+  format: string;
   data: IdeasListExportData;
-  savedOnly: boolean;
 };
 
 function getIdeasListTitle(data: IdeasListExportData) {
   return data.name?.trim() || "Список идей";
 }
 
-function getIdeasListFileName(
-  data: IdeasListExportData,
-  format: IdeasListExportFormat,
-) {
+function getIdeasListFileName(data: IdeasListExportData, format: string) {
   const baseName = slugifyFileName(getIdeasListTitle(data)) || "ideas-list";
+
   return `${baseName}.${format}`;
 }
 
-function getIdeasListMetaLines(data: IdeasListExportData, savedOnly: boolean) {
-  return [
-    `Описание: ${data.description || "Не указано"}`,
-    `Целевая аудитория: ${data.targetAudience || "Не указана"}`,
-    `Профиль: ${data.profile?.name || "Не указан"}`,
-    `Шаблон: ${data.template?.name || "Не указан"}`,
-    `Тоны: ${data.ideasListToTone.map(({ tone }) => tone.name).join(", ") || "Не указаны"}`,
-    `Типы видео: ${data.ideasListToVideoType.map(({ videoType }) => videoType.name).join(", ") || "Не указаны"}`,
-    `Экспорт только сохранённых: ${savedOnly ? "Да" : "Нет"}`,
-    `Количество идей: ${data.ideas.length}`,
-  ];
+function getIdeasListMetaLines(data: IdeasListExportData) {
+  const metaLines = [`Количество идей: ${data.ideas.length}`];
+
+  if (data.description) {
+    metaLines.push(`Описание: ${data.description}`);
+  }
+
+  if (data.targetAudience) {
+    metaLines.push(`Целевая аудитория: ${data.targetAudience}`);
+  }
+
+  if (data.profile) {
+    metaLines.push(`Профиль: ${data.profile.name}`);
+  }
+
+  if (data.template) {
+    metaLines.push(`Шаблон: ${data.template.name}`);
+  }
+
+  if (data.tones.length > 0) {
+    metaLines.push(`Тоны: ${data.tones.map(({ name }) => name).join(", ")}`);
+  }
+
+  if (data.videoTypes.length > 0) {
+    metaLines.push(
+      `Типы видео: ${data.videoTypes.map(({ name }) => name).join(", ")}`,
+    );
+  }
+
+  return metaLines;
 }
 
 async function renderIdeasListPdf(
   data: IdeasListExportData,
-  savedOnly: boolean,
-) {
+): Promise<RenderedDocumentFile> {
   const writer = await PDFWriter.create();
 
   writer.addTitle(getIdeasListTitle(data));
 
-  for (const line of getIdeasListMetaLines(data, savedOnly)) {
+  for (const line of getIdeasListMetaLines(data)) {
     writer.addParagraph(line);
   }
 
@@ -88,19 +85,18 @@ async function renderIdeasListPdf(
     buffer: await writer.save(),
     fileName: getIdeasListFileName(data, "pdf"),
     mimeType: "application/pdf",
-  } satisfies RenderedDocumentFile;
+  };
 }
 
 async function renderIdeasListDocx(
   data: IdeasListExportData,
-  savedOnly: boolean,
-) {
+): Promise<RenderedDocumentFile> {
   const children: Paragraph[] = [
     new Paragraph({
       text: getIdeasListTitle(data),
       heading: HeadingLevel.TITLE,
     }),
-    ...getIdeasListMetaLines(data, savedOnly).map(
+    ...getIdeasListMetaLines(data).map(
       (line) =>
         new Paragraph({
           text: line,
@@ -161,17 +157,16 @@ async function renderIdeasListDocx(
     fileName: getIdeasListFileName(data, "docx"),
     mimeType:
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  } satisfies RenderedDocumentFile;
+  };
 }
 
 export async function renderIdeasListExport({
   format,
   data,
-  savedOnly,
 }: RenderIdeasListExportParams) {
   if (format === "pdf") {
-    return renderIdeasListPdf(data, savedOnly);
+    return renderIdeasListPdf(data);
   }
 
-  return renderIdeasListDocx(data, savedOnly);
+  return renderIdeasListDocx(data);
 }
