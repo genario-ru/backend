@@ -3,7 +3,7 @@ import { validator } from "hono-openapi";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
+import { getAttachmentDownloadUrl } from "@/lib/attachments/utils/get-attachment-download-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -109,7 +109,7 @@ getScenarioVersionExportsRoute.get(
           };
         }
 
-        const url = await getSignedS3Url(latestExport.attachment.key);
+        const url = getAttachmentDownloadUrl(latestExport.attachment.id);
 
         return {
           formatName: format.name,

@@ -5,7 +5,7 @@ import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
 import { exportDocument, scenarioVersionToExportDocument } from "@/db/schema";
-import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
+import { getAttachmentDownloadUrl } from "@/lib/attachments/utils/get-attachment-download-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -182,7 +182,7 @@ getScenarioVersionExportRoute.post(
       foundExportDocument.status === "ready" &&
       foundExportDocument.attachment
     ) {
-      const url = await getSignedS3Url(foundExportDocument.attachment.key);
+      const url = getAttachmentDownloadUrl(foundExportDocument.attachment.id);
 
       return c.json<GetScenarioVersionExportResponse>(
         getScenarioVersionExportResponseSchema.parse({

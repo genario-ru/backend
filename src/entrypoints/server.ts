@@ -25,6 +25,7 @@ import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
 } from "@/routes/v1/archive";
+import { getAttachmentDownloadRoute } from "@/routes/v1/attachments";
 import {
   deleteIdeaRoute,
   getIdeaRoute,
@@ -115,6 +116,7 @@ const appAPIv1RoutesList = [
   getIdeaRoute,
   updateIdeaRoute,
   saveIdeaRoute,
+  getAttachmentDownloadRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
