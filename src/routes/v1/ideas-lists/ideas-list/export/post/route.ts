@@ -143,13 +143,14 @@ getIdeasListExportRoute.post(
     }
 
     if (foundExportDocument.status === "failed") {
-      await db
+      const [updatedExportDocument] = await db
         .update(exportDocument)
         .set({
           status: "pending",
           statusDetails: null,
         })
-        .where(eq(exportDocument.id, foundExportDocument.id));
+        .where(eq(exportDocument.id, foundExportDocument.id))
+        .returning();
 
       await enqueueIdeasListExport({
         exportDocumentId: foundExportDocument.id,
@@ -163,8 +164,8 @@ getIdeasListExportRoute.post(
             formatSlug: foundExportDocument.format.slug,
             formatColor: foundExportDocument.format.color,
             formatIcon: foundExportDocument.format.icon,
-            documentStatus: foundExportDocument.status,
-            documentStatusDetails: foundExportDocument.statusDetails,
+            documentStatus: updatedExportDocument.status,
+            documentStatusDetails: updatedExportDocument.statusDetails,
             documentUrl: null,
           },
         }),

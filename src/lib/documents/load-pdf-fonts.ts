@@ -4,10 +4,10 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 const latinFontPath =
-  require.resolve("@fontsource/noto-sans/files/noto-sans-latin-ext-400-normal.woff");
+  require.resolve("@fontsource/noto-sans/files/noto-sans-latin-400-normal.woff");
 
 const cyrillicFontPath =
-  require.resolve("@fontsource/noto-sans/files/noto-sans-cyrillic-ext-400-normal.woff");
+  require.resolve("@fontsource/noto-sans/files/noto-sans-cyrillic-400-normal.woff");
 
 let fontBuffersPromise:
   | Promise<{
