@@ -59,17 +59,6 @@ getScenarioVersionExportsRoute.get(
       where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
       with: {
         scenario: true,
-        scenarioVersionToExportDocument: {
-          orderBy: (link, { desc }) => [desc(link.createdAt)],
-          with: {
-            exportDocument: {
-              with: {
-                format: true,
-                attachment: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -88,12 +77,26 @@ getScenarioVersionExportsRoute.get(
       });
     }
 
+    const foundScenarioVersionExports =
+      await db.query.scenarioVersionToExportDocument.findMany({
+        where: (link, { eq }) => eq(link.scenarioVersionId, versionId),
+        orderBy: (link, { desc }) => [desc(link.createdAt)],
+        with: {
+          exportDocument: {
+            with: {
+              format: true,
+              attachment: true,
+            },
+          },
+        },
+      });
+
     const foundExportDocumentFormats =
       await db.query.exportDocumentFormat.findMany();
 
     const exportsData: ExportDocumentShort[] = await Promise.all(
       foundExportDocumentFormats.map(async (format) => {
-        const latestExport = foundVersion.scenarioVersionToExportDocument
+        const latestExport = foundScenarioVersionExports
           .map((item) => item.exportDocument)
           .find((item) => item.format.slug === format.slug);
 
