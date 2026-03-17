@@ -64,17 +64,6 @@ getScenarioVersionExportRoute.post(
       where: (scenarioVersion, { eq }) => eq(scenarioVersion.id, versionId),
       with: {
         scenario: true,
-        scenarioVersionToExportDocument: {
-          orderBy: (link, { desc }) => [desc(link.createdAt)],
-          with: {
-            exportDocument: {
-              with: {
-                format: true,
-                attachment: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -88,12 +77,25 @@ getScenarioVersionExportRoute.post(
     if (foundVersion.scenario.userId !== user.id) {
       return throwAPIError({
         code: APIErrorCode.Forbidden,
-        message:
-          "Данный сценарий не существует или у вас нет возможности экспортировать его",
+        message: "У вас нет возможности экспортировать этот сценарий",
       });
     }
 
-    const foundExportDocument = foundVersion.scenarioVersionToExportDocument
+    const foundScenarioVersionExports =
+      await db.query.scenarioVersionToExportDocument.findMany({
+        where: (link, { eq }) => eq(link.scenarioVersionId, versionId),
+        orderBy: (link, { desc }) => [desc(link.createdAt)],
+        with: {
+          exportDocument: {
+            with: {
+              format: true,
+              attachment: true,
+            },
+          },
+        },
+      });
+
+    const foundExportDocument = foundScenarioVersionExports
       .map((item) => item.exportDocument)
       .find((item) => item.format.slug === format);
 
