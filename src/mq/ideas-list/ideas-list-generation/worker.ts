@@ -2,14 +2,14 @@ import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
+import { generateIdeasListPrompt } from "@/ai/prompts/ideas-lists/generate-ideas-list-prompt";
+import { systemPrompt } from "@/ai/prompts/system/system-prompt";
+import { polzaAI } from "@/ai/providers/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
-import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { generateIdeasListPrompt } from "@/prompts/ideas-lists/generate-ideas-list-prompt";
-import { systemPrompt } from "@/prompts/system/system-prompt";
 import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
 
 import {

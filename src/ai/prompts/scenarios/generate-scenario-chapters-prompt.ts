@@ -1,4 +1,4 @@
-import { buildContextLines } from "@/lib/ai/utils/build-context-lines";
+import { buildContextLines } from "@/ai/utils/build-context-lines";
 
 type GenerateScenarioChaptersPromptProps = {
   context: {

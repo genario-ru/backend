@@ -2,16 +2,16 @@ import { generateImage } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
+import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/scenarios/generate-scenario-scene-preview-prompt";
+import { vsellm } from "@/ai/providers/vsellm";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
-import { vsellm } from "@/lib/ai/providers/vsellm";
 import { compressBase64Image } from "@/lib/image/compress-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
-import { generateScenarioScenePreviewPrompt } from "@/prompts/scenarios/generate-scenario-scene-preview-prompt";
 
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,

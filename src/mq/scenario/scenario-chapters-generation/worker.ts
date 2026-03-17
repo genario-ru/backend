@@ -2,14 +2,14 @@ import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
+import { generateScenarioChaptersPrompt } from "@/ai/prompts/scenarios/generate-scenario-chapters-prompt";
+import { systemPrompt } from "@/ai/prompts/system/system-prompt";
+import { polzaAI } from "@/ai/providers/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { generationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
-import { polzaAI } from "@/lib/ai/providers/polza-ai";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { generateScenarioChaptersPrompt } from "@/prompts/scenarios/generate-scenario-chapters-prompt";
-import { systemPrompt } from "@/prompts/system/system-prompt";
 import { scenarioChapterGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-chapter";
 
 import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";

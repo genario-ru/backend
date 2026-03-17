@@ -1,7 +1,7 @@
 import {
   buildContextLines,
   formatPreviousItems,
-} from "@/lib/ai/utils/build-context-lines";
+} from "@/ai/utils/build-context-lines";
 
 type ComponentType = {
   id: string;
