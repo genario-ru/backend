@@ -1,8 +1,7 @@
 import { Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
+import slugify from "slugify";
 
-import { PDFWriter } from "@/lib/documents/pdf-writer";
-import { slugifyFileName } from "@/lib/documents/slugify-file-name";
-import { type RenderedDocumentFile } from "@/lib/documents/types";
+import { PDFWriter } from "@/lib/pdf/pdf-writer";
 
 import type { IdeasListExportData } from "./types";
 
@@ -11,12 +10,18 @@ type RenderIdeasListExportParams = {
   data: IdeasListExportData;
 };
 
+export type RenderedDocumentFile = {
+  buffer: Buffer;
+  fileName: string;
+  mimeType: string;
+};
+
 function getIdeasListTitle(data: IdeasListExportData) {
   return data.name?.trim() || "Список идей";
 }
 
 function getIdeasListFileName(data: IdeasListExportData, format: string) {
-  const baseName = slugifyFileName(getIdeasListTitle(data)) || "ideas-list";
+  const baseName = slugify(getIdeasListTitle(data)) || "ideas-list";
 
   return `${baseName}.${format}`;
 }

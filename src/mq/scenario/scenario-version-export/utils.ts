@@ -1,14 +1,19 @@
 import { Document, HeadingLevel, Packer, Paragraph } from "docx";
+import slugify from "slugify";
 
-import { PDFWriter } from "@/lib/documents/pdf-writer";
-import { slugifyFileName } from "@/lib/documents/slugify-file-name";
-import { type RenderedDocumentFile } from "@/lib/documents/types";
+import { PDFWriter } from "@/lib/pdf/pdf-writer";
 
 import type { ScenarioVersionExportData } from "./types";
 
 type RenderScenarioVersionExportParams = {
   format: string;
   data: ScenarioVersionExportData;
+};
+
+export type RenderedDocumentFile = {
+  buffer: Buffer;
+  fileName: string;
+  mimeType: string;
 };
 
 function formatTimeRange(startTime: number, endTime: number) {
@@ -20,7 +25,7 @@ function getScenarioTitle(data: ScenarioVersionExportData) {
 }
 
 function getScenarioFileName(data: ScenarioVersionExportData, format: string) {
-  const scenarioSlug = slugifyFileName(getScenarioTitle(data)) || "scenario";
+  const scenarioSlug = slugify(getScenarioTitle(data)) || "scenario";
   return `${scenarioSlug}-version-${data.id.slice(0, 8)}.${format}`;
 }
 
