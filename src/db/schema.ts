@@ -15,10 +15,10 @@ export * from "./schemas/billing/credits-batch";
 export * from "./schemas/billing/credits-cost";
 export * from "./schemas/billing/credits-package";
 export * from "./schemas/billing/credits-usage";
+export * from "./schemas/billing/payment";
 export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/tariff";
 export * from "./schemas/billing/tariff-discount";
-export * from "./schemas/billing/transaction";
 
 // Linking
 export * from "./schemas/linking/credits-package-to-credits-batch";

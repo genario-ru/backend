@@ -50,6 +50,7 @@ export const envs = envsSchema.parse({
   YOOKASSA_OPENAPI_URL: process.env.YOOKASSA_OPENAPI_URL,
   YOOKASSA_BASE_URL: process.env.YOOKASSA_BASE_URL,
   YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY,
+  YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
 
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,

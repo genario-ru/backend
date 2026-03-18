@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  decimal,
   integer,
   pgEnum,
   pgTable,
@@ -29,8 +30,8 @@ export const tariff = pgTable("tariff", {
   slug: varchar("slug", { length: 255 }).unique().notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  price: integer("price").notNull(),
-  oldPrice: integer("old_price"),
+  price: decimal("price").notNull(),
+  oldPrice: decimal("old_price"),
   billingPeriod: tariffBillingPeriod("billing_period"),
   durationDays: integer("duration_days"),
   isRenewable: boolean("is_renewable").default(true).notNull(),

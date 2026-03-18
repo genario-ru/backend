@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { decimal, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -25,7 +25,7 @@ export const tariffDiscount = pgTable("tariff_discount", {
     onDelete: "cascade",
   }),
   type: tariffDiscountType("type").notNull(),
-  value: integer("value").notNull(),
+  value: decimal("value").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "string",

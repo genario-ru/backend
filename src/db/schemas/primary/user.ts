@@ -13,6 +13,7 @@ import { timestamps } from "@/db/constants/timestamps";
 import { account } from "../auth/account";
 import { session } from "../auth/session";
 import { creditsBatch } from "../billing/credits-batch";
+import { payment } from "../billing/payment";
 import { subscription } from "../billing/subscription";
 import { tariffDiscount } from "../billing/tariff-discount";
 import { referralCode } from "../referral/referral-code";
@@ -49,6 +50,7 @@ export const userRelations = relations(user, ({ many }) => ({
   impersonatedSessions: many(session, { relationName: "impersonatedSession" }),
   creditsBatches: many(creditsBatch),
   tariffDiscounts: many(tariffDiscount),
+  payments: many(payment),
   profiles: many(profile),
   ideasLists: many(ideasList),
   scenarios: many(scenario),

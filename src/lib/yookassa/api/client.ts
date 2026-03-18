@@ -55,8 +55,13 @@ export const client: Client = async ({
     includeQuestionmark: true,
   });
 
+  const auth = Buffer.from(
+    `${envs.YOOKASSA_SHOP_ID}:${envs.YOOKASSA_SECRET_KEY}`,
+    "base64",
+  ).toString("base64");
+
   const headers = new Headers({
-    Authorization: `Bearer ${envs.YOOKASSA_SECRET_KEY}`,
+    Authorization: `Basic ${auth}`,
     ...initialHeaders,
   });
 
