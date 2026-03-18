@@ -204,6 +204,13 @@
       "when": 1773871036429,
       "tag": "0028_light_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1773872434550,
+      "tag": "0029_sloppy_captain_marvel",
+      "breakpoints": true
     }
   ]
 }

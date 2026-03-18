@@ -1,4 +1,4 @@
-import { decimal, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { generationEntity } from "@/db/constants/generation-entity";
 import { timestamps } from "@/db/constants/timestamps";
@@ -10,6 +10,6 @@ export const generationLog = pgTable("generation_log", {
   prompt: text("prompt"),
   model: text("model").notNull(),
   tokens: integer("tokens").notNull(),
-  cost: decimal("cost"),
+  cost: real("cost"),
   ...timestamps,
 });

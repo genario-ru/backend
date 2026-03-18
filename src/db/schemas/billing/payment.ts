@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { decimal, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -15,7 +15,7 @@ export const payment = pgTable("payment", {
   userId: uuid("user_id")
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
-  amount: decimal("amount").notNull(),
+  amount: real("amount").notNull(),
   entity: paymentEntity("entity").notNull(),
   entityId: uuid("entity_id").notNull(),
   paymentId: text("payment_id").notNull(),

@@ -1,10 +1,10 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  decimal,
   integer,
   pgEnum,
   pgTable,
+  real,
   text,
   uuid,
   varchar,
@@ -30,8 +30,8 @@ export const tariff = pgTable("tariff", {
   slug: varchar("slug", { length: 255 }).unique().notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  price: decimal("price").notNull(),
-  oldPrice: decimal("old_price"),
+  price: real("price").notNull(),
+  oldPrice: real("old_price"),
   billingPeriod: tariffBillingPeriod("billing_period"),
   durationDays: integer("duration_days"),
   isRenewable: boolean("is_renewable").default(true).notNull(),
