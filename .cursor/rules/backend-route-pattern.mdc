@@ -1,0 +1,22 @@
+---
+description: Паттерн разработки route в Hono для backend API
+globs: src/routes/**/*.ts
+alwaysApply: false
+---
+
+# Backend Route Pattern
+
+- Создавай route через `createHonoApp().basePath(...)`.
+- Используй middleware в стабильном порядке:
+  `sessionMiddleware -> rateLimitMiddleware -> subscriptionMiddleware -> openAPIResponseMiddleware -> validator`.
+- Для валидации параметров/тела используй `validator("param", ...)` и `validator("json", ...)`.
+- Для OpenAPI-ответов используй `createOpenAPIResponse` и соответствующую `responseSchema`.
+- В handler извлекай данные только через `c.req.valid(...)`.
+- Ошибки доменной логики возвращай через `throwAPIError(...)`.
+- Успешный ответ формируй строго как `c.json<ResponseType>(responseSchema.parse({ data }))`.
+
+## Что не делать
+
+- Не пропускать `openAPIResponseMiddleware` у публичных API endpoints.
+- Не возвращать сырые объекты без `responseSchema.parse(...)`.
+- Не добавлять бизнес-логику, которая заметно раздувает route, без явной причины.

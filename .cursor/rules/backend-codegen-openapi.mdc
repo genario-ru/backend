@@ -1,0 +1,20 @@
+---
+description: Правила обновления OpenAPI и генерации клиентов через Kubb
+globs: "{kubb.config.ts,scripts/download-*-openapi.ts,src/codegen/**/*.ts}"
+alwaysApply: false
+---
+
+# Backend OpenAPI Codegen
+
+- Для обновления клиентов соблюдай порядок:
+  `api:download:* -> api:generate`.
+- Источники спецификаций хранятся в `deps/api/*.json`; не редактируй сгенерированный код вручную без необходимости.
+- При изменениях `kubb.config.ts` проверяй `importPath`, parser, transformers и output-пути.
+- После генерации проверяй diff на неожиданные изменения в `src/codegen/api/**`.
+- Для API-специфичных нормализаций добавляй явные шаги в download-скрипты, а не ручные post-fix.
+
+## Что не делать
+
+- Не запускать `api:generate` на устаревших `deps/api/*.json`, если требовалось обновление схем.
+- Не смешивать ручные исправления и автогенерацию в одном файле без комментария причины.
+- Не менять стиль именования в codegen артефактах в обход централизованных transformers.

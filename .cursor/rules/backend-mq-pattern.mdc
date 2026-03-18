@@ -1,0 +1,22 @@
+---
+description: Паттерн разработки BullMQ queue/worker и их регистрации
+globs: src/mq/**/*.ts
+alwaysApply: false
+---
+
+# Backend MQ Pattern
+
+- Для каждой новой очереди используй парную структуру: `queue.ts` + `worker.ts`.
+- Типизируй payload job-данных на уровне `Queue<JobData>` и `Worker<JobData>`.
+- Подключай Redis через общий модуль `@/lib/redis`.
+- Для каждой новой очереди обновляй:
+  - `src/entrypoints/workers.ts` (импорт + `worker.close()` в shutdown),
+  - `src/entrypoints/server.ts` (регистрация очереди в Bull Board).
+- Следи за консистентным `QUEUE_NAME` между queue и worker.
+- Для ошибок worker используй единый подход логирования и проброса ошибок.
+
+## Что не делать
+
+- Не оставлять queue без регистрации в Bull Board.
+- Не дублировать ключи/имена очередей в разном формате.
+- Не использовать неявно типизированные payload структуры.
