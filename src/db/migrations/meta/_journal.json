@@ -197,6 +197,13 @@
       "when": 1773680064374,
       "tag": "0027_broken_karen_page",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1773871036429,
+      "tag": "0028_light_power_pack",
+      "breakpoints": true
     }
   ]
 }

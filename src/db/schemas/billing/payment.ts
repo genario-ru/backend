@@ -5,7 +5,10 @@ import { timestamps } from "@/db/constants/timestamps";
 
 import { user } from "../primary/user";
 
-const paymentEntity = pgEnum("payment_entity", ["tariff", "credits_package"]);
+export const paymentEntity = pgEnum("payment_entity", [
+  "tariff",
+  "credits_package",
+]);
 
 export const payment = pgTable("payment", {
   id: uuid("id").defaultRandom().primaryKey(),
