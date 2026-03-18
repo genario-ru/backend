@@ -1,31 +1,31 @@
 ---
 name: env-propagation-checklist
-description: Проводит добавление новой env-переменной через все обязательные уровни backend (schema, constants, Docker). Использовать при изменении конфигурации окружения.
+description: Handles adding a new env variable across all required backend layers (schema, constants, Docker). Use when environment configuration changes.
 ---
 
 # Env Propagation Checklist
 
-## Когда использовать
+## When To Use
 
-При добавлении, переименовании или удалении переменной окружения.
+When adding, renaming, or removing an environment variable.
 
-## Обязательные точки обновления
+## Required Update Points
 
-1. `src/schemas/common/envs.ts` — тип и валидация переменной.
-2. `src/constants/common/envs.ts` — прокидывание из `process.env`.
-3. `docker-compose.yml` — переменная для `server` и `workers`.
-4. `Dockerfile` — `ARG`/`ENV`, если переменная участвует в build/runtime образа.
-5. `.env.example` — пример и документация по новой переменной.
+1. `src/schemas/common/envs.ts` - variable type and validation.
+2. `src/constants/common/envs.ts` - mapping from `process.env`.
+3. `docker-compose.yml` - variable for both `server` and `workers`.
+4. `Dockerfile` - `ARG`/`ENV` if variable is needed at build/runtime image level.
+5. `.env.example` - example and documentation for the variable.
 
-## Порядок действий
+## Steps
 
-1. Добавь переменную в schema и constants.
-2. Протяни переменную в Docker-конфигурации.
-3. Обнови `.env.example`.
-4. Запусти минимальную проверку запуска (`pnpm dev` или релевантный workflow).
+1. Add variable to schema and constants.
+2. Propagate variable through Docker configuration.
+3. Update `.env.example`.
+4. Run a minimal startup validation (`pnpm dev` or relevant workflow).
 
 ## Self-check
 
-- Переменная валидируется на старте.
-- Одинаковое имя переменной во всех файлах.
-- Нет ситуации, когда `server` видит переменную, а `workers` — нет.
+- Variable is validated at startup.
+- Variable name is consistent across files.
+- No case where `server` has the variable but `workers` does not.

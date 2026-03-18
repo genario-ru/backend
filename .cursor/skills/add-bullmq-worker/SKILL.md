@@ -1,35 +1,35 @@
 ---
 name: add-bullmq-worker
-description: Добавляет новую BullMQ очередь и worker в backend с обязательной регистрацией в workers shutdown и Bull Board. Использовать при добавлении новых фоновых задач в src/mq.
+description: Adds a new BullMQ queue and worker in backend with mandatory registration in workers shutdown and Bull Board. Use when introducing new background jobs in src/mq.
 ---
 
 # Add BullMQ Worker
 
-## Цель
+## Goal
 
-Создать новый модуль фоновой обработки без пропуска интеграционных шагов.
+Create a new background processing module without missing integration steps.
 
-## Порядок действий
+## Steps
 
-1. Создай папку `src/mq/<domain>/<feature>/`.
-2. Добавь `queue.ts`:
-   - константа имени очереди;
-   - `Queue<JobData>` с общей Redis-конфигурацией;
-   - helper `enqueue...(...)`.
-3. Добавь `worker.ts`:
+1. Create folder `src/mq/<domain>/<feature>/`.
+2. Add `queue.ts`:
+   - queue name constant;
+   - `Queue<JobData>` with shared Redis configuration;
+   - `enqueue...(...)` helper.
+3. Add `worker.ts`:
    - `Worker<JobData>`;
-   - обработчик job с валидацией входа;
-   - унифицированная обработка ошибок.
-4. Обнови `src/entrypoints/workers.ts`:
-   - импорт worker;
-   - `await worker.close()` в `shutdown`.
-5. Обнови `src/entrypoints/server.ts`:
-   - импорт queue;
-   - `new BullMQAdapter(queue)` в `createBullBoard`.
+   - job handler with input validation;
+   - unified error handling.
+4. Update `src/entrypoints/workers.ts`:
+   - import worker;
+   - add `await worker.close()` in `shutdown`.
+5. Update `src/entrypoints/server.ts`:
+   - import queue;
+   - add `new BullMQAdapter(queue)` to `createBullBoard`.
 
 ## Self-check
 
-- Queue и worker используют один `QUEUE_NAME`.
-- Worker корректно закрывается через shutdown.
-- Очередь отображается в `/admin/queues`.
-- В payload нет `any`, есть тип `JobData`.
+- Queue and worker use the same `QUEUE_NAME`.
+- Worker is correctly closed in shutdown.
+- Queue is visible in `/admin/queues`.
+- Payload does not use `any`; `JobData` is typed.

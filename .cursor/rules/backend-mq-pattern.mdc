@@ -1,22 +1,22 @@
 ---
-description: Паттерн разработки BullMQ queue/worker и их регистрации
+description: BullMQ queue/worker development and registration pattern
 globs: src/mq/**/*.ts
 alwaysApply: false
 ---
 
 # Backend MQ Pattern
 
-- Для каждой новой очереди используй парную структуру: `queue.ts` + `worker.ts`.
-- Типизируй payload job-данных на уровне `Queue<JobData>` и `Worker<JobData>`.
-- Подключай Redis через общий модуль `@/lib/redis`.
-- Для каждой новой очереди обновляй:
-  - `src/entrypoints/workers.ts` (импорт + `worker.close()` в shutdown),
-  - `src/entrypoints/server.ts` (регистрация очереди в Bull Board).
-- Следи за консистентным `QUEUE_NAME` между queue и worker.
-- Для ошибок worker используй единый подход логирования и проброса ошибок.
+- For each new queue, use a paired structure: `queue.ts` + `worker.ts`.
+- Type job payloads as `Queue<JobData>` and `Worker<JobData>`.
+- Use Redis via the shared module `@/lib/redis`.
+- For every new queue, update:
+  - `src/entrypoints/workers.ts` (import + `worker.close()` in shutdown),
+  - `src/entrypoints/server.ts` (queue registration in Bull Board).
+- Keep `QUEUE_NAME` consistent between queue and worker.
+- Use a unified worker error handling/logging pattern.
 
-## Что не делать
+## What Not To Do
 
-- Не оставлять queue без регистрации в Bull Board.
-- Не дублировать ключи/имена очередей в разном формате.
-- Не использовать неявно типизированные payload структуры.
+- Do not leave a queue unregistered in Bull Board.
+- Do not duplicate queue keys/names in inconsistent formats.
+- Do not use implicitly typed payload structures.

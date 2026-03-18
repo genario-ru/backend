@@ -1,34 +1,34 @@
 ---
 name: add-api-endpoint
-description: Добавляет новый endpoint в backend по проектному паттерну Hono + Zod + OpenAPI и с правильным подключением route в server entrypoint. Использовать при создании новых API handlers.
+description: Adds a new backend endpoint using the project Hono + Zod + OpenAPI pattern with proper route registration in server entrypoint. Use when creating new API handlers.
 ---
 
 # Add API Endpoint
 
-## Цель
+## Goal
 
-Добавить endpoint без пропуска schema-валидации, OpenAPI и подключения в роутер.
+Add an endpoint without missing schema validation, OpenAPI, or router registration steps.
 
-## Порядок действий
+## Steps
 
-1. Определи место endpoint в `src/routes/v1/...`.
-2. Создай/обнови схемы в `src/schemas/entities/.../handlers/<handler>/`:
-   - `params.ts` при наличии path params;
-   - `query.ts` при query параметрах;
-   - `body.ts` для тела запроса;
-   - `response.ts` для ответа.
-3. Реализуй route:
+1. Define endpoint location in `src/routes/v1/...`.
+2. Create/update schemas in `src/schemas/entities/.../handlers/<handler>/`:
+   - `params.ts` for path params;
+   - `query.ts` for query parameters;
+   - `body.ts` for request body;
+   - `response.ts` for response payload.
+3. Implement route:
    - `createHonoApp().basePath(...)`;
-   - middleware в проектном порядке;
-   - `validator(...)` для входа;
-   - `throwAPIError(...)` для доменных ошибок;
+   - middleware in project order;
+   - `validator(...)` for input;
+   - `throwAPIError(...)` for domain errors;
    - `c.json<ResponseType>(responseSchema.parse({ data }))`.
-4. Подключи route в `src/entrypoints/server.ts`.
-5. Убедись, что endpoint появляется в OpenAPI.
+4. Register route in `src/entrypoints/server.ts`.
+5. Ensure endpoint is visible in OpenAPI.
 
 ## Self-check
 
-- Endpoint подключен в `server.ts`.
-- Все входы и выход типизированы через schema.
-- Ответ не возвращается в обход `responseSchema.parse`.
-- Нет необоснованного `any`.
+- Endpoint is registered in `server.ts`.
+- All inputs/outputs are schema-typed.
+- Response is not returned without `responseSchema.parse`.
+- No unjustified `any`.

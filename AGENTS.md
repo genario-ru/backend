@@ -1,68 +1,69 @@
 # AGENTS Guide For Backend
 
-Этот файл задает проектный контекст для AI-агентов и используется как точка входа в архитектуру.
+This file defines project context for AI agents and serves as an architecture entry point.
 
-## Проектный контекст
+## Project Context
 
-- Стек: TypeScript, Hono, Drizzle ORM, BullMQ, Zod, Kubb codegen.
+- Stack: TypeScript, Hono, Drizzle ORM, BullMQ, Zod, Kubb codegen.
 - Entrypoints:
-  - `src/entrypoints/server.ts` — HTTP API + docs + Bull Board.
-  - `src/entrypoints/workers.ts` — фоновые workers и shutdown.
-- Основные области:
-  - `src/routes/` — API handlers.
-  - `src/schemas/` — запросы/ответы и OpenAPI schemas.
-  - `src/db/` — схемы/миграции БД.
-  - `src/mq/` — queue/worker модули.
-  - `src/lib/` — инфраструктурные интеграции.
+  - `src/entrypoints/server.ts` - HTTP API + docs + Bull Board.
+  - `src/entrypoints/workers.ts` - background workers and shutdown.
+- Main areas:
+  - `src/routes/` - API handlers.
+  - `src/schemas/` - request/response and OpenAPI schemas.
+  - `src/db/` - DB schemas and migrations.
+  - `src/mq/` - queue/worker modules.
+  - `src/lib/` - infrastructure integrations.
 
-## Рабочие команды
+## Common Commands
 
-- API в watch: `pnpm dev`
-- Workers в watch: `pnpm dev:workers`
+- API watch mode: `pnpm dev`
+- Workers watch mode: `pnpm dev:workers`
 - Build: `pnpm build`
 - TypeScript check: `pnpm lint:typescript`
 - ESLint: `pnpm lint:eslint`
 - Prettier: `pnpm lint:prettier`
-- Миграции: `pnpm db:generate && pnpm db:migrate`
+- Migrations: `pnpm db:generate && pnpm db:migrate`
 - Codegen: `pnpm api:download:tochka && pnpm api:download:yookassa && pnpm api:generate`
 
-## Правила внесения изменений
+## Change Rules
 
-- Для API придерживайся route паттерна из `.cursor/rules/backend-route-pattern.mdc`.
-- Для queue/worker придерживайся `.cursor/rules/backend-mq-pattern.mdc`.
-- Для DB изменений придерживайся `.cursor/rules/backend-db-and-migrations.mdc`.
-- Для codegen придерживайся `.cursor/rules/backend-codegen-openapi.mdc`.
-- Для общих стандартов придерживайся `.cursor/rules/backend-core.mdc`.
-- Для финализации любой задачи применяй `.cursor/rules/backend-change-validation.mdc`.
+- For API changes, follow `.cursor/rules/backend-route-pattern.mdc`.
+- For queue/worker changes, follow `.cursor/rules/backend-mq-pattern.mdc`.
+- For DB changes, follow `.cursor/rules/backend-db-and-migrations.mdc`.
+- For codegen changes, follow `.cursor/rules/backend-codegen-openapi.mdc`.
+- For global standards, follow `.cursor/rules/backend-core.mdc`.
+- For task finalization, follow `.cursor/rules/backend-change-validation.mdc`.
+- For new files in domain folders, follow `.cursor/rules/backend-reference-first.mdc`.
 
-## Быстрые маршруты по задачам
+## Quick Task Paths
 
-- Новый endpoint:
-  1) schema в `src/schemas/entities/...`,
-  2) route в `src/routes/v1/...`,
-  3) регистрация в `src/entrypoints/server.ts`.
-- Новый worker:
-  1) `src/mq/<domain>/<feature>/queue.ts` и `worker.ts`,
-  2) регистрация в `src/entrypoints/workers.ts`,
-  3) регистрация queue в Bull Board внутри `src/entrypoints/server.ts`.
-- Новая env:
+- New endpoint:
+  1) schema in `src/schemas/entities/...`,
+  2) route in `src/routes/v1/...`,
+  3) registration in `src/entrypoints/server.ts`.
+- New worker:
+  1) `src/mq/<domain>/<feature>/queue.ts` and `worker.ts`,
+  2) registration in `src/entrypoints/workers.ts`,
+  3) queue registration in Bull Board inside `src/entrypoints/server.ts`.
+- New env variable:
   1) `src/schemas/common/envs.ts`,
   2) `src/constants/common/envs.ts`,
-  3) `docker-compose.yml` и `Dockerfile`,
+  3) `docker-compose.yml` and `Dockerfile`,
   4) `.env.example`.
 
-## Рекомендуемые skills
+## Recommended Skills
 
-- Новый endpoint: `.cursor/skills/add-api-endpoint/SKILL.md`
-- Новый worker: `.cursor/skills/add-bullmq-worker/SKILL.md`
-- Изменение схемы БД: `.cursor/skills/drizzle-migration-workflow/SKILL.md`
+- New endpoint: `.cursor/skills/add-api-endpoint/SKILL.md`
+- New worker: `.cursor/skills/add-bullmq-worker/SKILL.md`
+- DB schema change: `.cursor/skills/drizzle-migration-workflow/SKILL.md`
 - OpenAPI/codegen: `.cursor/skills/openapi-codegen-kubb/SKILL.md`
-- Добавление env: `.cursor/skills/env-propagation-checklist/SKILL.md`
-- Подбор проверок: `.cursor/skills/change-validation-matrix/SKILL.md`
+- New env variable: `.cursor/skills/env-propagation-checklist/SKILL.md`
+- Validation selection: `.cursor/skills/change-validation-matrix/SKILL.md`
 
-## Связанные документы
+## Related Documents
 
-- Архитектурная карта: `docs/architecture/backend-modules.md`
-- Чеклисты разработки: `docs/workflows/development-checklists.md`
-- Матрица проверок: `docs/workflows/verification-matrix.md`
+- Architecture map: `docs/architecture/backend-modules.md`
+- Development checklists: `docs/workflows/development-checklists.md`
+- Verification matrix: `docs/workflows/verification-matrix.md`
 - Repeatable workflows: `.cursor/skills/*/SKILL.md`

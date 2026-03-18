@@ -1,31 +1,31 @@
 ---
 name: change-validation-matrix
-description: Подбирает и запускает минимально достаточную верификацию изменений в backend по матрице покрытия. Использовать после любых code changes перед финализацией задачи.
+description: Selects and runs minimally sufficient backend verification based on coverage matrix. Use after any code changes before task finalization.
 ---
 
 # Change Validation Matrix
 
-## Цель
+## Goal
 
-Не завершать задачу без фактической проверки по области изменений.
+Do not finalize tasks without actual checks for changed areas.
 
-## Порядок действий
+## Steps
 
-1. Определи, какие зоны изменены:
+1. Identify changed areas:
    - API/routes/schemas;
    - DB/migrations;
    - MQ/workers;
    - env/config/docker;
    - codegen.
-2. Выбери команды из `docs/workflows/verification-matrix.md`.
-3. Запусти минимально достаточный набор проверок.
-4. Если что-то не запущено (долго, недоступно, нет окружения), явно зафиксируй это в результате.
+2. Select commands from `docs/workflows/verification-matrix.md`.
+3. Run a minimally sufficient set of checks.
+4. If something is not executed (time, environment, access), report it explicitly.
 
-## Базовый минимум
+## Baseline Minimum
 
 - `pnpm lint:typescript`
 
 ## Self-check
 
-- Есть явный список: что проверено, что не проверено, почему.
-- Нет фразы "готово", если ничего не запускалось.
+- Explicitly list what was validated, what was not, and why.
+- Do not claim completion if no checks were run.

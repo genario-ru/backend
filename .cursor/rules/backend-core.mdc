@@ -1,20 +1,20 @@
 ---
-description: Базовые стандарты backend для TypeScript, валидации и ошибок API
+description: Core backend standards for TypeScript, validation, and API errors
 alwaysApply: true
 ---
 
 # Backend Core Standards
 
-- Используй alias-импорты `@/` для кода из `src`, не добавляй новые относительные цепочки вида `../../../`.
-- Для runtime-валидации используй Zod из `@/lib/zod` и схемы из `src/schemas`.
-- Для API-ошибок используй `throwAPIError(...)`, а не локальные ad-hoc форматы ошибок.
-- Возвращай ответы route через `responseSchema.parse(...)` перед `c.json(...)`.
-- Для новых публичных API сохраняй OpenAPI-метаданные осмысленными (`title`, `description`, `ref`).
-- Избегай `any`; если точная типизация пока невозможна, используй `unknown` и сужение типов.
-- Не смешивай policy и workflow: стандарты кода фиксируются в rules, пошаговые процедуры — в skills.
+- Use `@/` alias imports for code from `src`; do not introduce new deep relative paths like `../../../`.
+- For runtime validation, use Zod from `@/lib/zod` and schemas from `src/schemas`.
+- For API errors, use `throwAPIError(...)` instead of ad-hoc local error formats.
+- Return route responses through `responseSchema.parse(...)` before `c.json(...)`.
+- For new public APIs, keep OpenAPI metadata meaningful (`title`, `description`, `ref`).
+- Avoid `any`; if strict typing is not possible yet, use `unknown` with narrowing.
+- Do not mix policy and workflow: coding standards belong to rules, step-by-step procedures belong to skills.
 
-## Обязательная самопроверка перед завершением задачи
+## Required Self-Check Before Finishing
 
-- Изменения типобезопасны и не добавляют необоснованные исключения линтера.
-- Добавленные/измененные обработчики API используют существующие schema/response паттерны.
-- Если менялась интеграция с окружением, проверены все точки распространения конфигурации.
+- Changes remain type-safe and do not introduce unjustified linter suppressions.
+- Added/updated API handlers follow existing schema/response patterns.
+- If environment integration was changed, all config propagation points are verified.

@@ -1,0 +1,31 @@
+---
+description: Before adding new files in a domain, analyze at least 3 similar implementations and build from those references
+alwaysApply: true
+---
+
+# Backend Reference-First Rule
+
+## When This Rule Is Mandatory
+
+- When creating new files/folders inside domain areas:
+  - `src/routes/**`
+  - `src/db/**`
+  - `src/mq/**`
+  - `src/schemas/**`
+  - `src/lib/**`
+  - `src/ai/**`
+
+## Required Action Before Coding
+
+- Before writing code, analyze at least 3 similar sections in the same domain.
+  - Examples: for a new route, review at least 3 route modules; for a new worker, review at least 3 `queue/worker` pairs; for a new DB entity, review at least 3 similar schema/relation implementations.
+- Based on that analysis, record references and follow their structure/patterns.
+
+## What Must Be Included In The Result
+
+- Explicitly list the references used (file/module paths).
+- Briefly explain which patterns were taken from references and how they were applied.
+
+## Exception
+
+- If the domain has fewer than 3 relevant examples, use all available references and explicitly state this limitation.

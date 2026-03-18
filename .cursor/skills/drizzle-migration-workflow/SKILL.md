@@ -1,31 +1,31 @@
 ---
 name: drizzle-migration-workflow
-description: Пошаговый workflow изменения схемы БД через Drizzle с генерацией и применением миграций. Использовать при любом изменении src/db/schemas.
+description: Step-by-step workflow for DB schema changes via Drizzle with migration generation and application. Use for any change in src/db/schemas.
 ---
 
 # Drizzle Migration Workflow
 
-## Когда использовать
+## When To Use
 
-Когда изменяются таблицы, поля, индексы, связи или enum в `src/db/schemas/**`.
+When tables, fields, indexes, relations, or enums are changed in `src/db/schemas/**`.
 
-## Порядок действий
+## Steps
 
-1. Проверь целевую БД (`POSTGRES_URL`) и контекст окружения.
-2. Внеси изменения в `src/db/schemas/**`.
-3. Сгенерируй миграцию: `pnpm db:generate`.
-4. Примени миграцию: `pnpm db:migrate`.
-5. Убедись, что миграция адекватно отражает изменение схемы.
-6. Запусти проверки проекта (минимум TypeScript + ESLint).
-7. Коммить схему и миграции вместе.
+1. Verify target DB (`POSTGRES_URL`) and environment context.
+2. Apply schema changes in `src/db/schemas/**`.
+3. Generate migration: `pnpm db:generate`.
+4. Apply migration: `pnpm db:migrate`.
+5. Ensure migration correctly reflects schema changes.
+6. Run project checks (at least TypeScript + ESLint).
+7. Commit schema and migrations together.
 
-## Ограничения
+## Constraints
 
-- `db:push` не использовать как основной командный workflow для изменений, попадающих в репозиторий.
-- Не переписывать старые миграции, если это ломает последовательность истории.
+- Do not use `db:push` as the primary workflow for repository changes.
+- Do not rewrite older migrations if it breaks migration history order.
 
 ## Self-check
 
-- Есть и изменение схемы, и миграционный файл.
-- Миграции применяются локально без ошибок.
-- Нет несогласованности между кодом схемы и SQL.
+- Both schema change and migration file are present.
+- Migrations apply locally without errors.
+- No mismatch between schema code and SQL.

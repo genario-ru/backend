@@ -1,18 +1,18 @@
 ---
-description: Обязательная верификация изменений перед завершением задач
+description: Mandatory change verification before task completion
 alwaysApply: true
 ---
 
 # Backend Change Validation
 
-- Перед завершением задачи выбирай проверки по области изменений, а не пропускай их полностью.
-- Минимум для TypeScript-кода: `pnpm lint:typescript`.
-- Для изменений route, middleware, MQ, DB, env или инфраструктуры дополнительно запускай релевантные проверки из `docs/workflows/verification-matrix.md`.
-- Если полные проверки не запускались, явно фиксируй это в ответе и указывай, что именно осталось проверить.
-- Не объявляй задачу полностью завершенной без фактической проверки или явного ограничения.
+- Before finishing a task, select checks based on changed areas rather than skipping validation.
+- Minimum for TypeScript changes: `pnpm lint:typescript`.
+- For route, middleware, MQ, DB, env, or infra changes, run relevant checks from `docs/workflows/verification-matrix.md`.
+- If full checks were not run, state it explicitly and list what remains unverified.
+- Do not claim full completion without actual validation or explicit constraints.
 
-## Принцип качества
+## Quality Principle
 
-- Rules отвечают за policy и стандарты.
-- Skills отвечают за пошаговый workflow выполнения.
-- Документация содержит матрицу, на которую можно ссылаться при проектировании и имплементации.
+- Rules define policy and standards.
+- Skills define step-by-step workflows.
+- Documentation contains the matrix used as a planning and implementation reference.

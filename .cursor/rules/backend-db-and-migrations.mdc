@@ -1,20 +1,20 @@
 ---
-description: Правила изменений схемы БД и миграций Drizzle
+description: Rules for DB schema changes and Drizzle migrations
 globs: src/db/**/*.ts
 alwaysApply: false
 ---
 
 # Backend DB And Migrations
 
-- При изменении схемы в `src/db/schemas/**` предпочитай workflow:
+- For schema changes in `src/db/schemas/**`, prefer:
   `pnpm db:generate -> pnpm db:migrate`.
-- Используй `db:push` только для локальных быстрых экспериментов, не как основной путь для изменений в репозитории.
-- Коммить изменения схемы вместе с сгенерированными миграциями.
-- Перед миграциями проверяй актуальность `POSTGRES_URL` (не мигрировать случайно чужую БД).
-- Сохраняй единый стиль Drizzle-запросов и связей (`relations`, typed query helpers).
+- Use `db:push` only for quick local experiments, not as the main repository workflow.
+- Commit schema updates together with generated migrations.
+- Before migrations, verify `POSTGRES_URL` to avoid applying changes to the wrong database.
+- Keep Drizzle query and relations style consistent (`relations`, typed query helpers).
 
-## Что не делать
+## What Not To Do
 
-- Не отправлять PR с измененной схемой без миграций.
-- Не редактировать вручную старые миграции, если это ломает историю миграций.
-- Не смешивать бизнес-правила и инфраструктурные SQL-изменения в одном большом коммите без разделения ответственности.
+- Do not open a PR with schema changes but no migrations.
+- Do not manually rewrite old migrations if it breaks migration history.
+- Do not mix business-rule and infra SQL changes in one large unstructured commit.
