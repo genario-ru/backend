@@ -41,6 +41,8 @@ export * from "./schemas/primary/ideas-list";
 export * from "./schemas/primary/platform";
 export * from "./schemas/primary/profile";
 export * from "./schemas/primary/profile-attachment";
+export * from "./schemas/primary/profile-channel";
+export * from "./schemas/primary/profile-channel-video";
 export * from "./schemas/primary/profile-type";
 export * from "./schemas/primary/scenario";
 export * from "./schemas/primary/scenario-chapter";
