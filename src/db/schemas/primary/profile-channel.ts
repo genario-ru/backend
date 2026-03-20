@@ -3,6 +3,7 @@ import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { profileToProfilesFromChannelsJob } from "../linking/profile-to-profiles-from-channels-job";
 import { platform } from "./platform";
 import { profile } from "./profile";
 import { profileChannelVideo } from "./profile-channel-video";
@@ -42,5 +43,6 @@ export const profileChannelRelations = relations(
       references: [platform.id],
     }),
     videos: many(profileChannelVideo),
+    profilesFromChannelsJob: many(profileToProfilesFromChannelsJob),
   }),
 );

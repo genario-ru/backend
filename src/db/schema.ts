@@ -20,13 +20,18 @@ export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/tariff";
 export * from "./schemas/billing/tariff-discount";
 
+// Jobs
+export * from "./schemas/jobs/profiles-from-channels-job";
+
 // Linking
 export * from "./schemas/linking/credits-package-to-credits-batch";
 export * from "./schemas/linking/ideas-list-to-export-document";
 export * from "./schemas/linking/ideas-list-to-tone";
 export * from "./schemas/linking/ideas-list-to-video-type";
 export * from "./schemas/linking/platform-to-video-type";
+export * from "./schemas/linking/profile-channel-to-profiles-from-channels-job";
 export * from "./schemas/linking/profile-to-platform";
+export * from "./schemas/linking/profile-to-profiles-from-channels-job";
 export * from "./schemas/linking/profile-to-tone";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/scenario-version-to-export-document";
@@ -65,3 +70,4 @@ export * from "./schemas/referral/referral-reward";
 
 // Secondary
 export * from "./schemas/secondary/alert";
+export * from "./schemas/secondary/notification";

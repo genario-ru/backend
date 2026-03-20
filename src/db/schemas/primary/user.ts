@@ -16,8 +16,10 @@ import { creditsBatch } from "../billing/credits-batch";
 import { payment } from "../billing/payment";
 import { subscription } from "../billing/subscription";
 import { tariffDiscount } from "../billing/tariff-discount";
+import { profilesFromChannelsJob } from "../jobs/profiles-from-channels-job";
 import { referralCode } from "../referral/referral-code";
 import { referralInvite } from "../referral/referral-invite";
+import { notification } from "../secondary/notification";
 import { attachment } from "./attachment";
 import { exportDocument } from "./export-document";
 import { ideasList } from "./ideas-list";
@@ -52,12 +54,14 @@ export const userRelations = relations(user, ({ many }) => ({
   tariffDiscounts: many(tariffDiscount),
   payments: many(payment),
   profiles: many(profile),
+  profilesFromChannelsJobs: many(profilesFromChannelsJob),
   ideasLists: many(ideasList),
   scenarios: many(scenario),
   attachments: many(attachment),
   exportDocuments: many(exportDocument),
   subscriptions: many(subscription),
   referralCodes: many(referralCode),
+  notifications: many(notification),
   referralInvitesAsSource: many(referralInvite, {
     relationName: "referralSourceUser",
   }),

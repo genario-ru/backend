@@ -1,9 +1,10 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
 import { profileToPlatform } from "../linking/profile-to-platform";
+import { profileToProfilesFromChannelsJob } from "../linking/profile-to-profiles-from-channels-job";
 import { profileToTone } from "../linking/profile-to-tone";
 import { ideasList } from "./ideas-list";
 import { profileAttachment } from "./profile-attachment";
@@ -24,7 +25,6 @@ export const profile = pgTable("profile", {
   name: text("name").notNull(),
   description: text("description"),
   targetAudience: text("target_audience"),
-  isDraft: boolean("is_draft").notNull().default(false),
   ...timestamps,
 });
 
@@ -43,4 +43,5 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
   attachments: many(profileAttachment),
   profileToPlatform: many(profileToPlatform),
   profileToTone: many(profileToTone),
+  profileToProfilesFromChannelsJob: many(profileToProfilesFromChannelsJob),
 }));
