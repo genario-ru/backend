@@ -24,7 +24,7 @@ export const profile = pgTable("profile", {
   name: text("name").notNull(),
   description: text("description"),
   targetAudience: text("target_audience"),
-  isTemplate: boolean("is_template").notNull().default(false),
+  isDraft: boolean("is_draft").notNull().default(false),
   ...timestamps,
 });
 

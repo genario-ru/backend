@@ -1,0 +1,1 @@
+ALTER TABLE "profile" RENAME COLUMN "is_template" TO "is_draft";
