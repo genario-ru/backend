@@ -4,6 +4,7 @@ import { profileAttachment } from "@/db/schema";
 import { z } from "@/lib/zod";
 
 import { attachmentSchema } from "../../attachments/entities/attachment";
+
 export const profileAttachmentSchema = createSelectSchema(
   profileAttachment,
 ).meta({
@@ -15,9 +16,7 @@ export const profileAttachmentSchema = createSelectSchema(
 export type ProfileAttachment = z.infer<typeof profileAttachmentSchema>;
 
 export const ProfileAttachmentExtendedSchema = profileAttachmentSchema
-  .extend({
-    attachment: attachmentSchema,
-  })
+  .extend({ attachment: attachmentSchema })
   .meta({
     title: "Profile attachment extended",
     description: "Profile attachment extended description",
