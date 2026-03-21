@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -17,6 +17,8 @@ export const platform = pgTable("platform", {
   logoUrl: text("logo_url"),
   baseUrl: text("base_url"),
   urlRegex: text("url_regex"),
+  channelUrlRegex: text("channel_url_regex"),
+  hasAutoImport: boolean("has_auto_import").default(false).notNull(),
   ...timestamps,
 });
 

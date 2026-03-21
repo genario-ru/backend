@@ -46,11 +46,14 @@ import {
 import { getPlatformsRoute } from "@/routes/v1/platforms";
 import {
   createProfileRoute,
+  createProfilesFromChannelsRoute,
   deleteProfileRoute,
   getMyProfilesRoute,
+  getPlatformsForChannelsRoute,
   getProfileRoute,
   getProfileTypesRoute,
   updateProfileRoute,
+  validateProfileChannelRoute,
 } from "@/routes/v1/profiles";
 import {
   getMyReferralCodesRoute,
@@ -130,6 +133,9 @@ const appAPIv1RoutesList = [
   updateIdeasListRoute,
   getPlatformsRoute,
   getMyProfilesRoute,
+  createProfilesFromChannelsRoute,
+  validateProfileChannelRoute,
+  getPlatformsForChannelsRoute,
   deleteProfileRoute,
   getProfileTypesRoute,
   getProfileRoute,

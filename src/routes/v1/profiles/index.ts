@@ -1,3 +1,6 @@
+export { getPlatformsForChannelsRoute } from "./channels/platforms/get/route";
+export { createProfilesFromChannelsRoute } from "./channels/root/post/route";
+export { validateProfileChannelRoute } from "./channels/validate/post/route";
 export { getMyProfilesRoute } from "./my/get/route";
 export { deleteProfileRoute } from "./profile/delete/route";
 export { getProfileRoute } from "./profile/get/route";

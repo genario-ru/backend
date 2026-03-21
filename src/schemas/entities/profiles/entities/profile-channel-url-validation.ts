@@ -7,7 +7,7 @@ export const profileChannelUrlValidationSchema = z
     url: z.url(),
     status: z.enum(["error", "success"]),
     statusDetails: z.string(),
-    platform: platformSchema,
+    platform: platformSchema.nullable(),
   })
   .meta({
     title: "Profile channel url validation",

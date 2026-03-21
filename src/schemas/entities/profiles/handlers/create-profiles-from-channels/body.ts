@@ -1,15 +1,15 @@
 import { z } from "@/lib/zod";
 
-export const createProfilesFromChannelUrlsBodySchema = z
+export const createProfilesFromChannelsBodySchema = z
   .object({
     channelUrls: z.array(z.url()),
   })
   .meta({
-    title: "Create profiles from channel urls body",
-    description: "Create profiles from channel urls body description",
-    ref: "CreateProfilesFromChannelUrlsBodySchema",
+    title: "Create profiles from channels body",
+    description: "Create profiles from channels body description",
+    ref: "CreateProfilesFromChannelsBodySchema",
   });
 
-export type CreateProfilesFromChannelUrlsBody = z.infer<
-  typeof createProfilesFromChannelUrlsBodySchema
+export type CreateProfilesFromChannelsBody = z.infer<
+  typeof createProfilesFromChannelsBodySchema
 >;
