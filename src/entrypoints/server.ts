@@ -21,6 +21,7 @@ import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario/scenario-scen
 import { scenarioScenesGenerationQueue } from "@/mq/scenario/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario/scenario-version-export/queue";
 import { authRoute } from "@/routes/auth/route";
+import { healthRoute } from "@/routes/health/route";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
@@ -188,6 +189,8 @@ app.use(
 );
 
 app.use(errorHandlerMiddleware);
+
+app.route("/", healthRoute);
 
 appAPI.route("/", authRoute);
 
