@@ -30,6 +30,7 @@ export const envsSchema = z.object({
   YOOKASSA_BASE_URL: z.string(),
   YOOKASSA_SECRET_KEY: z.string(),
   YOOKASSA_SHOP_ID: z.string(),
+  YOUTUBE_API_KEY: z.string(),
   FRONTEND_BASE_URL: z.string(),
   BACKEND_BASE_URL: z.string(),
 });

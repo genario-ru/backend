@@ -52,6 +52,9 @@ export const envs = envsSchema.parse({
   YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY,
   YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
 
+  // Youtube
+  YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
+
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
   BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,

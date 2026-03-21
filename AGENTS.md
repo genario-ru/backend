@@ -39,18 +39,18 @@ This file defines project context for AI agents and serves as an architecture en
 ## Quick Task Paths
 
 - New endpoint:
-  1) schema in `src/schemas/entities/...`,
-  2) route in `src/routes/v1/...`,
-  3) registration in `src/entrypoints/server.ts`.
+  1. schema in `src/schemas/entities/...`,
+  2. route in `src/routes/v1/...`,
+  3. registration in `src/entrypoints/server.ts`.
 - New worker:
-  1) `src/mq/<domain>/<feature>/queue.ts` and `worker.ts`,
-  2) registration in `src/entrypoints/workers.ts`,
-  3) queue registration in Bull Board inside `src/entrypoints/server.ts`.
+  1. `src/mq/<domain>/<feature>/queue.ts` and `worker.ts`,
+  2. registration in `src/entrypoints/workers.ts`,
+  3. queue registration in Bull Board inside `src/entrypoints/server.ts`.
 - New env variable:
-  1) `src/schemas/common/envs.ts`,
-  2) `src/constants/common/envs.ts`,
-  3) `docker-compose.yml` and `Dockerfile`,
-  4) `.env.example`.
+  1. `src/schemas/common/envs.ts`,
+  2. `src/constants/common/envs.ts`,
+  3. `docker-compose.yml` and `Dockerfile`,
+  4. `.env.example`.
 
 ## Recommended Skills
 
