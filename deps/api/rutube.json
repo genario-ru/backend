@@ -1,0 +1,552 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RuTube Public HTTP API (неофициальная спецификация)",
+    "description": "Обратная инженерия публичных JSON-эндпоинтов rutube.ru. Официальной документации нет; контракт может меняться без предупреждения.\n\nОшибки: часто приходит `application/json` с полем `detail`; для части ответов возможен `text/html` (страница ошибки).",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://rutube.ru",
+      "description": "Продакшен RuTube"
+    }
+  ],
+  "paths": {
+    "/api/profile/user/{author_id}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Профиль пользователя / канала",
+        "description": "Информация о канале по числовому идентификатору автора.",
+        "operationId": "getUserProfile",
+        "parameters": [
+          {
+            "name": "author_id",
+            "in": "path",
+            "required": true,
+            "description": "Числовой id автора (как в URL канала на сайте).",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "example": "38284124"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ClientOrNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/video/person/{author_id}/": {
+      "get": {
+        "tags": [
+          "Video"
+        ],
+        "summary": "Список видео канала",
+        "description": "Постраничный список видео автора. Пагинация: `page`, размер страницы — query-параметр `limit` (в ответе отражается как `per_page`).",
+        "operationId": "getVideosByAuthorId",
+        "parameters": [
+          {
+            "name": "author_id",
+            "in": "path",
+            "required": true,
+            "description": "Числовой id автора.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "example": "38284124"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Номер страницы (с 1).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Количество элементов на странице.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoListPage"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ClientOrNotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "ClientOrNotFoundError": {
+        "description": "Ресурс не найден или ошибка клиента. Тело может быть JSON с `detail` или HTML-страница.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          },
+          "text/html": {
+            "schema": {
+              "type": "string",
+              "description": "HTML страницы ошибки"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Ошибка сервера. Тело может быть JSON с `detail` или HTML-страница.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          },
+          "text/html": {
+            "schema": {
+              "type": "string",
+              "description": "HTML страницы ошибки"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorBody": {
+        "type": "object",
+        "description": "Типичный JSON при 404 и части других ошибок API.",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Текст сообщения об ошибке"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "additionalProperties": true
+      },
+      "UserAppearance": {
+        "type": "object",
+        "description": "Оформление страницы канала.",
+        "properties": {
+          "bgcolor": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "default_image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "cover_image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "avatar_image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "donations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "kind_sign_for_user": {
+            "type": "boolean"
+          },
+          "is_reborn_channel": {
+            "type": "boolean"
+          },
+          "default_video_description": {
+            "type": "string"
+          },
+          "is_ten_thousand": {
+            "type": "boolean"
+          },
+          "is_ten_thousand_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "is_channel_donate_allowed": {
+            "type": "boolean"
+          },
+          "is_livestream_donate_allowed": {
+            "type": "boolean"
+          },
+          "short_url": {
+            "type": "string"
+          },
+          "channel_type": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_official": {
+            "type": "boolean"
+          },
+          "video_count": {
+            "type": "integer"
+          },
+          "hits": {
+            "type": "integer"
+          },
+          "appearance": {
+            "$ref": "#/components/schemas/UserAppearance"
+          },
+          "subscribers_count": {
+            "type": "integer"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "date_joined": {
+            "type": "string",
+            "description": "Дата регистрации (формат от сервера без timezone)"
+          },
+          "last_update_ts": {
+            "type": "string",
+            "description": "Метка последнего обновления"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": true
+      },
+      "VideoAuthor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "site_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "is_allowed_offline": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      },
+      "VideoCategory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "category_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "PgRating": {
+        "type": "object",
+        "properties": {
+          "age": {
+            "type": "integer"
+          },
+          "logo": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "additionalProperties": true
+      },
+      "VideoListItem": {
+        "type": "object",
+        "description": "Элемент списка видео; набор полей может расширяться.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "thumbnail_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "video_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "is_audio": {
+            "type": "boolean"
+          },
+          "created_ts": {
+            "type": "string"
+          },
+          "track_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_livestream": {
+            "type": "boolean"
+          },
+          "is_on_air": {
+            "type": "boolean"
+          },
+          "last_update_ts": {
+            "type": "string"
+          },
+          "stream_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "picture_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "author": {
+            "$ref": "#/components/schemas/VideoAuthor"
+          },
+          "pg_rating": {
+            "$ref": "#/components/schemas/PgRating"
+          },
+          "origin_type": {
+            "type": "string"
+          },
+          "preview_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "is_adult": {
+            "type": "boolean"
+          },
+          "is_club": {
+            "type": "boolean"
+          },
+          "is_classic": {
+            "type": "boolean"
+          },
+          "is_paid": {
+            "type": "boolean"
+          },
+          "product_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "common_subscription_product_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "publication_ts": {
+            "type": "string"
+          },
+          "hits": {
+            "type": "integer"
+          },
+          "embed_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "category": {
+            "$ref": "#/components/schemas/VideoCategory"
+          },
+          "feed_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "feed_name": {
+            "type": "string"
+          },
+          "is_official": {
+            "type": "boolean"
+          },
+          "is_licensed": {
+            "type": "boolean"
+          },
+          "html": {
+            "type": "string"
+          },
+          "is_reborn_channel": {
+            "type": "boolean"
+          },
+          "action_reason": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "is_hidden": {
+            "type": "boolean"
+          },
+          "has_high_quality": {
+            "type": "boolean"
+          },
+          "is_deleted": {
+            "type": "boolean"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "rutube_poster": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pepper": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_original_content": {
+            "type": "boolean"
+          },
+          "kind_sign_for_user": {
+            "type": "boolean"
+          },
+          "is_original_sticker_2x2": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "additionalProperties": true
+      },
+      "VideoListPage": {
+        "type": "object",
+        "properties": {
+          "has_next": {
+            "type": "boolean"
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "previous": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "num_pages": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VideoListItem"
+            }
+          }
+        },
+        "required": [
+          "has_next",
+          "page",
+          "per_page",
+          "num_pages",
+          "results"
+        ],
+        "additionalProperties": true
+      }
+    }
+  }
+}

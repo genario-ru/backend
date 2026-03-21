@@ -55,6 +55,9 @@ export const envs = envsSchema.parse({
   // Youtube
   YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
 
+  // RuTube (неофициальный публичный API)
+  RUTUBE_BASE_API_URL: process.env.RUTUBE_BASE_API_URL,
+
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
   BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,

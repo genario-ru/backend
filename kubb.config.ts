@@ -44,6 +44,19 @@ export default defineConfig(() => {
         },
       },
     }),
+    createConfig({
+      input: `${API_DIR}/rutube.json`,
+      output: `${API_OUTPUT_DIR}/rutube`,
+      clientConfig: {
+        parser: "zod",
+        pathParamsType: "object",
+        paramsType: "object",
+        importPath: "@/lib/rutube/client",
+        transformers: {
+          name: kebabCaseTransformer,
+        },
+      },
+    }),
   ];
 });
 
