@@ -7,7 +7,7 @@ import { vsellm } from "@/ai/providers/vsellm";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
-import { compressBase64Image } from "@/lib/image/compress-base64-image";
+import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";

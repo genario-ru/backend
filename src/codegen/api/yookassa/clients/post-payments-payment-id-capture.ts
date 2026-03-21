@@ -7,8 +7,8 @@ import type {
   Client,
   RequestConfig,
   ResponseErrorConfig,
-} from "@/lib/tochka/api/client.ts";
-import fetch from "@/lib/tochka/api/client.ts";
+} from "@/lib/yookassa/client";
+import fetch from "@/lib/yookassa/client";
 
 import type {
   PostPaymentsPaymentIdCapture400,

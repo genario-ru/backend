@@ -1,7 +1,7 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from "pdf-lib";
 
-import { loadPdfFonts } from "./load-pdf-fonts";
+import { loadPdfFonts } from "../utils/load-pdf-fonts";
 
 type Script = "latin" | "cyrillic";
 

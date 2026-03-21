@@ -1,7 +1,7 @@
 import { Document, HeadingLevel, Packer, Paragraph } from "docx";
 import slugify from "slugify";
 
-import { PDFWriter } from "@/lib/pdf/pdf-writer";
+import { PDFWriter } from "@/lib/pdf/classes/pdf-writer";
 
 import type { ScenarioVersionExportData } from "./types";
 

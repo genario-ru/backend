@@ -25,7 +25,7 @@ export default defineConfig(() => {
         parser: "zod",
         pathParamsType: "object",
         paramsType: "object",
-        importPath: "@/lib/tochka/api/client.ts",
+        importPath: "@/lib/tochka/client",
         transformers: {
           name: kebabCaseTransformer,
         },
@@ -38,7 +38,7 @@ export default defineConfig(() => {
         parser: "zod",
         pathParamsType: "object",
         paramsType: "object",
-        importPath: "@/lib/tochka/api/client.ts",
+        importPath: "@/lib/yookassa/client",
         transformers: {
           name: kebabCaseTransformer,
         },
