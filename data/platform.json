@@ -1,0 +1,93 @@
+[
+  {
+    "id": "01b25c48-b6fc-48e2-8121-16cd85e2bf59",
+    "slug": "dzen",
+    "name": "Дзен",
+    "description": "Платформа Яндекса для статей и видео. Длинные и средние форматы.",
+    "logo_url": null,
+    "base_url": "https://dzen.ru",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:22.206126+00",
+    "updated_at": "2026-03-22 16:08:22.206126+00"
+  },
+  {
+    "id": "10af5c3e-e65b-4141-a81d-5e255590e11e",
+    "slug": "tiktok",
+    "name": "TikTok",
+    "description": "Платформа коротких вертикальных видео. Главный источник вирусности.",
+    "logo_url": null,
+    "base_url": "https://www.tiktok.com",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:22.333578+00",
+    "updated_at": "2026-03-22 16:08:22.333578+00"
+  },
+  {
+    "id": "13e5a3f2-6ef1-4f57-ba9c-b085595f769a",
+    "slug": "instagram",
+    "name": "Instagram",
+    "description": "Reels и видео в Instagram. Вертикальный короткий формат.",
+    "logo_url": null,
+    "base_url": "https://www.instagram.com",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:22.463257+00",
+    "updated_at": "2026-03-22 16:08:22.463257+00"
+  },
+  {
+    "id": "2360dbb6-42d8-4af5-8822-555ff7fab531",
+    "slug": "vk-clips",
+    "name": "VK Клипы",
+    "description": "Короткие вертикальные видео внутри VK. Аналог TikTok/Reels.",
+    "logo_url": null,
+    "base_url": "https://vk.com/clips",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:21.949318+00",
+    "updated_at": "2026-03-22 16:08:21.949318+00"
+  },
+  {
+    "id": "819727ff-ebe0-418d-8fdd-b41b76a87091",
+    "slug": "rutube",
+    "name": "RuTube",
+    "description": "Российская альтернатива YouTube. Полноценные видео и короткий формат.",
+    "logo_url": null,
+    "base_url": "https://rutube.ru",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:21.820474+00",
+    "updated_at": "2026-03-22 16:08:21.820474+00"
+  },
+  {
+    "id": "95739b01-8663-4ccc-ae73-a3e179d20ec0",
+    "slug": "vk-video",
+    "name": "VK Видео",
+    "description": "Полноценные видео в VK. Длинный и средний формат.",
+    "logo_url": null,
+    "base_url": "https://vk.com/video",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:22.078271+00",
+    "updated_at": "2026-03-22 16:08:22.078271+00"
+  },
+  {
+    "id": "ea2f1d07-c08a-4a10-a1ee-f5f47792fda7",
+    "slug": "youtube",
+    "name": "YouTube",
+    "description": "Крупнейшая видео-платформа в мире. Поддерживает длинные видео, Shorts и монетизацию.",
+    "logo_url": null,
+    "base_url": "https://www.youtube.com",
+    "url_regex": null,
+    "channel_url_regex": null,
+    "has_auto_import": false,
+    "created_at": "2026-03-22 16:08:21.68751+00",
+    "updated_at": "2026-03-22 16:08:21.68751+00"
+  }
+]

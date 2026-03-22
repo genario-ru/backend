@@ -11,6 +11,7 @@ export const template = pgTable("template", {
   slug: text("slug").unique().notNull(),
   name: text("name").notNull(),
   description: text("description"),
+  details: text("details"),
   icon: text("icon"),
   color: text("color").notNull(),
   ...timestamps,

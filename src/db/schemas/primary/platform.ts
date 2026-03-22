@@ -14,6 +14,7 @@ export const platform = pgTable("platform", {
   slug: text("slug").notNull(),
   name: text("name").notNull(),
   description: text("description"),
+  details: text("details"),
   logoUrl: text("logo_url"),
   baseUrl: text("base_url"),
   urlRegex: text("url_regex"),

@@ -12,6 +12,7 @@ export const scenarioSceneComponentType = pgTable(
     slug: text("slug").unique().notNull(),
     name: text("name").notNull(),
     description: text("description"),
+    details: text("details"),
     icon: text("icon"),
     color: text("color"),
     optional: boolean("optional").notNull().default(false),
