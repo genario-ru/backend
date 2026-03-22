@@ -1,1 +1,0 @@
-ALTER TYPE "public"."generation_status" ADD VALUE 'idle' BEFORE 'pending';

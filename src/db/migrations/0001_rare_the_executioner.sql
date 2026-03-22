@@ -1,1 +1,0 @@
-ALTER TABLE "scenario" ADD COLUMN "saved" boolean DEFAULT false NOT NULL;

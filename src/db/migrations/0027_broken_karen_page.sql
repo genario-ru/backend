@@ -1,1 +1,0 @@
-ALTER TABLE "export_document" RENAME COLUMN "error" TO "status_details";
