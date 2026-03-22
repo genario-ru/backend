@@ -88,7 +88,7 @@ getArchiveFiltersRoute.get(
       {
         slug: "templateIds",
         name: "Шаблоны",
-        icon: "book-dashed",
+        icon: "cuboid",
         type: "multiselect",
         options: toOptions(foundTemplates),
       },
@@ -116,7 +116,7 @@ getArchiveFiltersRoute.get(
       {
         slug: "platformIds",
         name: "Платформы",
-        icon: "linkedin",
+        icon: "app-window",
         type: "multiselect",
         options: toOptions(foundPlatforms),
       },
