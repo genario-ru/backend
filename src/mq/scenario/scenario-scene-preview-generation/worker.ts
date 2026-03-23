@@ -1,9 +1,8 @@
-import { generateImage } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
 import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/scenarios/generate-scenario-scene-preview-prompt";
-import { vsellm } from "@/ai/providers/vsellm";
+import { vsellm } from "@/ai/providers/open-ai/vsellm";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
@@ -79,11 +78,22 @@ export const scenarioScenePreviewsGenerationWorker =
           sceneEndTime: scene.endTime,
         });
 
-        const { image, usage } = await generateImage({
-          model: vsellm.imageModel(envs.VSELLM_IMAGE_MODEL),
+        const {
+          data,
+          usage,
+          output_format = "jpeg",
+        } = await vsellm.images.generate({
+          model: envs.VSELLM_IMAGE_MODEL,
           prompt,
-          n: 1,
+          quality: "medium",
+          output_format: "jpeg",
         });
+
+        const image = data?.[0]?.b64_json;
+
+        if (!image) {
+          throw new Error("Image was not generated");
+        }
 
         const s3KeyOriginal = createS3Key({
           userId: scenario.userId,
@@ -97,14 +107,16 @@ export const scenarioScenePreviewsGenerationWorker =
           fileName: `${scenarioScenePreviewId}-compressed.webp`,
         });
 
+        const mimeType = `image/${output_format}`;
+
         await uploadBase64ToS3({
           key: s3KeyOriginal,
-          mimeType: image.mediaType,
-          base64: image.base64,
+          mimeType,
+          base64: image,
         });
 
         const { buffer: compressedBuffer, mimeType: compressedMimeType } =
-          await compressBase64Image(image.base64);
+          await compressBase64Image(image);
 
         await uploadBufferToS3({
           key: s3KeyCompressed,
@@ -122,7 +134,7 @@ export const scenarioScenePreviewsGenerationWorker =
                     userId: scenario.userId,
                     key: s3KeyOriginal,
                     bucketName: envs.S3_BUCKET_NAME,
-                    mimeType: image.mediaType,
+                    mimeType,
                   })
                   .returning(),
                 tx
@@ -149,8 +161,8 @@ export const scenarioScenePreviewsGenerationWorker =
                 entity: "scenario-scene-preview" as const,
                 entityId: scenarioScenePreviewId,
                 prompt,
-                model: envs.POLZA_AI_IMAGE_MODEL,
-                tokens: usage?.totalTokens ?? 0,
+                model: envs.VSELLM_IMAGE_MODEL,
+                tokens: usage?.total_tokens ?? 0,
               }),
             ]);
 

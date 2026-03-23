@@ -2,7 +2,7 @@ import { ToolLoopAgent } from "ai";
 
 import { envs } from "@/constants/common/envs";
 
-import { polzaAI } from "../providers/polza-ai";
+import { polzaAI } from "../providers/ai-sdk/polza-ai";
 
 export const allmightyAgent = new ToolLoopAgent({
   model: polzaAI(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),

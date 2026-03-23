@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 
 import { generateIdeasListPrompt } from "@/ai/prompts/ideas-lists/generate-ideas-list-prompt";
 import { systemPrompt } from "@/ai/prompts/system/system-prompt";
-import { polzaAI } from "@/ai/providers/polza-ai";
+import { polzaAI } from "@/ai/providers/ai-sdk/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";

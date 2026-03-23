@@ -15,7 +15,7 @@ export const scenarioScenePreviewGenerationQueue =
     {
       connection: redis,
       defaultJobOptions: {
-        attempts: 3,
+        attempts: 1,
         backoff: {
           type: "exponential",
           delay: 3000,
