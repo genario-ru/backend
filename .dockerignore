@@ -1,8 +1,32 @@
-.git
-.gitignore
-Dockerfile
-.dockerignore
+# Зависимости
 node_modules
+
+# Сборка
+dist
+
+# Разработка
 eslint.config.js
 .prettierignore
 prettier.config.js
+.editorconfig
+
+# IDE
+.vscode
+.idea
+.cursor
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Документация
+*.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# OpenAPI
+deps
