@@ -1,10 +1,10 @@
-import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
+import { zodTextFormat } from "openai/helpers/zod";
 
 import { generateIdeasListPrompt } from "@/ai/prompts/ideas-lists/generate-ideas-list-prompt";
 import { systemPrompt } from "@/ai/prompts/system/system-prompt";
-import { polzaAI } from "@/ai/providers/ai-sdk/polza-ai";
+import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
@@ -82,23 +82,32 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         })),
       });
 
-      const {
-        output: { ideas: generatedIdeas },
-        usage,
-      } = await generateText({
-        model: polzaAI.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
-        output: Output.object({
-          schema: z.object({
-            ideas: z.array(ideaGeneratedSchema),
-          }),
-        }),
-        temperature: 0.2,
-        system: systemPrompt(),
-        prompt,
-        onFinish: (data) => {
-          console.log("Ideas list generation finished", data.response.id);
-        },
-      });
+      const { output_parsed: generatedIdeasObject, usage } =
+        await polzaAI.responses.parse({
+          model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+          temperature: 0.2,
+          input: [
+            { role: "system", content: systemPrompt() },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          text: {
+            format: zodTextFormat(
+              z.object({ ideas: z.array(ideaGeneratedSchema) }),
+              "ideasList",
+            ),
+          },
+        });
+
+      if (!generatedIdeasObject) {
+        throw new Error("Ideas list generation failed");
+      }
+
+      console.log("Ideas list generation finished");
+
+      const generatedIdeas = generatedIdeasObject.ideas;
 
       await db.transaction(async (tx) => {
         const createdIdeas = await tx
@@ -120,7 +129,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             entityId: foundIdeasList.id,
             prompt,
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            tokens: usage?.totalTokens ?? 0,
+            tokens: usage?.total_tokens ?? 0,
           });
         }
 
@@ -130,8 +139,6 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
           .where(eq(ideasList.id, ideasListId));
       });
     } catch (error) {
-      console.error("Ideas generation worker error", error);
-
       try {
         await db
           .update(ideasList)

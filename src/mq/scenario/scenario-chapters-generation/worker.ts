@@ -1,10 +1,10 @@
-import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
+import { zodTextFormat } from "openai/helpers/zod";
 
 import { generateScenarioChaptersPrompt } from "@/ai/prompts/scenarios/generate-scenario-chapters-prompt";
 import { systemPrompt } from "@/ai/prompts/system/system-prompt";
-import { polzaAI } from "@/ai/providers/ai-sdk/polza-ai";
+import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import { generationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
@@ -74,26 +74,32 @@ export const scenarioChaptersGenerationWorker =
           },
         });
 
-        const {
-          output: { chapters: generatedChapters },
-          usage,
-        } = await generateText({
-          model: polzaAI.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
-          output: Output.object({
-            schema: z.object({
-              chapters: z.array(scenarioChapterGeneratedSchema),
-            }),
-          }),
-          temperature: 0.2,
-          system: systemPrompt(),
-          prompt,
-          onFinish: (data) => {
-            console.log(
-              "Scenario chapters generation finished",
-              data.response.id,
-            );
-          },
-        });
+        const { output_parsed: generatedChaptersObject, usage } =
+          await polzaAI.responses.parse({
+            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            temperature: 0.2,
+            input: [
+              { role: "system", content: systemPrompt() },
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            text: {
+              format: zodTextFormat(
+                z.object({ chapters: z.array(scenarioChapterGeneratedSchema) }),
+                "scenarioChapters",
+              ),
+            },
+          });
+
+        if (!generatedChaptersObject) {
+          throw new Error("Scenario chapters generation failed");
+        }
+
+        console.log("Scenario chapters generation finished");
+
+        const generatedChapters = generatedChaptersObject.chapters;
 
         const scenarioChapters = await db.transaction(async (tx) => {
           const createdScenarioChapters = await tx
@@ -115,7 +121,7 @@ export const scenarioChaptersGenerationWorker =
               entityId: scenarioVersionId,
               prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.totalTokens ?? 0,
+              tokens: usage?.total_tokens ?? 0,
             });
           } else {
             console.warn(`No scenario chapters generated`);
@@ -135,8 +141,6 @@ export const scenarioChaptersGenerationWorker =
           }),
         );
       } catch (error) {
-        console.error("Scenario chapters generation worker error", error);
-
         try {
           await db
             .update(scenarioVersion)

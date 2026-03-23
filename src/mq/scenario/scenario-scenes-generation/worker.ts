@@ -1,10 +1,10 @@
-import { generateText, Output } from "ai";
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
+import { zodTextFormat } from "openai/helpers/zod";
 
 import { generateScenarioScenesPrompt } from "@/ai/prompts/scenarios/generate-scenario-scenes-with-components-prompt";
 import { systemPrompt } from "@/ai/prompts/system/system-prompt";
-import { polzaAI } from "@/ai/providers/ai-sdk/polza-ai";
+import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
 import {
@@ -85,26 +85,34 @@ export const scenarioScenesGenerationWorker =
           },
         });
 
-        const {
-          output: { scenes: generatedScenes },
-          usage,
-        } = await generateText({
-          model: polzaAI.languageModel(envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL),
-          output: Output.object({
-            schema: z.object({
-              scenes: z.array(scenarioSceneWithComponentsGeneratedSchema),
-            }),
-          }),
-          temperature: 0.2,
-          system: systemPrompt(),
-          prompt,
-          onFinish: (data) => {
-            console.log(
-              "Scenario scenes generation finished",
-              data.response.id,
-            );
-          },
-        });
+        const { output_parsed: generatedScenesObject, usage } =
+          await polzaAI.responses.parse({
+            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            temperature: 0.2,
+            input: [
+              { role: "system", content: systemPrompt() },
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            text: {
+              format: zodTextFormat(
+                z.object({
+                  scenes: z.array(scenarioSceneWithComponentsGeneratedSchema),
+                }),
+                "scenarioScenes",
+              ),
+            },
+          });
+
+        if (!generatedScenesObject) {
+          throw new Error("Scenario scenes generation failed");
+        }
+
+        console.log("Scenario scenes generation finished");
+
+        const generatedScenes = generatedScenesObject.scenes;
 
         await db.transaction(async (tx) => {
           const createdScenes = await tx
@@ -144,7 +152,7 @@ export const scenarioScenesGenerationWorker =
               entityId: scenarioChapterId,
               prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.totalTokens ?? 0,
+              tokens: usage?.total_tokens ?? 0,
             });
           }
 
