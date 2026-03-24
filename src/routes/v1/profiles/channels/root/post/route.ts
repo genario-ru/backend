@@ -43,7 +43,7 @@ createProfilesFromChannelsRoute.post(
     responses: {
       [HTTPStatusCode.Created]: createOpenAPIResponse({
         description: "Profiles from channels created successfully",
-        schema: createProfilesFromChannelsBodySchema,
+        schema: createProfilesFromChannelsResponseSchema,
       }),
       [HTTPStatusCode.BadRequest]: createOpenAPIResponse({
         description: "Profiles from channels creation failed",
