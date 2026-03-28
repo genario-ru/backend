@@ -2,17 +2,11 @@ import type { youtube_v3 } from "@googleapis/youtube";
 
 import { youTubeClient } from "@/lib/youtube/client";
 
-const PLAYLIST_ITEM_PARTS: string[] = ["snippet", "contentDetails"];
-
-export type GetChannelVideosOptions = {
-  maxResults?: number;
-  pageToken?: string;
-};
-
-export type GetChannelVideosResult = {
-  items: youtube_v3.Schema$PlaylistItem[];
-  nextPageToken?: string | null;
-};
+import { PLAYLIST_ITEM_PARTS } from "../constants/playlist-item-parts";
+import type {
+  GetChannelVideosOptions,
+  GetChannelVideosResult,
+} from "../types/get-channels-videos";
 
 /** YouTube Data API v3 — `playlistItems.list` (плейлист uploads канала). */
 export async function getChannelVideos(

@@ -5,9 +5,16 @@ import { redis } from "@/lib/redis";
 export const PROFILES_FROM_CHANNELS_GENERATION_QUEUE_NAME =
   "profiles-from-channels-generation";
 
+export type ChannelInput = {
+  url: string;
+  platformId: string;
+  platformSlug: string;
+};
+
 export type ProfilesFromChannelsGenerationJobData = {
+  jobId: string;
   userId: string;
-  channelUrls: string[];
+  channels: ChannelInput[];
 };
 
 export const profilesFromChannelsGenerationQueue =
@@ -16,7 +23,7 @@ export const profilesFromChannelsGenerationQueue =
     {
       connection: redis,
       defaultJobOptions: {
-        attempts: 3,
+        attempts: 2,
         backoff: {
           type: "exponential",
           delay: 3000,

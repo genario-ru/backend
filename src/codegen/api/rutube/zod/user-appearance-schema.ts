@@ -19,10 +19,10 @@ export const userAppearanceSchema = z
     kind_sign_for_user: z.optional(z.boolean()),
     is_reborn_channel: z.optional(z.boolean()),
     default_video_description: z.optional(z.string()),
-    is_ten_thousand: z.optional(z.boolean()),
+    is_ten_thousand: z.boolean().nullish(),
     is_ten_thousand_url: z.url().nullish(),
-    is_channel_donate_allowed: z.optional(z.boolean()),
-    is_livestream_donate_allowed: z.optional(z.boolean()),
+    is_channel_donate_allowed: z.boolean().nullish(),
+    is_livestream_donate_allowed: z.boolean().nullish(),
     short_url: z.optional(z.string()),
     channel_type: z.optional(z.string()),
   })

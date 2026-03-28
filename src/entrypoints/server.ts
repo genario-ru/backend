@@ -16,6 +16,7 @@ import { envs } from "@/constants/common/envs";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list/ideas-list-generation/queue";
+import { profilesFromChannelsGenerationQueue } from "@/mq/profiles/profiles-from-channels-generation/queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/scenario/scenario-chapters-generation/queue";
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario/scenario-scene-preview-generation/queue";
 import { scenarioScenesGenerationQueue } from "@/mq/scenario/scenario-scenes-generation/queue";
@@ -104,6 +105,7 @@ createBullBoard({
   queues: [
     new BullMQAdapter(ideasListGenerationQueue),
     new BullMQAdapter(ideasListExportQueue),
+    new BullMQAdapter(profilesFromChannelsGenerationQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),

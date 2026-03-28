@@ -208,7 +208,10 @@
             "type": "string"
           },
           "is_ten_thousand": {
-            "type": "boolean"
+            "type": [
+              "boolean",
+              "null"
+            ]
           },
           "is_ten_thousand_url": {
             "type": [
@@ -218,10 +221,16 @@
             "format": "uri"
           },
           "is_channel_donate_allowed": {
-            "type": "boolean"
+            "type": [
+              "boolean",
+              "null"
+            ]
           },
           "is_livestream_donate_allowed": {
-            "type": "boolean"
+            "type": [
+              "boolean",
+              "null"
+            ]
           },
           "short_url": {
             "type": "string"

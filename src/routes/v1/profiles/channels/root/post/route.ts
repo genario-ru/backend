@@ -5,10 +5,12 @@ import { validator } from "hono-openapi";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { profilesFromChannelsJob } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
+import { enqueueProfilesFromChannelsGeneration } from "@/mq/profiles/profiles-from-channels-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createProfilesFromChannelsBodySchema } from "@/schemas/entities/profiles/handlers/create-profiles-from-channels/body";
 import {
@@ -59,7 +61,11 @@ createProfilesFromChannelsRoute.post(
       channelUrls.map((channelUrl) => validateProfileChannel(channelUrl)),
     );
 
-    if (validationResults.some((result) => result.status === "error")) {
+    const errorValidationResults = validationResults.filter(
+      (result) => result.status === "error",
+    );
+
+    if (errorValidationResults.length > 0) {
       return c.json<CreateProfilesFromChannelsError>(
         createProfilesFromChannelsErrorSchema.parse({
           data: validationResults,
@@ -85,11 +91,28 @@ createProfilesFromChannelsRoute.post(
       }
     }
 
-    // TODO: Добавить создание профилей из каналов
+    const [job] = await db
+      .insert(profilesFromChannelsJob)
+      .values({ userId: user.id, status: "pending" })
+      .returning();
+
+    const successValidationResults = validationResults.filter(
+      (result) => result.status === "success",
+    );
+
+    await enqueueProfilesFromChannelsGeneration({
+      jobId: job.id,
+      userId: user.id,
+      channels: successValidationResults.map((result) => ({
+        url: result.url,
+        platformId: result.platform.id,
+        platformSlug: result.platform.slug,
+      })),
+    });
 
     return c.json<CreateProfilesFromChannelsResponse>(
       createProfilesFromChannelsResponseSchema.parse({
-        data: null,
+        data: job,
       }),
       HTTPStatusCode.Created,
     );

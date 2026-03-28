@@ -46,21 +46,21 @@ export type UserAppearance = {
    */
   default_video_description?: string;
   /**
-   * @type boolean | undefined
+   * @type boolean,null
    */
-  is_ten_thousand?: boolean;
+  is_ten_thousand?: boolean | null;
   /**
    * @type string,null, uri
    */
   is_ten_thousand_url?: string | null;
   /**
-   * @type boolean | undefined
+   * @type boolean,null
    */
-  is_channel_donate_allowed?: boolean;
+  is_channel_donate_allowed?: boolean | null;
   /**
-   * @type boolean | undefined
+   * @type boolean,null
    */
-  is_livestream_donate_allowed?: boolean;
+  is_livestream_donate_allowed?: boolean | null;
   /**
    * @type string | undefined
    */

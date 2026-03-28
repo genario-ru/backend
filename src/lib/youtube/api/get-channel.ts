@@ -1,17 +1,13 @@
 import type { youtube_v3 } from "@googleapis/youtube";
 
 import { youTubeClient } from "@/lib/youtube/client";
-import type { YouTubeChannelIdentifier } from "@/lib/youtube/utils/parse-channel-url";
 
-const CHANNEL_LIST_PARTS: string[] = [
-  "snippet",
-  "contentDetails",
-  "statistics",
-];
+import { CHANNEL_LIST_PARTS } from "../constants/channel-list-parts";
+import type { ChannelIdentifier } from "../types/channel-identifier";
 
 /** YouTube Data API v3 — `channels.list`. */
 export async function getChannel(
-  identifier: YouTubeChannelIdentifier,
+  identifier: ChannelIdentifier,
 ): Promise<youtube_v3.Schema$Channel | null> {
   switch (identifier.kind) {
     case "handle": {
