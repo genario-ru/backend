@@ -35,10 +35,11 @@ videoTypeId:
 
 {{CONTEXT}}
 
+{{PREVIOUS_IDEAS}}
+
 ## Data
 
 - Available video types (use "id" values for videoTypeId): {{VIDEO_TYPES}}
-  {{PREVIOUS_IDEAS}}
 
 ## Examples
 

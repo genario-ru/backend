@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { generateScenarioScenesPrompt } from "@/ai/prompts/builders/generate-scenario-scenes-with-components-prompt";
+import { generateScenarioScenesPrompt } from "@/ai/prompts/builders/generate-scenario-scenes";
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
@@ -88,7 +88,7 @@ export const scenarioScenesGenerationWorker =
         const { output_parsed: generatedScenesObject, usage } =
           await polzaAI.responses.parse({
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            temperature: 0.2,
+            temperature: 0.7,
             input: [
               { role: "system", content: systemPrompt() },
               {

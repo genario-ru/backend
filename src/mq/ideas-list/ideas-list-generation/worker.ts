@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { generateIdeasListPrompt } from "@/ai/prompts/builders/generate-ideas-list-prompt";
+import { generateIdeasListPrompt } from "@/ai/prompts/builders/generate-ideas-list";
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
@@ -85,7 +85,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       const { output_parsed: generatedIdeasObject, usage } =
         await polzaAI.responses.parse({
           model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-          temperature: 0.2,
+          temperature: 0.7,
           input: [
             { role: "system", content: systemPrompt() },
             {

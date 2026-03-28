@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { generateScenarioChaptersPrompt } from "@/ai/prompts/builders/generate-scenario-chapters-prompt";
+import { generateScenarioChaptersPrompt } from "@/ai/prompts/builders/generate-scenario-chapters";
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
@@ -77,7 +77,7 @@ export const scenarioChaptersGenerationWorker =
         const { output_parsed: generatedChaptersObject, usage } =
           await polzaAI.responses.parse({
             model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            temperature: 0.2,
+            temperature: 0.5,
             input: [
               { role: "system", content: systemPrompt() },
               {

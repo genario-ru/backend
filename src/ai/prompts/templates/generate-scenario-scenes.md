@@ -7,6 +7,7 @@ Each scene: name, startTime, endTime.
 - Scenes must be contiguous (scene N endTime = scene N+1 startTime).
 - First scene starts at {{CHAPTER_START}}, last ends at {{CHAPTER_END}}.
 - Maintain narrative continuity with previous chapters.
+- Prefer the higher end of the range for richer storytelling.
 
 ## Part 2 — Components (per scene)
 
@@ -14,6 +15,7 @@ For each scene, generate components from the types below. Use the type's name ex
 
 - **Timing**: spoken/on-screen text must fit the scene duration. {{WORD_BUDGET_HINTS}}
 - **Continuity**: first scene in chapter — open with a hook. Later scenes — continue from the previous scene's last thought, no re-greeting.
+- **Variety of expression**: Each voice-over must open with a different word and rhetorical device. Scan all voice-overs in the Previous chapters section and in scenes already written for this chapter — never reuse an opening pattern (e.g. "Забудьте", "Представьте", "Вспомните", "Многие думают"). Every scene's voice-over must feel fresh and distinct from all others in the scenario.
 - **Required components**: include all. Optional: only when they enrich the scene.
 - Omit a component if you cannot produce meaningful content.
 
