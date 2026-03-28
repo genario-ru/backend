@@ -1,7 +1,9 @@
+import template from "@/ai/prompts/templates/generate-scenario-scenes.md";
 import {
   buildContextLines,
   formatPreviousItems,
 } from "@/ai/utils/build-context-lines";
+import { interpolate } from "@/ai/utils/interpolate-template";
 
 type ComponentType = {
   id: string;
@@ -57,22 +59,8 @@ function estimateSceneCount(chapterDurationSeconds: number): string {
 function buildComponentTypesBlock(types: ComponentType[]): string {
   return types
     .map((ct) => {
-      let badge: string;
-
-      if (ct.optional) {
-        badge = "[optional]";
-      } else {
-        badge = "[required]";
-      }
-
-      let desc: string;
-
-      if (ct.description) {
-        desc = `: ${ct.description}`;
-      } else {
-        desc = "";
-      }
-
+      const badge = ct.optional ? "[optional]" : "[required]";
+      const desc = ct.description ? `: ${ct.description}` : "";
       return `- "${ct.name}" (id: ${ct.id}) ${badge}${desc}`;
     })
     .join("\n");
@@ -100,14 +88,10 @@ function formatComponentPreview(c: {
   name: string;
   content?: string | null;
 }): string {
-  let preview: string;
-
-  if (c.content && c.content.length > 100) {
-    preview = c.content.slice(0, 100) + "…";
-  } else {
-    preview = c.content ?? "(empty)";
-  }
-
+  const preview =
+    c.content && c.content.length > 100
+      ? c.content.slice(0, 100) + "…"
+      : (c.content ?? "(empty)");
   return `[${c.name}]: ${preview}`;
 }
 
@@ -115,27 +99,18 @@ type PreviousScene = NonNullable<PreviousChapter["scenes"]>[number];
 
 function formatScene(s: PreviousScene): string {
   if (!s) return "";
-
-  let comps: string;
-
-  if (s.components && s.components.length > 0) {
-    comps = s.components.map(formatComponentPreview).join("\n");
-  } else {
-    comps = "(no components)";
-  }
-
+  const comps =
+    s.components && s.components.length > 0
+      ? s.components.map(formatComponentPreview).join("\n")
+      : "(no components)";
   return `- "${s.name}" (${s.startTime}s–${s.endTime}s)\n${comps}`;
 }
 
 function formatChapter(ch: PreviousChapter, index: number): string {
-  let scenes: string;
-
-  if (ch.scenes && ch.scenes.length > 0) {
-    scenes = ch.scenes.map(formatScene).join("\n");
-  } else {
-    scenes = "(no scenes yet)";
-  }
-
+  const scenes =
+    ch.scenes && ch.scenes.length > 0
+      ? ch.scenes.map(formatScene).join("\n")
+      : "(no scenes yet)";
   return `${index + 1}. "${ch.name}" (${ch.startTime}s–${ch.endTime}s)\n${scenes}`;
 }
 
@@ -173,54 +148,15 @@ export function generateScenarioScenesPrompt({
     ],
   ]);
 
-  return `
-    Break chapter "${chapterName}" into ${sceneCount} scenes that fill ${chapterStartTime}s – ${chapterEndTime}s. For each scene, also generate its components (voice-over, visuals, etc.) in one pass.
-
-    ## Part 1 — Scenes
-
-    Each scene: name, startTime, endTime.
-    - Scenes must be contiguous (scene N endTime = scene N+1 startTime).
-    - First scene starts at ${chapterStartTime}, last ends at ${chapterEndTime}.
-    - Maintain narrative continuity with previous chapters.
-
-    ## Part 2 — Components (per scene)
-
-    For each scene, generate components from the types below. Use the type's name exactly (e.g. "Голосовое сопровождение").
-    - **Timing**: spoken/on-screen text must fit the scene duration. ${buildWordBudgetHint(5)} for 5s, ${buildWordBudgetHint(15)} for 15s, ${buildWordBudgetHint(30)} for 30s.
-    - **Continuity**: first scene in chapter — open with a hook. Later scenes — continue from the previous scene's last thought, no re-greeting.
-    - **Required components**: include all. Optional: only when they enrich the scene.
-    - Omit a component if you cannot produce meaningful content.
-
-    ## Component types
-    ${buildComponentTypesBlock(availableSceneComponentTypes)}
-
-    ## Output structure
-    For each scene: { name, startTime, endTime, components: [{ name, content, typeId }] }
-    - name: use component type name exactly.
-    - content: natural speech within word budget; Markdown for utility components.
-    - typeId: exact id from the list above.
-
-    ## Context
-    ${contextLines}
-
-    ## Previous chapters (scenes + components for continuity)
-    ${formatPreviousChapters(previousGeneratedChapters)}
-
-    ## Example
-
-    Chapter "Проблема: три причины" (7s–28s), 3 scenes:
-
-    Scene 1: name "Иллюзия прогресса", startTime 7, endTime 15
-    components: [
-      { name: "Цель и задачи сцены", content: "Создать момент узнавания...", typeId: "..." },
-      { name: "Голосовое сопровождение", content: "Первые две недели — кайф. Мышцы болят, весы падают. Только этот минус два — не жир. Это вода.", typeId: "..." },
-      { name: "Визуальное сопровождение", content: "Крупный план автора, затем врезка весов.", typeId: "..." }
-    ]
-
-    Scene 2: name "Момент X: весы останавливаются", startTime 15, endTime 21
-    components: [ ... ]
-
-    Scene 3: name "Психология отказа", startTime 21, endTime 28
-    components: [ ... ]
-  `.trim();
+  return interpolate(template, {
+    CHAPTER_NAME: chapterName,
+    SCENE_COUNT: sceneCount,
+    TIME_RANGE: `${chapterStartTime}s – ${chapterEndTime}s`,
+    CHAPTER_START: String(chapterStartTime),
+    CHAPTER_END: String(chapterEndTime),
+    WORD_BUDGET_HINTS: `${buildWordBudgetHint(5)} for 5s, ${buildWordBudgetHint(15)} for 15s, ${buildWordBudgetHint(30)} for 30s.`,
+    COMPONENT_TYPES: buildComponentTypesBlock(availableSceneComponentTypes),
+    CONTEXT: contextLines,
+    PREVIOUS_CHAPTERS: formatPreviousChapters(previousGeneratedChapters),
+  });
 }

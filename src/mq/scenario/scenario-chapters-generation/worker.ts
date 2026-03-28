@@ -2,8 +2,8 @@ import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 import { zodTextFormat } from "openai/helpers/zod";
 
-import { generateScenarioChaptersPrompt } from "@/ai/prompts/scenarios/generate-scenario-chapters-prompt";
-import { systemPrompt } from "@/ai/prompts/system/system-prompt";
+import { generateScenarioChaptersPrompt } from "@/ai/prompts/builders/generate-scenario-chapters-prompt";
+import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";

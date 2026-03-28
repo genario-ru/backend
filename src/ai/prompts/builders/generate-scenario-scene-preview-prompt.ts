@@ -1,3 +1,6 @@
+import template from "@/ai/prompts/templates/generate-scenario-scene-preview.md";
+import { interpolate } from "@/ai/utils/interpolate-template";
+
 type GenerateScenarioScenePreviewPromptProps = {
   scenarioName: string | null;
   scenarioDescription: string | null;
@@ -45,16 +48,7 @@ function buildSceneContext(
 export function generateScenarioScenePreviewPrompt(
   props: GenerateScenarioScenePreviewPromptProps,
 ): string {
-  return `
-    Create a cinematic preview image for this video scene.
-
-    ${buildSceneContext(props)}
-
-    Style:
-    - Single clear focal point that captures the scene's emotional core.
-    - Mood, lighting, and color palette matching the scene's tone.
-    - Photorealistic or high-quality illustration style.
-    - Composition works for both 16:9 and square crops.
-    - No text, watermarks, logos, or UI elements.
-      `.trim();
+  return interpolate(template, {
+    SCENE_CONTEXT: buildSceneContext(props),
+  });
 }

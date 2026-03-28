@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
-import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/scenarios/generate-scenario-scene-preview-prompt";
+import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/builders/generate-scenario-scene-preview-prompt";
 import { vsellm } from "@/ai/providers/open-ai/vsellm";
 import { envs } from "@/constants/common/envs";
 import { db } from "@/db";
