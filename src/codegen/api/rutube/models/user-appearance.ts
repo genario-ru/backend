@@ -42,9 +42,9 @@ export type UserAppearance = {
    */
   is_reborn_channel?: boolean;
   /**
-   * @type string | undefined
+   * @type string,null
    */
-  default_video_description?: string;
+  default_video_description?: string | null;
   /**
    * @type boolean,null
    */

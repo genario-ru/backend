@@ -18,7 +18,7 @@ export const userAppearanceSchema = z
     donations: z.optional(z.array(z.object({}).catchall(z.any()))),
     kind_sign_for_user: z.optional(z.boolean()),
     is_reborn_channel: z.optional(z.boolean()),
-    default_video_description: z.optional(z.string()),
+    default_video_description: z.string().nullish(),
     is_ten_thousand: z.boolean().nullish(),
     is_ten_thousand_url: z.url().nullish(),
     is_channel_donate_allowed: z.boolean().nullish(),

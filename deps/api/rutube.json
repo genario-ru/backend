@@ -205,7 +205,10 @@
             "type": "boolean"
           },
           "default_video_description": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "is_ten_thousand": {
             "type": [
