@@ -23,7 +23,7 @@ getMyProfilesFromChannelsJobs.get(
   rateLimitMiddleware({
     keyPrefix: "get-my-profiles-from-channels-jobs",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 20,
   }),
   subscriptionMiddleware,
   openAPIResponseMiddleware({
