@@ -44,9 +44,10 @@ export type VideoListItem = {
    */
   created_ts?: string;
   /**
-   * @type string,null
+   * @description RuTube отдаёт число или строку в зависимости от эндпоинта.
+   * @type string,integer,null
    */
-  track_id?: string | null;
+  track_id?: (string | number) | null;
   /**
    * @type boolean | undefined
    */
@@ -64,7 +65,8 @@ export type VideoListItem = {
    */
   stream_type?: string | null;
   /**
-   * @type string | undefined, uri
+   * @description Путь или URL без гарантии абсолютной формы; не использовать format uri (ломает Zod url()).
+   * @type string | undefined
    */
   picture_url?: string;
   /**

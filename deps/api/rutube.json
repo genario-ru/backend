@@ -370,8 +370,10 @@
             "type": "string"
           },
           "track_id": {
+            "description": "RuTube отдаёт число или строку в зависимости от эндпоинта.",
             "type": [
               "string",
+              "integer",
               "null"
             ]
           },
@@ -391,8 +393,8 @@
             ]
           },
           "picture_url": {
-            "type": "string",
-            "format": "uri"
+            "description": "Путь или URL без гарантии абсолютной формы; не использовать format uri (ломает Zod url()).",
+            "type": "string"
           },
           "author": {
             "$ref": "#/components/schemas/VideoAuthor"

@@ -22,12 +22,21 @@ export const videoListItemSchema = z
     duration: z.optional(z.number()),
     is_audio: z.optional(z.boolean()),
     created_ts: z.optional(z.string()),
-    track_id: z.string().nullish(),
+    track_id: z
+      .union([z.int(), z.string()])
+      .describe("RuTube отдаёт число или строку в зависимости от эндпоинта.")
+      .nullish(),
     is_livestream: z.optional(z.boolean()),
     is_on_air: z.optional(z.boolean()),
     last_update_ts: z.optional(z.string()),
     stream_type: z.string().nullish(),
-    picture_url: z.optional(z.url()),
+    picture_url: z.optional(
+      z
+        .string()
+        .describe(
+          "Путь или URL без гарантии абсолютной формы; не использовать format uri (ломает Zod url()).",
+        ),
+    ),
     get author() {
       return videoAuthorSchema.optional();
     },
