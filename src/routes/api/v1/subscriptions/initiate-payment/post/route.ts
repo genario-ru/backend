@@ -6,6 +6,7 @@ import { envs } from "@/constants/common/envs";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
+import { payment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -98,10 +99,9 @@ initiateSubscriptionPaymentRoute.post(
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
       : `${envs.FRONTEND_BASE_URL}/home`;
 
-    const amount = {
-      value: foundTrialTariff ? foundTrialTariff.price : foundTariff.price,
-      currency: "RUB",
-    };
+    const amountValue = foundTrialTariff
+      ? foundTrialTariff.price
+      : foundTariff.price;
 
     const description = foundTrialTariff
       ? `Оплата пробного периода "${foundTrialTariff.name}" для ${user.email}`
@@ -113,9 +113,12 @@ initiateSubscriptionPaymentRoute.post(
 
     // Отправляем запрос к API ЮKassa
 
-    const payment = await postPayments({
+    const createdYooKassaPayment = await postPayments({
       data: {
-        amount,
+        amount: {
+          value: amountValue.toString(),
+          currency: "RUB",
+        },
         description,
         receipt: {
           customer: {
@@ -124,7 +127,10 @@ initiateSubscriptionPaymentRoute.post(
           items: [
             {
               description: receiptItemDescription,
-              amount,
+              amount: {
+                value: amountValue.toString(),
+                currency: "RUB",
+              },
               vat_code: 1,
               quantity: 1,
               measure: "piece",
@@ -145,12 +151,38 @@ initiateSubscriptionPaymentRoute.post(
       },
     });
 
-    console.log("payment", payment);
+    const createdYooKassaPaymentConfirmationUrl =
+      createdYooKassaPayment.confirmation &&
+      "confirmation_url" in createdYooKassaPayment.confirmation
+        ? createdYooKassaPayment.confirmation.confirmation_url
+        : undefined;
+
+    if (!createdYooKassaPaymentConfirmationUrl) {
+      return throwAPIError({
+        code: APIErrorCode.InternalServerError,
+        message:
+          "Failed to initiate subscription payment, received confirmation type is not redirect",
+      });
+    }
+
+    const [createdPayment] = await db
+      .insert(payment)
+      .values({
+        userId: user.id,
+        amount: amountValue,
+        currency: "RUB",
+        entity: "tariff",
+        entityId: foundTariff.id,
+        paymentId: createdYooKassaPayment.id,
+        paymentLink: createdYooKassaPaymentConfirmationUrl,
+        status: "pending",
+      })
+      .returning();
 
     return c.json<InitiateSubscriptionPaymentResponse>(
       initiateSubscriptionPaymentResponseSchema.parse({
         data: {
-          paymentLink: "",
+          paymentLink: createdPayment.paymentLink,
         },
       }),
     );

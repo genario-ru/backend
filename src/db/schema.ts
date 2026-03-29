@@ -16,6 +16,7 @@ export * from "./schemas/billing/credits-cost";
 export * from "./schemas/billing/credits-package";
 export * from "./schemas/billing/credits-usage";
 export * from "./schemas/billing/payment";
+export * from "./schemas/billing/payment-method";
 export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/tariff";
 export * from "./schemas/billing/tariff-discount";

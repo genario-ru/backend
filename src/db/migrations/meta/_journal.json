@@ -15,6 +15,20 @@
       "when": 1774212745335,
       "tag": "0001_curved_clea",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774801051684,
+      "tag": "0002_perpetual_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774801225081,
+      "tag": "0003_premium_shen",
+      "breakpoints": true
     }
   ]
 }
