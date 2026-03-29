@@ -3,7 +3,6 @@ import { createSelectSchema } from "drizzle-zod";
 import { creditsUsage } from "@/db/schema";
 import { z } from "@/lib/zod";
 
-import { userSchema } from "../../users/entities/user";
 import { creditsBatchSchema } from "./credits-batch";
 
 export const creditsUsageSchema = createSelectSchema(creditsUsage).meta({
@@ -16,7 +15,6 @@ export type CreditsUsage = z.infer<typeof creditsUsageSchema>;
 
 export const creditsUsageExtendedSchema = creditsUsageSchema
   .extend({
-    user: userSchema,
     creditsBatch: creditsBatchSchema,
   })
   .meta({
@@ -24,3 +22,5 @@ export const creditsUsageExtendedSchema = creditsUsageSchema
     description: "Credits usage extended description",
     ref: "CreditsUsageExtendedSchema",
   });
+
+export type CreditsUsageExtended = z.infer<typeof creditsUsageExtendedSchema>;

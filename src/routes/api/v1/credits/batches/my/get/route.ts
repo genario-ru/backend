@@ -1,0 +1,91 @@
+import { HTTPStatusCode } from "@/constants/common/http-status-code";
+import { OpenAPITags } from "@/constants/openapi/tags";
+import { db } from "@/db";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import {
+  type GetMyCreditsBatchesResponse,
+  getMyCreditsBatchesResponseSchema,
+} from "@/schemas/entities/credits/handlers/get-my-credits-batches/response";
+import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/server/create-hono-app";
+
+export const getMyCreditsBatchesRoute = createHonoApp().basePath(
+  "/credits/batches/my",
+);
+
+// GET /api/v1/credits/batches/my
+getMyCreditsBatchesRoute.get(
+  "/",
+  sessionMiddleware,
+  rateLimitMiddleware({
+    keyPrefix: "get-my-credits-batches",
+    windowMs: 60 * 1000,
+    limit: 10,
+  }),
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Credits],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "My credits batches retrieved successfully",
+        schema: getMyCreditsBatchesResponseSchema,
+      }),
+    },
+  }),
+  async (c) => {
+    const user = c.get("user");
+
+    const foundCreditsBatches = await db.query.creditsBatch.findMany({
+      orderBy: (creditsBatch, { desc }) => desc(creditsBatch.createdAt),
+      where: (creditsBatch, { eq, and, gt }) =>
+        and(
+          eq(creditsBatch.userId, user.id),
+          gt(creditsBatch.remainingAmount, 0),
+        ),
+      with: {
+        subscriptionToCreditsBatch: {
+          with: {
+            subscription: true,
+          },
+        },
+        creditsPackageToCreditsBatch: {
+          with: {
+            creditsPackage: true,
+          },
+        },
+      },
+    });
+
+    const filteredFoundCreditsBatches = foundCreditsBatches.filter(
+      (creditsBatch) => {
+        if (
+          creditsBatch.expiresAt &&
+          new Date(creditsBatch.expiresAt) < new Date()
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+    );
+
+    const preparedFoundCreditsBatches = filteredFoundCreditsBatches.map(
+      ({
+        subscriptionToCreditsBatch,
+        creditsPackageToCreditsBatch,
+        ...creditsBatch
+      }) => ({
+        ...creditsBatch,
+        subscription: subscriptionToCreditsBatch?.subscription,
+        creditsPackage: creditsPackageToCreditsBatch?.creditsPackage,
+      }),
+    );
+
+    return c.json<GetMyCreditsBatchesResponse>(
+      getMyCreditsBatchesResponseSchema.parse({
+        data: preparedFoundCreditsBatches,
+      }),
+    );
+  },
+);

@@ -37,13 +37,13 @@ export const referralInvite = pgTable("referral_invite", {
     .notNull(),
   creditsBatchId: uuid("credits_batch_id").references(() => creditsBatch.id, {
     onUpdate: "cascade",
-    onDelete: "cascade",
+    onDelete: "set null",
   }),
   tariffDiscountId: uuid("tariff_discount_id").references(
     () => tariffDiscount.id,
     {
       onUpdate: "cascade",
-      onDelete: "cascade",
+      onDelete: "set null",
     },
   ),
   ...timestamps,

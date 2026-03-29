@@ -3,6 +3,7 @@ import { date, pgEnum, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { subscriptionToCreditsBatch } from "../linking/subscription-to-credits-batch";
 import { user } from "../primary/user";
 import { tariff } from "./tariff";
 
@@ -55,4 +56,5 @@ export const subscriptionRelations = relations(subscription, ({ one }) => ({
     fields: [subscription.tariffId],
     references: [tariff.id],
   }),
+  subscriptionToCreditsBatch: one(subscriptionToCreditsBatch),
 }));

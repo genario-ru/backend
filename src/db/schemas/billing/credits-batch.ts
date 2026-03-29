@@ -24,15 +24,12 @@ export const creditsBatch = pgTable("credits_batch", {
   ...timestamps,
 });
 
-export const creditsBatchRelations = relations(
-  creditsBatch,
-  ({ one, many }) => ({
-    user: one(user, {
-      fields: [creditsBatch.userId],
-      references: [user.id],
-    }),
-    referralInvite: one(referralInvite),
-    subscriptionToCreditsBatch: many(subscriptionToCreditsBatch),
-    creditsPackageToCreditsBatch: many(creditsPackageToCreditsBatch),
+export const creditsBatchRelations = relations(creditsBatch, ({ one }) => ({
+  user: one(user, {
+    fields: [creditsBatch.userId],
+    references: [user.id],
   }),
-);
+  referralInvite: one(referralInvite),
+  subscriptionToCreditsBatch: one(subscriptionToCreditsBatch),
+  creditsPackageToCreditsBatch: one(creditsPackageToCreditsBatch),
+}));
