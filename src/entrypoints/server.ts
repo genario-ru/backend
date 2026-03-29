@@ -21,20 +21,18 @@ import { scenarioChaptersGenerationQueue } from "@/mq/scenario/scenario-chapters
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario/scenario-scene-preview-generation/queue";
 import { scenarioScenesGenerationQueue } from "@/mq/scenario/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario/scenario-version-export/queue";
-import { authRoute } from "@/routes/auth/route";
-import { healthRoute } from "@/routes/health";
-import { rootRoute } from "@/routes/root";
+import { authRoute } from "@/routes/api/auth/route";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
-} from "@/routes/v1/archive";
-import { getAttachmentDownloadRoute } from "@/routes/v1/attachments";
+} from "@/routes/api/v1/archive";
+import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
 import {
   deleteIdeaRoute,
   getIdeaRoute,
   saveIdeaRoute,
   updateIdeaRoute,
-} from "@/routes/v1/ideas";
+} from "@/routes/api/v1/ideas";
 import {
   createIdeaRoute,
   createIdeasListRoute,
@@ -45,8 +43,8 @@ import {
   getIdeasListRoute,
   getMyIdeasListsRoute,
   updateIdeasListRoute,
-} from "@/routes/v1/ideas-lists";
-import { getPlatformsRoute } from "@/routes/v1/platforms";
+} from "@/routes/api/v1/ideas-lists";
+import { getPlatformsRoute } from "@/routes/api/v1/platforms";
 import {
   createProfileRoute,
   createProfilesFromChannelsRoute,
@@ -58,12 +56,12 @@ import {
   getProfileTypesRoute,
   updateProfileRoute,
   validateProfileChannelRoute,
-} from "@/routes/v1/profiles";
+} from "@/routes/api/v1/profiles";
 import {
   getMyReferralCodesRoute,
   getMyReferralInvitesRoute,
   getReferralInfoRoute,
-} from "@/routes/v1/referral";
+} from "@/routes/api/v1/referral";
 import {
   createScenarioRoute,
   createScenarioScenePreviewRoute,
@@ -86,13 +84,15 @@ import {
   updateScenarioRoute,
   updateScenarioSceneComponentRoute,
   updateScenarioSceneRoute,
-} from "@/routes/v1/scenarios";
-import { getMySubscriptionsRoute } from "@/routes/v1/subscriptions";
-import { getTariffsRoute, getTrialTariffRoute } from "@/routes/v1/tariffs";
-import { getTemplatesRoute } from "@/routes/v1/templates";
-import { getTonesRoute } from "@/routes/v1/tones";
-import { getVideoDurationsRoute } from "@/routes/v1/video-durations";
-import { getVideoTypesRoute } from "@/routes/v1/video-types";
+} from "@/routes/api/v1/scenarios";
+import { getMySubscriptionsRoute } from "@/routes/api/v1/subscriptions";
+import { getTariffsRoute, getTrialTariffRoute } from "@/routes/api/v1/tariffs";
+import { getTemplatesRoute } from "@/routes/api/v1/templates";
+import { getTonesRoute } from "@/routes/api/v1/tones";
+import { getVideoDurationsRoute } from "@/routes/api/v1/video-durations";
+import { getVideoTypesRoute } from "@/routes/api/v1/video-types";
+import { healthRoute } from "@/routes/health";
+import { rootRoute } from "@/routes/root";
 import { addGracefulShutdown } from "@/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 
