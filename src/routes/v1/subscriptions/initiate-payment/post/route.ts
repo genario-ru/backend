@@ -10,39 +10,39 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { initiatePaymentBodySchema } from "@/schemas/entities/billing/handlers/initiate-payment/body";
+import { initiateSubscriptionPaymentBodySchema } from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/body";
 import {
-  type InitiatePaymentResponse,
-  initiatePaymentResponseSchema,
-} from "@/schemas/entities/billing/handlers/initiate-payment/response";
+  type InitiateSubscriptionPaymentResponse,
+  initiateSubscriptionPaymentResponseSchema,
+} from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/response";
 import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
-export const initiatePayment = createHonoApp().basePath(
-  "/billing/initiate-payment",
+export const initiateSubscriptionPaymentRoute = createHonoApp().basePath(
+  "/subscriptions/initiate-payment",
 );
 
-// POST /api/v1/billing/initiate-payment
-initiatePayment.post(
+// POST /api/v1/subscriptions/initiate-payment
+initiateSubscriptionPaymentRoute.post(
   "/",
   sessionMiddleware,
   rateLimitMiddleware({
-    keyPrefix: "initiate-payment",
+    keyPrefix: "initiate-subscription-payment",
     windowMs: 60 * 1000,
-    limit: 3,
+    limit: 10,
   }),
   openAPIResponseMiddleware({
-    tags: [OpenAPITags.Billing],
+    tags: [OpenAPITags.Subscriptions],
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
-        description: "Payment initiated successfully",
-        schema: initiatePaymentResponseSchema,
+        description: "Subscription payment initiated successfully",
+        schema: initiateSubscriptionPaymentResponseSchema,
       }),
     },
   }),
-  validator("json", initiatePaymentBodySchema),
+  validator("json", initiateSubscriptionPaymentBodySchema),
   async (c) => {
     const user = c.get("user");
 
@@ -147,8 +147,8 @@ initiatePayment.post(
 
     console.log("payment", payment);
 
-    return c.json<InitiatePaymentResponse>(
-      initiatePaymentResponseSchema.parse({
+    return c.json<InitiateSubscriptionPaymentResponse>(
+      initiateSubscriptionPaymentResponseSchema.parse({
         data: {
           paymentLink: "",
         },
