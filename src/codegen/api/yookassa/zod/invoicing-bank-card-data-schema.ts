@@ -17,7 +17,9 @@ import { bankCardTypeSchema } from "./bank-card-type-schema.ts";
 export const invoicingBankCardDataSchema = z
   .object({
     get first6() {
-      return bankCardFirst6Schema.and(z.any());
+      return bankCardFirst6Schema.describe(
+        "Первые 6 цифр номера карты (BIN). При оплате картой, сохраненной в ЮKassa: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/basics и других сервисах, переданный BIN может не соответствовать значениям last4, expiry_year, expiry_month.",
+      );
     },
     get last4() {
       return bankCardLast4Schema.describe("Последние 4 цифры номера карты.");

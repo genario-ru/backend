@@ -21,6 +21,14 @@ export type ElectronicCertificate = {
    * @type integer
    */
   tru_quantity: number;
-  available_compensation: MonetaryAmount & any;
-  applied_compensation: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  available_compensation: MonetaryAmount;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  applied_compensation: MonetaryAmount;
 };

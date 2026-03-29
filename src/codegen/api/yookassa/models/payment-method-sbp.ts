@@ -4,6 +4,7 @@
  */
 
 import type { PaymentMethod } from "./payment-method.ts";
+import type { SbpOperationId } from "./sbp-operation-id.ts";
 import type { SbpPayerBankDetails } from "./sbp-payer-bank-details.ts";
 
 export const paymentMethodSbpTypeEnum = {
@@ -20,10 +21,10 @@ export type PaymentMethodSbp = (PaymentMethod & {
   type: "sbp";
 }) & {
   /**
-   * @description Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777 Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать.
+   * @description Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777.
    * @type string | undefined
    */
-  sbp_operation_id?: string;
+  sbp_operation_id?: SbpOperationId;
   /**
    * @description Реквизиты счета, который использовался для оплаты. Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать.
    * @type object | undefined

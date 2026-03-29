@@ -7,7 +7,7 @@ import type { Airline } from "./airline.ts";
 import type { BadRequest } from "./bad-request.ts";
 import type { Capture } from "./capture.ts";
 import type { ClientIp } from "./client-ip.ts";
-import type { ConfirmationDataEmbedded } from "./confirmation-data-embedded.ts";
+import type { ConfirmationData } from "./confirmation-data.ts";
 import type { ConfirmationDataExternal } from "./confirmation-data-external.ts";
 import type { ConfirmationDataMobileApplication } from "./confirmation-data-mobile-application.ts";
 import type { ConfirmationDataQr } from "./confirmation-data-qr.ts";
@@ -83,8 +83,16 @@ export type PostPayments500 = TooManyRequests;
  * CreatePaymentRequest
  */
 export type PostPaymentsMutationRequest = {
-  amount: MonetaryAmount & any;
-  description?: Description & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Поле, в котором пользователь может передать описание создаваемого объекта (не более 128 символов). Например: «Оплата заказа № 72».
+   * @type string | undefined
+   */
+  description?: Description;
   /**
    * @description Data for creating a receipt. The parameter is specified if: you are a company or a sole proprietor, and you use Receipts from YooMoney: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics; you are a company or a sole proprietor, and you use the third-party sales register: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics and send data for creating receipts under one of the following scenarios: Payment and receipt at the same time: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics#payment-and-receipt or Payment after receipt: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics#payment-after-receipt.
    * @type object | undefined
@@ -121,7 +129,7 @@ export type PostPaymentsMutationRequest = {
     | ConfirmationDataRedirect
     | ConfirmationDataExternal
     | ConfirmationDataQr
-    | ConfirmationDataEmbedded
+    | ConfirmationData
     | ConfirmationDataMobileApplication;
   /**
    * @description Сохранение платежных данных для проведения автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/basics. Возможные значения: * true — сохранить способ оплаты (сохранить платежные данные); * false — провести платеж без сохранения способа оплаты. Доступно только после согласования с менеджером ЮKassa.
@@ -143,14 +151,26 @@ export type PostPaymentsMutationRequest = {
    * @type object | undefined
    */
   metadata?: Metadata;
-  airline?: Airline & any;
+  /**
+   * @description Объект с данными для продажи авиабилетов: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/airline-tickets. Используется только для платежей банковской картой.
+   * @type object | undefined
+   */
+  airline?: Airline;
   /**
    * @description Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.
    * @type array | undefined
    */
   transfers?: TransferDataPayment[];
-  deal?: PaymentDealInfo & any;
-  merchant_customer_id?: MerchantCustomerId & any;
+  /**
+   * @description The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics.
+   * @type object | undefined
+   */
+  deal?: PaymentDealInfo;
+  /**
+   * @description Идентификатор покупателя в вашей системе, например электронная почта или номер телефона. Не более 200 символов.
+   * @type string | undefined
+   */
+  merchant_customer_id?: MerchantCustomerId;
   payment_order?: PaymentOrderDataUtilities;
   receiver?:
     | ReceiverMobileBalance

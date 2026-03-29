@@ -21,7 +21,7 @@ export const receiverMobileBalanceSchema = z
   .and(
     z.object({
       get phone() {
-        return phoneSchema.and(z.any()).and(z.any());
+        return phoneSchema.describe("Номер телефона в формате ITU-T E.164");
       },
       type: z.enum(["mobile_balance"]),
     }),

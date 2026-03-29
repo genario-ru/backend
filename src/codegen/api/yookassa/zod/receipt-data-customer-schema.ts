@@ -22,13 +22,19 @@ export const receiptDataCustomerSchema = z
         ),
     ),
     get inn() {
-      return russianItnSchema.and(z.any()).optional();
+      return russianItnSchema
+        .describe("ИНН пользователя (10 или 12 цифр).")
+        .optional();
     },
     get email() {
-      return emailSchema.and(z.any()).optional();
+      return emailSchema
+        .describe("Адрес электронной почты RFC 5322")
+        .optional();
     },
     get phone() {
-      return phoneSchema.and(z.any()).optional();
+      return phoneSchema
+        .describe("Номер телефона в формате ITU-T E.164")
+        .optional();
     },
   })
   .describe(

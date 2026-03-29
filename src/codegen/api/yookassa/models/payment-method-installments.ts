@@ -3,20 +3,37 @@
  * Do not edit manually.
  */
 
-import type { PaymentMethod } from "./payment-method.ts";
-
-export const paymentMethodInstallmentsTypeEnum = {
-  installments: "installments",
-} as const;
-
-export type PaymentMethodInstallmentsTypeEnumKey =
-  (typeof paymentMethodInstallmentsTypeEnum)[keyof typeof paymentMethodInstallmentsTypeEnum];
+import type { PaymentMethodStatus } from "./payment-method-status.ts";
+import type { PaymentMethodTitle } from "./payment-method-title.ts";
+import type { PaymentMethodType } from "./payment-method-type.ts";
 
 /**
- * @description Оплата через сервис «Заплатить по частям» (в кредит или рассрочку).
+ * @description Payment method: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all used for this payment.
  */
-export type PaymentMethodInstallments = (PaymentMethod & {
-  type: "installments";
-}) & {
-  type: PaymentMethodInstallmentsTypeEnumKey;
+export type PaymentMethodInstallments = {
+  /**
+   * @description Payment method code is the type of a means of payment used for paying. More about payment methods: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods
+   * @type string
+   */
+  type: PaymentMethodType;
+  /**
+   * @description Payment method ID.
+   * @type string
+   */
+  id: string;
+  /**
+   * @description Признак сохранения способа оплаты для автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/pay-with-saved. Возможные значения: * true — способ оплаты сохранен для автоплатежей и выплат; * false — способ оплаты не сохранен.
+   * @type boolean
+   */
+  saved: boolean;
+  /**
+   * @description Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: пользователь не подтвердил привязку платежного средства или при сохранении способа оплаты возникла ошибка. Чтобы узнать подробности, обратитесь в техническую поддержку ЮKassa.
+   * @type string
+   */
+  status: PaymentMethodStatus;
+  /**
+   * @description Название способа оплаты.
+   * @type string | undefined
+   */
+  title?: PaymentMethodTitle;
 };

@@ -19,6 +19,10 @@ export type B2BSberbankMixedVatDataTypeEnumKey =
 export type B2BSberbankMixedVatData = (B2BSberbankVatData & {
   type: "mixed";
 }) & {
-  amount: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
   type: B2BSberbankMixedVatDataTypeEnumKey;
 };

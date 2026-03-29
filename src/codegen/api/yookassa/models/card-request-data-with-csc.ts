@@ -3,9 +3,12 @@
  * Do not edit manually.
  */
 
-import type { CardRequestData } from "./card-request-data.ts";
+import type { BankCardHolderName } from "./bank-card-holder-name.ts";
 
-export type CardRequestDataWithCsc = CardRequestData & {
+/**
+ * @description Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
+ */
+export type CardRequestDataWithCsc = {
   /**
    * @description Номер банковской карты.
    * @pattern [0-9]{14,19}
@@ -25,9 +28,9 @@ export type CardRequestDataWithCsc = CardRequestData & {
    */
   expiry_month: string;
   /**
-   * @description Код CVC2 или CVV2, 3 или 4 символа, печатается на обратной стороне карты.
-   * @pattern [0-9]{3,4}
+   * @description Имя владельца карты.
+   * @pattern [a-zA-Z '-]{0,26}
    * @type string | undefined
    */
-  csc?: string;
+  cardholder?: BankCardHolderName;
 };

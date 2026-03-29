@@ -66,7 +66,9 @@ export const receiptDataSchema = z
         .optional();
     },
     get receipt_operational_details() {
-      return operationalDetailsSchema.and(z.any()).optional();
+      return operationalDetailsSchema
+        .describe("Данные операционного реквизита чека")
+        .optional();
     },
   })
   .describe(

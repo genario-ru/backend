@@ -56,6 +56,9 @@ async function main() {
     console.log(`🔧 Исправляем проблемные регулярки...`);
     cleanSpec = fixAllPatterns(cleanSpec);
 
+    console.log(`🔧 Исправляем allOf...`);
+    cleanSpec = flattenAllOf(cleanSpec);
+
     console.log(`🔧 Исправляем enum с числами внутри type: string...`);
     cleanSpec = fixInvalidStringEnums(cleanSpec);
 
@@ -91,11 +94,11 @@ function fixInvalidStringEnums(obj: any): any {
   // === Главный фикс: type: string + enum с числами ===
   if (result.type === "string" && Array.isArray(result.enum)) {
     const hasNumbers = result.enum.some((v: any) => typeof v === "number");
+
     if (hasNumbers) {
       result.enum = result.enum.map((v: any) =>
         typeof v === "number" ? String(v) : v,
       );
-      console.log(`🔧 Исправлен enum (числа → строки) в поле типа string`);
     }
   }
 
@@ -112,11 +115,74 @@ function fixInvalidStringEnums(obj: any): any {
   return result;
 }
 
+function flattenAllOf(obj: any): any {
+  if (typeof obj !== "object" || obj === null) return obj;
+  if (Array.isArray(obj)) return obj.map(flattenAllOf);
+
+  const result: any = { ...obj };
+
+  if (Array.isArray(result.allOf)) {
+    // Ищем объект со ссылкой
+    const refItem = result.allOf.find(
+      (item: any) => item && typeof item === "object" && item.$ref,
+    );
+
+    if (refItem) {
+      let canFlatten = true;
+
+      // Проверяем, что в остальных элементах нет ломающих структуру полей (properties, required и т.д.)
+      for (const item of result.allOf) {
+        if (item === refItem || !item || typeof item !== "object") continue;
+
+        const keys = Object.keys(item);
+        for (const key of keys) {
+          // Разрешаем только безопасные метаданные и "type: object" без свойств
+          if (
+            !["description", "title", "example", "default", "type"].includes(
+              key,
+            )
+          ) {
+            canFlatten = false;
+            break;
+          }
+          if (key === "type" && (item[key] !== "object" || item.properties)) {
+            canFlatten = false;
+            break;
+          }
+        }
+      }
+
+      // Если всё безопасно — сплющиваем (flatten)
+      if (canFlatten) {
+        result.$ref = refItem.$ref;
+
+        for (const item of result.allOf) {
+          if (item === refItem) continue;
+          if (item.description) result.description = item.description;
+          if (item.title) result.title = item.title;
+          if (item.example) result.example = item.example;
+        }
+
+        // Удаляем allOf
+        delete result.allOf;
+      }
+    }
+  }
+
+  // Рекурсия по всем вложенным объектам
+  for (const [key, value] of Object.entries(result)) {
+    result[key] = flattenAllOf(value);
+  }
+
+  return result;
+}
+
 function fixAllPatterns(obj: any): any {
   if (typeof obj !== "object" || obj === null) return obj;
   if (Array.isArray(obj)) return obj.map(fixAllPatterns);
 
   const result: any = {};
+
   for (const [key, value] of Object.entries(obj)) {
     if (key === "pattern" && typeof value === "string") {
       result[key] = sanitizePattern(value);
@@ -124,6 +190,7 @@ function fixAllPatterns(obj: any): any {
       result[key] = fixAllPatterns(value);
     }
   }
+
   return result;
 }
 

@@ -15,5 +15,9 @@ export type SettlementPaymentItem = {
    * @type string
    */
   type: SettlementItemType;
-  amount: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
 };

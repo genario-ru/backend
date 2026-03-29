@@ -26,7 +26,9 @@ export const paymentMethodSchema = z
         "Признак сохранения способа оплаты для автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/pay-with-saved. Возможные значения: * true — способ оплаты сохранен для автоплатежей и выплат; * false — способ оплаты не сохранен.",
       ),
     get status() {
-      return paymentMethodStatusSchema.and(z.any());
+      return paymentMethodStatusSchema.describe(
+        "Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: пользователь не подтвердил привязку платежного средства или при сохранении способа оплаты возникла ошибка. Чтобы узнать подробности, обратитесь в техническую поддержку ЮKassa.",
+      );
     },
     get title() {
       return paymentMethodTitleSchema

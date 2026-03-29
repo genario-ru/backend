@@ -21,7 +21,11 @@ export type PaymentMethodElectronicCertificateTypeEnumKey =
 export type PaymentMethodElectronicCertificate = (PaymentMethod & {
   type: "electronic_certificate";
 }) & {
-  card?: BankCardData & any;
+  /**
+   * @description Данные банковской карты.
+   * @type object | undefined
+   */
+  card?: BankCardData;
   /**
    * @description Данные от ФЭС НСПК для оплаты по электронному сертификату.
    * @type object | undefined

@@ -21,7 +21,9 @@ export const paymentMethodDataSberBnplSchema = z
   .and(
     z.object({
       get phone() {
-        return phoneSchema.and(z.any()).optional();
+        return phoneSchema
+          .describe("Номер телефона в формате ITU-T E.164")
+          .optional();
       },
       type: z.enum(["sber_bnpl"]),
     }),

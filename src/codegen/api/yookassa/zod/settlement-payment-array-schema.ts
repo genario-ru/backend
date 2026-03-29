@@ -5,11 +5,11 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { settlementPayoutPaymentSchema } from "./settlement-payout-payment-schema.ts";
+import { settlementPaymentItemSchema } from "./settlement-payment-item-schema.ts";
 
 /**
  * @description Данные о распределении денег.
  */
 export const settlementPaymentArraySchema = z
-  .array(z.lazy(() => settlementPayoutPaymentSchema))
+  .array(z.lazy(() => settlementPaymentItemSchema))
   .describe("Данные о распределении денег.");

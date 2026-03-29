@@ -16,5 +16,10 @@ export type SbpPayerBankDetails = {
    * @type string
    */
   bank_id: SbpBankId;
-  bic: SbpBankBic & string & any;
+  /**
+   * @description Банковский идентификационный код (БИК) банка или платежного сервиса.
+   * @pattern \d{9}
+   * @type string
+   */
+  bic: SbpBankBic;
 };

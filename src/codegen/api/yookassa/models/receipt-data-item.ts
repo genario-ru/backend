@@ -29,7 +29,11 @@ export type ReceiptDataItem = {
    * @type string
    */
   description: ReceiptItemDescription;
-  amount: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
   /**
    * @description Ставка НДС (тег в 54 ФЗ — 1199). Перечень возможных значений: * для Чеков от ЮKassa: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/parameters-values#vat-codes * для сторонних онлайн-касс: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/parameters-values#vat-codes
    * @type integer, int32

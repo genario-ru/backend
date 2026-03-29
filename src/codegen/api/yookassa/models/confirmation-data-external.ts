@@ -3,17 +3,21 @@
  * Do not edit manually.
  */
 
-import type { ConfirmationData } from "./confirmation-data.ts";
+import type { ConfirmationDataType } from "./confirmation-data-type.ts";
+import type { Locale } from "./locale.ts";
 
-export const confirmationDataExternalTypeEnum = {
-  external: "external",
-} as const;
-
-export type ConfirmationDataExternalTypeEnumKey =
-  (typeof confirmationDataExternalTypeEnum)[keyof typeof confirmationDataExternalTypeEnum];
-
-export type ConfirmationDataExternal = (ConfirmationData & {
-  type: "external";
-}) & {
-  type: ConfirmationDataExternalTypeEnumKey;
+/**
+ * @description Information required to initiate the selected payment confirmation scenario by the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation
+ */
+export type ConfirmationDataExternal = {
+  /**
+   * @description Type of payment confirmation scenario by the user. Possible values: redirect - redirecting the user to a ready-made YooMoney page or a partner\'s page; external - waiting for the user to confirm the payment independently; qr - generating a QR and displaying it on the payment page so that the user can confirm the payment; embedded - displaying the YooMoney payment widget; mobile_application - redirecting the user to the partner\'s payment app.
+   * @type string
+   */
+  type: ConfirmationDataType;
+  /**
+   * @description Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897: https://en.wikipedia.org/wiki/Locale_(computer_software). Возможные значения: ru_RU, en_US. Регистр важен.
+   * @type string | undefined
+   */
+  locale?: Locale;
 };

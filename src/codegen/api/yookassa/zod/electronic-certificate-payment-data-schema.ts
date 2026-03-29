@@ -14,10 +14,12 @@ import { monetaryAmountSchema } from "./monetary-amount-schema.ts";
 export const electronicCertificatePaymentDataSchema = z
   .object({
     get amount() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get basket_id() {
-      return basketIdSchema.and(z.any());
+      return basketIdSchema.describe(
+        "Идентификатор корзины, сформированной в НСПК.",
+      );
     },
   })
   .describe(

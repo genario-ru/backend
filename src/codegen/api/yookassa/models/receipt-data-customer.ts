@@ -16,7 +16,21 @@ export type ReceiptDataCustomer = {
    * @type string | undefined
    */
   full_name?: string;
-  inn?: RussianItn & string & any;
-  email?: Email & any;
-  phone?: Phone & string & any;
+  /**
+   * @description ИНН пользователя (10 или 12 цифр).
+   * @pattern \d{10}|\d{12}
+   * @type string | undefined
+   */
+  inn?: RussianItn;
+  /**
+   * @description Адрес электронной почты RFC 5322
+   * @type string | undefined, email
+   */
+  email?: Email;
+  /**
+   * @description Номер телефона в формате ITU-T E.164
+   * @pattern [0-9]{4,15}
+   * @type string | undefined
+   */
+  phone?: Phone;
 };

@@ -205,6 +205,7 @@ export { russianItnSchema } from "./russian-itn-schema.ts";
 export { savePaymentMethodAttributeSchema } from "./save-payment-method-attribute-schema.ts";
 export { sbpBankBicSchema } from "./sbp-bank-bic-schema.ts";
 export { sbpBankIdSchema } from "./sbp-bank-id-schema.ts";
+export { sbpOperationIdSchema } from "./sbp-operation-id-schema.ts";
 export { sbpPayerBankDetailsSchema } from "./sbp-payer-bank-details-schema.ts";
 export { settlementItemTypeSchema } from "./settlement-item-type-schema.ts";
 export { settlementPaymentArraySchema } from "./settlement-payment-array-schema.ts";

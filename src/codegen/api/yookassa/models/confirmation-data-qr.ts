@@ -16,6 +16,10 @@ export type ConfirmationDataQrTypeEnumKey =
 export type ConfirmationDataQr = (ConfirmationData & {
   type: "qr";
 }) & {
-  return_url?: ReturnUrl & any;
+  /**
+   * @description URL, на который вернется пользователь после подтверждения или отмены платежа на веб-странице. Не более 2048 символов.
+   * @type string | undefined
+   */
+  return_url?: ReturnUrl;
   type: ConfirmationDataQrTypeEnumKey;
 };

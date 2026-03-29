@@ -21,7 +21,7 @@ export const B2BSberbankMixedVatDataSchema = z
   .and(
     z.object({
       get amount() {
-        return monetaryAmountSchema.and(z.any());
+        return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
       },
       type: z.enum(["mixed"]),
     }),

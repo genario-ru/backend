@@ -56,9 +56,21 @@ export type Payment = {
    * @type string
    */
   status: PaymentStatus;
-  amount: MonetaryAmount & any;
-  income_amount?: MonetaryAmount & any;
-  description?: Description & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object | undefined
+   */
+  income_amount?: MonetaryAmount;
+  /**
+   * @description Поле, в котором пользователь может передать описание создаваемого объекта (не более 128 символов). Например: «Оплата заказа № 72».
+   * @type string | undefined
+   */
+  description?: Description;
   /**
    * @description Payment recipient.
    * @type object
@@ -120,7 +132,11 @@ export type Payment = {
    * @type boolean
    */
   test: Test;
-  refunded_amount?: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object | undefined
+   */
+  refunded_amount?: MonetaryAmount;
   /**
    * @description The attribute of a paid order.
    * @type boolean
@@ -131,7 +147,11 @@ export type Payment = {
    * @type boolean
    */
   refundable: boolean;
-  receipt_registration?: ReceiptRegistrationStatus & any;
+  /**
+   * @description Статус регистрации чека. Возможные значения: pending — данные в обработке; succeeded — чек успешно зарегистрирован; canceled — чек зарегистрировать не удалось; если используете Чеки от ЮKassa: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics, обратитесь в техническую поддержку, в остальных случаях сформируйте чек вручную. Присутствует, если вы используете решения ЮKassa для отправки чеков в налоговую: https://yookassa.ru/developers/payment-acceptance/receipts/basics.
+   * @type string | undefined
+   */
+  receipt_registration?: ReceiptRegistrationStatus;
   /**
    * @description Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    * @type object | undefined
@@ -152,8 +172,16 @@ export type Payment = {
    * @type array | undefined
    */
   transfers?: Transfer[];
-  deal?: PaymentDealInfo & any;
-  merchant_customer_id?: MerchantCustomerId & any;
+  /**
+   * @description The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics.
+   * @type object | undefined
+   */
+  deal?: PaymentDealInfo;
+  /**
+   * @description Идентификатор покупателя в вашей системе, например электронная почта или номер телефона. Не более 200 символов.
+   * @type string | undefined
+   */
+  merchant_customer_id?: MerchantCustomerId;
   /**
    * @description Данные о выставленном счете, в рамках которого проведен платеж.
    * @type object | undefined

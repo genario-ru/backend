@@ -5,6 +5,26 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { transferDataSchema } from "./transfer-data-schema.ts";
+import { accountIdSchema } from "./account-id-schema.ts";
+import { monetaryAmountSchema } from "./monetary-amount-schema.ts";
 
-export const transferDataCaptureSchema = z.lazy(() => transferDataSchema);
+/**
+ * @description Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.
+ */
+export const transferDataCaptureSchema = z
+  .object({
+    get account_id() {
+      return accountIdSchema.describe("Идентификатор магазина в ЮKassa.");
+    },
+    get amount() {
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
+    },
+    get platform_fee_amount() {
+      return monetaryAmountSchema
+        .describe("Сумма в выбранной валюте.")
+        .optional();
+    },
+  })
+  .describe(
+    "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
+  );

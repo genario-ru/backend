@@ -3,20 +3,15 @@
  * Do not edit manually.
  */
 
-import type { B2BSberbankVatData } from "./b2-b-sberbank-vat-data.ts";
-
-export const B2BSberbankUntaxedVatDataTypeEnum = {
-  untaxed: "untaxed",
-} as const;
-
-export type B2BSberbankUntaxedVatDataTypeEnumKey =
-  (typeof B2BSberbankUntaxedVatDataTypeEnum)[keyof typeof B2BSberbankUntaxedVatDataTypeEnum];
+import type { B2BSberbankVatDataType } from "./b2-b-sberbank-vat-data-type.ts";
 
 /**
- * @description Данные об НДС, если товар или услуга не облагается налогом (в параметре type передано значение untaxed).
+ * @description Данные о налоге на добавленную стоимость (НДС). Платеж может облагаться или не облагаться НДС. Товары могут облагаться по одной ставке НДС или по разным.
  */
-export type B2BSberbankUntaxedVatData = (B2BSberbankVatData & {
-  type: "untaxed";
-}) & {
-  type: B2BSberbankUntaxedVatDataTypeEnumKey;
+export type B2BSberbankUntaxedVatData = {
+  /**
+   * @description Тип способа расчета НДС.
+   * @type string
+   */
+  type: B2BSberbankVatDataType;
 };

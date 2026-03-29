@@ -58,13 +58,19 @@ export const paymentSchema = z
       );
     },
     get amount() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get income_amount() {
-      return monetaryAmountSchema.and(z.any()).optional();
+      return monetaryAmountSchema
+        .describe("Сумма в выбранной валюте.")
+        .optional();
     },
     get description() {
-      return descriptionSchema.and(z.any()).optional();
+      return descriptionSchema
+        .describe(
+          "Поле, в котором пользователь может передать описание создаваемого объекта (не более 128 символов). Например: «Оплата заказа № 72».",
+        )
+        .optional();
     },
     recipient: z
       .object({
@@ -136,14 +142,20 @@ export const paymentSchema = z
       return testSchema.describe("Признак тестовой операции.");
     },
     get refunded_amount() {
-      return monetaryAmountSchema.and(z.any()).optional();
+      return monetaryAmountSchema
+        .describe("Сумма в выбранной валюте.")
+        .optional();
     },
     paid: z.boolean().describe("The attribute of a paid order."),
     refundable: z
       .boolean()
       .describe("Availability of the option to make a refund via API."),
     get receipt_registration() {
-      return receiptRegistrationStatusSchema.and(z.any()).optional();
+      return receiptRegistrationStatusSchema
+        .describe(
+          "Статус регистрации чека. Возможные значения: pending — данные в обработке; succeeded — чек успешно зарегистрирован; canceled — чек зарегистрировать не удалось; если используете Чеки от ЮKassa: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics, обратитесь в техническую поддержку, в остальных случаях сформируйте чек вручную. Присутствует, если вы используете решения ЮKassa для отправки чеков в налоговую: https://yookassa.ru/developers/payment-acceptance/receipts/basics.",
+        )
+        .optional();
     },
     get metadata() {
       return metadataSchema
@@ -179,10 +191,18 @@ export const paymentSchema = z
         .optional();
     },
     get deal() {
-      return paymentDealInfoSchema.and(z.any()).optional();
+      return paymentDealInfoSchema
+        .describe(
+          "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics.",
+        )
+        .optional();
     },
     get merchant_customer_id() {
-      return merchantCustomerIdSchema.and(z.any()).optional();
+      return merchantCustomerIdSchema
+        .describe(
+          "Идентификатор покупателя в вашей системе, например электронная почта или номер телефона. Не более 200 символов.",
+        )
+        .optional();
     },
     invoice_details: z.optional(
       z

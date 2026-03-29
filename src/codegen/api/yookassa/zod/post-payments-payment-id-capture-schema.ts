@@ -15,7 +15,7 @@ import { paymentSchema } from "./payment-schema.ts";
 import { receiptDataSchema } from "./receipt-data-schema.ts";
 import { settlementPaymentArraySchema } from "./settlement-payment-array-schema.ts";
 import { tooManyRequestsSchema } from "./too-many-requests-schema.ts";
-import { transferDataCaptureSchema } from "./transfer-data-capture-schema.ts";
+import { transferDataSchema } from "./transfer-data-schema.ts";
 
 export const postPaymentsPaymentIdCapturePathParamsSchema = z.object({
   get payment_id() {
@@ -76,7 +76,9 @@ export const postPaymentsPaymentIdCapture500Schema = z
 
 export const postPaymentsPaymentIdCaptureMutationRequestSchema = z.object({
   get amount() {
-    return monetaryAmountSchema.and(z.any()).optional();
+    return monetaryAmountSchema
+      .describe("Сумма в выбранной валюте.")
+      .optional();
   },
   get receipt() {
     return receiptDataSchema
@@ -86,11 +88,19 @@ export const postPaymentsPaymentIdCaptureMutationRequestSchema = z.object({
       .optional();
   },
   get airline() {
-    return airlineSchema.and(z.any()).optional();
+    return airlineSchema
+      .describe(
+        "Объект с данными для продажи авиабилетов: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/airline-tickets. Используется только для платежей банковской картой.",
+      )
+      .optional();
   },
   get transfers() {
     return z
-      .array(transferDataCaptureSchema)
+      .array(
+        transferDataSchema.describe(
+          "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
+        ),
+      )
       .describe(
         "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified for partially capturing a payment if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
       )

@@ -23,7 +23,9 @@ export const paymentMethodElectronicCertificateSchema = z
   .and(
     z.object({
       get card() {
-        return bankCardDataSchema.and(z.any()).optional();
+        return bankCardDataSchema
+          .describe("Данные банковской карты.")
+          .optional();
       },
       get electronic_certificate() {
         return electronicCertificatePaymentSchema

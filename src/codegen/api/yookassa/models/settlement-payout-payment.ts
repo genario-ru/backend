@@ -3,17 +3,21 @@
  * Do not edit manually.
  */
 
-import type { SettlementPaymentItem } from "./settlement-payment-item.ts";
+import type { MonetaryAmount } from "./monetary-amount.ts";
+import type { SettlementItemType } from "./settlement-item-type.ts";
 
-export const settlementPayoutPaymentTypeEnum = {
-  payout: "payout",
-} as const;
-
-export type SettlementPayoutPaymentTypeEnumKey =
-  (typeof settlementPayoutPaymentTypeEnum)[keyof typeof settlementPayoutPaymentTypeEnum];
-
-export type SettlementPayoutPayment = (SettlementPaymentItem & {
-  type: "payout";
-}) & {
-  type: SettlementPayoutPaymentTypeEnumKey;
+/**
+ * @description Данные о распределении денег.
+ */
+export type SettlementPayoutPayment = {
+  /**
+   * @description Transaction type.
+   * @type string
+   */
+  type: SettlementItemType;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
 };

@@ -5,17 +5,27 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { confirmationDataSchema } from "./confirmation-data-schema.ts";
+import { confirmationDataTypeSchema } from "./confirmation-data-type-schema.ts";
+import { localeSchema } from "./locale-schema.ts";
 
+/**
+ * @description Information required to initiate the selected payment confirmation scenario by the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation
+ */
 export const confirmationDataExternalSchema = z
-  .lazy(() => confirmationDataSchema)
-  .and(
-    z.object({
-      type: z.literal("external"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["external"]),
-    }),
+  .object({
+    get type() {
+      return confirmationDataTypeSchema.describe(
+        "Type of payment confirmation scenario by the user. Possible values: redirect - redirecting the user to a ready-made YooMoney page or a partner's page; external - waiting for the user to confirm the payment independently; qr - generating a QR and displaying it on the payment page so that the user can confirm the payment; embedded - displaying the YooMoney payment widget; mobile_application - redirecting the user to the partner's payment app.",
+      );
+    },
+    get locale() {
+      return localeSchema
+        .describe(
+          "Язык интерфейса, писем и смс, которые будет видеть или получать пользователь. Формат соответствует ISO/IEC 15897: https://en.wikipedia.org/wiki/Locale_(computer_software). Возможные значения: ru_RU, en_US. Регистр важен.",
+        )
+        .optional();
+    },
+  })
+  .describe(
+    "Information required to initiate the selected payment confirmation scenario by the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation",
   );

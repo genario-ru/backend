@@ -5,17 +5,19 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { settlementPaymentItemSchema } from "./settlement-payment-item-schema.ts";
+import { monetaryAmountSchema } from "./monetary-amount-schema.ts";
+import { settlementItemTypeSchema } from "./settlement-item-type-schema.ts";
 
+/**
+ * @description Данные о распределении денег.
+ */
 export const settlementPayoutPaymentSchema = z
-  .lazy(() => settlementPaymentItemSchema)
-  .and(
-    z.object({
-      type: z.literal("payout"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["payout"]),
-    }),
-  );
+  .object({
+    get type() {
+      return settlementItemTypeSchema.describe("Transaction type.");
+    },
+    get amount() {
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
+    },
+  })
+  .describe("Данные о распределении денег.");

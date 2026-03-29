@@ -9,11 +9,11 @@ import { airlineSchema } from "./airline-schema.ts";
 import { badRequestSchema } from "./bad-request-schema.ts";
 import { captureSchema } from "./capture-schema.ts";
 import { clientIpSchema } from "./client-ip-schema.ts";
-import { confirmationDataEmbeddedSchema } from "./confirmation-data-embedded-schema.ts";
 import { confirmationDataExternalSchema } from "./confirmation-data-external-schema.ts";
 import { confirmationDataMobileApplicationSchema } from "./confirmation-data-mobile-application-schema.ts";
 import { confirmationDataQrSchema } from "./confirmation-data-qr-schema.ts";
 import { confirmationDataRedirectSchema } from "./confirmation-data-redirect-schema.ts";
+import { confirmationDataSchema } from "./confirmation-data-schema.ts";
 import { descriptionSchema } from "./description-schema.ts";
 import { forbiddenSchema } from "./forbidden-schema.ts";
 import { invalidCredentialsSchema } from "./invalid-credentials-schema.ts";
@@ -99,10 +99,14 @@ export const postPayments500Schema = z
 
 export const postPaymentsMutationRequestSchema = z.object({
   get amount() {
-    return monetaryAmountSchema.and(z.any());
+    return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
   },
   get description() {
-    return descriptionSchema.and(z.any()).optional();
+    return descriptionSchema
+      .describe(
+        "Поле, в котором пользователь может передать описание создаваемого объекта (не более 128 символов). Например: «Оплата заказа № 72».",
+      )
+      .optional();
   },
   get receipt() {
     return receiptDataSchema
@@ -155,7 +159,7 @@ export const postPaymentsMutationRequestSchema = z.object({
         confirmationDataRedirectSchema,
         confirmationDataExternalSchema,
         confirmationDataQrSchema,
-        confirmationDataEmbeddedSchema,
+        confirmationDataSchema,
         confirmationDataMobileApplicationSchema,
       ])
       .optional();
@@ -189,7 +193,11 @@ export const postPaymentsMutationRequestSchema = z.object({
       .optional();
   },
   get airline() {
-    return airlineSchema.and(z.any()).optional();
+    return airlineSchema
+      .describe(
+        "Объект с данными для продажи авиабилетов: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/airline-tickets. Используется только для платежей банковской картой.",
+      )
+      .optional();
   },
   get transfers() {
     return z
@@ -200,10 +208,18 @@ export const postPaymentsMutationRequestSchema = z.object({
       .optional();
   },
   get deal() {
-    return paymentDealInfoSchema.and(z.any()).optional();
+    return paymentDealInfoSchema
+      .describe(
+        "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics.",
+      )
+      .optional();
   },
   get merchant_customer_id() {
-    return merchantCustomerIdSchema.and(z.any()).optional();
+    return merchantCustomerIdSchema
+      .describe(
+        "Идентификатор покупателя в вашей системе, например электронная почта или номер телефона. Не более 200 символов.",
+      )
+      .optional();
   },
   get payment_order() {
     return paymentOrderDataUtilitiesSchema.optional();

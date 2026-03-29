@@ -26,7 +26,11 @@ export type PaymentMethod = {
    * @type boolean
    */
   saved: boolean;
-  status: PaymentMethodStatus & any;
+  /**
+   * @description Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: пользователь не подтвердил привязку платежного средства или при сохранении способа оплаты возникла ошибка. Чтобы узнать подробности, обратитесь в техническую поддержку ЮKassa.
+   * @type string
+   */
+  status: PaymentMethodStatus;
   /**
    * @description Название способа оплаты.
    * @type string | undefined

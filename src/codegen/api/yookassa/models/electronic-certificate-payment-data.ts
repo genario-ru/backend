@@ -10,6 +10,15 @@ import type { MonetaryAmount } from "./monetary-amount.ts";
  * @description Данные от ФЭС НСПК для оплаты по электронному сертификату. Неоходимо передавать только при оплате со сбором данных на вашей стороне: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/electronic-certificate/merchant-payment-form.
  */
 export type ElectronicCertificatePaymentData = {
-  amount: MonetaryAmount & any;
-  basket_id: BasketId & string & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Идентификатор корзины, сформированной в НСПК.
+   * @pattern [0-9]{24}
+   * @type string
+   */
+  basket_id: BasketId;
 };

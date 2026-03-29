@@ -40,7 +40,11 @@ export type ElectronicCertificateArticle = {
    * @type integer, int32
    */
   quantity: ElectronicCertificateArticleQuantity;
-  price: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  price: MonetaryAmount;
   /**
    * @description Любые дополнительные данные, которые нужны вам для работы (например, ваш внутренний идентификатор заказа). Передаются в виде набора пар «ключ-значение» и возвращаются в ответе от ЮKassa. Ограничения: максимум 16 ключей, имя ключа не больше 32 символов, значение ключа не больше 512 символов, тип данных — строка в формате UTF-8.
    * @type object | undefined

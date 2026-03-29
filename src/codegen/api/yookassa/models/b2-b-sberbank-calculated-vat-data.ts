@@ -35,6 +35,10 @@ export type B2BSberbankCalculatedVatData = (B2BSberbankVatData & {
    * @type string
    */
   rate: B2BSberbankCalculatedVatDataRateEnumKey;
-  amount: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
   type: B2BSberbankCalculatedVatDataTypeEnumKey;
 };

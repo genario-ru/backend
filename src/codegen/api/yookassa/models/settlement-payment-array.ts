@@ -3,9 +3,9 @@
  * Do not edit manually.
  */
 
-import type { SettlementPayoutPayment } from "./settlement-payout-payment.ts";
+import type { SettlementPaymentItem } from "./settlement-payment-item.ts";
 
 /**
  * @description Данные о распределении денег.
  */
-export type SettlementPaymentArray = SettlementPayoutPayment[];
+export type SettlementPaymentArray = SettlementPaymentItem[];

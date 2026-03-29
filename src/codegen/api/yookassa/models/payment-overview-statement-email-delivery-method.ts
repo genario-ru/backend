@@ -20,6 +20,10 @@ export type PaymentOverviewStatementEmailDeliveryMethod =
   (PaymentOverviewStatementDeliveryMethod & {
     type: "email";
   }) & {
-    email: Email & any;
+    /**
+     * @description Адрес электронной почты RFC 5322
+     * @type string, email
+     */
+    email: Email;
     type: PaymentOverviewStatementEmailDeliveryMethodTypeEnumKey;
   };

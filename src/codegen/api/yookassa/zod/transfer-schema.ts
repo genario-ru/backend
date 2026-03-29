@@ -16,10 +16,10 @@ import { transferStatusSchema } from "./transfer-status-schema.ts";
 export const transferSchema = z
   .object({
     get account_id() {
-      return accountIdSchema.and(z.any());
+      return accountIdSchema.describe("Идентификатор магазина в ЮKassa.");
     },
     get amount() {
-      return monetaryAmountSchema.and(z.any()).and(z.object({}));
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get status() {
       return transferStatusSchema.describe(
@@ -27,7 +27,9 @@ export const transferSchema = z
       );
     },
     get platform_fee_amount() {
-      return monetaryAmountSchema.and(z.any()).and(z.object({})).optional();
+      return monetaryAmountSchema
+        .describe("Сумма в выбранной валюте.")
+        .optional();
     },
     description: z.optional(
       z

@@ -26,5 +26,9 @@ export type PaymentOrderRecipientUtilities = {
    * @type string
    */
   kpp: string;
-  bank: PaymentOrderBankUtilities & any;
+  /**
+   * @description Банк получателя платежа.
+   * @type object
+   */
+  bank: PaymentOrderBankUtilities;
 };

@@ -18,7 +18,9 @@ export const confirmationDataMobileApplicationSchema = z
   .and(
     z.object({
       get return_url() {
-        return returnUrlSchema.and(z.any());
+        return returnUrlSchema.describe(
+          "URL, на который вернется пользователь после подтверждения или отмены платежа на веб-странице. Не более 2048 символов.",
+        );
       },
       type: z.enum(["mobile_application"]),
     }),

@@ -13,7 +13,7 @@ import type { PaymentId } from "./payment-id.ts";
 import type { ReceiptData } from "./receipt-data.ts";
 import type { SettlementPaymentArray } from "./settlement-payment-array.ts";
 import type { TooManyRequests } from "./too-many-requests.ts";
-import type { TransferDataCapture } from "./transfer-data-capture.ts";
+import type { TransferData } from "./transfer-data.ts";
 
 export type PostPaymentsPaymentIdCapturePathParams = {
   /**
@@ -62,18 +62,26 @@ export type PostPaymentsPaymentIdCapture500 = TooManyRequests;
  * PaymentCaptureRequest
  */
 export type PostPaymentsPaymentIdCaptureMutationRequest = {
-  amount?: MonetaryAmount & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object | undefined
+   */
+  amount?: MonetaryAmount;
   /**
    * @description Data for creating a receipt. The parameter is specified if: you are a company or a sole proprietor, and you use Receipts from YooMoney: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics; you are a company or a sole proprietor, and you use the third-party sales register: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics and send data for creating receipts under one of the following scenarios: Payment and receipt at the same time: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics#payment-and-receipt or Payment after receipt: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/basics#payment-after-receipt.
    * @type object | undefined
    */
   receipt?: ReceiptData;
-  airline?: Airline & any;
+  /**
+   * @description Объект с данными для продажи авиабилетов: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/airline-tickets. Используется только для платежей банковской картой.
+   * @type object | undefined
+   */
+  airline?: Airline;
   /**
    * @description Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified for partially capturing a payment if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.
    * @type array | undefined
    */
-  transfers?: TransferDataCapture[];
+  transfers?: TransferData[];
   /**
    * @description The deal within which the payment is being carried out. Specified for partially capturing a payment if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics.
    * @type object | undefined

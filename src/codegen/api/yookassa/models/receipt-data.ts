@@ -45,5 +45,9 @@ export type ReceiptData = {
    * @type array | undefined
    */
   receipt_industry_details?: IndustryDetails[];
-  receipt_operational_details?: OperationalDetails & any;
+  /**
+   * @description Данные операционного реквизита чека
+   * @type object | undefined
+   */
+  receipt_operational_details?: OperationalDetails;
 };

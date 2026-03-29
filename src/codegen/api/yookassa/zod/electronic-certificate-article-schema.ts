@@ -44,7 +44,7 @@ export const electronicCertificateArticleSchema = z
       );
     },
     get price() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get metadata() {
       return metadataSchema

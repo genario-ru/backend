@@ -23,10 +23,10 @@ export const electronicCertificateSchema = z
         "Количество единиц товара, которое одобрили для оплаты по этому электронному сертификату.",
       ),
     get available_compensation() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get applied_compensation() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
   })
   .describe("Описание используемого электронного сертификата.");

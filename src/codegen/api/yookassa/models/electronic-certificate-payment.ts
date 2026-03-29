@@ -10,6 +10,15 @@ import type { MonetaryAmount } from "./monetary-amount.ts";
  * @description Данные от ФЭС НСПК для оплаты по электронному сертификату.
  */
 export type ElectronicCertificatePayment = {
-  amount: MonetaryAmount & any;
-  basket_id: BasketId & string & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Идентификатор корзины, сформированной в НСПК.
+   * @pattern [0-9]{24}
+   * @type string
+   */
+  basket_id: BasketId;
 };

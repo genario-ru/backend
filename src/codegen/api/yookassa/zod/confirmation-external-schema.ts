@@ -5,17 +5,19 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { confirmationSchema } from "./confirmation-schema.ts";
+import { confirmationTypeSchema } from "./confirmation-type-schema.ts";
 
+/**
+ * @description Selected payment confirmation scenario. For payments requiring confirmation from the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation
+ */
 export const confirmationExternalSchema = z
-  .lazy(() => confirmationSchema)
-  .and(
-    z.object({
-      type: z.literal("external"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["external"]),
-    }),
+  .object({
+    get type() {
+      return confirmationTypeSchema.describe(
+        "Тип пользовательского процесса подтверждения платежа | - redirect - необходимо направить пользователя на страницу партнера; - external - необходимо подождать, пока пользователь самостоятельно подтвердит платеж; - qr - необходимо сгенерировать QR-код и отобразить его на странице оплаты, чтобы пользователь смог подтвердить платеж; - embedded - необходимо отобразить платежный виджет ЮKassa; - mobile_application - необходимо перенаправить пользователя в приложение партнера для оплаты.",
+      );
+    },
+  })
+  .describe(
+    "Selected payment confirmation scenario. For payments requiring confirmation from the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation",
   );

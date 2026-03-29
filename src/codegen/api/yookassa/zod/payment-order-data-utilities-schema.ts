@@ -26,13 +26,17 @@ export const paymentOrderDataUtilitiesSchema = z
   .and(
     z.object({
       get amount() {
-        return monetaryAmountSchema.and(z.any());
+        return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
       },
       get payment_purpose() {
-        return paymentPurposeSchema.and(z.any());
+        return paymentPurposeSchema.describe(
+          "Назначение платежа (не больше 210 символов).",
+        );
       },
       get recipient() {
-        return paymentOrderRecipientUtilitiesSchema.and(z.any());
+        return paymentOrderRecipientUtilitiesSchema.describe(
+          "Получатель платежа",
+        );
       },
       get kbk() {
         return kbkSchema

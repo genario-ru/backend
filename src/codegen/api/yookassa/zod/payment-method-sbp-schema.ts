@@ -6,6 +6,7 @@
 import { z } from "@/lib/zod/index.ts";
 
 import { paymentMethodSchema } from "./payment-method-schema.ts";
+import { sbpOperationIdSchema } from "./sbp-operation-id-schema.ts";
 import { sbpPayerBankDetailsSchema } from "./sbp-payer-bank-details-schema.ts";
 
 /**
@@ -20,13 +21,13 @@ export const paymentMethodSbpSchema = z
   )
   .and(
     z.object({
-      sbp_operation_id: z.optional(
-        z
-          .string()
+      get sbp_operation_id() {
+        return sbpOperationIdSchema
           .describe(
-            "Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777 Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать.",
-          ),
-      ),
+            "Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777.",
+          )
+          .optional();
+      },
       get payer_bank_details() {
         return sbpPayerBankDetailsSchema
           .describe(

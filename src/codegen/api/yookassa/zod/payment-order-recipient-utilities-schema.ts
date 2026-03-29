@@ -22,7 +22,9 @@ export const paymentOrderRecipientUtilitiesSchema = z
       .regex(/[0-9]{9}/)
       .describe("КПП получателя."),
     get bank() {
-      return paymentOrderBankUtilitiesSchema.and(z.any());
+      return paymentOrderBankUtilitiesSchema.describe(
+        "Банк получателя платежа.",
+      );
     },
   })
   .describe("Получатель платежа");

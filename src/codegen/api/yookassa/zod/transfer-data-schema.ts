@@ -14,13 +14,15 @@ import { monetaryAmountSchema } from "./monetary-amount-schema.ts";
 export const transferDataSchema = z
   .object({
     get account_id() {
-      return accountIdSchema.and(z.any());
+      return accountIdSchema.describe("Идентификатор магазина в ЮKassa.");
     },
     get amount() {
-      return monetaryAmountSchema.and(z.any()).and(z.object({}));
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get platform_fee_amount() {
-      return monetaryAmountSchema.and(z.any()).and(z.object({})).optional();
+      return monetaryAmountSchema
+        .describe("Сумма в выбранной валюте.")
+        .optional();
     },
   })
   .describe(

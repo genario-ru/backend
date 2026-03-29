@@ -3,17 +3,15 @@
  * Do not edit manually.
  */
 
-import type { Confirmation } from "./confirmation.ts";
+import type { ConfirmationType } from "./confirmation-type.ts";
 
-export const confirmationExternalTypeEnum = {
-  external: "external",
-} as const;
-
-export type ConfirmationExternalTypeEnumKey =
-  (typeof confirmationExternalTypeEnum)[keyof typeof confirmationExternalTypeEnum];
-
-export type ConfirmationExternal = (Confirmation & {
-  type: "external";
-}) & {
-  type: ConfirmationExternalTypeEnumKey;
+/**
+ * @description Selected payment confirmation scenario. For payments requiring confirmation from the user. More about confirmation scenarios: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#user-confirmation
+ */
+export type ConfirmationExternal = {
+  /**
+   * @description Тип пользовательского процесса подтверждения платежа | - redirect - необходимо направить пользователя на страницу партнера; - external - необходимо подождать, пока пользователь самостоятельно подтвердит платеж; - qr - необходимо сгенерировать QR-код и отобразить его на странице оплаты, чтобы пользователь смог подтвердить платеж; - embedded - необходимо отобразить платежный виджет ЮKassa; - mobile_application - необходимо перенаправить пользователя в приложение партнера для оплаты.
+   * @type string
+   */
+  type: ConfirmationType;
 };

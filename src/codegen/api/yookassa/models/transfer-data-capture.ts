@@ -3,6 +3,26 @@
  * Do not edit manually.
  */
 
-import type { TransferData } from "./transfer-data.ts";
+import type { AccountId } from "./account-id.ts";
+import type { MonetaryAmount } from "./monetary-amount.ts";
 
-export type TransferDataCapture = TransferData;
+/**
+ * @description Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.
+ */
+export type TransferDataCapture = {
+  /**
+   * @description Идентификатор магазина в ЮKassa.
+   * @type string
+   */
+  account_id: AccountId;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object | undefined
+   */
+  platform_fee_amount?: MonetaryAmount;
+};

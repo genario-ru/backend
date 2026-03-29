@@ -5,23 +5,17 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { B2BSberbankVatDataSchema } from "./b2-b-sberbank-vat-data-schema.ts";
+import { B2BSberbankVatDataTypeSchema } from "./b2-b-sberbank-vat-data-type-schema.ts";
 
 /**
- * @description Данные об НДС, если товар или услуга не облагается налогом (в параметре type передано значение untaxed).
+ * @description Данные о налоге на добавленную стоимость (НДС). Платеж может облагаться или не облагаться НДС. Товары могут облагаться по одной ставке НДС или по разным.
  */
 export const B2BSberbankUntaxedVatDataSchema = z
-  .lazy(() => B2BSberbankVatDataSchema)
-  .and(
-    z.object({
-      type: z.literal("untaxed"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["untaxed"]),
-    }),
-  )
+  .object({
+    get type() {
+      return B2BSberbankVatDataTypeSchema.describe("Тип способа расчета НДС.");
+    },
+  })
   .describe(
-    "Данные об НДС, если товар или услуга не облагается налогом (в параметре type передано значение untaxed).",
+    "Данные о налоге на добавленную стоимость (НДС). Платеж может облагаться или не облагаться НДС. Товары могут облагаться по одной ставке НДС или по разным.",
   );

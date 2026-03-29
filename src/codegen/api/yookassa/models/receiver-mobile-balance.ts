@@ -19,6 +19,11 @@ export type ReceiverMobileBalanceTypeEnumKey =
 export type ReceiverMobileBalance = (Receiver & {
   type: "mobile_balance";
 }) & {
-  phone: Phone & string & any & any;
+  /**
+   * @description Номер телефона в формате ITU-T E.164
+   * @pattern [0-9]{4,15}
+   * @type string
+   */
+  phone: Phone;
   type: ReceiverMobileBalanceTypeEnumKey;
 };

@@ -5,21 +5,37 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { paymentMethodSchema } from "./payment-method-schema.ts";
+import { paymentMethodStatusSchema } from "./payment-method-status-schema.ts";
+import { paymentMethodTitleSchema } from "./payment-method-title-schema.ts";
+import { paymentMethodTypeSchema } from "./payment-method-type-schema.ts";
 
 /**
- * @description Оплата через сервис «Плати частями».
+ * @description Payment method: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all used for this payment.
  */
 export const paymentMethodSberBnplSchema = z
-  .lazy(() => paymentMethodSchema)
-  .and(
-    z.object({
-      type: z.literal("sber_bnpl"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["sber_bnpl"]),
-    }),
-  )
-  .describe("Оплата через сервис «Плати частями».");
+  .object({
+    get type() {
+      return paymentMethodTypeSchema.describe(
+        "Payment method code is the type of a means of payment used for paying. More about payment methods: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods",
+      );
+    },
+    id: z.string().describe("Payment method ID."),
+    saved: z
+      .boolean()
+      .describe(
+        "Признак сохранения способа оплаты для автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/pay-with-saved. Возможные значения: * true — способ оплаты сохранен для автоплатежей и выплат; * false — способ оплаты не сохранен.",
+      ),
+    get status() {
+      return paymentMethodStatusSchema.describe(
+        "Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: пользователь не подтвердил привязку платежного средства или при сохранении способа оплаты возникла ошибка. Чтобы узнать подробности, обратитесь в техническую поддержку ЮKassa.",
+      );
+    },
+    get title() {
+      return paymentMethodTitleSchema
+        .describe("Название способа оплаты.")
+        .optional();
+    },
+  })
+  .describe(
+    "Payment method: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all used for this payment.",
+  );

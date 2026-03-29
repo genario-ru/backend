@@ -26,7 +26,7 @@ export const B2BSberbankCalculatedVatDataSchema = z
           "Tax rate (in percentage). Possible values: 5, 7, 10, 20 and 22. Starting January 1, 2026, the 22% VAT rate applies instead of the 20% rate.",
         ),
       get amount() {
-        return monetaryAmountSchema.and(z.any());
+        return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
       },
       type: z.enum(["calculated"]),
     }),

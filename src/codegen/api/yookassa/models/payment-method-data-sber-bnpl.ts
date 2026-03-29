@@ -19,6 +19,11 @@ export type PaymentMethodDataSberBnplTypeEnumKey =
 export type PaymentMethodDataSberBnpl = (PaymentMethodData & {
   type: "sber_bnpl";
 }) & {
-  phone?: Phone & string & any;
+  /**
+   * @description Номер телефона в формате ITU-T E.164
+   * @pattern [0-9]{4,15}
+   * @type string | undefined
+   */
+  phone?: Phone;
   type: PaymentMethodDataSberBnplTypeEnumKey;
 };

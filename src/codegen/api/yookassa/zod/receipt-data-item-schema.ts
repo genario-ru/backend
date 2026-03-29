@@ -33,7 +33,7 @@ export const receiptDataItemSchema = z
       );
     },
     get amount() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
     get vat_code() {
       return receiptItemVatCodeSchema.describe(

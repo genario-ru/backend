@@ -5,31 +5,31 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { cardRequestDataSchema } from "./card-request-data-schema.ts";
+import { bankCardHolderNameSchema } from "./bank-card-holder-name-schema.ts";
 
+/**
+ * @description Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
+ */
 export const cardRequestDataWithCscSchema = z
-  .lazy(() => cardRequestDataSchema)
-  .and(
-    z.object({
-      number: z
-        .string()
-        .regex(/[0-9]{14,19}/)
-        .describe("Номер банковской карты."),
-      expiry_year: z
-        .string()
-        .regex(/[0-9]{4}/)
-        .describe("Срок действия, год, YYYY."),
-      expiry_month: z
-        .string()
-        .regex(/[0-9]{2}/)
-        .describe("Срок действия, месяц, MM."),
-      csc: z.optional(
-        z
-          .string()
-          .regex(/[0-9]{3,4}/)
-          .describe(
-            "Код CVC2 или CVV2, 3 или 4 символа, печатается на обратной стороне карты.",
-          ),
-      ),
-    }),
+  .object({
+    number: z
+      .string()
+      .regex(/[0-9]{14,19}/)
+      .describe("Номер банковской карты."),
+    expiry_year: z
+      .string()
+      .regex(/[0-9]{4}/)
+      .describe("Срок действия, год, YYYY."),
+    expiry_month: z
+      .string()
+      .regex(/[0-9]{2}/)
+      .describe("Срок действия, месяц, MM."),
+    get cardholder() {
+      return bankCardHolderNameSchema
+        .describe("Имя владельца карты.")
+        .optional();
+    },
+  })
+  .describe(
+    "Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).",
   );

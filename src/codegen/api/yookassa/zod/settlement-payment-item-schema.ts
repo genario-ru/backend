@@ -17,7 +17,7 @@ export const settlementPaymentItemSchema = z
       return settlementItemTypeSchema.describe("Transaction type.");
     },
     get amount() {
-      return monetaryAmountSchema.and(z.any());
+      return monetaryAmountSchema.describe("Сумма в выбранной валюте.");
     },
   })
   .describe("Данные о распределении денег.");

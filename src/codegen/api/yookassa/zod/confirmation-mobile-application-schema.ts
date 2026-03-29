@@ -18,7 +18,9 @@ export const confirmationMobileApplicationSchema = z
   .and(
     z.object({
       get confirmation_url() {
-        return confirmationUrlSchema.and(z.any());
+        return confirmationUrlSchema.describe(
+          "URL, на который необходимо перенаправить пользователя для подтверждения оплаты.",
+        );
       },
       type: z.enum(["mobile_application"]),
     }),

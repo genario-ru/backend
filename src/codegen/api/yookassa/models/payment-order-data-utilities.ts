@@ -24,9 +24,22 @@ export type PaymentOrderDataUtilitiesTypeEnumKey =
 export type PaymentOrderDataUtilities = (PaymentOrderData & {
   type: "utilities";
 }) & {
-  amount: MonetaryAmount & any;
-  payment_purpose: PaymentPurpose & string & any;
-  recipient: PaymentOrderRecipientUtilities & any;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
+  /**
+   * @description Назначение платежа (не больше 210 символов).
+   * @pattern [\s\S].{1,210}
+   * @type string
+   */
+  payment_purpose: PaymentPurpose;
+  /**
+   * @description Получатель платежа
+   * @type object
+   */
+  recipient: PaymentOrderRecipientUtilities;
   /**
    * @description Код бюджетной классификации (КБК).
    * @pattern ([\d]{20})|(0)

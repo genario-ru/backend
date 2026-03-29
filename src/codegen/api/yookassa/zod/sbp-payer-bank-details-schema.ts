@@ -19,7 +19,9 @@ export const sbpPayerBankDetailsSchema = z
       );
     },
     get bic() {
-      return sbpBankBicSchema.and(z.any());
+      return sbpBankBicSchema.describe(
+        "Банковский идентификационный код (БИК) банка или платежного сервиса.",
+      );
     },
   })
   .describe(

@@ -21,11 +21,7 @@ export type {
 } from "./models/b2-b-sberbank-mixed-vat-data.ts";
 export { B2BSberbankMixedVatDataTypeEnum } from "./models/b2-b-sberbank-mixed-vat-data.ts";
 export type { B2BSberbankPayerBankDetails } from "./models/b2-b-sberbank-payer-bank-details.ts";
-export type {
-  B2BSberbankUntaxedVatData,
-  B2BSberbankUntaxedVatDataTypeEnumKey,
-} from "./models/b2-b-sberbank-untaxed-vat-data.ts";
-export { B2BSberbankUntaxedVatDataTypeEnum } from "./models/b2-b-sberbank-untaxed-vat-data.ts";
+export type { B2BSberbankUntaxedVatData } from "./models/b2-b-sberbank-untaxed-vat-data.ts";
 export type { B2BSberbankVatData } from "./models/b2-b-sberbank-vat-data.ts";
 export type {
   B2BSberbankVatDataType,
@@ -63,16 +59,8 @@ export type { CardRequestDataWithCsc } from "./models/card-request-data-with-csc
 export type { ClientIp } from "./models/client-ip.ts";
 export type { Confirmation } from "./models/confirmation.ts";
 export type { ConfirmationData } from "./models/confirmation-data.ts";
-export type {
-  ConfirmationDataEmbedded,
-  ConfirmationDataEmbeddedTypeEnumKey,
-} from "./models/confirmation-data-embedded.ts";
-export { confirmationDataEmbeddedTypeEnum } from "./models/confirmation-data-embedded.ts";
-export type {
-  ConfirmationDataExternal,
-  ConfirmationDataExternalTypeEnumKey,
-} from "./models/confirmation-data-external.ts";
-export { confirmationDataExternalTypeEnum } from "./models/confirmation-data-external.ts";
+export type { ConfirmationDataEmbedded } from "./models/confirmation-data-embedded.ts";
+export type { ConfirmationDataExternal } from "./models/confirmation-data-external.ts";
 export type {
   ConfirmationDataMobileApplication,
   ConfirmationDataMobileApplicationTypeEnumKey,
@@ -98,11 +86,7 @@ export type {
   ConfirmationEmbeddedTypeEnumKey,
 } from "./models/confirmation-embedded.ts";
 export { confirmationEmbeddedTypeEnum } from "./models/confirmation-embedded.ts";
-export type {
-  ConfirmationExternal,
-  ConfirmationExternalTypeEnumKey,
-} from "./models/confirmation-external.ts";
-export { confirmationExternalTypeEnum } from "./models/confirmation-external.ts";
+export type { ConfirmationExternal } from "./models/confirmation-external.ts";
 export type {
   ConfirmationMobileApplication,
   ConfirmationMobileApplicationTypeEnumKey,
@@ -211,11 +195,7 @@ export type {
   PaymentMethodAlfabankTypeEnumKey,
 } from "./models/payment-method-alfabank.ts";
 export { paymentMethodAlfabankTypeEnum } from "./models/payment-method-alfabank.ts";
-export type {
-  PaymentMethodApplePay,
-  PaymentMethodApplePayTypeEnumKey,
-} from "./models/payment-method-apple-pay.ts";
-export { paymentMethodApplePayTypeEnum } from "./models/payment-method-apple-pay.ts";
+export type { PaymentMethodApplePay } from "./models/payment-method-apple-pay.ts";
 export type {
   PaymentMethodB2BSberbank,
   PaymentMethodB2BSberbankTypeEnumKey,
@@ -226,11 +206,7 @@ export type {
   PaymentMethodBankCardTypeEnumKey,
 } from "./models/payment-method-bank-card.ts";
 export { paymentMethodBankCardTypeEnum } from "./models/payment-method-bank-card.ts";
-export type {
-  PaymentMethodCash,
-  PaymentMethodCashTypeEnumKey,
-} from "./models/payment-method-cash.ts";
-export { paymentMethodCashTypeEnum } from "./models/payment-method-cash.ts";
+export type { PaymentMethodCash } from "./models/payment-method-cash.ts";
 export type {
   PaymentMethodData,
   PaymentMethodDataTypeEnumKey,
@@ -296,32 +272,12 @@ export type {
   PaymentMethodElectronicCertificateTypeEnumKey,
 } from "./models/payment-method-electronic-certificate.ts";
 export { paymentMethodElectronicCertificateTypeEnum } from "./models/payment-method-electronic-certificate.ts";
-export type {
-  PaymentMethodGooglePay,
-  PaymentMethodGooglePayTypeEnumKey,
-} from "./models/payment-method-google-pay.ts";
-export { paymentMethodGooglePayTypeEnum } from "./models/payment-method-google-pay.ts";
+export type { PaymentMethodGooglePay } from "./models/payment-method-google-pay.ts";
 export type { PaymentMethodId } from "./models/payment-method-id.ts";
-export type {
-  PaymentMethodInstallments,
-  PaymentMethodInstallmentsTypeEnumKey,
-} from "./models/payment-method-installments.ts";
-export { paymentMethodInstallmentsTypeEnum } from "./models/payment-method-installments.ts";
-export type {
-  PaymentMethodMobileBalance,
-  PaymentMethodMobileBalanceTypeEnumKey,
-} from "./models/payment-method-mobile-balance.ts";
-export { paymentMethodMobileBalanceTypeEnum } from "./models/payment-method-mobile-balance.ts";
-export type {
-  PaymentMethodQiwi,
-  PaymentMethodQiwiTypeEnumKey,
-} from "./models/payment-method-qiwi.ts";
-export { paymentMethodQiwiTypeEnum } from "./models/payment-method-qiwi.ts";
-export type {
-  PaymentMethodSberBnpl,
-  PaymentMethodSberBnplTypeEnumKey,
-} from "./models/payment-method-sber-bnpl.ts";
-export { paymentMethodSberBnplTypeEnum } from "./models/payment-method-sber-bnpl.ts";
+export type { PaymentMethodInstallments } from "./models/payment-method-installments.ts";
+export type { PaymentMethodMobileBalance } from "./models/payment-method-mobile-balance.ts";
+export type { PaymentMethodQiwi } from "./models/payment-method-qiwi.ts";
+export type { PaymentMethodSberBnpl } from "./models/payment-method-sber-bnpl.ts";
 export type {
   PaymentMethodSberLoan,
   PaymentMethodSberLoanTypeEnumKey,
@@ -353,16 +309,8 @@ export type {
   PaymentMethodTypeEnumKey,
 } from "./models/payment-method-type.ts";
 export { paymentMethodTypeEnum } from "./models/payment-method-type.ts";
-export type {
-  PaymentMethodWeChat,
-  PaymentMethodWeChatTypeEnumKey,
-} from "./models/payment-method-we-chat.ts";
-export { paymentMethodWeChatTypeEnum } from "./models/payment-method-we-chat.ts";
-export type {
-  PaymentMethodWebmoney,
-  PaymentMethodWebmoneyTypeEnumKey,
-} from "./models/payment-method-webmoney.ts";
-export { paymentMethodWebmoneyTypeEnum } from "./models/payment-method-webmoney.ts";
+export type { PaymentMethodWeChat } from "./models/payment-method-we-chat.ts";
+export type { PaymentMethodWebmoney } from "./models/payment-method-webmoney.ts";
 export type {
   PaymentMethodYooMoney,
   PaymentMethodYooMoneyTypeEnumKey,
@@ -499,6 +447,7 @@ export type { RussianItn } from "./models/russian-itn.ts";
 export type { SavePaymentMethodAttribute } from "./models/save-payment-method-attribute.ts";
 export type { SbpBankBic } from "./models/sbp-bank-bic.ts";
 export type { SbpBankId } from "./models/sbp-bank-id.ts";
+export type { SbpOperationId } from "./models/sbp-operation-id.ts";
 export type { SbpPayerBankDetails } from "./models/sbp-payer-bank-details.ts";
 export type {
   SettlementItemType,
@@ -507,11 +456,7 @@ export type {
 export { settlementItemTypeEnum } from "./models/settlement-item-type.ts";
 export type { SettlementPaymentArray } from "./models/settlement-payment-array.ts";
 export type { SettlementPaymentItem } from "./models/settlement-payment-item.ts";
-export type {
-  SettlementPayoutPayment,
-  SettlementPayoutPaymentTypeEnumKey,
-} from "./models/settlement-payout-payment.ts";
-export { settlementPayoutPaymentTypeEnum } from "./models/settlement-payout-payment.ts";
+export type { SettlementPayoutPayment } from "./models/settlement-payout-payment.ts";
 export type { Statement, StatementTypeEnumKey } from "./models/statement.ts";
 export { statementTypeEnum } from "./models/statement.ts";
 export type { TaxSystemCode } from "./models/tax-system-code.ts";
@@ -738,6 +683,7 @@ export { russianItnSchema } from "./zod/russian-itn-schema.ts";
 export { savePaymentMethodAttributeSchema } from "./zod/save-payment-method-attribute-schema.ts";
 export { sbpBankBicSchema } from "./zod/sbp-bank-bic-schema.ts";
 export { sbpBankIdSchema } from "./zod/sbp-bank-id-schema.ts";
+export { sbpOperationIdSchema } from "./zod/sbp-operation-id-schema.ts";
 export { sbpPayerBankDetailsSchema } from "./zod/sbp-payer-bank-details-schema.ts";
 export { settlementItemTypeSchema } from "./zod/settlement-item-type-schema.ts";
 export { settlementPaymentArraySchema } from "./zod/settlement-payment-array-schema.ts";

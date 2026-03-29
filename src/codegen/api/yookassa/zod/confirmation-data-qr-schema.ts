@@ -18,7 +18,11 @@ export const confirmationDataQrSchema = z
   .and(
     z.object({
       get return_url() {
-        return returnUrlSchema.and(z.any()).optional();
+        return returnUrlSchema
+          .describe(
+            "URL, на который вернется пользователь после подтверждения или отмены платежа на веб-странице. Не более 2048 символов.",
+          )
+          .optional();
       },
       type: z.enum(["qr"]),
     }),

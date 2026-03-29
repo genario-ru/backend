@@ -21,7 +21,7 @@ export const paymentOverviewStatementEmailDeliveryMethodSchema = z
   .and(
     z.object({
       get email() {
-        return emailSchema.and(z.any());
+        return emailSchema.describe("Адрес электронной почты RFC 5322");
       },
       type: z.enum(["email"]),
     }),

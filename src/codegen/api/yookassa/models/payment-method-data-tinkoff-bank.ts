@@ -3,20 +3,29 @@
  * Do not edit manually.
  */
 
-import type { PaymentMethodData } from "./payment-method-data.ts";
-
 export const paymentMethodDataTinkoffBankTypeEnum = {
+  bank_card: "bank_card",
+  cash: "cash",
+  sberbank: "sberbank",
   tinkoff_bank: "tinkoff_bank",
+  yoo_money: "yoo_money",
+  mobile_balance: "mobile_balance",
+  b2b_sberbank: "b2b_sberbank",
+  sbp: "sbp",
+  sber_loan: "sber_loan",
+  electronic_certificate: "electronic_certificate",
+  sber_bnpl: "sber_bnpl",
 } as const;
 
 export type PaymentMethodDataTinkoffBankTypeEnumKey =
   (typeof paymentMethodDataTinkoffBankTypeEnum)[keyof typeof paymentMethodDataTinkoffBankTypeEnum];
 
 /**
- * @description Данные для оплаты через T-Pay.
+ * @description Data for making payments using a certain method: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/basics#integration-options (payment_method). You can send the request without this object. If you do so, the user will be able to select the payment method on the YooMoney\'s side.
  */
-export type PaymentMethodDataTinkoffBank = (PaymentMethodData & {
-  type: "tinkoff_bank";
-}) & {
+export type PaymentMethodDataTinkoffBank = {
+  /**
+   * @type string
+   */
   type: PaymentMethodDataTinkoffBankTypeEnumKey;
 };

@@ -46,24 +46,12 @@
                 "title": "CreatePaymentRequest",
                 "properties": {
                   "amount": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/MonetaryAmount"
-                      },
-                      {
-                        "description": "Payment amount. Sometimes YooMoney's partners charge additional commission from the users that is not included in this amount. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/MonetaryAmount",
+                    "description": "Payment amount. Sometimes YooMoney's partners charge additional commission from the users that is not included in this amount. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
                   },
                   "description": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Description"
-                      },
-                      {
-                        "description": "Описание транзакции (не более 128 символов), которое вы увидите в личном кабинете ЮKassa, а пользователь — при оплате. Например: «Оплата заказа № 72 для user@yoomoney.ru»."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/Description",
+                    "description": "Описание транзакции (не более 128 символов), которое вы увидите в личном кабинете ЮKassa, а пользователь — при оплате. Например: «Оплата заказа № 72 для user@yoomoney.ru»."
                   },
                   "receipt": {
                     "$ref": "#/components/schemas/ReceiptData"
@@ -152,14 +140,8 @@
                     "$ref": "#/components/schemas/Metadata"
                   },
                   "airline": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Airline"
-                      },
-                      {
-                        "description": "Object containing the data for selling airline tickets. Used only for bank card payments."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/Airline",
+                    "description": "Object containing the data for selling airline tickets. Used only for bank card payments."
                   },
                   "transfers": {
                     "description": "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
@@ -169,24 +151,12 @@
                     }
                   },
                   "deal": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/PaymentDealInfo"
-                      },
-                      {
-                        "description": "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/PaymentDealInfo",
+                    "description": "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics."
                   },
                   "merchant_customer_id": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/MerchantCustomerId"
-                      },
-                      {
-                        "description": "The identifier of the customer in your system, such as email address or phone number. No more than 200 characters. Specified if you want to save a bank card and offer it for a recurring payment in the YooMoney payment widget: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/widget/basics."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/MerchantCustomerId",
+                    "description": "The identifier of the customer in your system, such as email address or phone number. No more than 200 characters. Specified if you want to save a bank card and offer it for a recurring payment in the YooMoney payment widget: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/widget/basics."
                   },
                   "payment_order": {
                     "oneOf": [
@@ -432,27 +402,15 @@
                 "title": "PaymentCaptureRequest",
                 "properties": {
                   "amount": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/MonetaryAmount"
-                      },
-                      {
-                        "description": "Total amount that will be debited from the user. You can specify a part of the initial amount to return the balance to the user. To do this, make sure that the selected payment method supports partial debit: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-partly. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/MonetaryAmount",
+                    "description": "Total amount that will be debited from the user. You can specify a part of the initial amount to return the balance to the user. To do this, make sure that the selected payment method supports partial debit: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-partly. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
                   },
                   "receipt": {
                     "$ref": "#/components/schemas/ReceiptData"
                   },
                   "airline": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Airline"
-                      },
-                      {
-                        "description": "Object containing the data for selling airline tickets. Used only for bank card payments."
-                      }
-                    ]
+                    "$ref": "#/components/schemas/Airline",
+                    "description": "Object containing the data for selling airline tickets. Used only for bank card payments."
                   },
                   "transfers": {
                     "description": "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified for partially capturing a payment if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
@@ -730,14 +688,8 @@
             }
           },
           "receipt_operational_details": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OperationalDetails"
-              },
-              {
-                "description": "Операционный реквизит чека (тег в 54 ФЗ — 1270). Можно передавать, если используете Чеки от ЮKassa или онлайн-кассу, обновленную до ФФД 1.2."
-              }
-            ]
+            "$ref": "#/components/schemas/OperationalDetails",
+            "description": "Операционный реквизит чека (тег в 54 ФЗ — 1270). Можно передавать, если используете Чеки от ЮKassa или онлайн-кассу, обновленную до ФФД 1.2."
           }
         },
         "required": [
@@ -797,34 +749,16 @@
             "example": "Иванов Иван Иванович"
           },
           "inn": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RussianItn"
-              },
-              {
-                "description": "ИНН пользователя (10 или 12 цифр). Если у физического лица отсутствует ИНН, необходимо передать паспортные данные в параметре full_name. Можно передавать, если используете Чеки от ЮKassa или онлайн-кассу Orange Data, Атол Онлайн."
-              }
-            ]
+            "$ref": "#/components/schemas/RussianItn",
+            "description": "ИНН пользователя (10 или 12 цифр). Если у физического лица отсутствует ИНН, необходимо передать паспортные данные в параметре full_name. Можно передавать, если используете Чеки от ЮKassa или онлайн-кассу Orange Data, Атол Онлайн."
           },
           "email": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Email"
-              },
-              {
-                "description": "User's email address for sending the receipt. A required parameter if you use Receipts from YooMoney or a third-party online sales register, and if you don't set the phone parameter."
-              }
-            ]
+            "$ref": "#/components/schemas/Email",
+            "description": "User's email address for sending the receipt. A required parameter if you use Receipts from YooMoney or a third-party online sales register, and if you don't set the phone parameter."
           },
           "phone": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Phone"
-              },
-              {
-                "description": "Телефон пользователя для отправки чека. Указывается в формате ITU-T E.164: https://ru.wikipedia.org/wiki/E.164, например 79000000000. Обязательный параметр, если не передан email."
-              }
-            ]
+            "$ref": "#/components/schemas/Phone",
+            "description": "Телефон пользователя для отправки чека. Указывается в формате ITU-T E.164: https://ru.wikipedia.org/wiki/E.164, например 79000000000. Обязательный параметр, если не передан email."
           }
         }
       },
@@ -836,14 +770,8 @@
             "$ref": "#/components/schemas/ReceiptItemDescription"
           },
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Цена товара (тег в 54 ФЗ — 1079)."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Цена товара (тег в 54 ФЗ — 1079)."
           },
           "vat_code": {
             "$ref": "#/components/schemas/ReceiptItemVatCode"
@@ -1249,6 +1177,13 @@
         "type": "string",
         "example": "+u7PDjMTkf08NtD66P6+eYWa2yjU3gsSIhOOO+OWsOg="
       },
+      "PaymentId": {
+        "type": "string",
+        "description": "Идентификатор платежа в ЮKassa.",
+        "minLength": 36,
+        "maxLength": 36,
+        "example": "1da5c87d-0984-50e8-a7f3-8de646dd9ec9"
+      },
       "ConfirmationDataType": {
         "description": "Type of payment confirmation scenario by the user. Possible values: redirect - redirecting the user to a ready-made YooMoney page or a partner's page; external - waiting for the user to confirm the payment independently; qr - generating a QR and displaying it on the payment page so that the user can confirm the payment; embedded - displaying the YooMoney payment widget; mobile_application - redirecting the user to the partner's payment app.",
         "type": "string",
@@ -1445,14 +1380,8 @@
             "example": true
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PaymentMethodStatus"
-              },
-              {
-                "description": "Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: возникла ошибка или не было попытки сохранения способа оплаты."
-              }
-            ]
+            "$ref": "#/components/schemas/PaymentMethodStatus",
+            "description": "Статус проверки и сохранения способа оплаты. Возможные значения: * pending — ожидает действий от пользователя; * active — способ оплаты сохранен, его можно использовать для автоплатежей или выплат; * inactive — способ оплаты не сохранен: возникла ошибка или не было попытки сохранения способа оплаты."
           },
           "title": {
             "$ref": "#/components/schemas/PaymentMethodTitle"
@@ -1570,14 +1499,8 @@
         "description": "Данные банковской карты.",
         "properties": {
           "first6": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BankCardFirst6"
-              },
-              {
-                "description": "Первые 6 цифр номера карты (BIN)."
-              }
-            ]
+            "$ref": "#/components/schemas/BankCardFirst6",
+            "description": "Первые 6 цифр номера карты (BIN)."
           },
           "last4": {
             "$ref": "#/components/schemas/BankCardLast4"
@@ -1600,6 +1523,11 @@
           "card_type"
         ]
       },
+      "SbpOperationId": {
+        "description": "Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777.",
+        "type": "string",
+        "example": "1027088AE4CB48CB81287833347A8777"
+      },
       "SbpPayerBankDetails": {
         "description": "Реквизиты счета, который использовался для оплаты. Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать.",
         "type": "object",
@@ -1608,14 +1536,8 @@
             "$ref": "#/components/schemas/SbpBankId"
           },
           "bic": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SbpBankBic"
-              },
-              {
-                "description": "Банковский идентификационный код (БИК) банка или платежного сервиса. Используйте значение этого параметра, чтобы узнать дополнительные сведения об организации в Справочнике БИК: https://cbr.ru/PSystem/payment_system/?utm_source=w&utm_content=page#a_101477. Например, так вы можете определить название банка."
-              }
-            ]
+            "$ref": "#/components/schemas/SbpBankBic",
+            "description": "Банковский идентификационный код (БИК) банка или платежного сервиса. Используйте значение этого параметра, чтобы узнать дополнительные сведения об организации в Справочнике БИК: https://cbr.ru/PSystem/payment_system/?utm_source=w&utm_content=page#a_101477. Например, так вы можете определить название банка."
           }
         },
         "required": [
@@ -1651,14 +1573,8 @@
                 "example": "22"
               },
               "amount": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/MonetaryAmount"
-                  },
-                  {
-                    "description": "Сумма НДС."
-                  }
-                ]
+                "$ref": "#/components/schemas/MonetaryAmount",
+                "description": "Сумма НДС."
               }
             },
             "required": [
@@ -1670,14 +1586,7 @@
       },
       "B2bSberbankUntaxedVatData": {
         "description": "Данные об НДС, если товар или услуга не облагается налогом (в параметре type передано значение untaxed).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/B2bSberbankVatData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/B2bSberbankVatData"
       },
       "B2bSberbankMixedVatData": {
         "description": "Данные об НДС, если создается платеж на несколько товаров или услуг с разными ставками НДС (в параметре type передано значение mixed).",
@@ -1689,14 +1598,8 @@
             "type": "object",
             "properties": {
               "amount": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/MonetaryAmount"
-                  },
-                  {
-                    "description": "Сумма НДС."
-                  }
-                ]
+                "$ref": "#/components/schemas/MonetaryAmount",
+                "description": "Сумма НДС."
               }
             },
             "required": [
@@ -1782,24 +1685,12 @@
         "description": "Данные от ФЭС НСПК для оплаты по электронному сертификату.",
         "properties": {
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Сумма, которая спишется с электронного сертификата."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Сумма, которая спишется с электронного сертификата."
           },
           "basket_id": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BasketId"
-              },
-              {
-                "description": "Идентификатор корзины покупки, сформированной в НСПК."
-              }
-            ]
+            "$ref": "#/components/schemas/BasketId",
+            "description": "Идентификатор корзины покупки, сформированной в НСПК."
           }
         },
         "required": [
@@ -1906,24 +1797,12 @@
             "description": "Количество единиц товара, которое одобрили для оплаты по этому электронному сертификату."
           },
           "available_compensation": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Максимально допустимая сумма, которую может покрыть электронный сертификат для оплаты одной единицы товара. Пример: сертификат может компенсировать максимум 1000 рублей для оплаты этого товара."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Максимально допустимая сумма, которую может покрыть электронный сертификат для оплаты одной единицы товара. Пример: сертификат может компенсировать максимум 1000 рублей для оплаты этого товара."
           },
           "applied_compensation": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Сумма, которую одобрили для оплаты по сертификату за одну единицу товара. Пример: из 1000 рублей одобрили 500 рублей для оплаты по сертификату."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Сумма, которую одобрили для оплаты по сертификату за одну единицу товара. Пример: из 1000 рублей одобрили 500 рублей для оплаты по сертификату."
           }
         },
         "required": [
@@ -1999,14 +1878,7 @@
         }
       },
       "SettlementPayoutPayment": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SettlementPaymentItem"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/SettlementPaymentItem"
       },
       "SettlementPaymentItem": {
         "type": "object",
@@ -2016,14 +1888,8 @@
             "$ref": "#/components/schemas/SettlementItemType"
           },
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Сумма вознаграждения продавца."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Сумма вознаграждения продавца."
           }
         },
         "discriminator": {
@@ -2044,13 +1910,6 @@
           "payout"
         ],
         "example": "payout"
-      },
-      "PaymentId": {
-        "type": "string",
-        "description": "Идентификатор платежа в ЮKassa.",
-        "minLength": 36,
-        "maxLength": 36,
-        "example": "1da5c87d-0984-50e8-a7f3-8de646dd9ec9"
       },
       "PaymentStatus": {
         "description": "Payment status. Possible values: pending, waiting_for_capture, succeeded, and canceled. More about the life cycle of a payment: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#lifecycle",
@@ -2081,25 +1940,11 @@
       },
       "PaymentMethodCash": {
         "description": "Payments in cash via payment kiosks.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodQiwi": {
         "description": "Оплата из кошелька QIWI Wallet.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodAlfabank": {
         "description": "Оплата через Альфа-Клик.",
@@ -2120,14 +1965,7 @@
       },
       "PaymentMethodWebmoney": {
         "description": "Оплата из кошелька WebMoney.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodSberbank": {
         "description": "Оплата через SberPay.",
@@ -2188,47 +2026,19 @@
       },
       "PaymentMethodApplePay": {
         "description": "Оплата через Apple Pay.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodGooglePay": {
         "description": "Оплата через Google Pay.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodMobileBalance": {
         "description": "Оплата с баланса мобильного телефона.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodInstallments": {
         "description": "Оплата через сервис «Заплатить по частям» (в кредит или рассрочку).",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodB2bSberbank": {
         "description": "Оплата через Сбербанк Бизнес Онлайн.",
@@ -2271,14 +2081,7 @@
       },
       "PaymentMethodWeChat": {
         "description": "Оплата через WeChat.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "PaymentMethodSbp": {
         "description": "Оплата через СБП (Система быстрых платежей ЦБ РФ).",
@@ -2290,9 +2093,8 @@
             "type": "object",
             "properties": {
               "sbp_operation_id": {
-                "description": "Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777 Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать.",
-                "type": "string",
-                "example": "1027088AE4CB48CB81287833347A8777"
+                "$ref": "#/components/schemas/SbpOperationId",
+                "description": "Идентификатор операции в СБП (НСПК). Пример: 1027088AE4CB48CB81287833347A8777 Обязательный параметр для платежей в статусе succeeded. В остальных случаях может отсутствовать."
               },
               "payer_bank_details": {
                 "$ref": "#/components/schemas/SbpPayerBankDetails"
@@ -2317,14 +2119,8 @@
                 "minLength": 1
               },
               "discount_amount": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/MonetaryAmount"
-                  },
-                  {
-                    "description": "Сумма скидки для рассрочки. Присутствует для платежей в статусе waiting_for_capture и succeeded, если пользователь выбрал рассрочку."
-                  }
-                ]
+                "$ref": "#/components/schemas/MonetaryAmount",
+                "description": "Сумма скидки для рассрочки. Присутствует для платежей в статусе waiting_for_capture и succeeded, если пользователь выбрал рассрочку."
               },
               "suspended_until": {
                 "description": "Время, когда заканчивается период охлаждения: https://yookassa.ru/docs/support/payments/credit-purchases-by-sberbank-with-cooling-off кредита или рассрочки. Указывается по UTC: https://ru.wikipedia.org/wiki/%D0%92%D1%81%D0%B5%D0%BC%D0%B8%D1%80%D0%BD%D0%BE%D0%B5_%D0%BA%D0%BE%D0%BE%D1%80%D0%B4%D0%B8%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D0%BE%D0%B5_%D0%B2%D1%80%D0%B5%D0%BC%D1%8F и передается в формате ISO 8601: https://en.wikipedia.org/wiki/ISO_8601. Присутствует для платежей в статусе pending, которые по закону: https://www.consultant.ru/document/cons_doc_LAW_498604/ попадают под процедуру охлаждения.",
@@ -2346,14 +2142,8 @@
             "type": "object",
             "properties": {
               "card": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/BankCardData"
-                  },
-                  {
-                    "description": "Данные банковской карты «Мир»."
-                  }
-                ]
+                "$ref": "#/components/schemas/BankCardData",
+                "description": "Данные банковской карты «Мир»."
               },
               "electronic_certificate": {
                 "$ref": "#/components/schemas/ElectronicCertificatePayment"
@@ -2371,14 +2161,7 @@
       },
       "PaymentMethodSberBnpl": {
         "description": "Оплата через сервис «Плати частями».",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethod"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethod"
       },
       "ConfirmationRedirect": {
         "allOf": [
@@ -2406,11 +2189,7 @@
       },
       "ConfirmationExternal": {
         "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Confirmation"
-          }
-        ]
+        "$ref": "#/components/schemas/Confirmation"
       },
       "ConfirmationQr": {
         "allOf": [
@@ -2460,15 +2239,9 @@
             "type": "object",
             "properties": {
               "confirmation_url": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/ConfirmationUrl"
-                  },
-                  {
-                    "description": "Диплинк на мобильное приложение, в котором пользователь подтверждает платеж."
-                  }
-                ],
-                "type": "string"
+                "type": "string",
+                "$ref": "#/components/schemas/ConfirmationUrl",
+                "description": "Диплинк на мобильное приложение, в котором пользователь подтверждает платеж."
               }
             },
             "required": [
@@ -2562,43 +2335,19 @@
         "description": "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
         "properties": {
           "account_id": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountId"
-              },
-              {
-                "description": "ID of the store in favor of which you're accepting the receipt. Provided by YooMoney, displayed in the Sellers: https://yookassa.ru/my/marketplace/sellers section of your Merchant Profile (shopId column)."
-              }
-            ]
+            "$ref": "#/components/schemas/AccountId",
+            "description": "ID of the store in favor of which you're accepting the receipt. Provided by YooMoney, displayed in the Sellers: https://yookassa.ru/my/marketplace/sellers section of your Merchant Profile (shopId column)."
           },
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Amount to be transferred to the store."
-              },
-              {
-                "type": "object"
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Amount to be transferred to the store."
           },
           "status": {
             "$ref": "#/components/schemas/TransferStatus"
           },
           "platform_fee_amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Commission for sold products or services charged in your favor."
-              },
-              {
-                "type": "object"
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Commission for sold products or services charged in your favor."
           },
           "description": {
             "description": "Transaction description (up to 128 characters), which the seller will see in the YooMoney Merchant Profile. Example: \"Marketplace order No. 72\".",
@@ -2705,25 +2454,11 @@
       },
       "PaymentMethodDataTinkoffBank": {
         "description": "Данные для оплаты через T-Pay.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethodData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethodData"
       },
       "PaymentMethodDataYooMoney": {
         "description": "Data for processing a payment made via the YooMoney wallet.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethodData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethodData"
       },
       "PaymentMethodDataMobileBalance": {
         "description": "Данные для оплаты с баланса мобильного телефона.",
@@ -2785,25 +2520,11 @@
       },
       "PaymentMethodDataSbp": {
         "description": "Данные для оплаты через СБП",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethodData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethodData"
       },
       "PaymentMethodDataSberLoan": {
         "description": "Данные для оплаты в кредит или рассрочку от СберБанка.",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaymentMethodData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/PaymentMethodData"
       },
       "PaymentMethodDataElectronicCertificate": {
         "description": "Данные для оплаты по электронному сертификату.",
@@ -2841,14 +2562,8 @@
             "type": "object",
             "properties": {
               "phone": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Phone"
-                  },
-                  {
-                    "description": "The user's phone number. Sent to the partner and used for authorization in the \"Pay in installments\" service. Maximum 15 characters. Specified in the ITU-T E.164: https://ru.wikipedia.org/wiki/E.164 format. Example: 79000000000."
-                  }
-                ]
+                "$ref": "#/components/schemas/Phone",
+                "description": "The user's phone number. Sent to the partner and used for authorization in the \"Pay in installments\" service. Maximum 15 characters. Specified in the ITU-T E.164: https://ru.wikipedia.org/wiki/E.164 format. Example: 79000000000."
               }
             }
           }
@@ -2877,14 +2592,7 @@
       },
       "ConfirmationDataExternal": {
         "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ConfirmationData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/ConfirmationData"
       },
       "ConfirmationDataQr": {
         "allOf": [
@@ -2895,28 +2603,15 @@
             "type": "object",
             "properties": {
               "return_url": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/ReturnUrl"
-                  },
-                  {
-                    "description": "The address of the page that will be open to the user when they've confirmed or cancelled the payment in the bank app. For example, if you need to return the user to the website, you may set the URL, or the deeplink for redirecting to the mobile app. The URL should conform to the RFC-3986: https://www.ietf.org/rfc/rfc3986.txt standard. Maximum 2048 characters. Available only for payments via the Faster Payments System: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/sbp."
-                  }
-                ]
+                "$ref": "#/components/schemas/ReturnUrl",
+                "description": "The address of the page that will be open to the user when they've confirmed or cancelled the payment in the bank app. For example, if you need to return the user to the website, you may set the URL, or the deeplink for redirecting to the mobile app. The URL should conform to the RFC-3986: https://www.ietf.org/rfc/rfc3986.txt standard. Maximum 2048 characters. Available only for payments via the Faster Payments System: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/sbp."
               }
             }
           }
         ]
       },
       "ConfirmationDataEmbedded": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ConfirmationData"
-          },
-          {
-            "type": "object"
-          }
-        ]
+        "$ref": "#/components/schemas/ConfirmationData"
       },
       "ConfirmationDataMobileApplication": {
         "allOf": [
@@ -2927,14 +2622,8 @@
             "type": "object",
             "properties": {
               "return_url": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/ReturnUrl"
-                  },
-                  {
-                    "description": "URL or deep link, to which user will return after confirming or canceling the payment in the app. Send the URL if the payment was made via the mobile version of the website, or send the deep link if the payment was made via mobile app. Maximum 255 characters for payments made via SberPay: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/sberpay#create-payment-mobile-application. Maximum 2,048 characters for other payment methods: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all."
-                  }
-                ]
+                "$ref": "#/components/schemas/ReturnUrl",
+                "description": "URL or deep link, to which user will return after confirming or canceling the payment in the app. Send the URL if the payment was made via the mobile version of the website, or send the deep link if the payment was made via mobile app. Maximum 255 characters for payments made via SberPay: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/sberpay#create-payment-mobile-application. Maximum 2,048 characters for other payment methods: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all."
               }
             },
             "required": [
@@ -3029,34 +2718,16 @@
             "type": "object",
             "properties": {
               "amount": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/MonetaryAmount"
-                  },
-                  {
-                    "description": "Сумма платежного поручения — сумма, которую пользователь переводит получателю платежа. Равна общей сумме платежа."
-                  }
-                ]
+                "$ref": "#/components/schemas/MonetaryAmount",
+                "description": "Сумма платежного поручения — сумма, которую пользователь переводит получателю платежа. Равна общей сумме платежа."
               },
               "payment_purpose": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PaymentPurpose"
-                  },
-                  {
-                    "description": "Payment purpose (no more than 210 characters). The payment purpose should be specified according to the recommendations from Letter of the Bank of Russia No. IN-04-45|12 dated 22.02.2018: https://my.dom.gosuslugi.ru/filestore/publicDownloadServlet?context=contentmanagement&uid=ef9a477a-2beb-4212-be30-aed231160db1&mode=view. Example: Payment for housing and utilities;ELS (Single Personal Account) 80KX478547;PRD (Payment Period) 12.2024;Ivanov Ivan;Moscow, 1 Flotskaya ulitsa, apartment 1"
-                  }
-                ]
+                "$ref": "#/components/schemas/PaymentPurpose",
+                "description": "Payment purpose (no more than 210 characters). The payment purpose should be specified according to the recommendations from Letter of the Bank of Russia No. IN-04-45|12 dated 22.02.2018: https://my.dom.gosuslugi.ru/filestore/publicDownloadServlet?context=contentmanagement&uid=ef9a477a-2beb-4212-be30-aed231160db1&mode=view. Example: Payment for housing and utilities;ELS (Single Personal Account) 80KX478547;PRD (Payment Period) 12.2024;Ivanov Ivan;Moscow, 1 Flotskaya ulitsa, apartment 1"
               },
               "recipient": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PaymentOrderRecipientUtilities"
-                  },
-                  {
-                    "description": "Получатель платежа — государственная или коммерческая организация, которая предоставляет услуги или является информационным посредником, который собирает и обрабатывает начисления от других поставщиков услуг."
-                  }
-                ]
+                "$ref": "#/components/schemas/PaymentOrderRecipientUtilities",
+                "description": "Получатель платежа — государственная или коммерческая организация, которая предоставляет услуги или является информационным посредником, который собирает и обрабатывает начисления от других поставщиков услуг."
               },
               "kbk": {
                 "$ref": "#/components/schemas/Kbk"
@@ -3121,15 +2792,8 @@
             "type": "object",
             "properties": {
               "phone": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Phone"
-                  },
-                  {},
-                  {
-                    "description": "Номер телефона для пополнения. Максимум 15 символов. Указывается в формате ITU-T E.164: https://ru.wikipedia.org/wiki/E.164. Пример: 79000000000."
-                  }
-                ]
+                "$ref": "#/components/schemas/Phone",
+                "description": "Номер телефона для пополнения. Максимум 15 символов. Указывается в формате ITU-T E.164: https://ru.wikipedia.org/wiki/E.164. Пример: 79000000000."
               }
             },
             "required": [
@@ -3225,34 +2889,16 @@
             "$ref": "#/components/schemas/PaymentStatus"
           },
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Payment amount. Sometimes YooMoney's partners charge additional commission from the users that is not included in this amount. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Payment amount. Sometimes YooMoney's partners charge additional commission from the users that is not included in this amount. The amount is specified with the currency code. It should match the currency of your subaccount (recipient.gateway_id) if you separate payment flows, or the currency of the account (shopId in the Merchant Profile) if you don't."
           },
           "income_amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Сумма платежа, которую получит магазин, — значение amount за вычетом комиссии ЮKassa и суммы НДС с этой комиссии. Если вы партнер: https://yookassa.ru/developers/solutions-for-platforms/partners-api/basics и для аутентификации запросов используете OAuth-токен, запросите у магазина право: https://yookassa.ru/developers/solutions-for-platforms/partners-api/oauth/basics на получение информации о комиссиях при платежах."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Сумма платежа, которую получит магазин, — значение amount за вычетом комиссии ЮKassa и суммы НДС с этой комиссии. Если вы партнер: https://yookassa.ru/developers/solutions-for-platforms/partners-api/basics и для аутентификации запросов используете OAuth-токен, запросите у магазина право: https://yookassa.ru/developers/solutions-for-platforms/partners-api/oauth/basics на получение информации о комиссиях при платежах."
           },
           "description": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Description"
-              },
-              {
-                "description": "Описание транзакции (не более 128 символов), которое вы увидите в личном кабинете ЮKassa, а пользователь — при оплате. Например: «Оплата заказа № 72 для user@yoomoney.ru»."
-              }
-            ]
+            "$ref": "#/components/schemas/Description",
+            "description": "Описание транзакции (не более 128 символов), которое вы увидите в личном кабинете ЮKassa, а пользователь — при оплате. Например: «Оплата заказа № 72 для user@yoomoney.ru»."
           },
           "recipient": {
             "description": "Payment recipient.",
@@ -3375,14 +3021,8 @@
             "$ref": "#/components/schemas/Test"
           },
           "refunded_amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "The amount refunded to the user. Specified if the payment has successful refunds."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "The amount refunded to the user. Specified if the payment has successful refunds."
           },
           "paid": {
             "description": "The attribute of a paid order.",
@@ -3395,14 +3035,8 @@
             "example": true
           },
           "receipt_registration": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ReceiptRegistrationStatus"
-              },
-              {
-                "description": "Статус регистрации чека. Возможные значения: pending — данные в обработке; succeeded — чек успешно зарегистрирован; canceled — чек зарегистрировать не удалось; если используете Чеки от ЮKassa: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics, обратитесь в техническую поддержку, в остальных случаях сформируйте чек вручную. Присутствует, если вы используете решения ЮKassa для отправки чеков в налоговую: https://yookassa.ru/developers/payment-acceptance/receipts/basics."
-              }
-            ]
+            "$ref": "#/components/schemas/ReceiptRegistrationStatus",
+            "description": "Статус регистрации чека. Возможные значения: pending — данные в обработке; succeeded — чек успешно зарегистрирован; canceled — чек зарегистрировать не удалось; если используете Чеки от ЮKassa: https://yookassa.ru/developers/payment-acceptance/receipts/54fz/yoomoney/basics, обратитесь в техническую поддержку, в остальных случаях сформируйте чек вручную. Присутствует, если вы используете решения ЮKassa для отправки чеков в налоговую: https://yookassa.ru/developers/payment-acceptance/receipts/basics."
           },
           "metadata": {
             "$ref": "#/components/schemas/Metadata"
@@ -3421,24 +3055,12 @@
             }
           },
           "deal": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PaymentDealInfo"
-              },
-              {
-                "description": "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics."
-              }
-            ]
+            "$ref": "#/components/schemas/PaymentDealInfo",
+            "description": "The deal within which the payment is being carried out. Specified if you use Safe deal: https://yookassa.ru/developers/solutions-for-platforms/safe-deal/basics."
           },
           "merchant_customer_id": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MerchantCustomerId"
-              },
-              {
-                "description": "The identifier of the customer in your system, such as email address or phone number. No more than 200 characters. Specified if you want to save a bank card and offer it for a recurring payment in the YooMoney payment widget: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/widget/basics."
-              }
-            ]
+            "$ref": "#/components/schemas/MerchantCustomerId",
+            "description": "The identifier of the customer in your system, such as email address or phone number. No more than 200 characters. Specified if you want to save a bank card and offer it for a recurring payment in the YooMoney payment widget: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/widget/basics."
           },
           "invoice_details": {
             "type": "object",
@@ -3626,11 +3248,7 @@
         ]
       },
       "TransferDataCapture": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/TransferData"
-          }
-        ]
+        "$ref": "#/components/schemas/TransferData"
       },
       "PaymentMethodData": {
         "type": "object",
@@ -3674,11 +3292,6 @@
         ]
       },
       "CardRequestDataWithCsc": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/CardRequestData"
-          }
-        ],
         "type": "object",
         "properties": {
           "csc": {
@@ -3692,31 +3305,20 @@
           "number",
           "expiry_year",
           "expiry_month"
-        ]
+        ],
+        "$ref": "#/components/schemas/CardRequestData"
       },
       "ElectronicCertificatePaymentData": {
         "type": "object",
         "description": "Данные от ФЭС НСПК для оплаты по электронному сертификату. Неоходимо передавать только при оплате со сбором данных на вашей стороне: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/electronic-certificate/merchant-payment-form.",
         "properties": {
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Сумма, которую необходимо использовать по электронному сертификату, — значение totalCertAmount, которое вы получили в ФЭС НСПК в запросе на предварительное одобрение использования сертификата (Pre-Auth): https://www.nspk.ru/developer/api-fes#operation/preAuthPurchase. Сумма должна быть не больше общей суммы платежа (amount)."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Сумма, которую необходимо использовать по электронному сертификату, — значение totalCertAmount, которое вы получили в ФЭС НСПК в запросе на предварительное одобрение использования сертификата (Pre-Auth): https://www.nspk.ru/developer/api-fes#operation/preAuthPurchase. Сумма должна быть не больше общей суммы платежа (amount)."
           },
           "basket_id": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BasketId"
-              },
-              {
-                "description": "Идентификатор корзины покупки, сформированной в НСПК, — значение purchaseBasketId, которое вы получили в ФЭС НСПК в запросе на предварительное одобрение использования сертификата (Pre-Auth): https://www.nspk.ru/developer/api-fes#operation/preAuthPurchase."
-              }
-            ]
+            "$ref": "#/components/schemas/BasketId",
+            "description": "Идентификатор корзины покупки, сформированной в НСПК, — значение purchaseBasketId, которое вы получили в ФЭС НСПК в запросе на предварительное одобрение использования сертификата (Pre-Auth): https://www.nspk.ru/developer/api-fes#operation/preAuthPurchase."
           }
         },
         "required": [
@@ -3747,14 +3349,8 @@
             "$ref": "#/components/schemas/ElectronicCertificateArticleQuantity"
           },
           "price": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Цена за единицу товара."
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Цена за единицу товара."
           },
           "metadata": {
             "$ref": "#/components/schemas/Metadata"
@@ -3779,40 +3375,16 @@
         "description": "Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.",
         "properties": {
           "account_id": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AccountId"
-              },
-              {
-                "description": "ID of the store in favor of which you're accepting the receipt. Provided by YooMoney, displayed in the Sellers: https://yookassa.ru/my/marketplace/sellers section of your Merchant Profile (shopId column)."
-              }
-            ]
+            "$ref": "#/components/schemas/AccountId",
+            "description": "ID of the store in favor of which you're accepting the receipt. Provided by YooMoney, displayed in the Sellers: https://yookassa.ru/my/marketplace/sellers section of your Merchant Profile (shopId column)."
           },
           "amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Amount to be transferred to the store."
-              },
-              {
-                "type": "object"
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Amount to be transferred to the store."
           },
           "platform_fee_amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MonetaryAmount"
-              },
-              {
-                "description": "Commission for sold products or services charged in your favor."
-              },
-              {
-                "type": "object"
-              }
-            ]
+            "$ref": "#/components/schemas/MonetaryAmount",
+            "description": "Commission for sold products or services charged in your favor."
           }
         },
         "required": [
@@ -3924,14 +3496,8 @@
             "pattern": "[0-9]{9}"
           },
           "bank": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PaymentOrderBankUtilities"
-              },
-              {
-                "description": "Банк получателя."
-              }
-            ]
+            "$ref": "#/components/schemas/PaymentOrderBankUtilities",
+            "description": "Банк получателя."
           }
         },
         "required": [
@@ -4070,14 +3636,8 @@
             "type": "object",
             "properties": {
               "email": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Email"
-                  },
-                  {
-                    "description": "Электронная почта пользователя для отправки справки. Адрес электронной почты должен соответствовать стандарту RFC 5322: https://www.ietf.org/rfc/rfc5322.txt. Пример: user@example.com."
-                  }
-                ]
+                "$ref": "#/components/schemas/Email",
+                "description": "Электронная почта пользователя для отправки справки. Адрес электронной почты должен соответствовать стандарту RFC 5322: https://www.ietf.org/rfc/rfc5322.txt. Пример: user@example.com."
               }
             },
             "required": [

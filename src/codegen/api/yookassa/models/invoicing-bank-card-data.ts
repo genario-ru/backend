@@ -13,7 +13,12 @@ import type { BankCardType } from "./bank-card-type.ts";
  * @description Данные банковской карты.
  */
 export type InvoicingBankCardData = {
-  first6: BankCardFirst6 & string & any;
+  /**
+   * @description Первые 6 цифр номера карты (BIN). При оплате картой, сохраненной в ЮKassa: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/basics и других сервисах, переданный BIN может не соответствовать значениям last4, expiry_year, expiry_month.
+   * @pattern [0-9]{6}
+   * @type string
+   */
+  first6: BankCardFirst6;
   /**
    * @description Последние 4 цифры номера карты.
    * @pattern [0-9]{4}

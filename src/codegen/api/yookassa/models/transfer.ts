@@ -12,14 +12,26 @@ import type { TransferStatus } from "./transfer-status.ts";
  * @description Information about money distribution: the amounts of transfers and the stores to be transferred to. Specified if you use Split payments: https://yookassa.ru/developers/solutions-for-platforms/split-payments/basics.
  */
 export type Transfer = {
-  account_id: AccountId & any;
-  amount: MonetaryAmount & any & object;
+  /**
+   * @description Идентификатор магазина в ЮKassa.
+   * @type string
+   */
+  account_id: AccountId;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object
+   */
+  amount: MonetaryAmount;
   /**
    * @description Status of the money distribution between stores. Possible values: pending, waiting_for_capture, succeeded, canceled.
    * @type string
    */
   status: TransferStatus;
-  platform_fee_amount?: MonetaryAmount & any & object;
+  /**
+   * @description Сумма в выбранной валюте.
+   * @type object | undefined
+   */
+  platform_fee_amount?: MonetaryAmount;
   /**
    * @description Transaction description (up to 128 characters), which the seller will see in the YooMoney Merchant Profile. Example: \"Marketplace order No. 72\".
    * @maxLength 128

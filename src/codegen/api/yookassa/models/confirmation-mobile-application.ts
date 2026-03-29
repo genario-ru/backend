@@ -17,8 +17,9 @@ export type ConfirmationMobileApplication = (Confirmation & {
   type: "mobile_application";
 }) & {
   /**
+   * @description URL, на который необходимо перенаправить пользователя для подтверждения оплаты.
    * @type string
    */
-  confirmation_url: ConfirmationUrl & any;
+  confirmation_url: ConfirmationUrl;
   type: ConfirmationMobileApplicationTypeEnumKey;
 };

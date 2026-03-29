@@ -5,21 +5,25 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { paymentMethodDataSchema } from "./payment-method-data-schema.ts";
-
 /**
- * @description Данные для оплаты через T-Pay.
+ * @description Data for making payments using a certain method: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/basics#integration-options (payment_method). You can send the request without this object. If you do so, the user will be able to select the payment method on the YooMoney\'s side.
  */
 export const paymentMethodDataTinkoffBankSchema = z
-  .lazy(() => paymentMethodDataSchema)
-  .and(
-    z.object({
-      type: z.literal("tinkoff_bank"),
-    }),
-  )
-  .and(
-    z.object({
-      type: z.enum(["tinkoff_bank"]),
-    }),
-  )
-  .describe("Данные для оплаты через T-Pay.");
+  .object({
+    type: z.enum([
+      "bank_card",
+      "cash",
+      "sberbank",
+      "tinkoff_bank",
+      "yoo_money",
+      "mobile_balance",
+      "b2b_sberbank",
+      "sbp",
+      "sber_loan",
+      "electronic_certificate",
+      "sber_bnpl",
+    ]),
+  })
+  .describe(
+    "Data for making payments using a certain method: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/basics#integration-options (payment_method). You can send the request without this object. If you do so, the user will be able to select the payment method on the YooMoney's side.",
+  );

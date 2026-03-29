@@ -29,7 +29,9 @@ export const paymentMethodSberLoanSchema = z
           ),
       ),
       get discount_amount() {
-        return monetaryAmountSchema.and(z.any()).optional();
+        return monetaryAmountSchema
+          .describe("Сумма в выбранной валюте.")
+          .optional();
       },
       suspended_until: z.optional(
         z.iso
