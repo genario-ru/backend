@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetCreditsPackagesResponse,
   getCreditsPackagesResponseSchema,
@@ -23,6 +24,7 @@ getCreditsPackagesRoute.get(
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],
     responses: {

@@ -87,19 +87,20 @@ initiateSubscriptionPaymentRoute.post(
       ? foundTrialTariff.id
       : foundTariff.id;
 
-    const lastPendingPayment = await db.query.payment.findFirst({
+    const lastPendingPayments = await db.query.payment.findMany({
       where: (payment, { and, eq }) =>
         and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
       orderBy: (payment, { desc }) => desc(payment.createdAt),
       with: {
-        tariffToPayment: {
-          where: (tariffToPayment, { eq }) =>
-            eq(tariffToPayment.tariffId, lastPendingTariffId),
-        },
+        tariffToPayment: true,
       },
     });
 
-    const idempotenceKey = lastPendingPayment?.id ?? randomUUID();
+    const foundTariffLastPendingPayment = lastPendingPayments.find(
+      (payment) => payment.tariffToPayment?.tariffId === lastPendingTariffId,
+    );
+
+    const idempotenceKey = foundTariffLastPendingPayment?.id ?? randomUUID();
 
     const returnUrl = redirectPath
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`

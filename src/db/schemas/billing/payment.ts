@@ -39,7 +39,7 @@ export const payment = pgTable("payment", {
   ...timestamps,
 });
 
-export const paymentRelations = relations(payment, ({ one, many }) => ({
+export const paymentRelations = relations(payment, ({ one }) => ({
   user: one(user, {
     fields: [payment.userId],
     references: [user.id],
@@ -48,6 +48,6 @@ export const paymentRelations = relations(payment, ({ one, many }) => ({
     fields: [payment.paymentMethodId],
     references: [paymentMethod.id],
   }),
-  tariffToPayment: many(tariffToPayment),
-  creditsPackageToPayment: many(creditsPackageToPayment),
+  tariffToPayment: one(tariffToPayment),
+  creditsPackageToPayment: one(creditsPackageToPayment),
 }));

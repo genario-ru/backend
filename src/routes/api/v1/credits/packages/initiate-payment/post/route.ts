@@ -10,6 +10,7 @@ import { creditsPackageToPayment, payment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/body";
 import {
@@ -33,6 +34,7 @@ initiateCreditsPackagePaymentRoute.post(
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],
     responses: {
@@ -64,19 +66,21 @@ initiateCreditsPackagePaymentRoute.post(
       });
     }
 
-    const lastPendingPayment = await db.query.payment.findFirst({
+    const lastPendingPayments = await db.query.payment.findMany({
       where: (payment, { and, eq }) =>
         and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
       orderBy: (payment, { desc }) => desc(payment.createdAt),
-      with: {
-        creditsPackageToPayment: {
-          where: (creditsPackageToPayment, { eq }) =>
-            eq(creditsPackageToPayment.creditsPackageId, creditsPackageId),
-        },
-      },
+      with: { creditsPackageToPayment: true },
     });
 
-    const idempotenceKey = lastPendingPayment?.id ?? randomUUID();
+    const foundCreditsPackageLastPendingPayment = lastPendingPayments.find(
+      (payment) =>
+        payment.creditsPackageToPayment?.creditsPackageId ===
+        foundCreditsPackage.id,
+    );
+
+    const idempotenceKey =
+      foundCreditsPackageLastPendingPayment?.id ?? randomUUID();
 
     const returnUrl = redirectPath
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`

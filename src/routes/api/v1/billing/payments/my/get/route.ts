@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetMyPaymentsResponse,
   getMyPaymentsResponseSchema,
@@ -24,6 +25,7 @@ getMyPaymentsRoute.get(
     windowMs: 60 * 1000,
     limit: 20,
   }),
+  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],
     responses: {
@@ -40,12 +42,30 @@ getMyPaymentsRoute.get(
       where: (payment, { eq }) => eq(payment.userId, user.id),
       with: {
         paymentMethod: true,
+        tariffToPayment: {
+          with: {
+            tariff: true,
+          },
+        },
+        creditsPackageToPayment: {
+          with: {
+            creditsPackage: true,
+          },
+        },
       },
     });
 
+    const preparedFoundPayments = foundPayments.map(
+      ({ tariffToPayment, creditsPackageToPayment, ...payment }) => ({
+        ...payment,
+        tariff: tariffToPayment?.tariff,
+        creditsPackage: creditsPackageToPayment?.creditsPackage,
+      }),
+    );
+
     return c.json<GetMyPaymentsResponse>(
       getMyPaymentsResponseSchema.parse({
-        data: foundPayments,
+        data: preparedFoundPayments,
       }),
     );
   },
