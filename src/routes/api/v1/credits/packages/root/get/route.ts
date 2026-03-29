@@ -33,7 +33,9 @@ getCreditsPackagesRoute.get(
     },
   }),
   async (c) => {
-    const foundCreditsPackages = await db.query.creditsPackage.findMany();
+    const foundCreditsPackages = await db.query.creditsPackage.findMany({
+      where: (creditsPackage, { eq }) => eq(creditsPackage.forPurchase, true),
+    });
 
     return c.json<GetCreditsPackagesResponse>(
       getCreditsPackagesResponseSchema.parse({

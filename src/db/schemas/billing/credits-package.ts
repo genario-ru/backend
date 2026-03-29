@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  real,
+  text,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -13,6 +20,7 @@ export const creditsPackage = pgTable("credits_package", {
   amount: integer("amount").notNull(),
   price: real("price").notNull(),
   oldPrice: real("old_price"),
+  forPurchase: boolean("for_purchase").notNull().default(false),
   ...timestamps,
 });
 

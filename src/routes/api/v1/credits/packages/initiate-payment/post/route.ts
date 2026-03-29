@@ -49,14 +49,18 @@ initiateCreditsPackagePaymentRoute.post(
     const { creditsPackageId, redirect: redirectPath } = c.req.valid("json");
 
     const foundCreditsPackage = await db.query.creditsPackage.findFirst({
-      where: (creditsPackage, { eq }) =>
-        eq(creditsPackage.id, creditsPackageId),
+      where: (creditsPackage, { eq, and }) =>
+        and(
+          eq(creditsPackage.id, creditsPackageId),
+          eq(creditsPackage.forPurchase, true),
+        ),
     });
 
     if (!foundCreditsPackage) {
       return throwAPIError({
         code: APIErrorCode.NotFound,
-        message: "Указанный пакет кредитов не существует",
+        message:
+          "Указанный пакет кредитов не существует или недоступен для покупки",
       });
     }
 
