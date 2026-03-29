@@ -6,95 +6,68 @@ import { envs } from "@/constants/common/envs";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { payment } from "@/db/schema";
-import { tariffToPayment } from "@/db/schemas/linking/tariff-to-payment";
+import { creditsPackageToPayment, payment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { APIErrorCode } from "@/schemas/common/api-error";
-import { initiateSubscriptionPaymentBodySchema } from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/body";
+import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/body";
 import {
-  type InitiateSubscriptionPaymentResponse,
-  initiateSubscriptionPaymentResponseSchema,
-} from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/response";
-import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
+  type InitiateCreditsPackagePaymentResponse,
+  initiateCreditsPackagePaymentResponseSchema,
+} from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
 import { throwAPIError } from "@/utils/server/throw-api-error";
 
-export const initiateSubscriptionPaymentRoute = createHonoApp().basePath(
-  "/subscriptions/initiate-payment",
+export const initiateCreditsPackagePaymentRoute = createHonoApp().basePath(
+  "/credits/packages/initiate-payment",
 );
 
-// POST /api/v1/subscriptions/initiate-payment
-initiateSubscriptionPaymentRoute.post(
+// POST /api/v1/credits/packages/initiate-payment
+initiateCreditsPackagePaymentRoute.post(
   "/",
   sessionMiddleware,
   rateLimitMiddleware({
-    keyPrefix: "initiate-subscription-payment",
+    keyPrefix: "initiate-credits-package-payment",
     windowMs: 60 * 1000,
     limit: 10,
   }),
   openAPIResponseMiddleware({
-    tags: [OpenAPITags.Subscriptions],
+    tags: [OpenAPITags.Credits],
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
-        description: "Subscription payment initiated successfully",
-        schema: initiateSubscriptionPaymentResponseSchema,
+        description: "Credits package payment initiated successfully",
+        schema: initiateCreditsPackagePaymentResponseSchema,
       }),
     },
   }),
-  validator("json", initiateSubscriptionPaymentBodySchema),
+  validator("json", initiateCreditsPackagePaymentBodySchema),
   async (c) => {
     const user = c.get("user");
 
-    const {
-      tariffSlug,
-      trialTariffSlug,
-      redirect: redirectPath,
-    } = c.req.valid("json");
+    const { creditsPackageId, redirect: redirectPath } = c.req.valid("json");
 
-    const foundTariff = await db.query.tariff.findFirst({
-      where: (tariff, { eq }) => eq(tariff.slug, tariffSlug),
+    const foundCreditsPackage = await db.query.creditsPackage.findFirst({
+      where: (creditsPackage, { eq }) =>
+        eq(creditsPackage.id, creditsPackageId),
     });
 
-    if (!foundTariff) {
+    if (!foundCreditsPackage) {
       return throwAPIError({
         code: APIErrorCode.NotFound,
-        message: "Указанный тариф не существует",
+        message: "Указанный пакет кредитов не существует",
       });
     }
-
-    let foundTrialTariff: Tariff | undefined;
-
-    if (trialTariffSlug) {
-      foundTrialTariff = await db.query.tariff.findFirst({
-        where: (tariff, { and, eq }) =>
-          and(eq(tariff.slug, trialTariffSlug), eq(tariff.isRenewable, false)),
-      });
-
-      if (!foundTrialTariff) {
-        return throwAPIError({
-          code: APIErrorCode.NotFound,
-          message: "Указанный тариф пробного периода не существует",
-        });
-      }
-    }
-
-    // Готовим данные для запроса к API ЮKassa
-
-    const lastPendingTariffId = foundTrialTariff
-      ? foundTrialTariff.id
-      : foundTariff.id;
 
     const lastPendingPayment = await db.query.payment.findFirst({
       where: (payment, { and, eq }) =>
         and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
       orderBy: (payment, { desc }) => desc(payment.createdAt),
       with: {
-        tariffToPayment: {
-          where: (tariffToPayment, { eq }) =>
-            eq(tariffToPayment.tariffId, lastPendingTariffId),
+        creditsPackageToPayment: {
+          where: (creditsPackageToPayment, { eq }) =>
+            eq(creditsPackageToPayment.creditsPackageId, creditsPackageId),
         },
       },
     });
@@ -103,19 +76,11 @@ initiateSubscriptionPaymentRoute.post(
 
     const returnUrl = redirectPath
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
-      : `${envs.FRONTEND_BASE_URL}/home`;
+      : `${envs.FRONTEND_BASE_URL}/billing`;
 
-    const amountValue = foundTrialTariff
-      ? foundTrialTariff.price
-      : foundTariff.price;
-
-    const description = foundTrialTariff
-      ? `Оплата пробного периода "${foundTrialTariff.name}" для ${user.email}`
-      : `Оплата тарифа "${foundTariff.name}" для ${user.email}`;
-
-    const receiptItemDescription = foundTrialTariff
-      ? `Пробный период "${foundTrialTariff.name}" в сервисе ${envs.FRONTEND_BASE_URL}`
-      : `Тариф "${foundTariff.name}" в сервисе ${envs.FRONTEND_BASE_URL}`;
+    const amountValue = foundCreditsPackage.price;
+    const description = `Оплата пакета кредитов "${foundCreditsPackage.name}" для ${user.email}`;
+    const receiptItemDescription = `Пакет кредитов "${foundCreditsPackage.name}" в сервисе ${envs.FRONTEND_BASE_URL}`;
 
     // Отправляем запрос к API ЮKassa
 
@@ -166,7 +131,8 @@ initiateSubscriptionPaymentRoute.post(
     if (!createdYooKassaPaymentConfirmationUrl) {
       return throwAPIError({
         code: APIErrorCode.InternalServerError,
-        message: "Произошла ошибка при инициализации платежа для подписки",
+        message:
+          "Произошла ошибка при инициализации платежа для пакета кредитов",
       });
     }
 
@@ -183,16 +149,16 @@ initiateSubscriptionPaymentRoute.post(
         })
         .returning();
 
-      await tx.insert(tariffToPayment).values({
-        tariffId: foundTariff.id,
+      await tx.insert(creditsPackageToPayment).values({
+        creditsPackageId: foundCreditsPackage.id,
         paymentId: createdPayment.id,
       });
 
       return { createdPayment };
     });
 
-    return c.json<InitiateSubscriptionPaymentResponse>(
-      initiateSubscriptionPaymentResponseSchema.parse({
+    return c.json<InitiateCreditsPackagePaymentResponse>(
+      initiateCreditsPackagePaymentResponseSchema.parse({
         data: {
           paymentLink: createdPayment.paymentLink,
         },

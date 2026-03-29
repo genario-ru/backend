@@ -26,6 +26,7 @@ export * from "./schemas/jobs/profiles-from-channels-job";
 
 // Linking
 export * from "./schemas/linking/credits-package-to-credits-batch";
+export * from "./schemas/linking/credits-package-to-payment";
 export * from "./schemas/linking/ideas-list-to-export-document";
 export * from "./schemas/linking/ideas-list-to-tone";
 export * from "./schemas/linking/ideas-list-to-video-type";
@@ -37,6 +38,7 @@ export * from "./schemas/linking/profile-to-tone";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/scenario-version-to-export-document";
 export * from "./schemas/linking/subscription-to-credits-batch";
+export * from "./schemas/linking/tariff-to-payment";
 
 // Primary
 export * from "./schemas/primary/attachment";

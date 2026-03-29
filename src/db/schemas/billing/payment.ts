@@ -3,6 +3,8 @@ import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { creditsPackageToPayment } from "../linking/credits-package-to-payment";
+import { tariffToPayment } from "../linking/tariff-to-payment";
 import { user } from "../primary/user";
 import { paymentMethod } from "./payment-method";
 
@@ -31,15 +33,13 @@ export const payment = pgTable("payment", {
   ),
   paymentId: text("payment_id").notNull(),
   paymentLink: text("payment_link"),
-  entity: paymentEntity("entity").notNull(),
-  entityId: uuid("entity_id").notNull(),
   amount: real("amount").notNull(),
   currency: text("currency").notNull(),
   status: paymentStatus("status").notNull(),
   ...timestamps,
 });
 
-export const paymentRelations = relations(payment, ({ one }) => ({
+export const paymentRelations = relations(payment, ({ one, many }) => ({
   user: one(user, {
     fields: [payment.userId],
     references: [user.id],
@@ -48,4 +48,6 @@ export const paymentRelations = relations(payment, ({ one }) => ({
     fields: [payment.paymentMethodId],
     references: [paymentMethod.id],
   }),
+  tariffToPayment: many(tariffToPayment),
+  creditsPackageToPayment: many(creditsPackageToPayment),
 }));

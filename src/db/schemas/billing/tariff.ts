@@ -12,6 +12,7 @@ import {
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { tariffToPayment } from "../linking/tariff-to-payment";
 import { subscription } from "./subscription";
 
 export const tariffBillingPeriod = pgEnum("tariff_billing_period", [
@@ -50,4 +51,5 @@ export const tariff = pgTable("tariff", {
 
 export const tariffRelations = relations(tariff, ({ many }) => ({
   subscriptions: many(subscription),
+  tariffToPayment: many(tariffToPayment),
 }));

@@ -1,11 +1,25 @@
-import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { integer, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
+
+import { creditsPackageToCreditsBatch } from "../linking/credits-package-to-credits-batch";
+import { creditsPackageToPayment } from "../linking/credits-package-to-payment";
 
 export const creditsPackage = pgTable("credits_package", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
   amount: integer("amount").notNull(),
+  price: real("price").notNull(),
+  oldPrice: real("old_price"),
   ...timestamps,
 });
+
+export const creditsPackageRelations = relations(
+  creditsPackage,
+  ({ many }) => ({
+    creditsPackageToCreditsBatch: many(creditsPackageToCreditsBatch),
+    creditsPackageToPayment: many(creditsPackageToPayment),
+  }),
+);
