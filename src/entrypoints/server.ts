@@ -14,13 +14,13 @@ import { openAPIRouteHandler } from "hono-openapi";
 import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
 import { envs } from "@/constants/common/envs";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
-import { ideasListExportQueue } from "@/mq/ideas-list/ideas-list-export/queue";
-import { ideasListGenerationQueue } from "@/mq/ideas-list/ideas-list-generation/queue";
-import { profilesFromChannelsGenerationQueue } from "@/mq/profiles/profiles-from-channels-generation/queue";
-import { scenarioChaptersGenerationQueue } from "@/mq/scenario/scenario-chapters-generation/queue";
-import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario/scenario-scene-preview-generation/queue";
-import { scenarioScenesGenerationQueue } from "@/mq/scenario/scenario-scenes-generation/queue";
-import { scenarioVersionExportQueue } from "@/mq/scenario/scenario-version-export/queue";
+import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
+import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
+import { profilesFromChannelsGenerationQueue } from "@/mq/profiles-from-channels-generation/queue";
+import { scenarioChaptersGenerationQueue } from "@/mq/scenario-chapters-generation/queue";
+import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview-generation/queue";
+import { scenarioScenesGenerationQueue } from "@/mq/scenario-scenes-generation/queue";
+import { scenarioVersionExportQueue } from "@/mq/scenario-version-export/queue";
 import { authRoute } from "@/routes/api/auth/route";
 import {
   getArchiveFiltersRoute,

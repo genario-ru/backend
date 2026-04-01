@@ -10,7 +10,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { enqueueScenarioVersionExport } from "@/mq/scenario/scenario-version-export/queue";
+import { enqueueScenarioVersionExport } from "@/mq/scenario-version-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { getScenarioVersionExportBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/body";
 import { getScenarioVersionExportParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-version-export/params";

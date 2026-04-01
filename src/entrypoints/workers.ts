@@ -1,10 +1,10 @@
-import { ideasListExportWorker } from "@/mq/ideas-list/ideas-list-export/worker";
-import { ideasListGenerationWorker } from "@/mq/ideas-list/ideas-list-generation/worker";
-import { profilesFromChannelsGenerationWorker } from "@/mq/profiles/profiles-from-channels-generation/worker";
-import { scenarioChaptersGenerationWorker } from "@/mq/scenario/scenario-chapters-generation/worker";
-import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario/scenario-scene-preview-generation/worker";
-import { scenarioScenesGenerationWorker } from "@/mq/scenario/scenario-scenes-generation/worker";
-import { scenarioVersionExportWorker } from "@/mq/scenario/scenario-version-export/worker";
+import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
+import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
+import { profilesFromChannelsGenerationWorker } from "@/mq/profiles-from-channels-generation/worker";
+import { scenarioChaptersGenerationWorker } from "@/mq/scenario-chapters-generation/worker";
+import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario-scene-preview-generation/worker";
+import { scenarioScenesGenerationWorker } from "@/mq/scenario-scenes-generation/worker";
+import { scenarioVersionExportWorker } from "@/mq/scenario-version-export/worker";
 
 const shutdown = async () => {
   await ideasListGenerationWorker.close();

@@ -10,7 +10,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { enqueueIdeasListExport } from "@/mq/ideas-list/ideas-list-export/queue";
+import { enqueueIdeasListExport } from "@/mq/ideas-list-export/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createIdeasListExportBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/body";
 import { cerateIdeasListExportParamsSchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list-export/params";

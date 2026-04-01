@@ -10,7 +10,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { enqueueProfilesFromChannelsGeneration } from "@/mq/profiles/profiles-from-channels-generation/queue";
+import { enqueueProfilesFromChannelsGeneration } from "@/mq/profiles-from-channels-generation/queue";
 import { APIErrorCode } from "@/schemas/common/api-error";
 import { createProfilesFromChannelsBodySchema } from "@/schemas/entities/profiles/handlers/create-profiles-from-channels/body";
 import {
