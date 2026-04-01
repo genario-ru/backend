@@ -28,6 +28,15 @@ import {
 } from "@/routes/api/v1/archive";
 import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
 import {
+  getMyPaymentMethodsRoute,
+  getMyPaymentsRoute,
+} from "@/routes/api/v1/billing";
+import {
+  getCreditsPackagesRoute,
+  getMyCreditsBatchesRoute,
+  initiateCreditsPackagePaymentRoute,
+} from "@/routes/api/v1/credits";
+import {
   deleteIdeaRoute,
   getIdeaRoute,
   saveIdeaRoute,
@@ -85,7 +94,10 @@ import {
   updateScenarioSceneComponentRoute,
   updateScenarioSceneRoute,
 } from "@/routes/api/v1/scenarios";
-import { getMySubscriptionsRoute } from "@/routes/api/v1/subscriptions";
+import {
+  getMySubscriptionsRoute,
+  initiateSubscriptionPaymentRoute,
+} from "@/routes/api/v1/subscriptions";
 import { getTariffsRoute, getTrialTariffRoute } from "@/routes/api/v1/tariffs";
 import { getTemplatesRoute } from "@/routes/api/v1/templates";
 import { getTonesRoute } from "@/routes/api/v1/tones";
@@ -125,6 +137,11 @@ const appAPIv1RoutesList = [
   updateIdeaRoute,
   saveIdeaRoute,
   getAttachmentDownloadRoute,
+  getMyPaymentMethodsRoute,
+  getMyPaymentsRoute,
+  getCreditsPackagesRoute,
+  getMyCreditsBatchesRoute,
+  initiateCreditsPackagePaymentRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
   generateMoreIdeasRoute,
@@ -172,6 +189,7 @@ const appAPIv1RoutesList = [
   deleteScenarioSceneComponentRoute,
   updateScenarioSceneComponentRoute,
   getMySubscriptionsRoute,
+  initiateSubscriptionPaymentRoute,
   getTariffsRoute,
   getTrialTariffRoute,
   getTemplatesRoute,
