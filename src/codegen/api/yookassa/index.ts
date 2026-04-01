@@ -1,7 +1,9 @@
+export { getPaymentMethodsPaymentMethodId } from "./clients/get-payment-methods-payment-method-id.ts";
 export { getPayments } from "./clients/get-payments.ts";
 export { getPaymentsPaymentId } from "./clients/get-payments-payment-id.ts";
 export { getRefunds } from "./clients/get-refunds.ts";
 export { getRefundsRefundId } from "./clients/get-refunds-refund-id.ts";
+export { postPaymentMethods } from "./clients/post-payment-methods.ts";
 export { postPayments } from "./clients/post-payments.ts";
 export { postPaymentsPaymentIdCancel } from "./clients/post-payments-payment-id-cancel.ts";
 export { postPaymentsPaymentIdCapture } from "./clients/post-payments-payment-id-capture.ts";
@@ -147,6 +149,18 @@ export { errorTypeEnum } from "./models/error.ts";
 export type { Forbidden, ForbiddenCodeEnumKey } from "./models/forbidden.ts";
 export { forbiddenCodeEnum } from "./models/forbidden.ts";
 export type { GatewayId } from "./models/gateway-id.ts";
+export type {
+  GetPaymentMethodsPaymentMethodId200,
+  GetPaymentMethodsPaymentMethodId400,
+  GetPaymentMethodsPaymentMethodId401,
+  GetPaymentMethodsPaymentMethodId403,
+  GetPaymentMethodsPaymentMethodId404,
+  GetPaymentMethodsPaymentMethodId429,
+  GetPaymentMethodsPaymentMethodId500,
+  GetPaymentMethodsPaymentMethodIdPathParams,
+  GetPaymentMethodsPaymentMethodIdQuery,
+  GetPaymentMethodsPaymentMethodIdQueryResponse,
+} from "./models/get-payment-methods-payment-method-id.ts";
 export type {
   GetPayments200,
   GetPayments400,
@@ -353,6 +367,23 @@ export type {
   PaymentMethodYooMoneyTypeEnumKey,
 } from "./models/payment-method-yoo-money.ts";
 export { paymentMethodYooMoneyTypeEnum } from "./models/payment-method-yoo-money.ts";
+export type { PaymentMethodsConfirmation } from "./models/payment-methods-confirmation.ts";
+export type { PaymentMethodsConfirmationData } from "./models/payment-methods-confirmation-data.ts";
+export type {
+  PaymentMethodsConfirmationDataRedirect,
+  PaymentMethodsConfirmationDataRedirectTypeEnumKey,
+} from "./models/payment-methods-confirmation-data-redirect.ts";
+export { paymentMethodsConfirmationDataRedirectTypeEnum } from "./models/payment-methods-confirmation-data-redirect.ts";
+export type {
+  PaymentMethodsConfirmationRedirect,
+  PaymentMethodsConfirmationRedirectTypeEnumKey,
+} from "./models/payment-methods-confirmation-redirect.ts";
+export { paymentMethodsConfirmationRedirectTypeEnum } from "./models/payment-methods-confirmation-redirect.ts";
+export type {
+  PaymentMethodsConfirmationType,
+  PaymentMethodsConfirmationTypeEnumKey,
+} from "./models/payment-methods-confirmation-type.ts";
+export { paymentMethodsConfirmationTypeEnum } from "./models/payment-methods-confirmation-type.ts";
 export type { PaymentOrderBankUtilities } from "./models/payment-order-bank-utilities.ts";
 export type {
   PaymentOrderData,
@@ -390,6 +421,18 @@ export type {
 export { paymentStatusEnum } from "./models/payment-status.ts";
 export type { PaymentToken } from "./models/payment-token.ts";
 export type { Phone } from "./models/phone.ts";
+export type {
+  PostPaymentMethods200,
+  PostPaymentMethods400,
+  PostPaymentMethods401,
+  PostPaymentMethods403,
+  PostPaymentMethods429,
+  PostPaymentMethods500,
+  PostPaymentMethodsHeaderParams,
+  PostPaymentMethodsMutation,
+  PostPaymentMethodsMutationRequest,
+  PostPaymentMethodsMutationResponse,
+} from "./models/post-payment-methods.ts";
 export type {
   PostPayments200,
   PostPayments400,
@@ -522,7 +565,28 @@ export { refundStatusEnum } from "./models/refund-status.ts";
 export type { ReturnUrl } from "./models/return-url.ts";
 export type { Rrn } from "./models/rrn.ts";
 export type { RussianItn } from "./models/russian-itn.ts";
+export type { SavePaymentMethod } from "./models/save-payment-method.ts";
 export type { SavePaymentMethodAttribute } from "./models/save-payment-method-attribute.ts";
+export type {
+  SavePaymentMethodBankCard,
+  SavePaymentMethodBankCardTypeEnumKey,
+} from "./models/save-payment-method-bank-card.ts";
+export { savePaymentMethodBankCardTypeEnum } from "./models/save-payment-method-bank-card.ts";
+export type {
+  SavePaymentMethodData,
+  SavePaymentMethodDataTypeEnumKey,
+} from "./models/save-payment-method-data.ts";
+export { savePaymentMethodDataTypeEnum } from "./models/save-payment-method-data.ts";
+export type {
+  SavePaymentMethodDataBankCard,
+  SavePaymentMethodDataBankCardTypeEnumKey,
+} from "./models/save-payment-method-data-bank-card.ts";
+export { savePaymentMethodDataBankCardTypeEnum } from "./models/save-payment-method-data-bank-card.ts";
+export type {
+  SavePaymentMethodType,
+  SavePaymentMethodTypeEnumKey,
+} from "./models/save-payment-method-type.ts";
+export { savePaymentMethodTypeEnum } from "./models/save-payment-method-type.ts";
 export type { SbpBankBic } from "./models/sbp-bank-bic.ts";
 export type { SbpBankId } from "./models/sbp-bank-id.ts";
 export type { SbpOperationId } from "./models/sbp-operation-id.ts";
@@ -628,6 +692,17 @@ export { errorSchema } from "./zod/error-schema.ts";
 export { forbiddenSchema } from "./zod/forbidden-schema.ts";
 export { gatewayIdSchema } from "./zod/gateway-id-schema.ts";
 export {
+  getPaymentMethodsPaymentMethodId200Schema,
+  getPaymentMethodsPaymentMethodId400Schema,
+  getPaymentMethodsPaymentMethodId401Schema,
+  getPaymentMethodsPaymentMethodId403Schema,
+  getPaymentMethodsPaymentMethodId404Schema,
+  getPaymentMethodsPaymentMethodId429Schema,
+  getPaymentMethodsPaymentMethodId500Schema,
+  getPaymentMethodsPaymentMethodIdPathParamsSchema,
+  getPaymentMethodsPaymentMethodIdQueryResponseSchema,
+} from "./zod/get-payment-methods-payment-method-id-schema.ts";
+export {
   getPaymentsPaymentId200Schema,
   getPaymentsPaymentId400Schema,
   getPaymentsPaymentId401Schema,
@@ -720,6 +795,11 @@ export { paymentMethodTypeSchema } from "./zod/payment-method-type-schema.ts";
 export { paymentMethodWeChatSchema } from "./zod/payment-method-we-chat-schema.ts";
 export { paymentMethodWebmoneySchema } from "./zod/payment-method-webmoney-schema.ts";
 export { paymentMethodYooMoneySchema } from "./zod/payment-method-yoo-money-schema.ts";
+export { paymentMethodsConfirmationDataRedirectSchema } from "./zod/payment-methods-confirmation-data-redirect-schema.ts";
+export { paymentMethodsConfirmationDataSchema } from "./zod/payment-methods-confirmation-data-schema.ts";
+export { paymentMethodsConfirmationRedirectSchema } from "./zod/payment-methods-confirmation-redirect-schema.ts";
+export { paymentMethodsConfirmationSchema } from "./zod/payment-methods-confirmation-schema.ts";
+export { paymentMethodsConfirmationTypeSchema } from "./zod/payment-methods-confirmation-type-schema.ts";
 export { paymentOrderBankUtilitiesSchema } from "./zod/payment-order-bank-utilities-schema.ts";
 export { paymentOrderDataSchema } from "./zod/payment-order-data-schema.ts";
 export { paymentOrderDataUtilitiesSchema } from "./zod/payment-order-data-utilities-schema.ts";
@@ -734,6 +814,17 @@ export { paymentSchema } from "./zod/payment-schema.ts";
 export { paymentStatusSchema } from "./zod/payment-status-schema.ts";
 export { paymentTokenSchema } from "./zod/payment-token-schema.ts";
 export { phoneSchema } from "./zod/phone-schema.ts";
+export {
+  postPaymentMethods200Schema,
+  postPaymentMethods400Schema,
+  postPaymentMethods401Schema,
+  postPaymentMethods403Schema,
+  postPaymentMethods429Schema,
+  postPaymentMethods500Schema,
+  postPaymentMethodsHeaderParamsSchema,
+  postPaymentMethodsMutationRequestSchema,
+  postPaymentMethodsMutationResponseSchema,
+} from "./zod/post-payment-methods-schema.ts";
 export {
   postPaymentsPaymentIdCancel200Schema,
   postPaymentsPaymentIdCancel400Schema,
@@ -813,6 +904,11 @@ export { returnUrlSchema } from "./zod/return-url-schema.ts";
 export { rrnSchema } from "./zod/rrn-schema.ts";
 export { russianItnSchema } from "./zod/russian-itn-schema.ts";
 export { savePaymentMethodAttributeSchema } from "./zod/save-payment-method-attribute-schema.ts";
+export { savePaymentMethodBankCardSchema } from "./zod/save-payment-method-bank-card-schema.ts";
+export { savePaymentMethodDataBankCardSchema } from "./zod/save-payment-method-data-bank-card-schema.ts";
+export { savePaymentMethodDataSchema } from "./zod/save-payment-method-data-schema.ts";
+export { savePaymentMethodSchema } from "./zod/save-payment-method-schema.ts";
+export { savePaymentMethodTypeSchema } from "./zod/save-payment-method-type-schema.ts";
 export { sbpBankBicSchema } from "./zod/sbp-bank-bic-schema.ts";
 export { sbpBankIdSchema } from "./zod/sbp-bank-id-schema.ts";
 export { sbpOperationIdSchema } from "./zod/sbp-operation-id-schema.ts";

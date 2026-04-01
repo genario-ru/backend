@@ -1,7 +1,9 @@
+export { getPaymentMethodsPaymentMethodId } from "./get-payment-methods-payment-method-id.ts";
 export { getPayments } from "./get-payments.ts";
 export { getPaymentsPaymentId } from "./get-payments-payment-id.ts";
 export { getRefunds } from "./get-refunds.ts";
 export { getRefundsRefundId } from "./get-refunds-refund-id.ts";
+export { postPaymentMethods } from "./post-payment-methods.ts";
 export { postPayments } from "./post-payments.ts";
 export { postPaymentsPaymentIdCancel } from "./post-payments-payment-id-cancel.ts";
 export { postPaymentsPaymentIdCapture } from "./post-payments-payment-id-capture.ts";

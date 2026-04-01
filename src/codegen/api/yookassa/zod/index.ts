@@ -64,6 +64,17 @@ export { errorSchema } from "./error-schema.ts";
 export { forbiddenSchema } from "./forbidden-schema.ts";
 export { gatewayIdSchema } from "./gateway-id-schema.ts";
 export {
+  getPaymentMethodsPaymentMethodId200Schema,
+  getPaymentMethodsPaymentMethodId400Schema,
+  getPaymentMethodsPaymentMethodId401Schema,
+  getPaymentMethodsPaymentMethodId403Schema,
+  getPaymentMethodsPaymentMethodId404Schema,
+  getPaymentMethodsPaymentMethodId429Schema,
+  getPaymentMethodsPaymentMethodId500Schema,
+  getPaymentMethodsPaymentMethodIdPathParamsSchema,
+  getPaymentMethodsPaymentMethodIdQueryResponseSchema,
+} from "./get-payment-methods-payment-method-id-schema.ts";
+export {
   getPaymentsPaymentId200Schema,
   getPaymentsPaymentId400Schema,
   getPaymentsPaymentId401Schema,
@@ -156,6 +167,11 @@ export { paymentMethodTypeSchema } from "./payment-method-type-schema.ts";
 export { paymentMethodWeChatSchema } from "./payment-method-we-chat-schema.ts";
 export { paymentMethodWebmoneySchema } from "./payment-method-webmoney-schema.ts";
 export { paymentMethodYooMoneySchema } from "./payment-method-yoo-money-schema.ts";
+export { paymentMethodsConfirmationDataRedirectSchema } from "./payment-methods-confirmation-data-redirect-schema.ts";
+export { paymentMethodsConfirmationDataSchema } from "./payment-methods-confirmation-data-schema.ts";
+export { paymentMethodsConfirmationRedirectSchema } from "./payment-methods-confirmation-redirect-schema.ts";
+export { paymentMethodsConfirmationSchema } from "./payment-methods-confirmation-schema.ts";
+export { paymentMethodsConfirmationTypeSchema } from "./payment-methods-confirmation-type-schema.ts";
 export { paymentOrderBankUtilitiesSchema } from "./payment-order-bank-utilities-schema.ts";
 export { paymentOrderDataSchema } from "./payment-order-data-schema.ts";
 export { paymentOrderDataUtilitiesSchema } from "./payment-order-data-utilities-schema.ts";
@@ -170,6 +186,17 @@ export { paymentSchema } from "./payment-schema.ts";
 export { paymentStatusSchema } from "./payment-status-schema.ts";
 export { paymentTokenSchema } from "./payment-token-schema.ts";
 export { phoneSchema } from "./phone-schema.ts";
+export {
+  postPaymentMethods200Schema,
+  postPaymentMethods400Schema,
+  postPaymentMethods401Schema,
+  postPaymentMethods403Schema,
+  postPaymentMethods429Schema,
+  postPaymentMethods500Schema,
+  postPaymentMethodsHeaderParamsSchema,
+  postPaymentMethodsMutationRequestSchema,
+  postPaymentMethodsMutationResponseSchema,
+} from "./post-payment-methods-schema.ts";
 export {
   postPaymentsPaymentIdCancel200Schema,
   postPaymentsPaymentIdCancel400Schema,
@@ -249,6 +276,11 @@ export { returnUrlSchema } from "./return-url-schema.ts";
 export { rrnSchema } from "./rrn-schema.ts";
 export { russianItnSchema } from "./russian-itn-schema.ts";
 export { savePaymentMethodAttributeSchema } from "./save-payment-method-attribute-schema.ts";
+export { savePaymentMethodBankCardSchema } from "./save-payment-method-bank-card-schema.ts";
+export { savePaymentMethodDataBankCardSchema } from "./save-payment-method-data-bank-card-schema.ts";
+export { savePaymentMethodDataSchema } from "./save-payment-method-data-schema.ts";
+export { savePaymentMethodSchema } from "./save-payment-method-schema.ts";
+export { savePaymentMethodTypeSchema } from "./save-payment-method-type-schema.ts";
 export { sbpBankBicSchema } from "./sbp-bank-bic-schema.ts";
 export { sbpBankIdSchema } from "./sbp-bank-id-schema.ts";
 export { sbpOperationIdSchema } from "./sbp-operation-id-schema.ts";

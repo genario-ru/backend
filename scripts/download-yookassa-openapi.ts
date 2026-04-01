@@ -12,7 +12,7 @@ import { envs } from "@/constants/common/envs";
 
 const OUTPUT_DIR = "deps/api";
 const FINAL_FILENAME = "yookassa.json";
-const TARGET_TAGS = ["Payments", "Возвраты"];
+const TARGET_TAGS = ["Payments", "Способы оплаты", "Возвраты"];
 const DOWNLOAD_URL = envs.YOOKASSA_OPENAPI_URL;
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================

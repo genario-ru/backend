@@ -24,6 +24,10 @@
       "description": "The API allows you to create, capture, and cancel payments, as well as receive payment information. How to process a payment: https://yookassa.ru/developers/payment-acceptance/getting-started/quick-start"
     },
     {
+      "name": "Способы оплаты",
+      "description": "Только для тех, кто использует привязку на нулевую сумму: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/save-payment-method/save-without-payment для сохранения банковских карт. Способ оплаты — данные платежного средства пользователя. Например, данные банковской карты. С помощью API вы можете создать способ оплаты — сохранить платежные данные в ЮKassa с привязкой к вашему магазину. Также по API вы можете получить актуальную информацию о созданном способе оплаты."
+    },
+    {
       "name": "Возвраты",
       "description": "С помощью API можно возвращать платежи — полностью или частично. Порядок возврата зависит от способа оплаты (payment_method) исходного платежа. При оплате банковской картой деньги возвращаются на карту, которая была использована для проведения платежа. Как проводить возвраты: https://yookassa.ru/developers/payment-acceptance/after-the-payment/refunds Часть способов оплаты (например, наличные) не поддерживают возвраты. Какие платежи можно вернуть: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all"
     }
@@ -508,6 +512,122 @@
         }
       }
     },
+    "/payment_methods": {
+      "post": {
+        "summary": "Создание способа оплаты",
+        "description": "Используйте этот запрос, чтобы создать в ЮKassa объект способа оплаты: https://yookassa.ru/developers/api#payment_method_object. В запросе необходимо передать код способа оплаты, который вы хотите сохранить, и при необходимости дополнительные параметры, связанные с той функциональностью, которую вы хотите использовать. Идентификатор созданного способа оплаты вы можете использовать при проведении автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/create-recurring или выплат: https://yookassa.ru/developers/payouts/scenario-extensions/multipurpose-token.",
+        "tags": [
+          "Способы оплаты"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotenceKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/SavePaymentMethodDataBankCard"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "type"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Запрос успешно обработан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SavePaymentMethodBankCard"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "type"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidCredentials"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/payment_methods/{payment_method_id}": {
+      "get": {
+        "summary": "Информация о способе оплаты",
+        "description": "Используйте этот запрос, чтобы получить информацию о текущем состоянии способа оплаты по его уникальному идентификатору.",
+        "tags": [
+          "Способы оплаты"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/paymentMethodIdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Запрос успешно обработан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SavePaymentMethodBankCard"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "type"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidCredentials"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
     "/refunds": {
       "post": {
         "summary": "Создание возврата",
@@ -813,6 +933,15 @@
         "description": "Идентификатор платежа.",
         "schema": {
           "$ref": "#/components/schemas/PaymentId"
+        }
+      },
+      "paymentMethodIdPath": {
+        "name": "payment_method_id",
+        "in": "path",
+        "required": true,
+        "description": "Идентификатор сохраненного способа оплаты.",
+        "schema": {
+          "$ref": "#/components/schemas/PaymentMethodId"
         }
       },
       "refundIdPath": {
@@ -3895,6 +4024,246 @@
         "type": "string",
         "example": "37a5c87d-3984-51e8-a7f3-8de646d39ec15"
       },
+      "SavePaymentMethodDataBankCard": {
+        "description": "Данные для проверки и сохранения банковской карты.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SavePaymentMethodData"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "card": {
+                "$ref": "#/components/schemas/CardRequestDataWithCsc"
+              }
+            }
+          }
+        ]
+      },
+      "SavePaymentMethodBankCard": {
+        "description": "Сохраненная банковская карта.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SavePaymentMethod"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "card": {
+                "$ref": "#/components/schemas/BankCardData"
+              }
+            }
+          }
+        ]
+      },
+      "PaymentMethodsConfirmationDataRedirect": {
+        "description": "Перенаправление пользователя на сайт ЮKassa для подтверждения привязки или страницу банка-эмитента для аутентификации по 3-D Secure.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaymentMethodsConfirmationData"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "enforce": {
+                "$ref": "#/components/schemas/Enforce",
+                "description": "Запрос на проведение привязки с аутентификацией по 3-D Secure. Будет работать, если оплату банковской картой вы по умолчанию принимаете без подтверждения платежа пользователем. В остальных случаях аутентификацией по 3-D Secure будет управлять ЮKassa. Если хотите принимать платежи и создавать привязки без дополнительного подтверждения пользователем, напишите вашему менеджеру ЮKassa."
+              },
+              "return_url": {
+                "$ref": "#/components/schemas/ReturnUrl",
+                "description": "URL, на который вернется пользователь после подтверждения или отмены привязки на веб-странице. Не более 2048 символов."
+              },
+              "locale": {
+                "$ref": "#/components/schemas/Locale"
+              }
+            },
+            "required": [
+              "return_url"
+            ]
+          }
+        ]
+      },
+      "PaymentMethodsConfirmationType": {
+        "description": "Код сценария подтверждения пользователем привязки платежного средства к вашему магазину в ЮKassa.",
+        "type": "string",
+        "enum": [
+          "redirect"
+        ],
+        "example": "redirect"
+      },
+      "PaymentMethodsConfirmationData": {
+        "description": "Данные, необходимые для инициирования сценария подтверждения привязки.",
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "redirect": "#/components/schemas/PaymentMethodsConfirmationDataRedirect"
+          }
+        },
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PaymentMethodsConfirmationType"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "PaymentMethodsConfirmation": {
+        "description": "Выбранный сценарий подтверждения привязки. Присутствует, когда привязка ожидает подтверждения от пользователя.",
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "redirect": "#/components/schemas/PaymentMethodsConfirmationRedirect"
+          }
+        },
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/PaymentMethodsConfirmationType"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "SavePaymentMethodData": {
+        "type": "object",
+        "description": "Данные для проверки и сохранения способа оплаты.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "bank_card"
+            ]
+          },
+          "holder": {
+            "$ref": "#/components/schemas/Recipient",
+            "description": "Данные магазина, для которого сохраняется способ оплаты."
+          },
+          "client_ip": {
+            "$ref": "#/components/schemas/ClientIp"
+          },
+          "confirmation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PaymentMethodsConfirmationDataRedirect"
+              }
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "bank_card": "#/components/schemas/SavePaymentMethodDataBankCard"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "SavePaymentMethodType": {
+        "description": "Тип способа оплаты.",
+        "type": "string",
+        "enum": [
+          "bank_card"
+        ],
+        "example": "bank_card"
+      },
+      "PaymentMethodsConfirmationRedirect": {
+        "description": "Перенаправление пользователя на сайт ЮKassa для подтверждения привязки или страницу банка-эмитента для аутентификации по 3-D Secure.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaymentMethodsConfirmation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "confirmation_url": {
+                "$ref": "#/components/schemas/ConfirmationUrl",
+                "description": "URL, на который необходимо перенаправить пользователя для подтверждения привязки."
+              },
+              "enforce": {
+                "$ref": "#/components/schemas/Enforce",
+                "description": "Запрос на проведение привязки с аутентификацией по 3-D Secure. Будет работать, если оплату банковской картой вы по умолчанию принимаете без подтверждения платежа пользователем. В остальных случаях аутентификацией по 3-D Secure будет управлять ЮKassa. Если хотите принимать платежи и создавать привязки без дополнительного подтверждения пользователем, напишите вашему менеджеру ЮKassa."
+              },
+              "return_url": {
+                "$ref": "#/components/schemas/ReturnUrl",
+                "description": "URL, на который вернется пользователь после подтверждения или отмены привязки на веб-странице. Не более 2048 символов."
+              }
+            },
+            "required": [
+              "confirmation_url"
+            ]
+          }
+        ]
+      },
+      "SavePaymentMethod": {
+        "type": "object",
+        "description": "Сохраненный способ оплаты.",
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "bank_card": "#/components/schemas/SavePaymentMethodBankCard"
+          }
+        },
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/SavePaymentMethodType"
+          },
+          "id": {
+            "description": "Идентификатор сохраненного способа оплаты.",
+            "type": "string",
+            "example": "1da5c87d-0984-50e8-a7f3-8de646dd9ec9"
+          },
+          "saved": {
+            "description": "Признак сохранения способа оплаты для автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/pay-with-saved. Возможные значения: * true — способ оплаты сохранен для автоплатежей и выплат; * false — способ оплаты не сохранен.",
+            "type": "boolean",
+            "example": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentMethodStatus"
+          },
+          "holder": {
+            "description": "Данные магазина, для которого сохраняется способ оплаты.",
+            "type": "object",
+            "properties": {
+              "account_id": {
+                "$ref": "#/components/schemas/AccountId"
+              },
+              "gateway_id": {
+                "$ref": "#/components/schemas/GatewayId"
+              }
+            },
+            "required": [
+              "account_id"
+            ]
+          },
+          "title": {
+            "$ref": "#/components/schemas/PaymentMethodTitle"
+          },
+          "confirmation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PaymentMethodsConfirmationRedirect"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "redirect": "#/components/schemas/PaymentMethodsConfirmationRedirect"
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "saved",
+          "status",
+          "holder"
+        ]
+      },
       "RefundSourcesData": {
         "type": "object",
         "description": "Данные о том, с какого магазина и какую сумму нужно удержать для проведения возврата. Сейчас в этом параметре можно передать данные только одного магазина.",
@@ -4370,6 +4739,16 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/NotFound"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Слишком много запросов одновременно отправляется в API. Повторите запрос позже.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TooManyRequests"
             }
           }
         }

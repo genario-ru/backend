@@ -131,6 +131,18 @@ export type { Forbidden, ForbiddenCodeEnumKey } from "./forbidden.ts";
 export { forbiddenCodeEnum } from "./forbidden.ts";
 export type { GatewayId } from "./gateway-id.ts";
 export type {
+  GetPaymentMethodsPaymentMethodId200,
+  GetPaymentMethodsPaymentMethodId400,
+  GetPaymentMethodsPaymentMethodId401,
+  GetPaymentMethodsPaymentMethodId403,
+  GetPaymentMethodsPaymentMethodId404,
+  GetPaymentMethodsPaymentMethodId429,
+  GetPaymentMethodsPaymentMethodId500,
+  GetPaymentMethodsPaymentMethodIdPathParams,
+  GetPaymentMethodsPaymentMethodIdQuery,
+  GetPaymentMethodsPaymentMethodIdQueryResponse,
+} from "./get-payment-methods-payment-method-id.ts";
+export type {
   GetPayments200,
   GetPayments400,
   GetPayments401,
@@ -333,6 +345,23 @@ export type {
   PaymentMethodYooMoneyTypeEnumKey,
 } from "./payment-method-yoo-money.ts";
 export { paymentMethodYooMoneyTypeEnum } from "./payment-method-yoo-money.ts";
+export type { PaymentMethodsConfirmation } from "./payment-methods-confirmation.ts";
+export type { PaymentMethodsConfirmationData } from "./payment-methods-confirmation-data.ts";
+export type {
+  PaymentMethodsConfirmationDataRedirect,
+  PaymentMethodsConfirmationDataRedirectTypeEnumKey,
+} from "./payment-methods-confirmation-data-redirect.ts";
+export { paymentMethodsConfirmationDataRedirectTypeEnum } from "./payment-methods-confirmation-data-redirect.ts";
+export type {
+  PaymentMethodsConfirmationRedirect,
+  PaymentMethodsConfirmationRedirectTypeEnumKey,
+} from "./payment-methods-confirmation-redirect.ts";
+export { paymentMethodsConfirmationRedirectTypeEnum } from "./payment-methods-confirmation-redirect.ts";
+export type {
+  PaymentMethodsConfirmationType,
+  PaymentMethodsConfirmationTypeEnumKey,
+} from "./payment-methods-confirmation-type.ts";
+export { paymentMethodsConfirmationTypeEnum } from "./payment-methods-confirmation-type.ts";
 export type { PaymentOrderBankUtilities } from "./payment-order-bank-utilities.ts";
 export type {
   PaymentOrderData,
@@ -367,6 +396,18 @@ export type { PaymentStatus, PaymentStatusEnumKey } from "./payment-status.ts";
 export { paymentStatusEnum } from "./payment-status.ts";
 export type { PaymentToken } from "./payment-token.ts";
 export type { Phone } from "./phone.ts";
+export type {
+  PostPaymentMethods200,
+  PostPaymentMethods400,
+  PostPaymentMethods401,
+  PostPaymentMethods403,
+  PostPaymentMethods429,
+  PostPaymentMethods500,
+  PostPaymentMethodsHeaderParams,
+  PostPaymentMethodsMutation,
+  PostPaymentMethodsMutationRequest,
+  PostPaymentMethodsMutationResponse,
+} from "./post-payment-methods.ts";
 export type {
   PostPayments200,
   PostPayments400,
@@ -490,7 +531,28 @@ export { refundStatusEnum } from "./refund-status.ts";
 export type { ReturnUrl } from "./return-url.ts";
 export type { Rrn } from "./rrn.ts";
 export type { RussianItn } from "./russian-itn.ts";
+export type { SavePaymentMethod } from "./save-payment-method.ts";
 export type { SavePaymentMethodAttribute } from "./save-payment-method-attribute.ts";
+export type {
+  SavePaymentMethodBankCard,
+  SavePaymentMethodBankCardTypeEnumKey,
+} from "./save-payment-method-bank-card.ts";
+export { savePaymentMethodBankCardTypeEnum } from "./save-payment-method-bank-card.ts";
+export type {
+  SavePaymentMethodData,
+  SavePaymentMethodDataTypeEnumKey,
+} from "./save-payment-method-data.ts";
+export { savePaymentMethodDataTypeEnum } from "./save-payment-method-data.ts";
+export type {
+  SavePaymentMethodDataBankCard,
+  SavePaymentMethodDataBankCardTypeEnumKey,
+} from "./save-payment-method-data-bank-card.ts";
+export { savePaymentMethodDataBankCardTypeEnum } from "./save-payment-method-data-bank-card.ts";
+export type {
+  SavePaymentMethodType,
+  SavePaymentMethodTypeEnumKey,
+} from "./save-payment-method-type.ts";
+export { savePaymentMethodTypeEnum } from "./save-payment-method-type.ts";
 export type { SbpBankBic } from "./sbp-bank-bic.ts";
 export type { SbpBankId } from "./sbp-bank-id.ts";
 export type { SbpOperationId } from "./sbp-operation-id.ts";
