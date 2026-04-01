@@ -51,6 +51,11 @@ export { electronicCertificateArticleQuantitySchema } from "./electronic-certifi
 export { electronicCertificateArticleSchema } from "./electronic-certificate-article-schema.ts";
 export { electronicCertificatePaymentDataSchema } from "./electronic-certificate-payment-data-schema.ts";
 export { electronicCertificatePaymentSchema } from "./electronic-certificate-payment-schema.ts";
+export { electronicCertificateRefundArticleSchema } from "./electronic-certificate-refund-article-schema.ts";
+export { electronicCertificateRefundDataRequestSchema } from "./electronic-certificate-refund-data-request-schema.ts";
+export { electronicCertificateRefundDataResponseSchema } from "./electronic-certificate-refund-data-response-schema.ts";
+export { electronicCertificateRefundMethodDataSchema } from "./electronic-certificate-refund-method-data-schema.ts";
+export { electronicCertificateRefundMethodSchema } from "./electronic-certificate-refund-method-schema.ts";
 export { electronicCertificateSchema } from "./electronic-certificate-schema.ts";
 export { electronicCertificateTruCodeSchema } from "./electronic-certificate-tru-code-schema.ts";
 export { emailSchema } from "./email-schema.ts";
@@ -77,6 +82,25 @@ export {
   getPaymentsQueryParamsSchema,
   getPaymentsQueryResponseSchema,
 } from "./get-payments-schema.ts";
+export {
+  getRefundsRefundId200Schema,
+  getRefundsRefundId400Schema,
+  getRefundsRefundId401Schema,
+  getRefundsRefundId403Schema,
+  getRefundsRefundId404Schema,
+  getRefundsRefundId500Schema,
+  getRefundsRefundIdPathParamsSchema,
+  getRefundsRefundIdQueryResponseSchema,
+} from "./get-refunds-refund-id-schema.ts";
+export {
+  getRefunds200Schema,
+  getRefunds400Schema,
+  getRefunds401Schema,
+  getRefunds403Schema,
+  getRefunds500Schema,
+  getRefundsQueryParamsSchema,
+  getRefundsQueryResponseSchema,
+} from "./get-refunds-schema.ts";
 export { industryDetailsSchema } from "./industry-details-schema.ts";
 export { invalidCredentialsSchema } from "./invalid-credentials-schema.ts";
 export { invoiceIdSchema } from "./invoice-id-schema.ts";
@@ -177,6 +201,16 @@ export {
   postPaymentsMutationRequestSchema,
   postPaymentsMutationResponseSchema,
 } from "./post-payments-schema.ts";
+export {
+  postRefunds200Schema,
+  postRefunds400Schema,
+  postRefunds401Schema,
+  postRefunds403Schema,
+  postRefunds500Schema,
+  postRefundsHeaderParamsSchema,
+  postRefundsMutationRequestSchema,
+  postRefundsMutationResponseSchema,
+} from "./post-refunds-schema.ts";
 export { receiptDataCustomerSchema } from "./receipt-data-customer-schema.ts";
 export { receiptDataItemSchema } from "./receipt-data-item-schema.ts";
 export { receiptDataSchema } from "./receipt-data-schema.ts";
@@ -199,6 +233,18 @@ export { receiverMobileBalanceSchema } from "./receiver-mobile-balance-schema.ts
 export { receiverSchema } from "./receiver-schema.ts";
 export { receiverTypeSchema } from "./receiver-type-schema.ts";
 export { recipientSchema } from "./recipient-schema.ts";
+export { refundAuthorizationDetailsSchema } from "./refund-authorization-details-schema.ts";
+export { refundCancellationDetailsSchema } from "./refund-cancellation-details-schema.ts";
+export { refundDealDataSchema } from "./refund-deal-data-schema.ts";
+export { refundDealInfoSchema } from "./refund-deal-info-schema.ts";
+export { refundIdSchema } from "./refund-id-schema.ts";
+export { refundListSchema } from "./refund-list-schema.ts";
+export { refundMethodDataSchema } from "./refund-method-data-schema.ts";
+export { refundMethodSchema } from "./refund-method-schema.ts";
+export { refundMethodTypeSchema } from "./refund-method-type-schema.ts";
+export { refundSchema } from "./refund-schema.ts";
+export { refundSourcesDataSchema } from "./refund-sources-data-schema.ts";
+export { refundStatusSchema } from "./refund-status-schema.ts";
 export { returnUrlSchema } from "./return-url-schema.ts";
 export { rrnSchema } from "./rrn-schema.ts";
 export { russianItnSchema } from "./russian-itn-schema.ts";
@@ -207,10 +253,14 @@ export { sbpBankBicSchema } from "./sbp-bank-bic-schema.ts";
 export { sbpBankIdSchema } from "./sbp-bank-id-schema.ts";
 export { sbpOperationIdSchema } from "./sbp-operation-id-schema.ts";
 export { sbpPayerBankDetailsSchema } from "./sbp-payer-bank-details-schema.ts";
+export { sbpRefundMethodSchema } from "./sbp-refund-method-schema.ts";
 export { settlementItemTypeSchema } from "./settlement-item-type-schema.ts";
 export { settlementPaymentArraySchema } from "./settlement-payment-array-schema.ts";
 export { settlementPaymentItemSchema } from "./settlement-payment-item-schema.ts";
 export { settlementPayoutPaymentSchema } from "./settlement-payout-payment-schema.ts";
+export { settlementPayoutRefundSchema } from "./settlement-payout-refund-schema.ts";
+export { settlementRefundArraySchema } from "./settlement-refund-array-schema.ts";
+export { settlementRefundItemSchema } from "./settlement-refund-item-schema.ts";
 export { statementSchema } from "./statement-schema.ts";
 export { taxSystemCodeSchema } from "./tax-system-code-schema.ts";
 export { testSchema } from "./test-schema.ts";
