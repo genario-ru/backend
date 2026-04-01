@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { postPayments } from "@/codegen/api/yookassa";
@@ -158,23 +159,44 @@ initiateSubscriptionPaymentRoute.post(
       },
     });
 
-    const createdYooKassaPaymentConfirmationUrl =
-      createdYooKassaPayment.confirmation &&
-      "confirmation_url" in createdYooKassaPayment.confirmation
-        ? createdYooKassaPayment.confirmation.confirmation_url
-        : undefined;
-
-    if (!createdYooKassaPaymentConfirmationUrl) {
+    if (
+      !createdYooKassaPayment.confirmation ||
+      !("confirmation_url" in createdYooKassaPayment.confirmation)
+    ) {
       return throwAPIError({
         code: APIErrorCode.InternalServerError,
         message: "Произошла ошибка при инициализации платежа для подписки",
       });
     }
 
-    const { createdPayment } = await db.transaction(async (tx) => {
+    const createdYooKassaPaymentConfirmationUrl =
+      createdYooKassaPayment.confirmation.confirmation_url;
+
+    if (foundTariffLastPendingPayment) {
+      await db
+        .update(payment)
+        .set({
+          paymentId: createdYooKassaPayment.id,
+          paymentLink: createdYooKassaPaymentConfirmationUrl,
+          amount: amountValue,
+          currency: "RUB",
+        })
+        .where(eq(payment.id, foundTariffLastPendingPayment.id));
+
+      return c.json<InitiateSubscriptionPaymentResponse>(
+        initiateSubscriptionPaymentResponseSchema.parse({
+          data: {
+            paymentLink: createdYooKassaPaymentConfirmationUrl,
+          },
+        }),
+      );
+    }
+
+    await db.transaction(async (tx) => {
       const [createdPayment] = await tx
         .insert(payment)
         .values({
+          id: idempotenceKey,
           userId: user.id,
           amount: amountValue,
           currency: "RUB",
@@ -188,14 +210,12 @@ initiateSubscriptionPaymentRoute.post(
         tariffId: foundTariff.id,
         paymentId: createdPayment.id,
       });
-
-      return { createdPayment };
     });
 
     return c.json<InitiateSubscriptionPaymentResponse>(
       initiateSubscriptionPaymentResponseSchema.parse({
         data: {
-          paymentLink: createdPayment.paymentLink,
+          paymentLink: createdYooKassaPaymentConfirmationUrl,
         },
       }),
     );

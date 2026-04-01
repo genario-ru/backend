@@ -1,10 +1,15 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { jsonb, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
 import { user } from "../primary/user";
 import { payment } from "./payment";
+
+export const paymentMethodStatus = pgEnum("payment_method_status", [
+  "pending",
+  "active",
+]);
 
 export const paymentMethod = pgTable("payment_method", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -12,7 +17,11 @@ export const paymentMethod = pgTable("payment_method", {
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
   paymentMethodId: text("payment_method_id").notNull(),
+  status: paymentMethodStatus("status").notNull(),
   type: text("type").notNull(),
+  title: text("title"),
+  confirmationUrl: text("confirmation_url"),
+  data: jsonb("data"),
   ...timestamps,
 });
 
