@@ -13,6 +13,7 @@ import {
 import { timestamps } from "@/db/constants/timestamps";
 
 import { tariffToPayment } from "../linking/tariff-to-payment";
+import { creditsPackage } from "./credits-package";
 import { subscription } from "./subscription";
 
 export const tariffBillingPeriod = pgEnum("tariff_billing_period", [
@@ -28,6 +29,13 @@ export const tariffGenerationPriority = pgEnum("tariff_generation_priority", [
 
 export const tariff = pgTable("tariff", {
   id: uuid("id").defaultRandom().primaryKey(),
+  creditsPackageId: uuid("credits_package_id").references(
+    () => creditsPackage.id,
+    {
+      onDelete: "cascade",
+      onUpdate: "set null",
+    },
+  ),
   slug: varchar("slug", { length: 255 }).unique().notNull(),
   name: text("name").notNull(),
   description: text("description"),
@@ -37,7 +45,6 @@ export const tariff = pgTable("tariff", {
   durationDays: integer("duration_days"),
   isRenewable: boolean("is_renewable").default(true).notNull(),
   isPreferred: boolean("is_preferred").default(false).notNull(),
-  creditsAmount: integer("credits_amount").notNull(),
   maxProfilesAmount: integer("max_profiles_amount"),
   exportAvailable: boolean("export_available").default(false).notNull(),
   versionHistoryAvailable: boolean("version_history_available")
@@ -49,7 +56,11 @@ export const tariff = pgTable("tariff", {
   ...timestamps,
 });
 
-export const tariffRelations = relations(tariff, ({ many }) => ({
+export const tariffRelations = relations(tariff, ({ one, many }) => ({
+  creditsPackage: one(creditsPackage, {
+    fields: [tariff.creditsPackageId],
+    references: [creditsPackage.id],
+  }),
   subscriptions: many(subscription),
   tariffToPayment: many(tariffToPayment),
 }));

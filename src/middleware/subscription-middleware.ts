@@ -1,4 +1,5 @@
-import { and, eq, gt, isNull, or } from "drizzle-orm";
+import { isFuture, isPast } from "date-fns";
+import { isNull } from "es-toolkit";
 import { createMiddleware } from "hono/factory";
 
 import { type AuthType } from "@/auth";
@@ -23,21 +24,31 @@ export const subscriptionMiddleware = createMiddleware<{
   Variables: SubscriptionMiddlewareVariables;
 }>(async (c, next) => {
   const user = c.get("user");
-  const now = new Date().toISOString();
 
-  const foundSubscription = await db.query.subscription.findFirst({
-    where: (subscription) =>
+  const foundNotTerminatedSubscriptions = await db.query.subscription.findMany({
+    orderBy: (subscription, { asc }) => [asc(subscription.startsAt)],
+    where: (subscription, { and, eq, ne }) =>
       and(
         eq(subscription.userId, user.id),
-        eq(subscription.status, "active"),
-        or(isNull(subscription.endsAt), gt(subscription.endsAt, now)),
+        ne(subscription.status, "terminated"),
       ),
     with: {
       tariff: true,
     },
   });
 
-  if (!foundSubscription) {
+  const foundActiveSubscription = foundNotTerminatedSubscriptions.find(
+    (subscription) => {
+      const isStarted = isPast(subscription.startsAt);
+
+      const isNotEnded =
+        isNull(subscription.endsAt) || isFuture(subscription.endsAt);
+
+      return isStarted && isNotEnded;
+    },
+  );
+
+  if (!foundActiveSubscription) {
     return throwAPIError({
       code: APIErrorCode.Forbidden,
       message:
@@ -45,7 +56,7 @@ export const subscriptionMiddleware = createMiddleware<{
     });
   }
 
-  const { tariff, ...subscription } = foundSubscription;
+  const { tariff, ...subscription } = foundActiveSubscription;
 
   c.set("subscription", subscriptionSchema.parse(subscription));
   c.set("tariff", tariffSchema.parse(tariff));

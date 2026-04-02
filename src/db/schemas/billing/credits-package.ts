@@ -12,6 +12,7 @@ import { timestamps } from "@/db/constants/timestamps";
 
 import { creditsPackageToCreditsBatch } from "../linking/credits-package-to-credits-batch";
 import { creditsPackageToPayment } from "../linking/credits-package-to-payment";
+import { tariff } from "./tariff";
 
 export const creditsPackage = pgTable("credits_package", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -27,6 +28,7 @@ export const creditsPackage = pgTable("credits_package", {
 export const creditsPackageRelations = relations(
   creditsPackage,
   ({ many }) => ({
+    tariffs: many(tariff),
     creditsPackageToCreditsBatch: many(creditsPackageToCreditsBatch),
     creditsPackageToPayment: many(creditsPackageToPayment),
   }),

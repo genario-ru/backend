@@ -30,6 +30,7 @@ import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
 import {
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
+  processWebhookRoute,
 } from "@/routes/api/v1/billing";
 import {
   getCreditsPackagesRoute,
@@ -95,6 +96,7 @@ import {
   updateScenarioSceneRoute,
 } from "@/routes/api/v1/scenarios";
 import {
+  cancelSubscriptionRoute,
   getMySubscriptionsRoute,
   initiateSubscriptionPaymentRoute,
 } from "@/routes/api/v1/subscriptions";
@@ -139,6 +141,7 @@ const appAPIv1RoutesList = [
   getAttachmentDownloadRoute,
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
+  processWebhookRoute,
   getCreditsPackagesRoute,
   getMyCreditsBatchesRoute,
   initiateCreditsPackagePaymentRoute,
@@ -189,6 +192,7 @@ const appAPIv1RoutesList = [
   deleteScenarioSceneComponentRoute,
   updateScenarioSceneComponentRoute,
   getMySubscriptionsRoute,
+  cancelSubscriptionRoute,
   initiateSubscriptionPaymentRoute,
   getTariffsRoute,
   getTrialTariffRoute,

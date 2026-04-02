@@ -1,3 +1,4 @@
+import type { CreditsPackage } from "@/schemas/entities/credits/entities/credits-package";
 import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
 import type { TariffFeature } from "@/schemas/entities/tariffs/entities/tariff-feature";
 import { ruPluralForm } from "@/utils/intl/ru-plural-form";
@@ -6,45 +7,49 @@ import { defaultFeatures } from "./constants";
 
 type PrepareTariffFeaturesParams = Pick<
   Tariff,
-  | "creditsAmount"
   | "maxProfilesAmount"
   | "durationDays"
   | "exportAvailable"
   | "generationPriority"
   | "versionHistoryAvailable"
->;
+> & {
+  creditsPackage: CreditsPackage | null;
+};
 
 type PrepareTariffFeaturesReturn = TariffFeature[];
 
 export function prepareTariffFeatures({
-  creditsAmount,
+  creditsPackage,
   maxProfilesAmount,
   durationDays,
   exportAvailable,
   generationPriority,
   versionHistoryAvailable,
 }: PrepareTariffFeaturesParams): PrepareTariffFeaturesReturn {
-  const features: PrepareTariffFeaturesReturn = [
-    {
+  const features: PrepareTariffFeaturesReturn = [];
+
+  if (creditsPackage) {
+    features.push({
       text: ruPluralForm({
-        count: creditsAmount,
+        count: creditsPackage.amount,
         one: "%d кредит для генераций",
         few: "%d кредита для генераций",
         many: "%d кредитов для генераций",
       }),
       included: true,
-    },
-    {
-      text: ruPluralForm({
-        count: maxProfilesAmount,
-        one: "%d профиль для вашего канала",
-        few: "%d профиля для ваших каналов",
-        many: "%d профилей для ваших каналов",
-        none: "Неограниченное количество профилей",
-      }),
-      included: true,
-    },
-  ];
+    });
+  }
+
+  features.push({
+    text: ruPluralForm({
+      count: maxProfilesAmount,
+      one: "%d профиль для вашего канала",
+      few: "%d профиля для ваших каналов",
+      many: "%d профилей для ваших каналов",
+      none: "Неограниченное количество профилей",
+    }),
+    included: true,
+  });
 
   if (durationDays) {
     features.push({

@@ -38,6 +38,7 @@ export * from "./schemas/linking/profile-to-tone";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/scenario-version-to-export-document";
 export * from "./schemas/linking/subscription-to-credits-batch";
+export * from "./schemas/linking/subscription-to-payment";
 export * from "./schemas/linking/tariff-to-payment";
 
 // Primary

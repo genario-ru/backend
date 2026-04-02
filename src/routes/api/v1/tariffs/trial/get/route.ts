@@ -37,6 +37,9 @@ getTrialTariffRoute.get(
     const lastUpdatedTrialTariff = await db.query.tariff.findFirst({
       orderBy: (tariff, { desc }) => [desc(tariff.updatedAt)],
       where: (tariff, { eq }) => eq(tariff.isRenewable, false),
+      with: {
+        creditsPackage: true,
+      },
     });
 
     if (!lastUpdatedTrialTariff) {

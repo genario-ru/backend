@@ -9,6 +9,7 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
+import { APIErrorCode } from "@/schemas/common/api-error";
 import { deletePaymentMethodParamsSchema } from "@/schemas/entities/billing/handlers/delete-payment-method/params";
 import {
   type DeletePaymentMethodResponse,
@@ -16,6 +17,7 @@ import {
 } from "@/schemas/entities/billing/handlers/delete-payment-method/response";
 import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/server/create-hono-app";
+import { throwAPIError } from "@/utils/server/throw-api-error";
 
 export const deletePaymentMethodRoute = createHonoApp().basePath(
   "/billing/payment-methods/:paymentMethodId",
@@ -44,6 +46,22 @@ deletePaymentMethodRoute.delete(
   async (c) => {
     const { paymentMethodId } = c.req.valid("param");
     const user = c.get("user");
+
+    const foundPaymentMethod = await db.query.paymentMethod.findFirst({
+      where: (paymentMethod, { and, eq }) =>
+        and(
+          eq(paymentMethod.id, paymentMethodId),
+          eq(paymentMethod.userId, user.id),
+        ),
+    });
+
+    if (!foundPaymentMethod) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный метод оплаты не существует или у вас нет прав на его удаление",
+      });
+    }
 
     const [deletedPaymentMethod] = await db
       .delete(paymentMethod)

@@ -4,6 +4,7 @@ import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { creditsPackageToPayment } from "../linking/credits-package-to-payment";
+import { subscriptionToPayment } from "../linking/subscription-to-payment";
 import { tariffToPayment } from "../linking/tariff-to-payment";
 import { user } from "../primary/user";
 import { paymentMethod } from "./payment-method";
@@ -17,6 +18,7 @@ export const paymentStatus = pgEnum("payment_status", [
   "pending",
   "succeeded",
   "canceled",
+  "failed",
 ]);
 
 export const payment = pgTable("payment", {
@@ -36,6 +38,7 @@ export const payment = pgTable("payment", {
   amount: real("amount").notNull(),
   currency: text("currency").notNull(),
   status: paymentStatus("status").notNull(),
+  statusDetails: text("status_details"),
   ...timestamps,
 });
 
@@ -48,6 +51,7 @@ export const paymentRelations = relations(payment, ({ one }) => ({
     fields: [payment.paymentMethodId],
     references: [paymentMethod.id],
   }),
+  subscriptionToPayment: one(subscriptionToPayment),
   tariffToPayment: one(tariffToPayment),
   creditsPackageToPayment: one(creditsPackageToPayment),
 }));
