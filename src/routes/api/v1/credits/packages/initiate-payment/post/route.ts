@@ -7,7 +7,7 @@ import { envs } from "@/constants/common/envs";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { creditsPackageToPayment, payment } from "@/db/schema";
+import { creditsBatch, creditsBatchToPayment, payment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -48,7 +48,6 @@ initiateCreditsPackagePaymentRoute.post(
   validator("json", initiateCreditsPackagePaymentBodySchema),
   async (c) => {
     const user = c.get("user");
-
     const { creditsPackageId, redirect: redirectPath } = c.req.valid("json");
 
     const foundCreditsPackage = await db.query.creditsPackage.findFirst({
@@ -68,20 +67,38 @@ initiateCreditsPackagePaymentRoute.post(
     }
 
     const lastPendingPayments = await db.query.payment.findMany({
+      orderBy: (payment, { desc }) => desc(payment.createdAt),
       where: (payment, { and, eq }) =>
         and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
-      orderBy: (payment, { desc }) => desc(payment.createdAt),
-      with: { creditsPackageToPayment: true },
+      with: {
+        creditsBatchToPayment: {
+          with: {
+            creditsBatch: {
+              with: {
+                creditsPackage: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    const foundCreditsPackageLastPendingPayment = lastPendingPayments.find(
-      (payment) =>
-        payment.creditsPackageToPayment?.creditsPackageId ===
-        foundCreditsPackage.id,
+    const lastPendingCreditsBatchPayment = lastPendingPayments.find(
+      (payment) => {
+        const linkedCreditsBatch = payment.creditsBatchToPayment?.creditsBatch;
+
+        const isSameCreditsPackage =
+          linkedCreditsBatch?.creditsPackageId === foundCreditsPackage.id;
+
+        const isPending = linkedCreditsBatch?.status === "pending";
+
+        return isSameCreditsPackage && isPending;
+      },
     );
 
     const idempotenceKey =
-      foundCreditsPackageLastPendingPayment?.id ?? randomUUID();
+      lastPendingCreditsBatchPayment?.creditsBatchToPayment?.paymentId ??
+      randomUUID();
 
     const returnUrl = redirectPath
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
@@ -145,7 +162,7 @@ initiateCreditsPackagePaymentRoute.post(
     const createdYooKassaPaymentConfirmationUrl =
       createdYooKassaPayment.confirmation.confirmation_url;
 
-    if (foundCreditsPackageLastPendingPayment) {
+    if (lastPendingCreditsBatchPayment) {
       await db
         .update(payment)
         .set({
@@ -154,7 +171,7 @@ initiateCreditsPackagePaymentRoute.post(
           amount: amountValue,
           currency: "RUB",
         })
-        .where(eq(payment.id, foundCreditsPackageLastPendingPayment.id));
+        .where(eq(payment.id, lastPendingCreditsBatchPayment.id));
 
       return c.json<InitiateCreditsPackagePaymentResponse>(
         initiateCreditsPackagePaymentResponseSchema.parse({
@@ -166,20 +183,34 @@ initiateCreditsPackagePaymentRoute.post(
     }
 
     await db.transaction(async (tx) => {
-      const [createdPayment] = await tx
-        .insert(payment)
-        .values({
-          userId: user.id,
-          amount: amountValue,
-          currency: "RUB",
-          paymentId: createdYooKassaPayment.id,
-          paymentLink: createdYooKassaPaymentConfirmationUrl,
-          status: "pending",
-        })
-        .returning();
+      const [[createdPayment], [createdCreditsBatch]] = await Promise.all([
+        tx
+          .insert(payment)
+          .values({
+            id: idempotenceKey,
+            userId: user.id,
+            amount: amountValue,
+            currency: "RUB",
+            paymentId: createdYooKassaPayment.id,
+            paymentLink: createdYooKassaPaymentConfirmationUrl,
+            status: "pending",
+          })
+          .returning(),
+        tx
+          .insert(creditsBatch)
+          .values({
+            userId: user.id,
+            creditsPackageId: foundCreditsPackage.id,
+            name: foundCreditsPackage.name,
+            description: foundCreditsPackage.description,
+            remainingAmount: foundCreditsPackage.amount,
+            status: "pending",
+          })
+          .returning(),
+      ]);
 
-      await tx.insert(creditsPackageToPayment).values({
-        creditsPackageId: foundCreditsPackage.id,
+      await tx.insert(creditsBatchToPayment).values({
+        creditsBatchId: createdCreditsBatch.id,
         paymentId: createdPayment.id,
       });
     });

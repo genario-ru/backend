@@ -12,7 +12,6 @@ import {
 
 import { timestamps } from "@/db/constants/timestamps";
 
-import { tariffToPayment } from "../linking/tariff-to-payment";
 import { creditsPackage } from "./credits-package";
 import { subscription } from "./subscription";
 
@@ -62,5 +61,4 @@ export const tariffRelations = relations(tariff, ({ one, many }) => ({
     references: [creditsPackage.id],
   }),
   subscriptions: many(subscription),
-  tariffToPayment: many(tariffToPayment),
 }));

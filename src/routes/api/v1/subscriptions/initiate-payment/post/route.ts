@@ -7,8 +7,7 @@ import { envs } from "@/constants/common/envs";
 import { HTTPStatusCode } from "@/constants/common/http-status-code";
 import { OpenAPITags } from "@/constants/openapi/tags";
 import { db } from "@/db";
-import { payment } from "@/db/schema";
-import { tariffToPayment } from "@/db/schemas/linking/tariff-to-payment";
+import { payment, subscription, subscriptionToPayment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -84,7 +83,7 @@ initiateSubscriptionPaymentRoute.post(
 
     // Готовим данные для запроса к API ЮKassa
 
-    const lastPendingTariffId = foundTrialTariff
+    const computedTariffId = foundTrialTariff
       ? foundTrialTariff.id
       : foundTariff.id;
 
@@ -93,15 +92,25 @@ initiateSubscriptionPaymentRoute.post(
         and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
       orderBy: (payment, { desc }) => desc(payment.createdAt),
       with: {
-        tariffToPayment: true,
+        subscriptionToPayment: {
+          with: {
+            subscription: true,
+          },
+        },
       },
     });
 
-    const foundTariffLastPendingPayment = lastPendingPayments.find(
-      (payment) => payment.tariffToPayment?.tariffId === lastPendingTariffId,
+    const lastPendingSubscriptionPayment = lastPendingPayments.find(
+      (payment) => {
+        const linkedSubscription = payment.subscriptionToPayment?.subscription;
+        const isSameTariff = linkedSubscription?.tariffId === computedTariffId;
+        const isPending = linkedSubscription?.status === "pending";
+
+        return isSameTariff && isPending;
+      },
     );
 
-    const idempotenceKey = foundTariffLastPendingPayment?.id ?? randomUUID();
+    const idempotenceKey = lastPendingSubscriptionPayment?.id ?? randomUUID();
 
     const returnUrl = redirectPath
       ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
@@ -172,7 +181,7 @@ initiateSubscriptionPaymentRoute.post(
     const createdYooKassaPaymentConfirmationUrl =
       createdYooKassaPayment.confirmation.confirmation_url;
 
-    if (foundTariffLastPendingPayment) {
+    if (lastPendingSubscriptionPayment) {
       await db
         .update(payment)
         .set({
@@ -181,7 +190,7 @@ initiateSubscriptionPaymentRoute.post(
           amount: amountValue,
           currency: "RUB",
         })
-        .where(eq(payment.id, foundTariffLastPendingPayment.id));
+        .where(eq(payment.id, lastPendingSubscriptionPayment.id));
 
       return c.json<InitiateSubscriptionPaymentResponse>(
         initiateSubscriptionPaymentResponseSchema.parse({
@@ -193,21 +202,31 @@ initiateSubscriptionPaymentRoute.post(
     }
 
     await db.transaction(async (tx) => {
-      const [createdPayment] = await tx
-        .insert(payment)
-        .values({
-          id: idempotenceKey,
-          userId: user.id,
-          amount: amountValue,
-          currency: "RUB",
-          paymentId: createdYooKassaPayment.id,
-          paymentLink: createdYooKassaPaymentConfirmationUrl,
-          status: "pending",
-        })
-        .returning();
+      const [[createdPayment], [createdSubscription]] = await Promise.all([
+        tx
+          .insert(payment)
+          .values({
+            id: idempotenceKey,
+            userId: user.id,
+            amount: amountValue,
+            currency: "RUB",
+            paymentId: createdYooKassaPayment.id,
+            paymentLink: createdYooKassaPaymentConfirmationUrl,
+            status: "pending",
+          })
+          .returning(),
+        tx
+          .insert(subscription)
+          .values({
+            userId: user.id,
+            tariffId: foundTariff.id,
+            status: "pending",
+          })
+          .returning(),
+      ]);
 
-      await tx.insert(tariffToPayment).values({
-        tariffId: foundTariff.id,
+      await tx.insert(subscriptionToPayment).values({
+        subscriptionId: createdSubscription.id,
         paymentId: createdPayment.id,
       });
     });

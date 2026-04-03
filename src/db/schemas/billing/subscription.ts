@@ -9,6 +9,7 @@ import { user } from "../primary/user";
 import { tariff } from "./tariff";
 
 export const subscriptionStatus = pgEnum("subscription_status", [
+  "pending", // Подписка создана, но еще не оплачена
   "active", // Подписка активна и последняя оплата прошла успешно
   "overdue", // Подписка активна, но последняя оплата не прошла
   "cancelled", // Подписка активна, но продлеваться она не будет
@@ -33,7 +34,7 @@ export const subscription = pgTable("subscription", {
   startsAt: timestamp("starts_at", {
     withTimezone: true,
     mode: "string",
-  }).notNull(),
+  }),
   // Общая дата окончания подписки (нужна, чтобы определять, когда отключать доступ для cancelled подписок)
   endsAt: timestamp("ends_at", {
     withTimezone: true,
@@ -43,12 +44,12 @@ export const subscription = pgTable("subscription", {
   cycleStartsAt: timestamp("cycle_starts_at", {
     withTimezone: true,
     mode: "string",
-  }).notNull(),
+  }),
   // Дата окончания цикла подписки (для отслеживания текущего цикла подписки и корректного расчета следующего цикла)
   cycleEndsAt: timestamp("cycle_ends_at", {
     withTimezone: true,
     mode: "string",
-  }).notNull(),
+  }),
   // Дата последнего успешного биллинга (для истории)
   lastBilledAt: timestamp("last_billed_at", {
     withTimezone: true,
@@ -63,7 +64,7 @@ export const subscription = pgTable("subscription", {
   failedBillingAttempts: integer("failed_billing_attempts")
     .default(0)
     .notNull(),
-  status: subscriptionStatus("status").notNull().default("active"),
+  status: subscriptionStatus("status").notNull().default("pending"),
   ...timestamps,
 });
 

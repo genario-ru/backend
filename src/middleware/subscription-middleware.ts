@@ -27,10 +27,10 @@ export const subscriptionMiddleware = createMiddleware<{
 
   const foundNotTerminatedSubscriptions = await db.query.subscription.findMany({
     orderBy: (subscription, { asc }) => [asc(subscription.startsAt)],
-    where: (subscription, { and, eq, ne }) =>
+    where: (subscription, { and, eq, notInArray }) =>
       and(
         eq(subscription.userId, user.id),
-        ne(subscription.status, "terminated"),
+        notInArray(subscription.status, ["pending", "terminated"]),
       ),
     with: {
       tariff: true,
@@ -39,7 +39,8 @@ export const subscriptionMiddleware = createMiddleware<{
 
   const foundActiveSubscription = foundNotTerminatedSubscriptions.find(
     (subscription) => {
-      const isStarted = isPast(subscription.startsAt);
+      const isStarted =
+        isNull(subscription.startsAt) || isPast(subscription.startsAt);
 
       const isNotEnded =
         isNull(subscription.endsAt) || isFuture(subscription.endsAt);

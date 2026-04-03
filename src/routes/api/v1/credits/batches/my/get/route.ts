@@ -51,11 +51,7 @@ getMyCreditsBatchesRoute.get(
             subscription: true,
           },
         },
-        creditsPackageToCreditsBatch: {
-          with: {
-            creditsPackage: true,
-          },
-        },
+        creditsPackage: true,
       },
     });
 
@@ -73,14 +69,9 @@ getMyCreditsBatchesRoute.get(
     );
 
     const preparedFoundCreditsBatches = filteredFoundCreditsBatches.map(
-      ({
-        subscriptionToCreditsBatch,
-        creditsPackageToCreditsBatch,
-        ...creditsBatch
-      }) => ({
+      ({ subscriptionToCreditsBatch, ...creditsBatch }) => ({
         ...creditsBatch,
         subscription: subscriptionToCreditsBatch?.subscription,
-        creditsPackage: creditsPackageToCreditsBatch?.creditsPackage,
       }),
     );
 

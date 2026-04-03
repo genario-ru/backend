@@ -1,12 +1,12 @@
 import { relations } from "drizzle-orm";
 import { pgTable, uuid } from "drizzle-orm/pg-core";
 
+import { creditsBatch } from "../billing/credits-batch";
 import { payment } from "../billing/payment";
-import { tariff } from "../billing/tariff";
 
-export const tariffToPayment = pgTable("tariff_to_payment", {
+export const creditsBatchToPayment = pgTable("credits_batch_to_payment", {
   id: uuid("id").defaultRandom().primaryKey(),
-  tariffId: uuid("tariff_id").references(() => tariff.id, {
+  creditsBatchId: uuid("credits_batch_id").references(() => creditsBatch.id, {
     onDelete: "cascade",
     onUpdate: "cascade",
   }),
@@ -16,15 +16,15 @@ export const tariffToPayment = pgTable("tariff_to_payment", {
   }),
 });
 
-export const tariffToPaymentRelations = relations(
-  tariffToPayment,
+export const creditsBatchToPaymentRelations = relations(
+  creditsBatchToPayment,
   ({ one }) => ({
-    tariff: one(tariff, {
-      fields: [tariffToPayment.tariffId],
-      references: [tariff.id],
+    creditsBatch: one(creditsBatch, {
+      fields: [creditsBatchToPayment.creditsBatchId],
+      references: [creditsBatch.id],
     }),
     payment: one(payment, {
-      fields: [tariffToPayment.paymentId],
+      fields: [creditsBatchToPayment.paymentId],
       references: [payment.id],
     }),
   }),

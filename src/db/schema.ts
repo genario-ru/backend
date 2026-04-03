@@ -17,6 +17,7 @@ export * from "./schemas/billing/credits-package";
 export * from "./schemas/billing/credits-usage";
 export * from "./schemas/billing/payment";
 export * from "./schemas/billing/payment-method";
+export * from "./schemas/billing/refund";
 export * from "./schemas/billing/subscription";
 export * from "./schemas/billing/tariff";
 export * from "./schemas/billing/tariff-discount";
@@ -25,8 +26,7 @@ export * from "./schemas/billing/tariff-discount";
 export * from "./schemas/jobs/profiles-from-channels-job";
 
 // Linking
-export * from "./schemas/linking/credits-package-to-credits-batch";
-export * from "./schemas/linking/credits-package-to-payment";
+export * from "./schemas/linking/credits-batch-to-payment";
 export * from "./schemas/linking/ideas-list-to-export-document";
 export * from "./schemas/linking/ideas-list-to-tone";
 export * from "./schemas/linking/ideas-list-to-video-type";
@@ -39,7 +39,6 @@ export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/scenario-version-to-export-document";
 export * from "./schemas/linking/subscription-to-credits-batch";
 export * from "./schemas/linking/subscription-to-payment";
-export * from "./schemas/linking/tariff-to-payment";
 
 // Primary
 export * from "./schemas/primary/attachment";

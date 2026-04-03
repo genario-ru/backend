@@ -42,24 +42,32 @@ getMyPaymentsRoute.get(
       where: (payment, { eq }) => eq(payment.userId, user.id),
       with: {
         paymentMethod: true,
-        tariffToPayment: {
+        subscriptionToPayment: {
           with: {
-            tariff: true,
+            subscription: {
+              with: {
+                tariff: true,
+              },
+            },
           },
         },
-        creditsPackageToPayment: {
+        creditsBatchToPayment: {
           with: {
-            creditsPackage: true,
+            creditsBatch: {
+              with: {
+                creditsPackage: true,
+              },
+            },
           },
         },
       },
     });
 
     const preparedFoundPayments = foundPayments.map(
-      ({ tariffToPayment, creditsPackageToPayment, ...payment }) => ({
+      ({ subscriptionToPayment, creditsBatchToPayment, ...payment }) => ({
         ...payment,
-        tariff: tariffToPayment?.tariff,
-        creditsPackage: creditsPackageToPayment?.creditsPackage,
+        subscription: subscriptionToPayment?.subscription,
+        creditsBatch: creditsBatchToPayment?.creditsBatch,
       }),
     );
 

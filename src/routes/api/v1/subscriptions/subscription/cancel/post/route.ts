@@ -71,7 +71,9 @@ cancelSubscriptionRoute.post(
     const billingPeriod = foundSubscription.tariff.billingPeriod;
     const durationDays = foundSubscription.tariff.durationDays;
 
-    if (billingPeriod === "month") {
+    if (!foundSubscription.startsAt) {
+      endsAt = new Date().toISOString();
+    } else if (billingPeriod === "month") {
       endsAt = addMonths(foundSubscription.startsAt, 1).toISOString();
     } else if (billingPeriod === "year") {
       endsAt = addYears(foundSubscription.startsAt, 1).toISOString();

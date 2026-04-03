@@ -9,6 +9,7 @@ import { payment } from "./payment";
 export const paymentMethodStatus = pgEnum("payment_method_status", [
   "pending",
   "active",
+  "inactive",
 ]);
 
 export const paymentMethod = pgTable("payment_method", {
@@ -18,6 +19,7 @@ export const paymentMethod = pgTable("payment_method", {
     .notNull(),
   paymentMethodId: text("payment_method_id").notNull(),
   status: paymentMethodStatus("status").notNull(),
+  statusDetails: text("status_details"),
   type: text("type").notNull(),
   title: text("title"),
   confirmationUrl: text("confirmation_url"),

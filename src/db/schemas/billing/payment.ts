@@ -3,11 +3,11 @@ import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
-import { creditsPackageToPayment } from "../linking/credits-package-to-payment";
+import { creditsBatchToPayment } from "../linking/credits-batch-to-payment";
 import { subscriptionToPayment } from "../linking/subscription-to-payment";
-import { tariffToPayment } from "../linking/tariff-to-payment";
 import { user } from "../primary/user";
 import { paymentMethod } from "./payment-method";
+import { refund } from "./refund";
 
 export const paymentEntity = pgEnum("payment_entity", [
   "tariff",
@@ -51,7 +51,7 @@ export const paymentRelations = relations(payment, ({ one }) => ({
     fields: [payment.paymentMethodId],
     references: [paymentMethod.id],
   }),
+  refund: one(refund),
   subscriptionToPayment: one(subscriptionToPayment),
-  tariffToPayment: one(tariffToPayment),
-  creditsPackageToPayment: one(creditsPackageToPayment),
+  creditsBatchToPayment: one(creditsBatchToPayment),
 }));
