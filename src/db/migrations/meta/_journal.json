@@ -64,6 +64,13 @@
       "when": 1775171634091,
       "tag": "0008_motionless_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1775253546080,
+      "tag": "0009_wet_kate_bishop",
+      "breakpoints": true
     }
   ]
 }
