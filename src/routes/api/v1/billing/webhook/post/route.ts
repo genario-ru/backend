@@ -26,6 +26,7 @@ processWebhookRoute.post(
     limit: 30,
   }),
   openAPIResponseMiddleware({
+    hideInProduction: true,
     tags: [OpenAPITags.Billing],
     responses: {
       [HTTPStatusCode.Ok]: createOpenAPIResponse({
