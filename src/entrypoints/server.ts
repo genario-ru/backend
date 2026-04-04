@@ -30,6 +30,7 @@ import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
 import {
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
+  processWebhookRoute,
 } from "@/routes/api/v1/billing";
 import {
   getCreditsPackagesRoute,
@@ -140,6 +141,7 @@ const appAPIv1RoutesList = [
   getAttachmentDownloadRoute,
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
+  processWebhookRoute,
   getCreditsPackagesRoute,
   getMyCreditsBatchesRoute,
   initiateCreditsPackagePaymentRoute,
