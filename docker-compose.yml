@@ -6,8 +6,6 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
-    networks:
-      - dokploy-network
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_URL=${POSTGRES_URL}
@@ -48,8 +46,6 @@ services:
     pull_policy: always
     command: pnpm run start:workers
     restart: unless-stopped
-    networks:
-      - dokploy-network
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_URL=${POSTGRES_URL}
@@ -84,7 +80,3 @@ services:
       - RUTUBE_BASE_API_URL=${RUTUBE_BASE_API_URL}
       - FRONTEND_BASE_URL=${FRONTEND_BASE_URL}
       - BACKEND_BASE_URL=${BACKEND_BASE_URL}
-
-networks:
-  dokploy-network:
-    external: true

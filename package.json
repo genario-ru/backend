@@ -31,6 +31,7 @@
     "@googleapis/youtube": "^31.0.0",
     "@hono/node-server": "^1.19.3",
     "@hono/standard-validator": "^0.2.0",
+    "@hono/zod-validator": "^0.7.6",
     "@pdf-lib/fontkit": "^1.1.1",
     "@scalar/hono-api-reference": "^0.9.19",
     "ai": "^6.0.136",

@@ -5,7 +5,7 @@ import { z } from "@/lib/zod";
 
 // Override jsonb: drizzle-zod's default record breaks Zod 4 toJSONSchema (OpenAPI).
 export const paymentMethodSchema = createSelectSchema(paymentMethod, {
-  data: z.json().nullable(),
+  data: z.unknown().nullable(),
 }).meta({
   title: "Payment method",
   description: "Payment method description",
