@@ -1,7 +1,7 @@
 import { createUpdateSchema } from "drizzle-zod";
-import { z } from "zod";
 
 import { profile } from "@/db/schema";
+import { z } from "@/lib/zod";
 
 export const updateProfileBodySchema = createUpdateSchema(profile)
   .pick({

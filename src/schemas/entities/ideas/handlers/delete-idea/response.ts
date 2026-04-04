@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 import { ideaSchema } from "../../entities/idea";
 export const deleteIdeaResponseSchema = z

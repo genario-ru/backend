@@ -1,6 +1,7 @@
 services:
   server:
     image: ghcr.io/genario-ru/backend:latest
+    pull_policy: always
     command: pnpm run start
     ports:
       - "3000:3000"
@@ -42,6 +43,7 @@ services:
 
   workers:
     image: ghcr.io/genario-ru/backend:latest
+    pull_policy: always
     command: pnpm run start:workers
     restart: unless-stopped
     environment:
