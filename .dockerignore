@@ -19,6 +19,7 @@ prettier.config.js
 .git
 .gitignore
 .gitattributes
+.github
 
 # Документация
 *.md
