@@ -66,4 +66,4 @@ jobs:
           api_token: ${{ secrets.DOKPLOY_API_TOKEN }}
           application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
           dokploy_url: ${{ secrets.DOKPLOY_URL }}
-          service_type: compose
+          service_type: application
