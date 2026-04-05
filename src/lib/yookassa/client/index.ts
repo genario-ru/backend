@@ -1,4 +1,4 @@
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 import {
   type Client,
   createApiClient,

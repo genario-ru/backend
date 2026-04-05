@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { queryMetaSchema } from "@/schemas/common/meta";
+import { queryMetaSchema } from "@/schemas/shared/common/meta";
 
 export const getMyArchiveItemsQuerySchema = queryMetaSchema
   .omit({ sortBy: true, sortOrder: true })

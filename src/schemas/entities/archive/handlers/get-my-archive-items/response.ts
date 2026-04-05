@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { responseMetaSchema } from "@/schemas/common/meta";
+import { responseMetaSchema } from "@/schemas/shared/common/meta";
 
 import { archiveItemSchema } from "../../entities/archive-item";
 

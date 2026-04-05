@@ -3,8 +3,11 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
-import { TRUSTED_ORIGINS } from "@/constants/api/trusted-origins";
-import { APP_NAME, APP_NAME_CAPITALIZED } from "@/constants/common/app-info";
+import { TRUSTED_ORIGINS } from "@/constants/shared/api/trusted-origins";
+import {
+  APP_NAME,
+  APP_NAME_CAPITALIZED,
+} from "@/constants/shared/common/app-info";
 import { db, schema } from "@/db";
 import { redis } from "@/lib/redis";
 

@@ -1,7 +1,7 @@
 import { validator } from "hono-openapi";
 
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { scenarioScenePreview } from "@/db/schema";
 import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
@@ -10,15 +10,15 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioScenePreviewGeneration } from "@/mq/scenario-scene-preview-generation/queue";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import { createScenarioScenePreviewParamsSchema } from "@/schemas/entities/scenarios/handlers/create-scenario-scene-preview/params";
 import {
   type CreateScenarioScenePreviewResponse,
   createScenarioScenePreviewResponseSchema,
 } from "@/schemas/entities/scenarios/handlers/create-scenario-scene-preview/response";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export const createScenarioScenePreviewRoute = createHonoApp().basePath(
   "/scenarios/scenes/:sceneId",

@@ -2,9 +2,9 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { paymentMethod } from "@/db/schema";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import type { PaymentMethodActiveWebhookData } from "@/schemas/entities/billing/entities/payment-method-webhook-data";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export async function processPaymentMethodActiveEvent(
   data: PaymentMethodActiveWebhookData,

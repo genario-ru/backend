@@ -1,7 +1,7 @@
 import { isEmpty } from "es-toolkit/compat";
 import qs from "qs";
 
-import { removeUndefinedFields } from "@/utils/api/remove-undefined-fields";
+import { removeUndefinedFields } from "@/utils/shared/api/remove-undefined-fields";
 
 type PrepareQueryString = {
   queryParams?: object | null;

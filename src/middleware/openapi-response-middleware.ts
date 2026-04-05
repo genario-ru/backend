@@ -1,7 +1,7 @@
 import { describeRoute } from "hono-openapi";
 
-import { errorResponses } from "@/constants/openapi/error-responses";
-import type { OpenAPIResponses } from "@/types/openapi/openapi-responses";
+import { errorResponses } from "@/constants/shared/openapi/error-responses";
+import type { OpenAPIResponses } from "@/types/shared/openapi/openapi-responses";
 
 type OpenAPIResponseMiddlewareParams = {
   tags: string[];

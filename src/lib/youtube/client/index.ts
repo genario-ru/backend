@@ -1,6 +1,6 @@
 import { youtube, type youtube_v3 } from "@googleapis/youtube";
 
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 
 export type YouTubeClient = youtube_v3.Youtube;
 

@@ -1,6 +1,6 @@
 import { ToolLoopAgent } from "ai";
 
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 
 import { polzaAI } from "../providers/ai-sdk/polza-ai";
 

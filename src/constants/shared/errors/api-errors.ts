@@ -1,4 +1,7 @@
-import { APIErrorCode, APIErrorStatusCode } from "@/schemas/common/api-error";
+import {
+  APIErrorCode,
+  APIErrorStatusCode,
+} from "@/schemas/shared/common/api-error";
 
 export const APIErrorCodeToAPIErrorStatusCode: Record<
   APIErrorCode,

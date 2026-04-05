@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 
 import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/builders/generate-scenario-scene-preview";
 import { vsellm } from "@/ai/providers/open-ai/vsellm";
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
 import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";

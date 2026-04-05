@@ -5,10 +5,10 @@ import {
   extractYouTubeChannelIdentifier,
   getYouTubeChannel,
 } from "@/lib/youtube";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import type { ProfileChannelUrlValidation } from "@/schemas/entities/profiles/entities/profile-channel-url-validation";
-import { testString } from "@/utils/regex/test-string";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { testString } from "@/utils/shared/regex/test-string";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export async function validateProfileChannel(
   url: string,

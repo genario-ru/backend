@@ -1,5 +1,5 @@
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { createHonoApp } from "@/utils/server/create-hono-app";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 export const rootRoute = createHonoApp().basePath("/");
 

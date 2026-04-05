@@ -4,7 +4,6 @@ import { createMiddleware } from "hono/factory";
 
 import { type AuthType } from "@/auth";
 import { db } from "@/db";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import {
   type Subscription,
   subscriptionSchema,
@@ -13,7 +12,8 @@ import {
   type Tariff,
   tariffSchema,
 } from "@/schemas/entities/tariffs/entities/tariff";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 type SubscriptionMiddlewareVariables = AuthType & {
   subscription: Subscription;

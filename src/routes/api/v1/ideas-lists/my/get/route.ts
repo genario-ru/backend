@@ -1,8 +1,8 @@
 import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
@@ -14,8 +14,8 @@ import {
   type GetMyIdeasListsResponse,
   getMyIdeasListsResponseSchema,
 } from "@/schemas/entities/ideas-lists/handlers/get-my-ideas-lists/response";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;

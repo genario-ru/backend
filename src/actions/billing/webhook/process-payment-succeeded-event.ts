@@ -10,9 +10,9 @@ import {
   subscription,
   subscriptionToCreditsBatch,
 } from "@/db/schema";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import type { PaymentSucceededWebhookData } from "@/schemas/entities/billing/entities/payment-webhook-data";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export async function processPaymentSucceededEvent(
   data: PaymentSucceededWebhookData,

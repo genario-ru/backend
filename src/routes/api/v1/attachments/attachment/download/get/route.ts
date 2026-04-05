@@ -1,17 +1,17 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { validator } from "hono-openapi";
 
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { s3 } from "@/lib/s3/client";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import { getAttachmentDownloadParamsSchema } from "@/schemas/entities/attachments/handlers/get-attachment-download/params";
-import { createHonoApp } from "@/utils/server/create-hono-app";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 import {
   createContentDisposition,

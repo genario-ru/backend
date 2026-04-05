@@ -1,8 +1,8 @@
 import { Worker } from "bullmq";
 import { eq } from "drizzle-orm";
 
-import { envs } from "@/constants/common/envs";
-import { SUPPORTED_EXPORT_FORMATS } from "@/constants/common/supported-export-format";
+import { envs } from "@/constants/shared/common/envs";
+import { SUPPORTED_EXPORT_FORMATS } from "@/constants/shared/common/supported-export-format";
 import { db } from "@/db";
 import { attachment, exportDocument } from "@/db/schema";
 import { redis } from "@/lib/redis";

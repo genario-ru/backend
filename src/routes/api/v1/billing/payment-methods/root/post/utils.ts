@@ -2,7 +2,7 @@ import { omit } from "es-toolkit";
 import { isEmpty } from "es-toolkit/compat";
 
 import type { PostPaymentMethodsMutationResponse } from "@/codegen/api/yookassa";
-import { removeUndefinedFields } from "@/utils/api/remove-undefined-fields";
+import { removeUndefinedFields } from "@/utils/shared/api/remove-undefined-fields";
 
 export const prepareYooKassaPaymentMethodData = (
   data: PostPaymentMethodsMutationResponse,

@@ -1,7 +1,7 @@
 import { resolver } from "hono-openapi";
 import type * as z from "zod";
 
-import type { OpenAPIResponse } from "@/types/openapi/openapi-responses";
+import type { OpenAPIResponse } from "@/types/shared/openapi/openapi-responses";
 
 type CreateOpenAPIResponseParams = {
   description: string;

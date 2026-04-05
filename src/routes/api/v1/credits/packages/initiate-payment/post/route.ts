@@ -3,24 +3,24 @@ import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { postPayments } from "@/codegen/api/yookassa";
-import { envs } from "@/constants/common/envs";
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import { envs } from "@/constants/shared/common/envs";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { creditsBatch, creditsBatchToPayment, payment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/body";
 import {
   type InitiateCreditsPackagePaymentResponse,
   initiateCreditsPackagePaymentResponseSchema,
 } from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/response";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export const initiateCreditsPackagePaymentRoute = createHonoApp().basePath(
   "/credits/packages/initiate-payment",

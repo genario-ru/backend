@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { profile } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
@@ -12,8 +12,8 @@ import {
   type GetArchiveFiltersResponse,
   getArchiveFiltersResponseSchema,
 } from "@/schemas/entities/archive/handlers/get-archive-filters/response";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 import { ARCHIVE_SORT_OPTIONS } from "./constants";
 import { toOptions } from "./utils";

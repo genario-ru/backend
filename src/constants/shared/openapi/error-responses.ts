@@ -1,10 +1,10 @@
-import { badRequestResponseSchema } from "@/schemas/responses/400-response";
-import { unauthorizedResponseSchema } from "@/schemas/responses/401-response";
-import { forbiddenResponseSchema } from "@/schemas/responses/403-response";
-import { notFoundResponseSchema } from "@/schemas/responses/404-response";
-import { internalServerErrorResponseSchema } from "@/schemas/responses/500-response";
-import type { OpenAPIResponses } from "@/types/openapi/openapi-responses";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
+import { badRequestResponseSchema } from "@/schemas/shared/responses/400-response";
+import { unauthorizedResponseSchema } from "@/schemas/shared/responses/401-response";
+import { forbiddenResponseSchema } from "@/schemas/shared/responses/403-response";
+import { notFoundResponseSchema } from "@/schemas/shared/responses/404-response";
+import { internalServerErrorResponseSchema } from "@/schemas/shared/responses/500-response";
+import type { OpenAPIResponses } from "@/types/shared/openapi/openapi-responses";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 
 import { HTTPErrorStatusCode } from "../errors/http-errors";
 

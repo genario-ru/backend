@@ -1,6 +1,6 @@
 import { S3Client } from "@aws-sdk/client-s3";
 
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 
 export const s3 = new S3Client({
   endpoint: envs.S3_BUCKET_BASE_URL,

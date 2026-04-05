@@ -3,9 +3,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { payment } from "@/db/schema";
 import { processPaymentCancellationDetails } from "@/lib/yookassa/utils/process-payment-cancellation-details";
-import { APIErrorCode } from "@/schemas/common/api-error";
 import type { PaymentCanceledWebhookData } from "@/schemas/entities/billing/entities/payment-webhook-data";
-import { throwAPIError } from "@/utils/server/throw-api-error";
+import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 
 export async function processPaymentCanceledEvent(
   data: PaymentCanceledWebhookData,

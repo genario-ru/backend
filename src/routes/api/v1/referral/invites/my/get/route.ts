@@ -1,9 +1,12 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from "@/constants/api/defaults";
-import { HTTPStatusCode } from "@/constants/common/http-status-code";
-import { OpenAPITags } from "@/constants/openapi/tags";
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PER_PAGE,
+} from "@/constants/shared/api/defaults";
+import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
+import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { referralInvite } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
@@ -16,8 +19,8 @@ import {
   type GetMyReferralInvitesResponse,
   getMyReferralInvitesResponseSchema,
 } from "@/schemas/entities/referral/handlers/get-my-referral-invites/response";
-import { createOpenAPIResponse } from "@/utils/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
+import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 import {
   DEFAULT_REFERRAL_INVITE_SORT_MAP,

@@ -7,7 +7,7 @@ import {
   getUserProfile as getRuTubeUserProfile,
   getVideosByAuthorId as getRuTubeVideosByAuthorId,
 } from "@/codegen/api/rutube/clients";
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
   extractYouTubeChannelIdentifier,

@@ -10,7 +10,7 @@ import {
   type ProcessWebhookResponse,
   processWebhookResponseSchema,
 } from "@/schemas/entities/billing/handlers/process-webhook/response";
-import { createHonoApp } from "@/utils/server/create-hono-app";
+import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 export const processWebhookRoute = createHonoApp().basePath("/billing/webhook");
 

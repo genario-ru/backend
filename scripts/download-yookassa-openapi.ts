@@ -6,7 +6,7 @@ import { openapiFilter } from "openapi-format";
 import { join } from "path";
 import YAML from "yaml";
 
-import { envs } from "@/constants/common/envs";
+import { envs } from "@/constants/shared/common/envs";
 
 // ====================== НАСТРОЙКИ ======================
 
