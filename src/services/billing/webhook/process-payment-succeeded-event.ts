@@ -10,7 +10,7 @@ import {
   subscription,
   subscriptionToCreditsBatch,
 } from "@/db/schema";
-import type { PaymentSucceededWebhookData } from "@/schemas/domains/billing/entities/payment-webhook-data";
+import type { PaymentSucceededWebhookData } from "@/domains/billing/schemas/entities/payment-webhook-data";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 

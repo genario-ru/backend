@@ -8,9 +8,9 @@ import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
+import { ideaGeneratedSchema } from "@/domains/ideas/schemas/entities/idea";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { ideaGeneratedSchema } from "@/schemas/domains/ideas/entities/idea";
 
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,

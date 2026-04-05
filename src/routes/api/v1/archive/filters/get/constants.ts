@@ -3,7 +3,7 @@ import {
   type ArchiveSortField,
   type ArchiveSortOrder,
   DEFAULT_ARCHIVE_SORT,
-} from "@/schemas/domains/archive/entities/archive-sort";
+} from "@/domains/archive/schemas/entities/archive-sort";
 
 export const ARCHIVE_SORT_MAP: Record<
   string,

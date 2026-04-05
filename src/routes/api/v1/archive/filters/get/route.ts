@@ -4,14 +4,14 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { profile } from "@/db/schema";
+import {
+  type GetArchiveFiltersResponse,
+  getArchiveFiltersResponseSchema,
+} from "@/domains/archive/schemas/handlers/get-archive-filters/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import {
-  type GetArchiveFiltersResponse,
-  getArchiveFiltersResponseSchema,
-} from "@/schemas/domains/archive/handlers/get-archive-filters/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

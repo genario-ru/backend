@@ -5,18 +5,18 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { exportDocument, scenarioVersionToExportDocument } from "@/db/schema";
+import { getScenarioVersionExportBodySchema } from "@/domains/scenarios/schemas/handlers/create-scenario-version-export/body";
+import { getScenarioVersionExportParamsSchema } from "@/domains/scenarios/schemas/handlers/create-scenario-version-export/params";
+import {
+  type GetScenarioVersionExportResponse,
+  getScenarioVersionExportResponseSchema,
+} from "@/domains/scenarios/schemas/handlers/create-scenario-version-export/response";
 import { getAttachmentDownloadUrl } from "@/lib/attachments/utils/get-attachment-download-url";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioVersionExport } from "@/mq/scenario-version-export/queue";
-import { getScenarioVersionExportBodySchema } from "@/schemas/domains/scenarios/handlers/create-scenario-version-export/body";
-import { getScenarioVersionExportParamsSchema } from "@/schemas/domains/scenarios/handlers/create-scenario-version-export/params";
-import {
-  type GetScenarioVersionExportResponse,
-  getScenarioVersionExportResponseSchema,
-} from "@/schemas/domains/scenarios/handlers/create-scenario-version-export/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

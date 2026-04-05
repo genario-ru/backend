@@ -1,11 +1,12 @@
 import { sql } from "drizzle-orm";
 
 import { db } from "@/db";
+import type { HealthCheck } from "@/domains/health/schemas/entities/health-check";
 import { redis } from "@/lib/redis";
-import type { HealthCheck } from "@/schemas/domains/health/handlers/entities/health-check";
 
 export async function probePostgres(): Promise<HealthCheck> {
   const started = Date.now();
+
   try {
     await db.execute(sql`select 1`);
 
@@ -17,6 +18,7 @@ export async function probePostgres(): Promise<HealthCheck> {
 
 export async function probeRedis(): Promise<HealthCheck> {
   const started = Date.now();
+
   try {
     const pong = await redis.ping();
 

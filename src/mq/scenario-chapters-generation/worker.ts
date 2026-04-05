@@ -8,9 +8,9 @@ import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import { generationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
+import { scenarioChapterGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-chapter";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { scenarioChapterGeneratedSchema } from "@/schemas/domains/scenarios/entities/scenario-chapter";
 
 import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
 import {

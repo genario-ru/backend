@@ -17,8 +17,8 @@ import {
   profileToProfilesFromChannelsJob,
   profileToTone,
 } from "@/db/schema";
+import { profileGeneratedSchema } from "@/domains/profiles/schemas/entities/profile-generated";
 import { redis } from "@/lib/redis";
-import { profileGeneratedSchema } from "@/schemas/domains/profiles/entities/profile-generated";
 
 import {
   PROFILES_FROM_CHANNELS_GENERATION_QUEUE_NAME,

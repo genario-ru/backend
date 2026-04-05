@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { paymentMethod } from "@/db/schema";
-import type { PaymentMethodActiveWebhookData } from "@/schemas/domains/billing/entities/payment-method-webhook-data";
+import type { PaymentMethodActiveWebhookData } from "@/domains/billing/schemas/entities/payment-method-webhook-data";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 

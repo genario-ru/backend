@@ -13,9 +13,9 @@ import {
   scenarioScene,
   scenarioSceneComponent,
 } from "@/db/schema";
+import { scenarioSceneWithComponentsGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-scene";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { scenarioSceneWithComponentsGeneratedSchema } from "@/schemas/domains/scenarios/entities/scenario-scene";
 
 import {
   SCENARIO_SCENES_GENERATION_QUEUE_NAME,

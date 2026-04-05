@@ -6,15 +6,15 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
+import { createProfileBodySchema } from "@/domains/profiles/schemas/handlers/create-profile/body";
+import {
+  type CreateProfileResponse,
+  createProfileResponseSchema,
+} from "@/domains/profiles/schemas/handlers/create-profile/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { createProfileBodySchema } from "@/schemas/domains/profiles/handlers/create-profile/body";
-import {
-  type CreateProfileResponse,
-  createProfileResponseSchema,
-} from "@/schemas/domains/profiles/handlers/create-profile/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

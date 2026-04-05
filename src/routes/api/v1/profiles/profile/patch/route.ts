@@ -6,16 +6,16 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { profile, profileToPlatform, profileToTone } from "@/db/schema";
+import { updateProfileBodySchema } from "@/domains/profiles/schemas/handlers/update-profile/body";
+import { updateProfileParamsSchema } from "@/domains/profiles/schemas/handlers/update-profile/params";
+import {
+  type UpdateProfileResponse,
+  updateProfileResponseSchema,
+} from "@/domains/profiles/schemas/handlers/update-profile/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { updateProfileBodySchema } from "@/schemas/domains/profiles/handlers/update-profile/body";
-import { updateProfileParamsSchema } from "@/schemas/domains/profiles/handlers/update-profile/params";
-import {
-  type UpdateProfileResponse,
-  updateProfileResponseSchema,
-} from "@/schemas/domains/profiles/handlers/update-profile/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

@@ -9,16 +9,16 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { referralInvite } from "@/db/schema";
+import { DEFAULT_REFERRAL_INVITE_SORT } from "@/domains/referral/schemas/entities/referral-invite-sort";
+import { getMyReferralInvitesQuerySchema } from "@/domains/referral/schemas/handlers/get-my-referral-invites/query";
+import {
+  type GetMyReferralInvitesResponse,
+  getMyReferralInvitesResponseSchema,
+} from "@/domains/referral/schemas/handlers/get-my-referral-invites/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { DEFAULT_REFERRAL_INVITE_SORT } from "@/schemas/domains/referral/entities/referral-invite-sort";
-import { getMyReferralInvitesQuerySchema } from "@/schemas/domains/referral/handlers/get-my-referral-invites/query";
-import {
-  type GetMyReferralInvitesResponse,
-  getMyReferralInvitesResponseSchema,
-} from "@/schemas/domains/referral/handlers/get-my-referral-invites/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

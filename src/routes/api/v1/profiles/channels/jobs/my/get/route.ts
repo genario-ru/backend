@@ -1,14 +1,14 @@
 import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
+import {
+  type GetMyProfilesFromChannelsJobResponse,
+  getMyProfilesFromChannelsJobResponseSchema,
+} from "@/domains/profiles/schemas/handlers/get-my-profiles-from-channels-job/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import {
-  type GetMyProfilesFromChannelsJobResponse,
-  getMyProfilesFromChannelsJobResponseSchema,
-} from "@/schemas/domains/profiles/handlers/get-my-profiles-from-channels-job/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

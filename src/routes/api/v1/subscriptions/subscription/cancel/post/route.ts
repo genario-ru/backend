@@ -6,15 +6,15 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { subscription } from "@/db/schema";
+import { cancelSubscriptionParamsSchema } from "@/domains/subscriptions/schemas/handlers/cancel-subscription/params";
+import {
+  type CancelSubscriptionResponse,
+  cancelSubscriptionResponseSchema,
+} from "@/domains/subscriptions/schemas/handlers/cancel-subscription/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { cancelSubscriptionParamsSchema } from "@/schemas/domains/subscriptions/handlers/cancel-subscription/params";
-import {
-  type CancelSubscriptionResponse,
-  cancelSubscriptionResponseSchema,
-} from "@/schemas/domains/subscriptions/handlers/cancel-subscription/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

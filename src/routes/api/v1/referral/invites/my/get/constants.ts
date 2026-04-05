@@ -3,7 +3,7 @@ import {
   REFERRAL_INVITE_SORT_VALUES,
   type ReferralInviteSortField,
   type ReferralInviteSortOrder,
-} from "@/schemas/domains/referral/entities/referral-invite-sort";
+} from "@/domains/referral/schemas/entities/referral-invite-sort";
 
 export const REFERRAL_INVITE_SORT_MAP: Record<
   string,

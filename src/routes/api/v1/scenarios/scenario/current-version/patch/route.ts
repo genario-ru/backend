@@ -5,16 +5,16 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { scenario } from "@/db/schema";
+import { updateScenarioCurrentVersionBodySchema } from "@/domains/scenarios/schemas/handlers/update-scenario-current-version/body";
+import { updateScenarioCurrentVersionParamsSchema } from "@/domains/scenarios/schemas/handlers/update-scenario-current-version/params";
+import {
+  type UpdateScenarioCurrentVersionResponse,
+  updateScenarioCurrentVersionResponseSchema,
+} from "@/domains/scenarios/schemas/handlers/update-scenario-current-version/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { updateScenarioCurrentVersionBodySchema } from "@/schemas/domains/scenarios/handlers/update-scenario-current-version/body";
-import { updateScenarioCurrentVersionParamsSchema } from "@/schemas/domains/scenarios/handlers/update-scenario-current-version/params";
-import {
-  type UpdateScenarioCurrentVersionResponse,
-  updateScenarioCurrentVersionResponseSchema,
-} from "@/schemas/domains/scenarios/handlers/update-scenario-current-version/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

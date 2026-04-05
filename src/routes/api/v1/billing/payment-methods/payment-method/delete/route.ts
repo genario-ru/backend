@@ -5,15 +5,15 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { paymentMethod } from "@/db/schema";
+import { deletePaymentMethodParamsSchema } from "@/domains/billing/schemas/handlers/delete-payment-method/params";
+import {
+  type DeletePaymentMethodResponse,
+  deletePaymentMethodResponseSchema,
+} from "@/domains/billing/schemas/handlers/delete-payment-method/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { deletePaymentMethodParamsSchema } from "@/schemas/domains/billing/handlers/delete-payment-method/params";
-import {
-  type DeletePaymentMethodResponse,
-  deletePaymentMethodResponseSchema,
-} from "@/schemas/domains/billing/handlers/delete-payment-method/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

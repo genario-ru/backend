@@ -8,15 +8,15 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { creditsBatch, creditsBatchToPayment, payment } from "@/db/schema";
+import { initiateCreditsPackagePaymentBodySchema } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/body";
+import {
+  type InitiateCreditsPackagePaymentResponse,
+  initiateCreditsPackagePaymentResponseSchema,
+} from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/domains/credits/handlers/initiate-credits-package-payment/body";
-import {
-  type InitiateCreditsPackagePaymentResponse,
-  initiateCreditsPackagePaymentResponseSchema,
-} from "@/schemas/domains/credits/handlers/initiate-credits-package-payment/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

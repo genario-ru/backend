@@ -1,11 +1,11 @@
 import { getUserProfile as getRuTubeUserProfile } from "@/codegen/api/rutube/clients";
 import { db } from "@/db";
+import type { ProfileChannelUrlValidation } from "@/domains/profiles/schemas/entities/profile-channel-url-validation";
 import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
   extractYouTubeChannelIdentifier,
   getYouTubeChannel,
 } from "@/lib/youtube";
-import type { ProfileChannelUrlValidation } from "@/schemas/domains/profiles/entities/profile-channel-url-validation";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { testString } from "@/utils/shared/regex/test-string";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";

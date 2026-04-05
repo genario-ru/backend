@@ -2,8 +2,8 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { payment } from "@/db/schema";
+import type { PaymentCanceledWebhookData } from "@/domains/billing/schemas/entities/payment-webhook-data";
 import { processPaymentCancellationDetails } from "@/lib/yookassa/utils/process-payment-cancellation-details";
-import type { PaymentCanceledWebhookData } from "@/schemas/domains/billing/entities/payment-webhook-data";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 

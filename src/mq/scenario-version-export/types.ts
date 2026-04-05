@@ -1,8 +1,8 @@
-import type { ScenarioExtended } from "@/schemas/domains/scenarios/entities/scenario";
-import type { ScenarioChapter } from "@/schemas/domains/scenarios/entities/scenario-chapter";
-import type { ScenarioScene } from "@/schemas/domains/scenarios/entities/scenario-scene";
-import type { ScenarioSceneComponentExtended } from "@/schemas/domains/scenarios/entities/scenario-scene-component";
-import type { ScenarioVersion } from "@/schemas/domains/scenarios/entities/scenario-version";
+import type { ScenarioExtended } from "@/domains/scenarios/schemas/entities/scenario";
+import type { ScenarioChapter } from "@/domains/scenarios/schemas/entities/scenario-chapter";
+import type { ScenarioScene } from "@/domains/scenarios/schemas/entities/scenario-scene";
+import type { ScenarioSceneComponentExtended } from "@/domains/scenarios/schemas/entities/scenario-scene-component";
+import type { ScenarioVersion } from "@/domains/scenarios/schemas/entities/scenario-version";
 
 type ScenarioSceneExport = ScenarioScene & {
   components: ScenarioSceneComponentExtended[];

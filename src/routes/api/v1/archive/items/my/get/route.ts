@@ -9,20 +9,20 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList, scenario } from "@/db/schema";
+import {
+  archiveEntitySchema,
+  type ArchiveItemWithFilters,
+} from "@/domains/archive/schemas/entities/archive-item";
+import { DEFAULT_ARCHIVE_SORT } from "@/domains/archive/schemas/entities/archive-sort";
+import { getMyArchiveItemsQuerySchema } from "@/domains/archive/schemas/handlers/get-my-archive-items/query";
+import {
+  type GetMyArchiveItemsResponse,
+  getMyArchiveItemsResponseSchema,
+} from "@/domains/archive/schemas/handlers/get-my-archive-items/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import {
-  archiveEntitySchema,
-  type ArchiveItemWithFilters,
-} from "@/schemas/domains/archive/entities/archive-item";
-import { DEFAULT_ARCHIVE_SORT } from "@/schemas/domains/archive/entities/archive-sort";
-import { getMyArchiveItemsQuerySchema } from "@/schemas/domains/archive/handlers/get-my-archive-items/query";
-import {
-  type GetMyArchiveItemsResponse,
-  getMyArchiveItemsResponseSchema,
-} from "@/schemas/domains/archive/handlers/get-my-archive-items/response";
 import { toTimestamp } from "@/utils/shared/api/dates";
 import {
   getNextPage,

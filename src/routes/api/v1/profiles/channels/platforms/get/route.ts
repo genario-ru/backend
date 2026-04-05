@@ -1,12 +1,12 @@
 import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
-import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
-import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetPlatformsForChannelsResponse,
   getPlatformsForChannelsResponseSchema,
-} from "@/schemas/domains/profiles/handlers/get-platforms-for-channels.ts/response";
+} from "@/domains/profiles/schemas/handlers/get-platforms-for-channels.ts/response";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

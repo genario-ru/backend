@@ -5,15 +5,15 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
+import { getMyIdeasListsQuerySchema } from "@/domains/ideas-lists/schemas/handlers/get-my-ideas-lists/query";
+import {
+  type GetMyIdeasListsResponse,
+  getMyIdeasListsResponseSchema,
+} from "@/domains/ideas-lists/schemas/handlers/get-my-ideas-lists/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { getMyIdeasListsQuerySchema } from "@/schemas/domains/ideas-lists/handlers/get-my-ideas-lists/query";
-import {
-  type GetMyIdeasListsResponse,
-  getMyIdeasListsResponseSchema,
-} from "@/schemas/domains/ideas-lists/handlers/get-my-ideas-lists/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

@@ -4,16 +4,16 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
+import { createIdeasListBodySchema } from "@/domains/ideas-lists/schemas/handlers/create-ideas-list/body";
+import {
+  type CreateIdeasListResponse,
+  createIdeasListResponseSchema,
+} from "@/domains/ideas-lists/schemas/handlers/create-ideas-list/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListGeneration } from "@/mq/ideas-list-generation/queue";
-import { createIdeasListBodySchema } from "@/schemas/domains/ideas-lists/handlers/create-ideas-list/body";
-import {
-  type CreateIdeasListResponse,
-  createIdeasListResponseSchema,
-} from "@/schemas/domains/ideas-lists/handlers/create-ideas-list/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

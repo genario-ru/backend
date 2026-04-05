@@ -5,16 +5,16 @@ import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { idea } from "@/db/schema";
+import { saveIdeaBodySchema } from "@/domains/ideas/schemas/handlers/save-idea/body";
+import { saveIdeaParamsSchema } from "@/domains/ideas/schemas/handlers/save-idea/params";
+import {
+  type SaveIdeaResponse,
+  saveIdeaResponseSchema,
+} from "@/domains/ideas/schemas/handlers/save-idea/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { saveIdeaBodySchema } from "@/schemas/domains/ideas/handlers/save-idea/body";
-import { saveIdeaParamsSchema } from "@/schemas/domains/ideas/handlers/save-idea/params";
-import {
-  type SaveIdeaResponse,
-  saveIdeaResponseSchema,
-} from "@/schemas/domains/ideas/handlers/save-idea/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

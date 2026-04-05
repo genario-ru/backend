@@ -1,6 +1,6 @@
-import type { Idea } from "@/schemas/domains/ideas/entities/idea";
-import type { IdeasListExtended } from "@/schemas/domains/ideas-lists/entities/ideas-list";
-import type { VideoType } from "@/schemas/domains/video-types/entities/video-type";
+import type { Idea } from "@/domains/ideas/schemas/entities/idea";
+import type { IdeasListExtended } from "@/domains/ideas-lists/schemas/entities/ideas-list";
+import type { VideoType } from "@/domains/video-types/schemas/entities/video-type";
 
 type IdeaExport = Idea & {
   videoType: VideoType;

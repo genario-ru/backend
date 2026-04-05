@@ -1,14 +1,14 @@
 import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
+import {
+  type GetMyCreditsBatchesResponse,
+  getMyCreditsBatchesResponseSchema,
+} from "@/domains/credits/schemas/handlers/get-my-credits-batches/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import {
-  type GetMyCreditsBatchesResponse,
-  getMyCreditsBatchesResponseSchema,
-} from "@/schemas/domains/credits/handlers/get-my-credits-batches/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

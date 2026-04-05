@@ -1,11 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 
-import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { processWebhookBodySchema } from "@/schemas/domains/billing/handlers/process-webhook/body";
+import { processWebhookBodySchema } from "@/domains/billing/schemas/handlers/process-webhook/body";
 import {
   type ProcessWebhookResponse,
   processWebhookResponseSchema,
-} from "@/schemas/domains/billing/handlers/process-webhook/response";
+} from "@/domains/billing/schemas/handlers/process-webhook/response";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { processPaymentCanceledEvent } from "@/services/billing/webhook/process-payment-canceled-event";
 import { processPaymentMethodActiveEvent } from "@/services/billing/webhook/process-payment-method-active-event";
 import { processPaymentSucceededEvent } from "@/services/billing/webhook/process-payment-succeeded-event";
