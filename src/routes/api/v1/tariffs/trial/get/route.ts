@@ -3,6 +3,7 @@ import {
   type GetTrialTariffResponse,
   getTrialTariffResponseSchema,
 } from "@/domains/tariffs/schemas/handlers/get-trial-tariff/response";
+import { prepareTariffFeatures } from "@/domains/tariffs/utils/prepare-tariff-features";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
@@ -11,8 +12,6 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import { prepareTariffFeatures } from "../../utils";
 
 export const getTrialTariffRoute = createHonoApp().basePath("/tariffs/trial");
 

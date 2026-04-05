@@ -3,6 +3,7 @@ import {
   type GetMySubscriptionsResponse,
   getMySubscriptionsResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/get-my-subscriptions/response";
+import { prepareTariffFeatures } from "@/domains/tariffs/utils/prepare-tariff-features";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -37,12 +38,24 @@ getMySubscriptionsRoute.get(
 
     const foundSubscriptions = await db.query.subscription.findMany({
       where: (subscription, { eq }) => eq(subscription.userId, user.id),
-      with: { tariff: true },
+      with: {
+        tariff: {
+          with: {
+            creditsPackage: true,
+          },
+        },
+      },
     });
 
     return c.json<GetMySubscriptionsResponse>(
       getMySubscriptionsResponseSchema.parse({
-        data: foundSubscriptions,
+        data: foundSubscriptions.map((subscription) => ({
+          ...subscription,
+          tariff: {
+            ...subscription.tariff,
+            features: prepareTariffFeatures(subscription.tariff),
+          },
+        })),
       }),
     );
   },

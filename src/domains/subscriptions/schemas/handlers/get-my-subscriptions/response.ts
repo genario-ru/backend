@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { subscriptionExtendedSchema } from "../../entities/subscription";
+
 export const getMySubscriptionsResponseSchema = z
   .object({
     data: z.array(subscriptionExtendedSchema),

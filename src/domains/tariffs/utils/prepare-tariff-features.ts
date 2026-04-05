@@ -3,7 +3,7 @@ import type { Tariff } from "@/domains/tariffs/schemas/entities/tariff";
 import type { TariffFeature } from "@/domains/tariffs/schemas/entities/tariff-feature";
 import { ruPluralForm } from "@/shared/utils/intl/ru-plural-form";
 
-import { defaultFeatures } from "./constants";
+import { defaultFeatures } from "../constants/default-features";
 
 type PrepareTariffFeaturesParams = Pick<
   Tariff,

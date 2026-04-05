@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { tariffExtendedSchema } from "../../entities/tariff";
+
 export const getTrialTariffResponseSchema = z
   .object({
     data: tariffExtendedSchema,

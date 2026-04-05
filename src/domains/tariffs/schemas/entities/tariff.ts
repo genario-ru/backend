@@ -1,6 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { tariff } from "@/db/schema";
+import { creditsPackageSchema } from "@/domains/credits/schemas/entities/credits-package";
 import { z } from "@/lib/zod";
 
 import { tariffFeature } from "./tariff-feature";
@@ -15,6 +16,7 @@ export type Tariff = z.infer<typeof tariffSchema>;
 
 export const tariffExtendedSchema = tariffSchema
   .extend({
+    creditsPackage: creditsPackageSchema.nullish(),
     features: z.array(tariffFeature),
   })
   .meta({
