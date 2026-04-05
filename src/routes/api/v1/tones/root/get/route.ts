@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetTonesResponse,
   getTonesResponseSchema,
-} from "@/schemas/entities/tones/handlers/get-tones/response";
+} from "@/schemas/domains/tones/handlers/get-tones/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

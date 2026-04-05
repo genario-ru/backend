@@ -6,11 +6,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { validateProfileChannelBodySchema } from "@/schemas/entities/profiles/handlers/validate-profile-channel/body";
+import { validateProfileChannelBodySchema } from "@/schemas/domains/profiles/handlers/validate-profile-channel/body";
 import {
   type ValidateProfileChannelResponse,
   validateProfileChannelResponseSchema,
-} from "@/schemas/entities/profiles/handlers/validate-profile-channel/response";
+} from "@/schemas/domains/profiles/handlers/validate-profile-channel/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

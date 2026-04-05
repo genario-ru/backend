@@ -11,12 +11,12 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListGeneration } from "@/mq/ideas-list-generation/queue";
-import { updateIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/body";
-import { updateIdeasListParamsSchema } from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/params";
+import { updateIdeasListBodySchema } from "@/schemas/domains/ideas-lists/handlers/update-ideas-list/body";
+import { updateIdeasListParamsSchema } from "@/schemas/domains/ideas-lists/handlers/update-ideas-list/params";
 import {
   type UpdateIdeasListResponse,
   updateIdeasListResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/update-ideas-list/response";
+} from "@/schemas/domains/ideas-lists/handlers/update-ideas-list/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

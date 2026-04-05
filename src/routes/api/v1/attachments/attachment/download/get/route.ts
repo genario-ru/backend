@@ -8,7 +8,7 @@ import { s3 } from "@/lib/s3/client";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { getAttachmentDownloadParamsSchema } from "@/schemas/entities/attachments/handlers/get-attachment-download/params";
+import { getAttachmentDownloadParamsSchema } from "@/schemas/domains/attachments/handlers/get-attachment-download/params";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";

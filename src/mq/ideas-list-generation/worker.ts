@@ -10,7 +10,7 @@ import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { ideaGeneratedSchema } from "@/schemas/entities/ideas/entities/idea";
+import { ideaGeneratedSchema } from "@/schemas/domains/ideas/entities/idea";
 
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,

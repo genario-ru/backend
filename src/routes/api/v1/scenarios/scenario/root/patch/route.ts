@@ -14,12 +14,12 @@ import { enqueueScenarioChaptersGeneration } from "@/mq/scenario-chapters-genera
 import {
   type UpdateScenarioBody,
   updateScenarioBodySchema,
-} from "@/schemas/entities/scenarios/handlers/update-scenario/body";
-import { updateScenarioParamsSchema } from "@/schemas/entities/scenarios/handlers/update-scenario/params";
+} from "@/schemas/domains/scenarios/handlers/update-scenario/body";
+import { updateScenarioParamsSchema } from "@/schemas/domains/scenarios/handlers/update-scenario/params";
 import {
   type UpdateScenarioResponse,
   updateScenarioResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/update-scenario/response";
+} from "@/schemas/domains/scenarios/handlers/update-scenario/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

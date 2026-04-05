@@ -9,7 +9,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetMyReferralCodesResponse,
   getMyReferralCodesResponseSchema,
-} from "@/schemas/entities/referral/handlers/get-my-referral-codes/response";
+} from "@/schemas/domains/referral/handlers/get-my-referral-codes/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

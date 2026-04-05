@@ -11,12 +11,12 @@ import { payment, subscription, subscriptionToPayment } from "@/db/schema";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { initiateSubscriptionPaymentBodySchema } from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/body";
+import { initiateSubscriptionPaymentBodySchema } from "@/schemas/domains/subscriptions/handlers/initiate-subscriptions-payment/body";
 import {
   type InitiateSubscriptionPaymentResponse,
   initiateSubscriptionPaymentResponseSchema,
-} from "@/schemas/entities/subscriptions/handlers/initiate-subscriptions-payment/response";
-import type { Tariff } from "@/schemas/entities/tariffs/entities/tariff";
+} from "@/schemas/domains/subscriptions/handlers/initiate-subscriptions-payment/response";
+import type { Tariff } from "@/schemas/domains/tariffs/entities/tariff";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

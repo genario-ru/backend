@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { exportDocumentShortSchema } from "@/schemas/entities/export-document/entities/export-document";
+import { exportDocumentShortSchema } from "@/schemas/domains/export-document/entities/export-document";
 
 export const createIdeasListExportResponseSchema = z
   .object({

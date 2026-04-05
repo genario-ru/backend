@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { platformSchema } from "@/schemas/entities/platforms/entities/platform";
+import { platformSchema } from "@/schemas/domains/platforms/entities/platform";
 
 export const getPlatformsForChannelsResponseSchema = z
   .object({

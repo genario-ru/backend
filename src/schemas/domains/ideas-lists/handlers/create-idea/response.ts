@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { ideaSchema } from "@/schemas/entities/ideas/entities/idea";
+import { ideaSchema } from "@/schemas/domains/ideas/entities/idea";
 
 export const createIdeaResponseSchema = z
   .object({

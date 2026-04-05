@@ -7,7 +7,7 @@ import { sessionMiddleware } from "@/middleware/session-middleware";
 import {
   type GetMySubscriptionsResponse,
   getMySubscriptionsResponseSchema,
-} from "@/schemas/entities/subscriptions/handlers/get-my-subscriptions/response";
+} from "@/schemas/domains/subscriptions/handlers/get-my-subscriptions/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

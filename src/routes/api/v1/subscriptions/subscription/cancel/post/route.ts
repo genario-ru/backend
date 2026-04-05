@@ -10,11 +10,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { cancelSubscriptionParamsSchema } from "@/schemas/entities/subscriptions/handlers/cancel-subscription/params";
+import { cancelSubscriptionParamsSchema } from "@/schemas/domains/subscriptions/handlers/cancel-subscription/params";
 import {
   type CancelSubscriptionResponse,
   cancelSubscriptionResponseSchema,
-} from "@/schemas/entities/subscriptions/handlers/cancel-subscription/response";
+} from "@/schemas/domains/subscriptions/handlers/cancel-subscription/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

@@ -9,12 +9,12 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { saveScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/save-scenario/body";
-import { saveScenarioParamsSchema } from "@/schemas/entities/scenarios/handlers/save-scenario/params";
+import { saveScenarioBodySchema } from "@/schemas/domains/scenarios/handlers/save-scenario/body";
+import { saveScenarioParamsSchema } from "@/schemas/domains/scenarios/handlers/save-scenario/params";
 import {
   type SaveScenarioResponse,
   saveScenarioResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/save-scenario/response";
+} from "@/schemas/domains/scenarios/handlers/save-scenario/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

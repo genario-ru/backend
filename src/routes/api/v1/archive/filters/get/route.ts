@@ -11,7 +11,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetArchiveFiltersResponse,
   getArchiveFiltersResponseSchema,
-} from "@/schemas/entities/archive/handlers/get-archive-filters/response";
+} from "@/schemas/domains/archive/handlers/get-archive-filters/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

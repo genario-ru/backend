@@ -9,11 +9,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { deletePaymentMethodParamsSchema } from "@/schemas/entities/billing/handlers/delete-payment-method/params";
+import { deletePaymentMethodParamsSchema } from "@/schemas/domains/billing/handlers/delete-payment-method/params";
 import {
   type DeletePaymentMethodResponse,
   deletePaymentMethodResponseSchema,
-} from "@/schemas/entities/billing/handlers/delete-payment-method/response";
+} from "@/schemas/domains/billing/handlers/delete-payment-method/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

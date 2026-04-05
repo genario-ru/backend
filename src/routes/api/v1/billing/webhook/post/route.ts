@@ -1,15 +1,15 @@
 import { zValidator } from "@hono/zod-validator";
 
-import { processPaymentCanceledEvent } from "@/actions/billing/webhook/process-payment-canceled-event";
-import { processPaymentMethodActiveEvent } from "@/actions/billing/webhook/process-payment-method-active-event";
-import { processPaymentSucceededEvent } from "@/actions/billing/webhook/process-payment-succeeded-event";
-import { processRefundSucceededEvent } from "@/actions/billing/webhook/process-refund-succeeded-event";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { processWebhookBodySchema } from "@/schemas/entities/billing/handlers/process-webhook/body";
+import { processWebhookBodySchema } from "@/schemas/domains/billing/handlers/process-webhook/body";
 import {
   type ProcessWebhookResponse,
   processWebhookResponseSchema,
-} from "@/schemas/entities/billing/handlers/process-webhook/response";
+} from "@/schemas/domains/billing/handlers/process-webhook/response";
+import { processPaymentCanceledEvent } from "@/services/billing/webhook/process-payment-canceled-event";
+import { processPaymentMethodActiveEvent } from "@/services/billing/webhook/process-payment-method-active-event";
+import { processPaymentSucceededEvent } from "@/services/billing/webhook/process-payment-succeeded-event";
+import { processRefundSucceededEvent } from "@/services/billing/webhook/process-refund-succeeded-event";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
 export const processWebhookRoute = createHonoApp().basePath("/billing/webhook");

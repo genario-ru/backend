@@ -13,12 +13,12 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { DEFAULT_REFERRAL_INVITE_SORT } from "@/schemas/entities/referral/entities/referral-invite-sort";
-import { getMyReferralInvitesQuerySchema } from "@/schemas/entities/referral/handlers/get-my-referral-invites/query";
+import { DEFAULT_REFERRAL_INVITE_SORT } from "@/schemas/domains/referral/entities/referral-invite-sort";
+import { getMyReferralInvitesQuerySchema } from "@/schemas/domains/referral/handlers/get-my-referral-invites/query";
 import {
   type GetMyReferralInvitesResponse,
   getMyReferralInvitesResponseSchema,
-} from "@/schemas/entities/referral/handlers/get-my-referral-invites/response";
+} from "@/schemas/domains/referral/handlers/get-my-referral-invites/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

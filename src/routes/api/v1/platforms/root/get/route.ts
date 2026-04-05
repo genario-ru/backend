@@ -6,7 +6,7 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetPlatformsResponse,
   getPlatformsResponseSchema,
-} from "@/schemas/entities/platforms/handlers/get-platforms/response";
+} from "@/schemas/domains/platforms/handlers/get-platforms/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

@@ -9,11 +9,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { deleteProfileParamsSchema } from "@/schemas/entities/profiles/handlers/delete-profile/params";
+import { deleteProfileParamsSchema } from "@/schemas/domains/profiles/handlers/delete-profile/params";
 import {
   type DeleteProfileResponse,
   deleteProfileResponseSchema,
-} from "@/schemas/entities/profiles/handlers/delete-profile/response";
+} from "@/schemas/domains/profiles/handlers/delete-profile/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

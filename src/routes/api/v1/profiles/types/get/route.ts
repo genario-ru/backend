@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetProfileTypesResponse,
   getProfileTypesResponseSchema,
-} from "@/schemas/entities/profiles/handlers/get-profile-types/response";
+} from "@/schemas/domains/profiles/handlers/get-profile-types/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

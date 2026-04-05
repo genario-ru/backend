@@ -10,7 +10,7 @@ import { db } from "@/db";
 import { generationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { scenarioChapterGeneratedSchema } from "@/schemas/entities/scenarios/entities/scenario-chapter";
+import { scenarioChapterGeneratedSchema } from "@/schemas/domains/scenarios/entities/scenario-chapter";
 
 import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
 import {

@@ -12,11 +12,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/body";
+import { initiateCreditsPackagePaymentBodySchema } from "@/schemas/domains/credits/handlers/initiate-credits-package-payment/body";
 import {
   type InitiateCreditsPackagePaymentResponse,
   initiateCreditsPackagePaymentResponseSchema,
-} from "@/schemas/entities/credits/handlers/initiate-credits-package-payment/response";
+} from "@/schemas/domains/credits/handlers/initiate-credits-package-payment/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

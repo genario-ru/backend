@@ -5,7 +5,7 @@ import {
   extractYouTubeChannelIdentifier,
   getYouTubeChannel,
 } from "@/lib/youtube";
-import type { ProfileChannelUrlValidation } from "@/schemas/entities/profiles/entities/profile-channel-url-validation";
+import type { ProfileChannelUrlValidation } from "@/schemas/domains/profiles/entities/profile-channel-url-validation";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { testString } from "@/utils/shared/regex/test-string";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";

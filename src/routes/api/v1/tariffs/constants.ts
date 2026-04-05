@@ -1,4 +1,4 @@
-import type { TariffFeature } from "@/schemas/entities/tariffs/entities/tariff-feature";
+import type { TariffFeature } from "@/schemas/domains/tariffs/entities/tariff-feature";
 
 export const defaultFeatures: TariffFeature[] = [
   {

@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetMyScenariosResponse,
   getMyScenariosResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/get-my-scenarios/response";
+} from "@/schemas/domains/scenarios/handlers/get-my-scenarios/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

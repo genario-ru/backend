@@ -9,11 +9,11 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { getMyIdeasListsQuerySchema } from "@/schemas/entities/ideas-lists/handlers/get-my-ideas-lists/query";
+import { getMyIdeasListsQuerySchema } from "@/schemas/domains/ideas-lists/handlers/get-my-ideas-lists/query";
 import {
   type GetMyIdeasListsResponse,
   getMyIdeasListsResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/get-my-ideas-lists/response";
+} from "@/schemas/domains/ideas-lists/handlers/get-my-ideas-lists/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

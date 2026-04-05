@@ -6,7 +6,7 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetTariffsResponse,
   getTariffsResponseSchema,
-} from "@/schemas/entities/tariffs/handlers/get-tariffs/response";
+} from "@/schemas/domains/tariffs/handlers/get-tariffs/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

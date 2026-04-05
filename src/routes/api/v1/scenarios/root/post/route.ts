@@ -10,11 +10,11 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/scenario-chapters-generation/queue";
-import { createScenarioBodySchema } from "@/schemas/entities/scenarios/handlers/create-scenario/body";
+import { createScenarioBodySchema } from "@/schemas/domains/scenarios/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,
   createScenarioResponseSchema,
-} from "@/schemas/entities/scenarios/handlers/create-scenario/response";
+} from "@/schemas/domains/scenarios/handlers/create-scenario/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

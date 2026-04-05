@@ -14,7 +14,7 @@ import {
   getYouTubeChannel,
   getYouTubeChannelVideos,
 } from "@/lib/youtube";
-import { channelGroupsGeneratedSchema } from "@/schemas/entities/profiles/entities/channel-groups-generated";
+import { channelGroupsGeneratedSchema } from "@/schemas/domains/profiles/entities/channel-groups-generated";
 
 import type { ChannelInput } from "./queue";
 import type { FetchedChannel } from "./types";

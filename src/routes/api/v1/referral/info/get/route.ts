@@ -5,8 +5,8 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import {
   type GetMyReferralCodesResponse,
   getMyReferralCodesResponseSchema,
-} from "@/schemas/entities/referral/handlers/get-my-referral-codes/response";
-import { getReferralInfoResponseSchema } from "@/schemas/entities/referral/handlers/get-referral-info/response";
+} from "@/schemas/domains/referral/handlers/get-my-referral-codes/response";
+import { getReferralInfoResponseSchema } from "@/schemas/domains/referral/handlers/get-referral-info/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

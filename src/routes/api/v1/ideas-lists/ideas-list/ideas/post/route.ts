@@ -8,12 +8,12 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { createIdeaBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-idea/body";
-import { createIdeaParamsSchema } from "@/schemas/entities/ideas-lists/handlers/create-idea/params";
+import { createIdeaBodySchema } from "@/schemas/domains/ideas-lists/handlers/create-idea/body";
+import { createIdeaParamsSchema } from "@/schemas/domains/ideas-lists/handlers/create-idea/params";
 import {
   type CreateIdeaResponse,
   createIdeaResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/create-idea/response";
+} from "@/schemas/domains/ideas-lists/handlers/create-idea/response";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";

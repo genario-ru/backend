@@ -7,11 +7,11 @@ import { db } from "@/db";
 import {
   type Subscription,
   subscriptionSchema,
-} from "@/schemas/entities/subscriptions/entities/subscription";
+} from "@/schemas/domains/subscriptions/entities/subscription";
 import {
   type Tariff,
   tariffSchema,
-} from "@/schemas/entities/tariffs/entities/tariff";
+} from "@/schemas/domains/tariffs/entities/tariff";
 import { APIErrorCode } from "@/schemas/shared/common/api-error";
 import { throwAPIError } from "@/utils/shared/server/throw-api-error";
 

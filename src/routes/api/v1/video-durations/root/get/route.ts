@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetVideoDurationsResponse,
   getVideoDurationsResponseSchema,
-} from "@/schemas/entities/video-durations/handlers/get-video-durations/response";
+} from "@/schemas/domains/video-durations/handlers/get-video-durations/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

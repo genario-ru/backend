@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetMyPaymentMethodsResponse,
   getMyPaymentMethodsResponseSchema,
-} from "@/schemas/entities/billing/handlers/get-my-payment-methods/response";
+} from "@/schemas/domains/billing/handlers/get-my-payment-methods/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { redis } from "@/lib/redis";
-import type { HealthCheck } from "@/schemas/entities/health/handlers/entities/health-check";
+import type { HealthCheck } from "@/schemas/domains/health/handlers/entities/health-check";
 
 export async function probePostgres(): Promise<HealthCheck> {
   const started = Date.now();

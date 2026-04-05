@@ -16,13 +16,13 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   archiveEntitySchema,
   type ArchiveItemWithFilters,
-} from "@/schemas/entities/archive/entities/archive-item";
-import { DEFAULT_ARCHIVE_SORT } from "@/schemas/entities/archive/entities/archive-sort";
-import { getMyArchiveItemsQuerySchema } from "@/schemas/entities/archive/handlers/get-my-archive-items/query";
+} from "@/schemas/domains/archive/entities/archive-item";
+import { DEFAULT_ARCHIVE_SORT } from "@/schemas/domains/archive/entities/archive-sort";
+import { getMyArchiveItemsQuerySchema } from "@/schemas/domains/archive/handlers/get-my-archive-items/query";
 import {
   type GetMyArchiveItemsResponse,
   getMyArchiveItemsResponseSchema,
-} from "@/schemas/entities/archive/handlers/get-my-archive-items/response";
+} from "@/schemas/domains/archive/handlers/get-my-archive-items/response";
 import { toTimestamp } from "@/utils/shared/api/dates";
 import {
   getNextPage,

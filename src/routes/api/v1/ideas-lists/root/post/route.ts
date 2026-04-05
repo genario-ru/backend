@@ -9,11 +9,11 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListGeneration } from "@/mq/ideas-list-generation/queue";
-import { createIdeasListBodySchema } from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/body";
+import { createIdeasListBodySchema } from "@/schemas/domains/ideas-lists/handlers/create-ideas-list/body";
 import {
   type CreateIdeasListResponse,
   createIdeasListResponseSchema,
-} from "@/schemas/entities/ideas-lists/handlers/create-ideas-list/response";
+} from "@/schemas/domains/ideas-lists/handlers/create-ideas-list/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 

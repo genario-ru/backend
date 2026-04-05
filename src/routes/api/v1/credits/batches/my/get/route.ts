@@ -8,7 +8,7 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import {
   type GetMyCreditsBatchesResponse,
   getMyCreditsBatchesResponseSchema,
-} from "@/schemas/entities/credits/handlers/get-my-credits-batches/response";
+} from "@/schemas/domains/credits/handlers/get-my-credits-batches/response";
 import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
 import { createHonoApp } from "@/utils/shared/server/create-hono-app";
 
