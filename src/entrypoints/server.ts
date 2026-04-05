@@ -26,6 +26,8 @@ import {
 } from "@/routes/api/v1/archive";
 import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
 import {
+  addPaymentMethodRoute,
+  deletePaymentMethodRoute,
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,
@@ -139,6 +141,8 @@ const appAPIv1RoutesList = [
   updateIdeaRoute,
   saveIdeaRoute,
   getAttachmentDownloadRoute,
+  addPaymentMethodRoute,
+  deletePaymentMethodRoute,
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,
