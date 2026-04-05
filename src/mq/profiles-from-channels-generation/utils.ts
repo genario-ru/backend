@@ -7,7 +7,6 @@ import {
   getUserProfile as getRuTubeUserProfile,
   getVideosByAuthorId as getRuTubeVideosByAuthorId,
 } from "@/codegen/api/rutube/clients";
-import { envs } from "@/constants/shared/common/envs";
 import { channelGroupsGeneratedSchema } from "@/domains/profiles/schemas/entities/channel-groups-generated";
 import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
@@ -15,6 +14,7 @@ import {
   getYouTubeChannel,
   getYouTubeChannelVideos,
 } from "@/lib/youtube";
+import { envs } from "@/shared/constants/common/envs";
 
 import type { ChannelInput } from "./queue";
 import type { FetchedChannel } from "./types";

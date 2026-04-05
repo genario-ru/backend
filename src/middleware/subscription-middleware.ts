@@ -12,8 +12,8 @@ import {
   type Tariff,
   tariffSchema,
 } from "@/domains/tariffs/schemas/entities/tariff";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 type SubscriptionMiddlewareVariables = AuthType & {
   subscription: Subscription;

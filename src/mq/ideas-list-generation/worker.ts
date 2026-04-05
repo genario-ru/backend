@@ -5,12 +5,12 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { generateIdeasListPrompt } from "@/ai/prompts/builders/generate-ideas-list";
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
-import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
 import { ideaGeneratedSchema } from "@/domains/ideas/schemas/entities/idea";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
+import { envs } from "@/shared/constants/common/envs";
 
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,

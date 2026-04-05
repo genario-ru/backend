@@ -3,7 +3,6 @@ import { eq } from "drizzle-orm";
 
 import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/builders/generate-scenario-scene-preview";
 import { vsellm } from "@/ai/providers/open-ai/vsellm";
-import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
 import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";
@@ -11,6 +10,7 @@ import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
+import { envs } from "@/shared/constants/common/envs";
 
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,

@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { envsSchema } from "@/schemas/shared/common/envs";
+import { envsSchema } from "@/shared/schemas/common/envs";
 
 export const envs = envsSchema.parse({
   // Env

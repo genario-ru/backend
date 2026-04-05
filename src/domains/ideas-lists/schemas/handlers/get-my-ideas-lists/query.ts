@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { queryMetaSchema } from "@/schemas/shared/common/meta";
+import { queryMetaSchema } from "@/shared/schemas/common/meta";
 
 export const getMyIdeasListsQuerySchema = queryMetaSchema.extend({
   profileId: z.uuid().optional(),

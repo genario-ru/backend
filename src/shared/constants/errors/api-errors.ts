@@ -1,7 +1,7 @@
 import {
   APIErrorCode,
   APIErrorStatusCode,
-} from "@/schemas/shared/common/api-error";
+} from "@/shared/schemas/errors/api-error";
 
 export const APIErrorCodeToAPIErrorStatusCode: Record<
   APIErrorCode,

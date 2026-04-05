@@ -3,13 +3,13 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
-import { TRUSTED_ORIGINS } from "@/constants/shared/api/trusted-origins";
+import { db, schema } from "@/db";
+import { redis } from "@/lib/redis";
+import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import {
   APP_NAME,
   APP_NAME_CAPITALIZED,
-} from "@/constants/shared/common/app-info";
-import { db, schema } from "@/db";
-import { redis } from "@/lib/redis";
+} from "@/shared/constants/common/app-info";
 
 export type AuthType = {
   user: typeof auth.$Infer.Session.user;

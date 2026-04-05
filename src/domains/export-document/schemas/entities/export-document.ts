@@ -3,7 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 import { exportDocument } from "@/db/schema";
 import { attachmentSchema } from "@/domains/attachments/schemas/entities/attachment";
 import { z } from "@/lib/zod";
-import { generationStatusSchema } from "@/schemas/shared/common/generation-status";
+import { generationStatusSchema } from "@/shared/schemas/common/generation-status";
 
 import { exportDocumentFormatSchema } from "./export-document-format";
 

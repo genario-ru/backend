@@ -1,7 +1,7 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-import { envs } from "@/constants/shared/common/envs";
+import { envs } from "@/shared/constants/common/envs";
 
 import { s3 } from "../client";
 

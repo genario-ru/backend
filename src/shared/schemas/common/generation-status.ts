@@ -1,5 +1,5 @@
-import { generationStatuses } from "@/constants/shared/common/generation-statuses";
 import { z } from "@/lib/zod";
+import { generationStatuses } from "@/shared/constants/common/generation-statuses";
 
 export const generationStatusSchema = z.enum(generationStatuses);
 

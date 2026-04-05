@@ -1,12 +1,6 @@
 import { and, asc, desc, eq, ilike, inArray, or } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import {
-  DEFAULT_PAGE,
-  DEFAULT_PER_PAGE,
-} from "@/constants/shared/api/defaults";
-import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
-import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList, scenario } from "@/db/schema";
 import {
@@ -23,15 +17,21 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { toTimestamp } from "@/utils/shared/api/dates";
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PER_PAGE,
+} from "@/shared/constants/api/defaults";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { toTimestamp } from "@/shared/utils/api/dates";
 import {
   getNextPage,
   getPreviousPage,
   getTotalPages,
-} from "@/utils/shared/api/response-pages";
-import { toArray } from "@/utils/shared/api/to-array";
-import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+} from "@/shared/utils/api/response-pages";
+import { toArray } from "@/shared/utils/api/to-array";
+import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 import {
   ARCHIVE_SORT_MAP,

@@ -1,5 +1,3 @@
-import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
-import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import {
   type GetMyReferralCodesResponse,
   getMyReferralCodesResponseSchema,
@@ -7,8 +5,10 @@ import {
 import { getReferralInfoResponseSchema } from "@/domains/referral/schemas/handlers/get-referral-info/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 import { REFERRAL_BASIC_INFO, REFERRAL_DOCUMENT_LINK } from "./constants";
 

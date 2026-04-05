@@ -1,10 +1,10 @@
-import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
 import {
   type GetHealthResponse,
   getHealthResponseSchema,
 } from "@/domains/health/schemas/handlers/get-health/response";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 import { probePostgres, probeRedis } from "./utils";
 

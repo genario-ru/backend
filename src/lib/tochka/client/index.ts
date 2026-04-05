@@ -1,4 +1,3 @@
-import { envs } from "@/constants/shared/common/envs";
 import {
   type Client,
   createApiClient,
@@ -6,6 +5,7 @@ import {
   type ResponseConfig,
   type ResponseErrorConfig,
 } from "@/lib/api-client";
+import { envs } from "@/shared/constants/common/envs";
 
 export const client: Client = createApiClient({
   baseUrl: envs.TOCHKA_BASE_API_URL,

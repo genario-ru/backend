@@ -4,8 +4,8 @@ import { db } from "@/db";
 import { payment } from "@/db/schema";
 import type { PaymentCanceledWebhookData } from "@/domains/billing/schemas/entities/payment-webhook-data";
 import { processPaymentCancellationDetails } from "@/lib/yookassa/utils/process-payment-cancellation-details";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export async function processPaymentCanceledEvent(
   data: PaymentCanceledWebhookData,

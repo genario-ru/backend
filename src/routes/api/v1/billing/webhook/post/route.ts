@@ -5,12 +5,12 @@ import {
   type ProcessWebhookResponse,
   processWebhookResponseSchema,
 } from "@/domains/billing/schemas/handlers/process-webhook/response";
+import { processPaymentCanceledEvent } from "@/domains/billing/services/process-payment-canceled-event";
+import { processPaymentMethodActiveEvent } from "@/domains/billing/services/process-payment-method-active-event";
+import { processPaymentSucceededEvent } from "@/domains/billing/services/process-payment-succeeded-event";
+import { processRefundSucceededEvent } from "@/domains/billing/services/process-refund-succeeded-event";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { processPaymentCanceledEvent } from "@/services/billing/webhook/process-payment-canceled-event";
-import { processPaymentMethodActiveEvent } from "@/services/billing/webhook/process-payment-method-active-event";
-import { processPaymentSucceededEvent } from "@/services/billing/webhook/process-payment-succeeded-event";
-import { processRefundSucceededEvent } from "@/services/billing/webhook/process-refund-succeeded-event";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 export const processWebhookRoute = createHonoApp().basePath("/billing/webhook");
 

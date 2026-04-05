@@ -1,4 +1,4 @@
-import { envs } from "../common/envs";
+import { envs } from "@/shared/constants/common/envs";
 
 const FRONTEND_LOCAL_BASE_URL = "http://localhost:5173";
 const BACKEND_LOCAL_BASE_URL = "http://localhost:3000";

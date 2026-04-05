@@ -1,8 +1,8 @@
 import { HTTPException } from "hono/http-exception";
 
-import { APIErrorCodeToAPIErrorStatusCode } from "@/constants/shared/errors/api-errors";
-import { httpStatusCodeMessages } from "@/constants/shared/errors/http-errors";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
+import { APIErrorCodeToAPIErrorStatusCode } from "@/shared/constants/errors/api-errors";
+import { httpStatusCodeMessages } from "@/shared/constants/errors/http-errors";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 
 type ThrownAPIErrorParams = {
   code: APIErrorCode;

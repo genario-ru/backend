@@ -2,8 +2,6 @@ import { and, eq, inArray } from "drizzle-orm";
 import { difference } from "es-toolkit";
 import { validator } from "hono-openapi";
 
-import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
-import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
 import {
@@ -20,10 +18,12 @@ import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/scenario-chapters-generation/queue";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export const updateScenarioRoute = createHonoApp().basePath(
   "/scenarios/:scenarioId",

@@ -1,8 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { HTTPStatusCode } from "@/constants/shared/common/http-status-code";
-import { OpenAPITags } from "@/constants/shared/openapi/tags";
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
 import { deleteIdeasListParamsSchema } from "@/domains/ideas-lists/schemas/handlers/delete-ideas-list/params";
@@ -14,8 +12,10 @@ import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middlew
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { createOpenAPIResponse } from "@/utils/shared/openapi/create-openapi-response";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 export const deleteIdeasListRoute = createHonoApp().basePath(
   "/ideas-lists/:ideasListId",

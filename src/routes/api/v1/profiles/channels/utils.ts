@@ -6,9 +6,9 @@ import {
   extractYouTubeChannelIdentifier,
   getYouTubeChannel,
 } from "@/lib/youtube";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { testString } from "@/utils/shared/regex/test-string";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { testString } from "@/shared/utils/regex/test-string";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export async function validateProfileChannel(
   url: string,

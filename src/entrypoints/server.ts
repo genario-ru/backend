@@ -11,8 +11,6 @@ import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
 import { openAPIRouteHandler } from "hono-openapi";
 
-import { TRUSTED_ORIGINS } from "@/constants/shared/api/trusted-origins";
-import { envs } from "@/constants/shared/common/envs";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
@@ -107,8 +105,10 @@ import { getVideoDurationsRoute } from "@/routes/api/v1/video-durations";
 import { getVideoTypesRoute } from "@/routes/api/v1/video-types";
 import { healthRoute } from "@/routes/health";
 import { rootRoute } from "@/routes/root";
-import { addGracefulShutdown } from "@/utils/shared/server/add-graceful-shutdown";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
+import { envs } from "@/shared/constants/common/envs";
+import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 const app = createHonoApp();
 const appAPI = app.basePath("/api");

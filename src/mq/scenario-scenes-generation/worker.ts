@@ -5,7 +5,6 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { generateScenarioScenesPrompt } from "@/ai/prompts/builders/generate-scenario-scenes";
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
-import { envs } from "@/constants/shared/common/envs";
 import { db } from "@/db";
 import {
   generationLog,
@@ -16,6 +15,7 @@ import {
 import { scenarioSceneWithComponentsGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-scene";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
+import { envs } from "@/shared/constants/common/envs";
 
 import {
   SCENARIO_SCENES_GENERATION_QUEUE_NAME,

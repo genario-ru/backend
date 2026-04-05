@@ -1,8 +1,8 @@
 import { createMiddleware } from "hono/factory";
 
 import { auth, type AuthType } from "@/auth";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export const sessionMiddleware = createMiddleware<{ Variables: AuthType }>(
   async (c, next) => {

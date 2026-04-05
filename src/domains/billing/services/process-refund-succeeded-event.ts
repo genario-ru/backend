@@ -3,8 +3,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { creditsBatch, refund, subscription } from "@/db/schema";
 import type { RefundSucceededWebhookData } from "@/domains/billing/schemas/entities/refund-webhook-data";
-import { APIErrorCode } from "@/schemas/shared/common/api-error";
-import { throwAPIError } from "@/utils/shared/server/throw-api-error";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export async function processRefundSucceededEvent(
   data: RefundSucceededWebhookData,

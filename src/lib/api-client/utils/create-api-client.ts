@@ -1,4 +1,4 @@
-import { prepareQueryString } from "@/utils/shared/api/prepare-query-string";
+import { prepareQueryString } from "@/shared/utils/api/prepare-query-string";
 
 import type {
   Client,

@@ -1,7 +1,7 @@
 import type { CreditsPackage } from "@/domains/credits/schemas/entities/credits-package";
 import type { Tariff } from "@/domains/tariffs/schemas/entities/tariff";
 import type { TariffFeature } from "@/domains/tariffs/schemas/entities/tariff-feature";
-import { ruPluralForm } from "@/utils/shared/intl/ru-plural-form";
+import { ruPluralForm } from "@/shared/utils/intl/ru-plural-form";
 
 import { defaultFeatures } from "./constants";
 

@@ -1,5 +1,5 @@
 import { z } from "@/lib/zod";
-import { responseMetaSchema } from "@/schemas/shared/common/meta";
+import { responseMetaSchema } from "@/shared/schemas/common/meta";
 
 import { referralInviteExtendedSchema } from "../../entities/referral-invite";
 

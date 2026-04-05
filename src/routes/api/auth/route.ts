@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { createHonoApp } from "@/utils/shared/server/create-hono-app";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 export const authRoute = createHonoApp().basePath("/auth");
 

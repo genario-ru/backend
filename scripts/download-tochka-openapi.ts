@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { openapiFilter } from "openapi-format";
 import { join } from "path";
 
-import { envs } from "@/constants/shared/common/envs";
+import { envs } from "@/shared/constants/common/envs";
 
 // ====================== НАСТРОЙКИ ======================
 
