@@ -35,6 +35,7 @@ import {
 import {
   getCreditsPackagesRoute,
   getMyCreditsBatchesRoute,
+  getMyCreditsUsageRoute,
   initiateCreditsPackagePaymentRoute,
 } from "@/routes/api/v1/credits";
 import {
@@ -148,6 +149,7 @@ const appAPIv1RoutesList = [
   processWebhookRoute,
   getCreditsPackagesRoute,
   getMyCreditsBatchesRoute,
+  getMyCreditsUsageRoute,
   initiateCreditsPackagePaymentRoute,
   createIdeasListRoute,
   deleteIdeasListRoute,
