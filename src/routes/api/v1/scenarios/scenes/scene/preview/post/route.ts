@@ -2,6 +2,8 @@ import { validator } from "hono-openapi";
 
 import { db } from "@/db";
 import { scenarioScenePreview } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { createScenarioScenePreviewParamsSchema } from "@/domains/scenarios/schemas/handlers/create-scenario-scene-preview/params";
 import {
   type CreateScenarioScenePreviewResponse,
@@ -111,6 +113,15 @@ createScenarioScenePreviewRoute.post(
         }),
         HTTPStatusCode.Ok,
       );
+    }
+
+    const creditsBalance = await getCreditsBalance({ userId: user.id });
+
+    if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
+      return throwAPIError({
+        code: APIErrorCode.BusinessRuleViolation,
+        message: "Недостаточно кредитов для генерации превью сцены сценария",
+      });
     }
 
     const [createdPreview] = await db

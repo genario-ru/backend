@@ -4,6 +4,8 @@ import { validator } from "hono-openapi";
 
 import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
+import { AVERAGE_SCENARIO_CREDITS_COST } from "@/domains/scenarios/constants/credits-pricing";
 import {
   type UpdateScenarioBody,
   updateScenarioBodySchema,
@@ -60,6 +62,17 @@ updateScenarioRoute.patch(
       regenerate: shouldRegenerate,
       ...updateScenarioParams
     } = requestBody;
+
+    if (shouldRegenerate) {
+      const creditsBalance = await getCreditsBalance({ userId: user.id });
+
+      if (creditsBalance < AVERAGE_SCENARIO_CREDITS_COST) {
+        return throwAPIError({
+          code: APIErrorCode.BusinessRuleViolation,
+          message: "Недостаточно кредитов для генерации сценария",
+        });
+      }
+    }
 
     const foundScenario = await db.query.scenario.findFirst({
       where: (scenario, { eq, and }) =>

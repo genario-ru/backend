@@ -3,6 +3,8 @@ import { validator } from "hono-openapi";
 
 import { db } from "@/db";
 import { ideasList } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { generateMoreIdeasBodySchema } from "@/domains/ideas-lists/schemas/handlers/generate-more-ideas/body";
 import {
   type GenerateMoreIdeasResponse,
@@ -61,6 +63,15 @@ generateMoreIdeasRoute.post(
         code: APIErrorCode.NotFound,
         message:
           "Данный список идей не существует или у вас нет возможности редактировать его",
+      });
+    }
+
+    const creditsBalance = await getCreditsBalance({ userId: user.id });
+
+    if (creditsBalance < creditsPricing["ideas-list"]) {
+      return throwAPIError({
+        code: APIErrorCode.BusinessRuleViolation,
+        message: "Недостаточно кредитов для генерации большего количества идей",
       });
     }
 

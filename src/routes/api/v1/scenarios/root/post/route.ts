@@ -3,6 +3,8 @@ import { validator } from "hono-openapi";
 
 import { db } from "@/db";
 import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
+import { AVERAGE_SCENARIO_CREDITS_COST } from "@/domains/scenarios/constants/credits-pricing";
 import { createScenarioBodySchema } from "@/domains/scenarios/schemas/handlers/create-scenario/body";
 import {
   type CreateScenarioResponse,
@@ -15,8 +17,10 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueScenarioChaptersGeneration } from "@/mq/scenario-chapters-generation/queue";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export const createScenarioRoute = createHonoApp().basePath("/scenarios");
 
@@ -43,6 +47,15 @@ createScenarioRoute.post(
   async (c) => {
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
     const user = c.get("user");
+
+    const creditsBalance = await getCreditsBalance({ userId: user.id });
+
+    if (creditsBalance < AVERAGE_SCENARIO_CREDITS_COST) {
+      return throwAPIError({
+        code: APIErrorCode.BusinessRuleViolation,
+        message: "Недостаточно кредитов для создания сценария",
+      });
+    }
 
     const { createdScenario, createdScenarioVersion } = await db.transaction(
       async (tx) => {

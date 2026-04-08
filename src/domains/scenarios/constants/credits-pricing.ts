@@ -1,0 +1,1 @@
+export const AVERAGE_SCENARIO_CREDITS_COST = 10;

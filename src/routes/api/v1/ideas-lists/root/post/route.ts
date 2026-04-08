@@ -2,6 +2,8 @@ import { validator } from "hono-openapi";
 
 import { db } from "@/db";
 import { ideasList, ideasListToTone, ideasListToVideoType } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { createIdeasListBodySchema } from "@/domains/ideas-lists/schemas/handlers/create-ideas-list/body";
 import {
   type CreateIdeasListResponse,
@@ -14,8 +16,10 @@ import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { enqueueIdeasListGeneration } from "@/mq/ideas-list-generation/queue";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 export const createIdeasListRoute = createHonoApp().basePath("/ideas-lists");
 
@@ -44,6 +48,15 @@ createIdeasListRoute.post(
       c.req.valid("json");
 
     const user = c.get("user");
+
+    const creditsBalance = await getCreditsBalance({ userId: user.id });
+
+    if (creditsBalance < creditsPricing["ideas-list"]) {
+      return throwAPIError({
+        code: APIErrorCode.BusinessRuleViolation,
+        message: "Недостаточно кредитов для создания списка идей",
+      });
+    }
 
     const createdIdeasList = await db.transaction(async (tx) => {
       const [createdIdeasList] = await tx
