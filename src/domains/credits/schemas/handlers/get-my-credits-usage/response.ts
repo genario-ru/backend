@@ -1,7 +1,7 @@
 import { z } from "@/lib/zod";
 import { responseMetaSchema } from "@/shared/schemas/common/meta";
 
-import { creditsUsagePublicExtendedSchema } from "../../entities/credits-usage";
+import { creditsUsageExtendedSchema } from "../../entities/credits-usage";
 
 export const getMyCreditsUsageResponseMetaSchema = responseMetaSchema
   .omit({
@@ -20,7 +20,7 @@ export type GetMyCreditsUsageResponseMeta = z.infer<
 
 export const getMyCreditsUsageResponseSchema = z
   .object({
-    data: z.array(creditsUsagePublicExtendedSchema),
+    data: z.array(creditsUsageExtendedSchema),
     meta: getMyCreditsUsageResponseMetaSchema,
   })
   .meta({

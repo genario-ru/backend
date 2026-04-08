@@ -21,7 +21,7 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
   async (job) => {
     const { exportDocumentId, ideasListId } = job.data;
 
-    console.log("Ideas list export worker started", job.data);
+    console.log("Worker экспорта списка идей запущен", job.data);
 
     try {
       const foundIdeasListToExportDocument =
@@ -148,13 +148,13 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         };
       });
 
-      console.log("Ideas list export generated", {
+      console.log("Экспорт списка идей успешно сгенерирован", {
         exportDocumentId,
         attachmentId: createdAttachment.id,
       });
     } catch (error) {
       console.error(
-        "Ideas list export generation worker error",
+        "Worker экспорта списка идей упал с ошибкой",
         exportDocumentId,
         error,
       );
@@ -164,7 +164,9 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
         .set({
           status: "failed",
           statusDetails:
-            error instanceof Error ? error.message : "Unknown export error",
+            error instanceof Error
+              ? error.message
+              : "Неизвестная ошибка экспорта",
         })
         .where(eq(exportDocument.id, exportDocumentId));
 
@@ -178,13 +180,17 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
 );
 
 ideasListExportWorker.on("error", (error) => {
-  console.error("Ideas list export worker error", error);
+  console.error("Worker экспорта списка идей упал с ошибкой", error);
 });
 
 ideasListExportWorker.on("failed", (job, error) => {
-  console.error("Ideas list export worker failed", job?.toJSON(), error);
+  console.error(
+    "Worker экспорта списка идей упал с ошибкой",
+    job?.toJSON(),
+    error,
+  );
 });
 
 ideasListExportWorker.on("completed", (job) => {
-  console.log("Ideas list export worker completed", job.id);
+  console.log("Worker экспорта списка идей отработал успешно", job.id);
 });

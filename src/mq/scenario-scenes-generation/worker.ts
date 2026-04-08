@@ -12,6 +12,9 @@ import {
   scenarioScene,
   scenarioSceneComponent,
 } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { chargeCredits } from "@/domains/credits/services/charge-credits";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { scenarioSceneWithComponentsGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-scene";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
@@ -28,7 +31,7 @@ export const scenarioScenesGenerationWorker =
     async (job) => {
       const { scenarioChapterId } = job.data;
 
-      console.log("Scenario scenes generation worker started", job.data);
+      console.log("Worker генерации сцен сценария запущен", job.data);
 
       try {
         const foundScenarioChapter = await db.query.scenarioChapter.findFirst({
@@ -47,9 +50,7 @@ export const scenarioScenesGenerationWorker =
         });
 
         if (!foundScenarioChapter) {
-          console.warn(
-            `Scenario chapter with id ${scenarioChapterId} was not found`,
-          );
+          console.warn(`Раздел сценария с id ${scenarioChapterId} не найден`);
 
           return;
         }
@@ -58,9 +59,17 @@ export const scenarioScenesGenerationWorker =
           await db.query.scenarioSceneComponentType.findMany();
 
         if (!scenarioSceneComponentTypes.length) {
-          console.warn(`Scenario scene component types not found`);
+          console.warn(`Типы компонентов сцены сценария не найдены`);
 
           return;
+        }
+
+        const creditsBalance = await getCreditsBalance({
+          userId: foundScenarioChapter.scenarioVersion.scenario.userId,
+        });
+
+        if (creditsBalance < creditsPricing["scenario-chapter-scenes"]) {
+          throw new Error("Недостаточно кредитов для выполнения операции");
         }
 
         await db
@@ -107,10 +116,10 @@ export const scenarioScenesGenerationWorker =
           });
 
         if (!generatedScenesObject) {
-          throw new Error("Scenario scenes generation failed");
+          throw new Error("Не удалось сгенерировать сцены сценария");
         }
 
-        console.log("Scenario scenes generation finished");
+        console.log("Сцены сценария успешно сгенерированы");
 
         const generatedScenes = generatedScenesObject.scenes;
 
@@ -147,13 +156,24 @@ export const scenarioScenesGenerationWorker =
           }
 
           if (generatedScenes.length > 0) {
-            await tx.insert(generationLog).values({
-              entity: "scenario-chapter-scenes" as const,
-              entityId: scenarioChapterId,
-              prompt,
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            });
+            await Promise.all([
+              tx.insert(generationLog).values({
+                entity: "scenario-chapter-scenes" as const,
+                entityId: scenarioChapterId,
+                prompt,
+                model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+                tokens: usage?.total_tokens ?? 0,
+              }),
+              chargeCredits({
+                userId: foundScenarioChapter.scenarioVersion.scenario.userId,
+                entity: "scenario-chapter-scenes",
+                entityId: scenarioChapterId,
+                totalTokens: usage?.total_tokens ?? 0,
+                transaction: tx,
+              }),
+            ]);
+          } else {
+            console.warn("Сгенерированный список сцен сценария пуст");
           }
 
           await tx
@@ -162,7 +182,7 @@ export const scenarioScenesGenerationWorker =
             .where(eq(scenarioChapter.id, scenarioChapterId));
         });
       } catch (error) {
-        console.error("Scenario scenes generation worker error", error);
+        console.error("Worker генерации сцен сценария упал с ошибкой", error);
 
         try {
           await db
@@ -171,7 +191,7 @@ export const scenarioScenesGenerationWorker =
             .where(eq(scenarioChapter.id, scenarioChapterId));
         } catch (updateError) {
           console.error(
-            "Scenario scenes generation worker failed to update status",
+            "Не удалось обновить статус сцен сценария",
             updateError,
           );
         }

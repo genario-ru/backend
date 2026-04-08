@@ -1,4 +1,5 @@
 // Enums
+export * from "./constants/generation-entity";
 export * from "./constants/generation-status";
 
 // Auth

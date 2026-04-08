@@ -3,6 +3,7 @@ import { partition } from "es-toolkit";
 
 import { db } from "@/db";
 import { creditsBatch, creditsUsage } from "@/db/schema";
+import type { Transaction } from "@/db/types";
 
 import { creditsPricing } from "../constants/credits-pricing";
 import type { CreditsBatch } from "../schemas/entities/credits-batch";
@@ -16,14 +17,16 @@ type ChargeCreditsParams = {
   userId: string;
   entity: CreditsPricingEntity;
   entityId: string;
-  totalPrice: number;
+  totalTokens: number;
+  transaction?: Transaction;
 };
 
 export async function chargeCredits({
   userId,
   entity,
   entityId,
-  totalPrice,
+  totalTokens,
+  transaction,
 }: ChargeCreditsParams) {
   const creditsBalance = await getCreditsBalance({ userId });
   const entityPrice = creditsPricing[entity];
@@ -72,10 +75,10 @@ export async function chargeCredits({
   }
 
   const newRemainingAmount = creditsBatchToCharge.remainingAmount - entityPrice;
-  const creditPrice = totalPrice / entityPrice;
-  const creditPriceRounded = Number(creditPrice.toFixed(2));
+  const tokensPerCredit = totalTokens / entityPrice;
+  const tokensPerCreditRounded = Number(tokensPerCredit.toFixed(2));
 
-  await db.transaction(async (tx) => {
+  await (transaction ?? db).transaction(async (tx) => {
     await tx
       .update(creditsBatch)
       .set({ remainingAmount: newRemainingAmount })
@@ -87,8 +90,7 @@ export async function chargeCredits({
       entity,
       entityId,
       creditsAmount: entityPrice,
-      creditPrice: creditPriceRounded,
-      totalPrice,
+      tokensPerCredit: tokensPerCreditRounded,
     });
   });
 }

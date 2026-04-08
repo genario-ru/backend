@@ -1,7 +1,8 @@
 import type { CreditsPricingEntity } from "../types/credits-pricing";
 
 export const creditsPricing: Record<CreditsPricingEntity, number> = {
-  "scenario": 10,
-  "scenario-scene-preview": 5,
   "ideas-list": 1,
+  "scenario-chapters": 1,
+  "scenario-chapter-scenes": 1,
+  "scenario-scene-preview": 5,
 } as const;

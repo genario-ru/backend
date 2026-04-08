@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
@@ -55,12 +55,10 @@ getMyCreditsUsageRoute.get(
     const { page = DEFAULT_PAGE, perPage = DEFAULT_PER_PAGE } =
       c.req.valid("query");
 
-    const whereConditions = [eq(creditsUsage.userId, user.id)];
-
     const [totalItems, foundCreditsUsage] = await Promise.all([
-      db.$count(creditsUsage, and(...whereConditions)),
+      db.$count(creditsUsage, eq(creditsUsage.userId, user.id)),
       db.query.creditsUsage.findMany({
-        where: and(...whereConditions),
+        where: eq(creditsUsage.userId, user.id),
         orderBy: desc(creditsUsage.createdAt),
         limit: perPage,
         offset: (page - 1) * perPage,
@@ -72,21 +70,9 @@ getMyCreditsUsageRoute.get(
 
     const totalPages = getTotalPages(totalItems, perPage);
 
-    const data = foundCreditsUsage.map(
-      ({
-        batch,
-        creditPrice: _creditPrice,
-        totalPrice: _totalPrice,
-        ...usage
-      }) => ({
-        ...usage,
-        creditsBatch: batch,
-      }),
-    );
-
     return c.json<GetMyCreditsUsageResponse>(
       getMyCreditsUsageResponseSchema.parse({
-        data,
+        data: foundCreditsUsage,
         meta: {
           previousPage: getPreviousPage(page),
           currentPage: page,

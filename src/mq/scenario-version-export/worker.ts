@@ -22,7 +22,7 @@ export const scenarioVersionExportWorker =
     async (job) => {
       const { exportDocumentId, scenarioVersionId } = job.data;
 
-      console.log("Scenario version export worker started", job.data);
+      console.log("Worker экспорта версии сценария запущен", job.data);
 
       try {
         const foundScenarioVersionToExportDocument =
@@ -43,7 +43,7 @@ export const scenarioVersionExportWorker =
 
         if (!foundScenarioVersionToExportDocument) {
           throw new Error(
-            `Scenario version export document not found: ${exportDocumentId}`,
+            `Экспортный документ с id ${exportDocumentId} не найден`,
           );
         }
 
@@ -175,13 +175,13 @@ export const scenarioVersionExportWorker =
           })
           .where(eq(exportDocument.id, exportDocumentId));
 
-        console.log("Scenario version export generated", {
+        console.log("Экспорт версии сценария успешно сгенерирован", {
           exportDocumentId,
           attachmentId: createdAttachment.id,
         });
       } catch (error) {
         console.error(
-          "Scenario version export generation worker error",
+          "Worker экспорта версии сценария упал с ошибкой",
           exportDocumentId,
           error,
         );
@@ -191,7 +191,9 @@ export const scenarioVersionExportWorker =
           .set({
             status: "failed",
             statusDetails:
-              error instanceof Error ? error.message : "Unknown export error",
+              error instanceof Error
+                ? error.message
+                : "Неизвестная ошибка экспорта",
           })
           .where(eq(exportDocument.id, exportDocumentId));
 
@@ -205,13 +207,17 @@ export const scenarioVersionExportWorker =
   );
 
 scenarioVersionExportWorker.on("error", (error) => {
-  console.error("Scenario version export worker error", error);
+  console.error("Worker экспорта версии сценария упал с ошибкой", error);
 });
 
 scenarioVersionExportWorker.on("failed", (job, error) => {
-  console.error("Scenario version export worker failed", job?.toJSON(), error);
+  console.error(
+    "Worker экспорта версии сценария упал с ошибкой",
+    job?.toJSON(),
+    error,
+  );
 });
 
 scenarioVersionExportWorker.on("completed", (job) => {
-  console.log("Scenario version export worker completed", job.id);
+  console.log("Worker экспорта версии сценария отработал успешно", job.id);
 });

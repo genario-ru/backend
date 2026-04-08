@@ -7,6 +7,9 @@ import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { db } from "@/db";
 import { generationLog, scenarioChapter, scenarioVersion } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { chargeCredits } from "@/domains/credits/services/charge-credits";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { scenarioChapterGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-chapter";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
@@ -24,7 +27,7 @@ export const scenarioChaptersGenerationWorker =
     async (job) => {
       const { scenarioId, scenarioVersionId } = job.data;
 
-      console.log("Scenario chapters generation worker started", job.data);
+      console.log("Worker генерации глав сценария запущен", job.data);
 
       try {
         const foundScenario = await db.query.scenario.findFirst({
@@ -42,9 +45,17 @@ export const scenarioChaptersGenerationWorker =
         });
 
         if (!foundScenario) {
-          console.warn(`Scenario with id ${scenarioId} was not found`);
+          console.warn(`Сценарий с id ${scenarioId} не найден`);
 
           return;
+        }
+
+        const creditsBalance = await getCreditsBalance({
+          userId: foundScenario.userId,
+        });
+
+        if (creditsBalance < creditsPricing["scenario-chapters"]) {
+          throw new Error("Недостаточно кредитов для выполнения операции");
         }
 
         await db
@@ -94,10 +105,10 @@ export const scenarioChaptersGenerationWorker =
           });
 
         if (!generatedChaptersObject) {
-          throw new Error("Scenario chapters generation failed");
+          throw new Error("Не удалось сгенерировать разделы сценария");
         }
 
-        console.log("Scenario chapters generation finished");
+        console.log("Разделы сценария успешно сгенерированы");
 
         const generatedChapters = generatedChaptersObject.chapters;
 
@@ -116,15 +127,24 @@ export const scenarioChaptersGenerationWorker =
             .returning();
 
           if (createdScenarioChapters.length > 0) {
-            await tx.insert(generationLog).values({
-              entity: "scenario-chapters" as const,
-              entityId: scenarioVersionId,
-              prompt,
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            });
+            await Promise.all([
+              await tx.insert(generationLog).values({
+                entity: "scenario-chapters" as const,
+                entityId: scenarioVersionId,
+                prompt,
+                model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+                tokens: usage?.total_tokens ?? 0,
+              }),
+              await chargeCredits({
+                userId: foundScenario.userId,
+                entity: "scenario-chapters",
+                entityId: scenarioVersionId,
+                totalTokens: usage?.total_tokens ?? 0,
+                transaction: tx,
+              }),
+            ]);
           } else {
-            console.warn(`No scenario chapters generated`);
+            console.warn("Сгенерированный список разделов сценария пуст");
           }
 
           await tx
@@ -148,7 +168,7 @@ export const scenarioChaptersGenerationWorker =
             .where(eq(scenarioVersion.id, scenarioVersionId));
         } catch (updateError) {
           console.error(
-            "Scenario chapters generation worker failed to update status",
+            "Не удалось обновить статус разделов сценария",
             updateError,
           );
         }
@@ -163,17 +183,17 @@ export const scenarioChaptersGenerationWorker =
   );
 
 scenarioChaptersGenerationWorker.on("error", (error) => {
-  console.error("Scenario chapters generation worker error", error);
+  console.error("Worker генерации глав сценария упал с ошибкой", error);
 });
 
 scenarioChaptersGenerationWorker.on("failed", (job, error) => {
   console.error(
-    "Scenario chapters generation worker failed",
+    "Worker генерации глав сценария упал с ошибкой",
     job?.toJSON(),
     error,
   );
 });
 
 scenarioChaptersGenerationWorker.on("completed", (job) => {
-  console.log("Scenario chapters generation worker completed", job.id);
+  console.log("Worker генерации глав сценария отработал успешно", job.id);
 });

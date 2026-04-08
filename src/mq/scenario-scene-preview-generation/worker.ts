@@ -5,6 +5,9 @@ import { generateScenarioScenePreviewPrompt } from "@/ai/prompts/builders/genera
 import { vsellm } from "@/ai/providers/open-ai/vsellm";
 import { db } from "@/db";
 import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { chargeCredits } from "@/domains/credits/services/charge-credits";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
@@ -23,7 +26,7 @@ export const scenarioScenePreviewsGenerationWorker =
     async (job) => {
       const { scenarioScenePreviewId } = job.data;
 
-      console.log("Scenario scene preview generation worker started", job.data);
+      console.log("Worker генерации превью сцены сценария запущен", job.data);
 
       try {
         const foundPreview = await db.query.scenarioScenePreview.findFirst({
@@ -42,9 +45,7 @@ export const scenarioScenePreviewsGenerationWorker =
         });
 
         if (!foundPreview) {
-          console.warn(
-            `Scenario scene preview not found: ${scenarioScenePreviewId}`,
-          );
+          console.warn(`Сценарий с id ${scenarioScenePreviewId} не найден`);
 
           return;
         }
@@ -57,9 +58,17 @@ export const scenarioScenePreviewsGenerationWorker =
         });
 
         if (!scenario) {
-          console.warn(`Scenario not found: ${scenarioId}`);
+          console.warn(`Сценарий с id ${scenarioId} не найден`);
 
           return;
+        }
+
+        const creditsBalance = await getCreditsBalance({
+          userId: scenario.userId,
+        });
+
+        if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
+          throw new Error("Недостаточно кредитов для выполнения операции");
         }
 
         await db
@@ -92,7 +101,7 @@ export const scenarioScenePreviewsGenerationWorker =
         const image = data?.[0]?.b64_json;
 
         if (!image) {
-          throw new Error("Image was not generated");
+          throw new Error("Не удалось сгенерировать превью сцены сценария");
         }
 
         const s3KeyOriginal = createS3Key({
@@ -164,6 +173,12 @@ export const scenarioScenePreviewsGenerationWorker =
                 model: envs.VSELLM_IMAGE_MODEL,
                 tokens: usage?.total_tokens ?? 0,
               }),
+              chargeCredits({
+                userId: scenario.userId,
+                entity: "scenario-scene-preview",
+                entityId: scenarioScenePreviewId,
+                totalTokens: usage?.total_tokens ?? 0,
+              }),
             ]);
 
             return {
@@ -172,14 +187,14 @@ export const scenarioScenePreviewsGenerationWorker =
             };
           });
 
-        console.log("Scenario scene preview generated:", {
+        console.log("Превью сцены сценария успешно сгенерировано:", {
           scenarioScenePreviewId,
           attachmentId: createdAttachment.id,
           compressedAttachmentId: createdCompressedAttachment.id,
         });
       } catch (error) {
         console.error(
-          "Scenario scene preview generation worker error",
+          "Worker генерации превью сцены сценария упал с ошибкой",
           scenarioScenePreviewId,
           error,
         );
@@ -191,7 +206,7 @@ export const scenarioScenePreviewsGenerationWorker =
             .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
         } catch (updateError) {
           console.error(
-            "Scenario scene preview generation worker failed to update status",
+            "Не удалось обновить статус превью сцены сценария",
             updateError,
           );
         }
@@ -206,17 +221,20 @@ export const scenarioScenePreviewsGenerationWorker =
   );
 
 scenarioScenePreviewsGenerationWorker.on("error", (error) => {
-  console.error("Scenario scene preview generation worker error", error);
+  console.error("Worker генерации превью сцены сценария упал с ошибкой", error);
 });
 
 scenarioScenePreviewsGenerationWorker.on("failed", (job, error) => {
   console.error(
-    "Scenario scene preview generation worker failed",
+    "Worker генерации превью сцены сценария упал с ошибкой",
     job?.toJSON(),
     error,
   );
 });
 
 scenarioScenePreviewsGenerationWorker.on("completed", (job) => {
-  console.log("Scenario scene preview generation worker completed", job.id);
+  console.log(
+    "Worker генерации превью сцены сценария отработал успешно",
+    job.id,
+  );
 });

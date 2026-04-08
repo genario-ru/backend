@@ -32,7 +32,7 @@ export const profilesFromChannelsGenerationWorker =
     async (job) => {
       const { jobId, userId, channels } = job.data;
 
-      console.log("Profiles from channels generation worker started", job.data);
+      console.log("Worker генерации профилей из каналов запущен", job.data);
 
       try {
         await db
@@ -89,7 +89,7 @@ export const profilesFromChannelsGenerationWorker =
             });
 
           if (!generatedProfile) {
-            console.error("Profile generation failed", groupChannels);
+            console.error("Не удалось сгенерировать профиль", groupChannels);
 
             continue;
           }
@@ -187,9 +187,12 @@ export const profilesFromChannelsGenerationWorker =
           .set({ status: "ready" })
           .where(eq(profilesFromChannelsJob.id, jobId));
 
-        console.log("Profiles from channels generation finished");
+        console.log("Профили из каналов успешно сгенерированы");
       } catch (error) {
-        console.error("Profiles from channels generation worker error", error);
+        console.error(
+          "Worker генерации профилей из каналов упал с ошибкой",
+          error,
+        );
 
         const statusDetails =
           error instanceof Error ? error.message : "Unknown error";
@@ -204,7 +207,7 @@ export const profilesFromChannelsGenerationWorker =
             .where(eq(profilesFromChannelsJob.id, jobId));
         } catch (updateError) {
           console.error(
-            "Profiles from channels worker failed to update status",
+            "Не удалось обновить статус профилей из каналов",
             updateError,
           );
         }
@@ -219,17 +222,17 @@ export const profilesFromChannelsGenerationWorker =
   );
 
 profilesFromChannelsGenerationWorker.on("error", (error) => {
-  console.error("Profiles from channels generation worker error", error);
+  console.error("Worker генерации профилей из каналов упал с ошибкой", error);
 });
 
 profilesFromChannelsGenerationWorker.on("failed", (job, error) => {
   console.error(
-    "Profiles from channels generation worker failed",
+    "Worker генерации профилей из каналов упал с ошибкой",
     job?.toJSON(),
     error,
   );
 });
 
 profilesFromChannelsGenerationWorker.on("completed", (job) => {
-  console.log("Profiles from channels generation worker completed", job.id);
+  console.log("Worker генерации профилей из каналов отработал успешно", job.id);
 });

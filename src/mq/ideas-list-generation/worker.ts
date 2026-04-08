@@ -7,6 +7,9 @@ import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { db } from "@/db";
 import { generationLog, idea, ideasList } from "@/db/schema";
+import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
+import { chargeCredits } from "@/domains/credits/services/charge-credits";
+import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { ideaGeneratedSchema } from "@/domains/ideas/schemas/entities/idea";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
@@ -23,6 +26,8 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
   IDEAS_LIST_GENERATION_QUEUE_NAME,
   async (job) => {
     const { ideasListId, userPrompt } = job.data;
+
+    console.log("Worker генерации списка идей запущен", job.data);
 
     try {
       const foundIdeasList = await db.query.ideasList.findFirst({
@@ -43,9 +48,17 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       });
 
       if (!foundIdeasList) {
-        console.warn(`Ideas list with id ${ideasListId} was not found`);
+        console.warn(`Список идей с id ${ideasListId} не найден`);
 
         return;
+      }
+
+      const creditsBalance = await getCreditsBalance({
+        userId: foundIdeasList.userId,
+      });
+
+      if (creditsBalance < creditsPricing["ideas-list"]) {
+        throw new Error("Недостаточно кредитов для выполнения операции");
       }
 
       await db
@@ -102,10 +115,10 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         });
 
       if (!generatedIdeasObject) {
-        throw new Error("Ideas list generation failed");
+        throw new Error("Не удалось сгенерировать список идей");
       }
 
-      console.log("Ideas list generation finished");
+      console.log("Список идей успешно сгенерирован");
 
       const generatedIdeas = generatedIdeasObject.ideas;
 
@@ -124,13 +137,25 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
           .returning();
 
         if (createdIdeas.length > 0) {
-          await tx.insert(generationLog).values({
-            entity: "ideas-list" as const,
-            entityId: foundIdeasList.id,
-            prompt,
-            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            tokens: usage?.total_tokens ?? 0,
-          });
+          await Promise.all([
+            tx.insert(generationLog).values({
+              entity: "ideas-list",
+              entityId: foundIdeasList.id,
+              prompt,
+              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              tokens: usage?.total_tokens ?? 0,
+            }),
+
+            await chargeCredits({
+              userId: foundIdeasList.userId,
+              entity: "ideas-list",
+              entityId: foundIdeasList.id,
+              totalTokens: usage?.total_tokens ?? 0,
+              transaction: tx,
+            }),
+          ]);
+        } else {
+          console.warn("Сгенерированный список идей пуст");
         }
 
         await tx
@@ -145,10 +170,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
           .set({ status: "failed" })
           .where(eq(ideasList.id, ideasListId));
       } catch (updateError) {
-        console.error(
-          "Ideas generation worker failed to update status",
-          updateError,
-        );
+        console.error("Не удалось обновить статус списка идей", updateError);
       }
 
       throw error;
@@ -161,13 +183,17 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 );
 
 ideasListGenerationWorker.on("error", (error) => {
-  console.error("Ideas list generation worker error", error);
+  console.error("Worker генерации списка идей отработал с ошибкой", error);
 });
 
 ideasListGenerationWorker.on("failed", (job, error) => {
-  console.error("Ideas list generation worker failed", job?.toJSON(), error);
+  console.error(
+    "Worker генерации списка идей упал с ошибкой",
+    job?.toJSON(),
+    error,
+  );
 });
 
 ideasListGenerationWorker.on("completed", (job) => {
-  console.log("Ideas list generation worker completed", job.id);
+  console.log("Worker генерации списка идей отработал успешно", job.id);
 });
