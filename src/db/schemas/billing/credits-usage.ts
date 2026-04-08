@@ -1,11 +1,16 @@
 import { relations } from "drizzle-orm";
-import { pgTable, real, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, real, uuid } from "drizzle-orm/pg-core";
 
-import { generationEntity } from "@/db/constants/generation-entity";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { user } from "../primary/user";
 import { creditsBatch } from "./credits-batch";
+
+export const creditsUsageEntity = pgEnum("credits_usage_entity", [
+  "ideas-list",
+  "scenario",
+  "scenario-scene-preview",
+]);
 
 export const creditsUsage = pgTable("credits_usage", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -18,7 +23,7 @@ export const creditsUsage = pgTable("credits_usage", {
       onDelete: "cascade",
     })
     .notNull(),
-  entity: generationEntity("entity").notNull(),
+  entity: creditsUsageEntity("entity").notNull(),
   entityId: uuid("entity_id").notNull(),
   creditsAmount: real("credits_amount").notNull(),
   creditPrice: real("credit_price").notNull(),
