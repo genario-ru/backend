@@ -51,40 +51,48 @@ updateScenarioSceneComponentRoute.patch(
     const user = c.get("user");
 
     // Проверяем владельца через JOIN
-    const existingComponent = await db.query.scenarioSceneComponent.findFirst({
-      where: (scenarioSceneComponent, { eq }) =>
-        eq(scenarioSceneComponent.id, sceneComponentId),
-      with: {
-        scenarioScene: {
-          with: {
-            scenarioChapter: {
-              with: {
-                scenarioVersion: {
-                  with: {
-                    scenario: true,
-                  },
+    const foundSceneComponent = await db.query.scenarioSceneComponent.findFirst(
+      {
+        where: (scenarioSceneComponent, { eq }) =>
+          eq(scenarioSceneComponent.id, sceneComponentId),
+        with: {
+          scenarioScene: {
+            with: {
+              scenarioChapter: {
+                with: {
+                  scenarioVersion: true,
                 },
               },
             },
           },
         },
       },
-    });
+    );
 
-    if (!existingComponent) {
+    if (!foundSceneComponent) {
       return throwAPIError({
         code: APIErrorCode.NotFound,
-        message: "Компонент сцены не найден",
+        message: "Запрашиваемый компонент сцены не найден",
       });
     }
 
-    if (
-      existingComponent.scenarioScene.scenarioChapter.scenarioVersion.scenario
-        .userId !== user.id
-    ) {
+    const foundScenario = await db.query.scenario.findFirst({
+      where: (scenario, { and, eq }) =>
+        and(
+          eq(scenario.userId, user.id),
+          eq(
+            scenario.id,
+            foundSceneComponent.scenarioScene.scenarioChapter.scenarioVersion
+              .scenarioId,
+          ),
+        ),
+    });
+
+    if (!foundScenario) {
       return throwAPIError({
-        code: APIErrorCode.Forbidden,
-        message: "У вас нет доступа к этому компоненту сцены",
+        code: APIErrorCode.NotFound,
+        message:
+          "Сценарий для указнного компонента сцены не существует или у вас нет доступа к нему",
       });
     }
 
