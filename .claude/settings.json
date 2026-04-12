@@ -1,0 +1,16 @@
+{
+  "autoMemoryDirectory": ".claude/memory",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /c/Users/ilialksv/genario/genario-backend/.claude/hooks/post-edit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

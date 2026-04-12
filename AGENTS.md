@@ -52,18 +52,18 @@ This file defines project context for AI agents and serves as an architecture en
   3. `docker-compose.yml` and `Dockerfile`,
   4. `.env.example`.
 
-## Recommended Skills
+## Recommended Skills / Commands
 
-- New endpoint: `.cursor/skills/add-api-endpoint/SKILL.md`
-- New worker: `.cursor/skills/add-bullmq-worker/SKILL.md`
-- DB schema change: `.cursor/skills/drizzle-migration-workflow/SKILL.md`
-- OpenAPI/codegen: `.cursor/skills/openapi-codegen-kubb/SKILL.md`
-- New env variable: `.cursor/skills/env-propagation-checklist/SKILL.md`
-- Validation selection: `.cursor/skills/change-validation-matrix/SKILL.md`
+- New endpoint: `.cursor/skills/add-api-endpoint/SKILL.md` · `.claude/commands/add-endpoint.md`
+- New worker: `.cursor/skills/add-bullmq-worker/SKILL.md` · `.claude/commands/add-worker.md`
+- DB schema change: `.cursor/skills/drizzle-migration-workflow/SKILL.md` · `.claude/commands/db-migration.md`
+- OpenAPI/codegen: `.cursor/skills/openapi-codegen-kubb/SKILL.md` · `.claude/commands/regenerate-api.md`
+- New env variable: `.cursor/skills/env-propagation-checklist/SKILL.md` · `.claude/commands/add-env.md`
+- Validation/lint: `.cursor/skills/change-validation-matrix/SKILL.md` · `.claude/commands/lint.md`
 
 ## Related Documents
 
 - Architecture map: `docs/architecture/backend-modules.md`
 - Development checklists: `docs/workflows/development-checklists.md`
 - Verification matrix: `docs/workflows/verification-matrix.md`
-- Repeatable workflows: `.cursor/skills/*/SKILL.md`
+- Repeatable workflows: `.cursor/skills/*/SKILL.md` · `.claude/commands/*.md`
