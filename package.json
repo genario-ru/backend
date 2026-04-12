@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "genario-backend",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/entrypoints/server.ts",
