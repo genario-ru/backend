@@ -1,5 +1,6 @@
 import { badRequestResponseSchema } from "@/shared/schemas/responses/400-response";
 import { unauthorizedResponseSchema } from "@/shared/schemas/responses/401-response";
+import { paymentRequiredResponseSchema } from "@/shared/schemas/responses/402-response";
 import { forbiddenResponseSchema } from "@/shared/schemas/responses/403-response";
 import { notFoundResponseSchema } from "@/shared/schemas/responses/404-response";
 import { internalServerErrorResponseSchema } from "@/shared/schemas/responses/500-response";
@@ -16,6 +17,11 @@ export const unauthorizedOpenAPIResponse = createOpenAPIResponse({
 export const forbiddenOpenAPIResponse = createOpenAPIResponse({
   description: "Forbidden",
   schema: forbiddenResponseSchema,
+});
+
+export const paymentRequiredOpenAPIResponse = createOpenAPIResponse({
+  description: "Payment required",
+  schema: paymentRequiredResponseSchema,
 });
 
 export const internalServerErrorOpenAPIResponse = createOpenAPIResponse({
@@ -36,6 +42,7 @@ export const notFoundOpenAPIResponse = createOpenAPIResponse({
 export const errorResponses: OpenAPIResponses = {
   [HTTPErrorStatusCode.BadRequest]: badRequestOpenAPIResponse,
   [HTTPErrorStatusCode.Unauthorized]: unauthorizedOpenAPIResponse,
+  [HTTPErrorStatusCode.PaymentRequired]: paymentRequiredOpenAPIResponse,
   [HTTPErrorStatusCode.Forbidden]: forbiddenOpenAPIResponse,
   [HTTPErrorStatusCode.NotFound]: notFoundOpenAPIResponse,
   [HTTPErrorStatusCode.InternalServerError]: internalServerErrorOpenAPIResponse,
