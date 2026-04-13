@@ -37,12 +37,15 @@ export async function chargeCredits({
 
   const foundCreditsBatches = await db.query.creditsBatch.findMany({
     orderBy: (creditsBatch, { desc }) => desc(creditsBatch.createdAt),
-    where: (creditsBatch, { and, eq, gt, gte }) =>
+    where: (creditsBatch, { and, or, eq, gt, gte, isNull }) =>
       and(
         eq(creditsBatch.userId, userId),
         eq(creditsBatch.status, "active"),
         gt(creditsBatch.remainingAmount, entityPrice),
-        gte(creditsBatch.expiresAt, new Date().toISOString()),
+        or(
+          isNull(creditsBatch.expiresAt),
+          gte(creditsBatch.expiresAt, new Date().toISOString()),
+        ),
       ),
     with: {
       subscriptionToCreditsBatch: true,
