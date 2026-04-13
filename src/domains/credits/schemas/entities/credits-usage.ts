@@ -15,7 +15,7 @@ export type CreditsUsage = z.infer<typeof creditsUsageSchema>;
 
 export const creditsUsageExtendedSchema = creditsUsageSchema
   .extend({
-    creditsBatch: creditsBatchSchema,
+    batch: creditsBatchSchema,
   })
   .meta({
     title: "Credits usage extended",
