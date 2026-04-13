@@ -3,6 +3,7 @@ import { z } from "@/lib/zod";
 export enum HTTPErrorCode {
   BadRequest = "BAD_REQUEST",
   Unauthorized = "UNAUTHORIZED",
+  PaymentRequired = "PAYMENT_REQUIRED",
   Forbidden = "FORBIDDEN",
   NotFound = "NOT_FOUND",
   Timeout = "TIMEOUT",
@@ -18,6 +19,7 @@ export enum HTTPErrorCode {
 export enum HTTPErrorStatusCode {
   BadRequest = 400,
   Unauthorized = 401,
+  PaymentRequired = 402,
   Forbidden = 403,
   NotFound = 404,
   Timeout = 408,

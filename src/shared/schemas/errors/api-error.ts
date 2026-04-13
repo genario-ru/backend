@@ -8,6 +8,7 @@ import {
 
 export enum APIErrorCode {
   Unauthorized = "UNAUTHORIZED",
+  PaymentRequired = "PAYMENT_REQUIRED",
   Forbidden = "FORBIDDEN",
   TokenExpired = "TOKEN_EXPIRED",
   TokenInvalid = "TOKEN_INVALID",
@@ -50,6 +51,7 @@ export enum APIErrorCode {
 
 export enum APIErrorStatusCode {
   Unauthorized = HTTPErrorStatusCode.Unauthorized,
+  PaymentRequired = HTTPErrorStatusCode.PaymentRequired,
   Forbidden = HTTPErrorStatusCode.Forbidden,
   TokenExpired = HTTPErrorStatusCode.Unauthorized,
   TokenInvalid = HTTPErrorStatusCode.Unauthorized,

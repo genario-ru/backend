@@ -52,7 +52,7 @@ createScenarioRoute.post(
 
     if (creditsBalance < AVERAGE_SCENARIO_CREDITS_COST) {
       return throwAPIError({
-        code: APIErrorCode.BusinessRuleViolation,
+        code: APIErrorCode.PaymentRequired,
         message: "Недостаточно кредитов для создания сценария",
       });
     }

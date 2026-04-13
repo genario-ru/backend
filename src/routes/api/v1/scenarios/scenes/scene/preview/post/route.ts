@@ -119,7 +119,7 @@ createScenarioScenePreviewRoute.post(
 
     if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
       return throwAPIError({
-        code: APIErrorCode.BusinessRuleViolation,
+        code: APIErrorCode.PaymentRequired,
         message: "Недостаточно кредитов для генерации превью сцены сценария",
       });
     }

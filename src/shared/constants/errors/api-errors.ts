@@ -8,6 +8,7 @@ export const APIErrorCodeToAPIErrorStatusCode: Record<
   APIErrorStatusCode
 > = {
   [APIErrorCode.Unauthorized]: APIErrorStatusCode.Unauthorized,
+  [APIErrorCode.PaymentRequired]: APIErrorStatusCode.PaymentRequired,
   [APIErrorCode.Forbidden]: APIErrorStatusCode.Forbidden,
   [APIErrorCode.TokenExpired]: APIErrorStatusCode.TokenExpired,
   [APIErrorCode.TokenInvalid]: APIErrorStatusCode.TokenInvalid,

@@ -53,7 +53,7 @@ createIdeasListRoute.post(
 
     if (creditsBalance < creditsPricing["ideas-list"]) {
       return throwAPIError({
-        code: APIErrorCode.BusinessRuleViolation,
+        code: APIErrorCode.PaymentRequired,
         message: "Недостаточно кредитов для создания списка идей",
       });
     }

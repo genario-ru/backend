@@ -3,6 +3,7 @@ import { z } from "@/lib/zod";
 export enum HTTPErrorCode {
   BadRequest = "BAD_REQUEST",
   Unauthorized = "UNAUTHORIZED",
+  PaymentRequired = "PAYMENT_REQUIRED",
   Forbidden = "FORBIDDEN",
   NotFound = "NOT_FOUND",
   Timeout = "TIMEOUT",
@@ -18,6 +19,7 @@ export enum HTTPErrorCode {
 export enum HTTPErrorStatusCode {
   BadRequest = 400,
   Unauthorized = 401,
+  PaymentRequired = 402,
   Forbidden = 403,
   NotFound = 404,
   Timeout = 408,
@@ -39,6 +41,7 @@ export const HTTPErrorCodeToHttpStatus: Record<
 > = {
   [HTTPErrorCode.BadRequest]: HTTPErrorStatusCode.BadRequest,
   [HTTPErrorCode.Unauthorized]: HTTPErrorStatusCode.Unauthorized,
+  [HTTPErrorCode.PaymentRequired]: HTTPErrorStatusCode.PaymentRequired,
   [HTTPErrorCode.Forbidden]: HTTPErrorStatusCode.Forbidden,
   [HTTPErrorCode.NotFound]: HTTPErrorStatusCode.NotFound,
   [HTTPErrorCode.Timeout]: HTTPErrorStatusCode.Timeout,
@@ -57,6 +60,7 @@ export const httpStatusToHTTPErrorCode: Record<
 > = {
   [HTTPErrorStatusCode.BadRequest]: HTTPErrorCode.BadRequest,
   [HTTPErrorStatusCode.Unauthorized]: HTTPErrorCode.Unauthorized,
+  [HTTPErrorStatusCode.PaymentRequired]: HTTPErrorCode.PaymentRequired,
   [HTTPErrorStatusCode.Forbidden]: HTTPErrorCode.Forbidden,
   [HTTPErrorStatusCode.NotFound]: HTTPErrorCode.NotFound,
   [HTTPErrorStatusCode.Timeout]: HTTPErrorCode.Timeout,
@@ -75,6 +79,7 @@ export type HTTPErrorStatusCodeType = `${HTTPErrorStatusCode}`;
 export const httpStatusCodeMessages: Record<HTTPErrorStatusCode, string> = {
   [HTTPErrorStatusCode.BadRequest]: "Bad Request",
   [HTTPErrorStatusCode.Unauthorized]: "Unauthorized",
+  [HTTPErrorStatusCode.PaymentRequired]: "Payment Required",
   [HTTPErrorStatusCode.Forbidden]: "Forbidden",
   [HTTPErrorStatusCode.NotFound]: "Not Found",
   [HTTPErrorStatusCode.Timeout]: "Timeout",
