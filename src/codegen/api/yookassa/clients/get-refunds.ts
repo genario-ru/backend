@@ -18,7 +18,6 @@ import type {
   GetRefundsQueryParams,
   GetRefundsQueryResponse,
 } from "../models/get-refunds.ts";
-import { getRefundsQueryResponseSchema } from "../zod/get-refunds-schema.ts";
 
 function getGetRefundsUrl() {
   const res = { method: "GET", url: `/refunds` as const };
@@ -48,5 +47,5 @@ export async function getRefunds(
     params,
     ...requestConfig,
   });
-  return getRefundsQueryResponseSchema.parse(res.data);
+  return res.data;
 }

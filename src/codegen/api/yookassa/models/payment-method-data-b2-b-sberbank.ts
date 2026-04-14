@@ -5,7 +5,7 @@
 
 import type { B2BSberbankCalculatedVatData } from "./b2-b-sberbank-calculated-vat-data.ts";
 import type { B2BSberbankMixedVatData } from "./b2-b-sberbank-mixed-vat-data.ts";
-import type { B2BSberbankUntaxedVatData } from "./b2-b-sberbank-untaxed-vat-data.ts";
+import type { B2BSberbankVatData } from "./b2-b-sberbank-vat-data.ts";
 import type { PaymentMethodData } from "./payment-method-data.ts";
 import type { PaymentPurpose } from "./payment-purpose.ts";
 
@@ -30,7 +30,7 @@ export type PaymentMethodDataB2BSberbank = (PaymentMethodData & {
   payment_purpose: PaymentPurpose;
   vat_data:
     | B2BSberbankCalculatedVatData
-    | B2BSberbankUntaxedVatData
+    | B2BSberbankVatData
     | B2BSberbankMixedVatData;
   type: PaymentMethodDataB2BSberbankTypeEnumKey;
 };

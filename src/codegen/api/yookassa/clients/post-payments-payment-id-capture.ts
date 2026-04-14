@@ -20,10 +20,6 @@ import type {
   PostPaymentsPaymentIdCaptureMutationResponse,
   PostPaymentsPaymentIdCapturePathParams,
 } from "../models/post-payments-payment-id-capture.ts";
-import {
-  postPaymentsPaymentIdCaptureMutationRequestSchema,
-  postPaymentsPaymentIdCaptureMutationResponseSchema,
-} from "../zod/post-payments-payment-id-capture-schema.ts";
 
 function getPostPaymentsPaymentIdCaptureUrl({
   payment_id,
@@ -58,8 +54,7 @@ export async function postPaymentsPaymentIdCapture(
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData =
-    postPaymentsPaymentIdCaptureMutationRequestSchema.parse(data);
+  const requestData = data;
 
   const res = await request<
     PostPaymentsPaymentIdCaptureMutationResponse,
@@ -77,5 +72,5 @@ export async function postPaymentsPaymentIdCapture(
     ...requestConfig,
     headers: { ...headers, ...requestConfig.headers },
   });
-  return postPaymentsPaymentIdCaptureMutationResponseSchema.parse(res.data);
+  return res.data;
 }

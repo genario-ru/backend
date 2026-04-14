@@ -8,10 +8,10 @@ import { z } from "@/lib/zod/index.ts";
 import { accountIdSchema } from "./account-id-schema.ts";
 import { authorizationDetailsSchema } from "./authorization-details-schema.ts";
 import { confirmationEmbeddedSchema } from "./confirmation-embedded-schema.ts";
-import { confirmationExternalSchema } from "./confirmation-external-schema.ts";
 import { confirmationMobileApplicationSchema } from "./confirmation-mobile-application-schema.ts";
 import { confirmationQrSchema } from "./confirmation-qr-schema.ts";
 import { confirmationRedirectSchema } from "./confirmation-redirect-schema.ts";
+import { confirmationSchema } from "./confirmation-schema.ts";
 import { descriptionSchema } from "./description-schema.ts";
 import { gatewayIdSchema } from "./gateway-id-schema.ts";
 import { invoiceIdSchema } from "./invoice-id-schema.ts";
@@ -22,22 +22,14 @@ import { paymentCancellationDetailsSchema } from "./payment-cancellation-details
 import { paymentDealInfoSchema } from "./payment-deal-info-schema.ts";
 import { paymentIdSchema } from "./payment-id-schema.ts";
 import { paymentMethodAlfabankSchema } from "./payment-method-alfabank-schema.ts";
-import { paymentMethodApplePaySchema } from "./payment-method-apple-pay-schema.ts";
 import { paymentMethodB2BSberbankSchema } from "./payment-method-b2-b-sberbank-schema.ts";
 import { paymentMethodBankCardSchema } from "./payment-method-bank-card-schema.ts";
-import { paymentMethodCashSchema } from "./payment-method-cash-schema.ts";
 import { paymentMethodElectronicCertificateSchema } from "./payment-method-electronic-certificate-schema.ts";
-import { paymentMethodGooglePaySchema } from "./payment-method-google-pay-schema.ts";
-import { paymentMethodInstallmentsSchema } from "./payment-method-installments-schema.ts";
-import { paymentMethodMobileBalanceSchema } from "./payment-method-mobile-balance-schema.ts";
-import { paymentMethodQiwiSchema } from "./payment-method-qiwi-schema.ts";
-import { paymentMethodSberBnplSchema } from "./payment-method-sber-bnpl-schema.ts";
 import { paymentMethodSberLoanSchema } from "./payment-method-sber-loan-schema.ts";
 import { paymentMethodSberbankSchema } from "./payment-method-sberbank-schema.ts";
 import { paymentMethodSbpSchema } from "./payment-method-sbp-schema.ts";
+import { paymentMethodSchema } from "./payment-method-schema.ts";
 import { paymentMethodTinkoffBankSchema } from "./payment-method-tinkoff-bank-schema.ts";
-import { paymentMethodWeChatSchema } from "./payment-method-we-chat-schema.ts";
-import { paymentMethodWebmoneySchema } from "./payment-method-webmoney-schema.ts";
 import { paymentMethodYooMoneySchema } from "./payment-method-yoo-money-schema.ts";
 import { paymentStatusSchema } from "./payment-status-schema.ts";
 import { receiptRegistrationStatusSchema } from "./receipt-registration-status-schema.ts";
@@ -88,23 +80,23 @@ export const paymentSchema = z
       return z
         .union([
           paymentMethodBankCardSchema,
-          paymentMethodCashSchema,
-          paymentMethodQiwiSchema,
+          paymentMethodSchema,
+          paymentMethodSchema,
           paymentMethodAlfabankSchema,
-          paymentMethodWebmoneySchema,
+          paymentMethodSchema,
           paymentMethodSberbankSchema,
           paymentMethodTinkoffBankSchema,
           paymentMethodYooMoneySchema,
-          paymentMethodApplePaySchema,
-          paymentMethodGooglePaySchema,
-          paymentMethodMobileBalanceSchema,
-          paymentMethodInstallmentsSchema,
+          paymentMethodSchema,
+          paymentMethodSchema,
+          paymentMethodSchema,
+          paymentMethodSchema,
           paymentMethodB2BSberbankSchema,
-          paymentMethodWeChatSchema,
+          paymentMethodSchema,
           paymentMethodSbpSchema,
           paymentMethodSberLoanSchema,
           paymentMethodElectronicCertificateSchema,
-          paymentMethodSberBnplSchema,
+          paymentMethodSchema,
         ])
         .optional();
     },
@@ -131,7 +123,7 @@ export const paymentSchema = z
       return z
         .union([
           confirmationRedirectSchema,
-          confirmationExternalSchema,
+          confirmationSchema,
           confirmationQrSchema,
           confirmationEmbeddedSchema,
           confirmationMobileApplicationSchema,

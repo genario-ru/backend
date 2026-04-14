@@ -19,10 +19,6 @@ import type {
   PostRefundsMutationRequest,
   PostRefundsMutationResponse,
 } from "../models/post-refunds.ts";
-import {
-  postRefundsMutationRequestSchema,
-  postRefundsMutationResponseSchema,
-} from "../zod/post-refunds-schema.ts";
 
 function getPostRefundsUrl() {
   const res = { method: "POST", url: `/refunds` as const };
@@ -45,7 +41,7 @@ export async function postRefunds(
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData = postRefundsMutationRequestSchema.parse(data);
+  const requestData = data;
 
   const res = await request<
     PostRefundsMutationResponse,
@@ -60,5 +56,5 @@ export async function postRefunds(
     ...requestConfig,
     headers: { ...headers, ...requestConfig.headers },
   });
-  return postRefundsMutationResponseSchema.parse(res.data);
+  return res.data;
 }

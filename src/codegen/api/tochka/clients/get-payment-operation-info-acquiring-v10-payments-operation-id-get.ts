@@ -19,7 +19,6 @@ import type {
   GetPaymentOperationInfoAcquiringV10PaymentsOperationIdGetPathParams,
   GetPaymentOperationInfoAcquiringV10PaymentsOperationIdGetQueryResponse,
 } from "../models/get-payment-operation-info-acquiring-v10-payments-operation-id-get.ts";
-import { getPaymentOperationInfoAcquiringV10PaymentsOperationIdGetQueryResponseSchema } from "../zod/get-payment-operation-info-acquiring-v10-payments-operation-id-get-schema.ts";
 
 function getGetPaymentOperationInfoAcquiringV10PaymentsOperationIdGetUrl({
   operationId,
@@ -70,7 +69,5 @@ export async function getPaymentOperationInfoAcquiringV10PaymentsOperationIdGet(
     }).url.toString(),
     ...requestConfig,
   });
-  return getPaymentOperationInfoAcquiringV10PaymentsOperationIdGetQueryResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

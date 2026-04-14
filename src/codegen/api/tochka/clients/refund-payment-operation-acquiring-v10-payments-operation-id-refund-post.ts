@@ -20,10 +20,6 @@ import type {
   RefundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationResponse,
   RefundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostPathParams,
 } from "../models/refund-payment-operation-acquiring-v10-payments-operation-id-refund-post.ts";
-import {
-  refundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationRequestSchema,
-  refundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationResponseSchema,
-} from "../zod/refund-payment-operation-acquiring-v10-payments-operation-id-refund-post-schema.ts";
 
 function getRefundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostUrl({
   operationId,
@@ -57,10 +53,7 @@ export async function refundPaymentOperationAcquiringV10PaymentsOperationIdRefun
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData =
-    refundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationRequestSchema.parse(
-      data,
-    );
+  const requestData = data;
 
   const res = await request<
     RefundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationResponse,
@@ -80,7 +73,5 @@ export async function refundPaymentOperationAcquiringV10PaymentsOperationIdRefun
     data: requestData,
     ...requestConfig,
   });
-  return refundPaymentOperationAcquiringV10PaymentsOperationIdRefundPostMutationResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

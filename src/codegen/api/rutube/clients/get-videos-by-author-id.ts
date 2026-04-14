@@ -17,7 +17,6 @@ import type {
   GetVideosByAuthorIdQueryParams,
   GetVideosByAuthorIdQueryResponse,
 } from "../models/get-videos-by-author-id.ts";
-import { getVideosByAuthorIdQueryResponseSchema } from "../zod/get-videos-by-author-id-schema.ts";
 
 function getGetVideosByAuthorIdUrl({
   author_id,
@@ -58,5 +57,5 @@ export async function getVideosByAuthorId(
     params,
     ...requestConfig,
   });
-  return getVideosByAuthorIdQueryResponseSchema.parse(res.data);
+  return res.data;
 }

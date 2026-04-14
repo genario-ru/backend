@@ -14,6 +14,7 @@ export type PaymentItemModel = {
    */
   purpose: string;
   /**
+   * @default "CREATED"
    * @type string | undefined
    */
   status?: AcquiringPaymentStatus;

@@ -16,7 +16,7 @@ export const acquiringCreatePaymentOperationWithReceiptResponseModelSchema =
   z.object({
     purpose: z.string(),
     get status() {
-      return acquiringPaymentStatusSchema.optional();
+      return acquiringPaymentStatusSchema.default("CREATED").optional();
     },
     amount: z.number(),
     operationId: z.string(),

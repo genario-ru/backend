@@ -16,7 +16,6 @@ import type {
   GetUserProfilePathParams,
   GetUserProfileQueryResponse,
 } from "../models/get-user-profile.ts";
-import { getUserProfileQueryResponseSchema } from "../zod/get-user-profile-schema.ts";
 
 function getGetUserProfileUrl({
   author_id,
@@ -47,5 +46,5 @@ export async function getUserProfile(
     url: getGetUserProfileUrl({ author_id }).url.toString(),
     ...requestConfig,
   });
-  return getUserProfileQueryResponseSchema.parse(res.data);
+  return res.data;
 }

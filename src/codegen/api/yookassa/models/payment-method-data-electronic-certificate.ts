@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import type { CardRequestDataWithCsc } from "./card-request-data-with-csc.ts";
+import type { CardRequestData } from "./card-request-data.ts";
 import type { ElectronicCertificateArticle } from "./electronic-certificate-article.ts";
 import type { ElectronicCertificatePaymentData } from "./electronic-certificate-payment-data.ts";
 import type { PaymentMethodData } from "./payment-method-data.ts";
@@ -22,9 +22,10 @@ export type PaymentMethodDataElectronicCertificate = (PaymentMethodData & {
   type: "electronic_certificate";
 }) & {
   /**
+   * @description Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
    * @type object | undefined
    */
-  card?: CardRequestDataWithCsc;
+  card?: CardRequestData;
   /**
    * @description Данные от ФЭС НСПК для оплаты по электронному сертификату. Неоходимо передавать только при оплате со сбором данных на вашей стороне: https://yookassa.ru/developers/payment-acceptance/integration-scenarios/manual-integration/other/electronic-certificate/merchant-payment-form.
    * @type object | undefined

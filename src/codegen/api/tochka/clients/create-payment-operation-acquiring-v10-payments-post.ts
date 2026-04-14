@@ -19,10 +19,6 @@ import type {
   CreatePaymentOperationAcquiringV10PaymentsPostMutationRequest,
   CreatePaymentOperationAcquiringV10PaymentsPostMutationResponse,
 } from "../models/create-payment-operation-acquiring-v10-payments-post.ts";
-import {
-  createPaymentOperationAcquiringV10PaymentsPostMutationRequestSchema,
-  createPaymentOperationAcquiringV10PaymentsPostMutationResponseSchema,
-} from "../zod/create-payment-operation-acquiring-v10-payments-post-schema.ts";
 
 function getCreatePaymentOperationAcquiringV10PaymentsPostUrl() {
   const res = { method: "POST", url: `/acquiring/v1.0/payments` as const };
@@ -44,10 +40,7 @@ export async function createPaymentOperationAcquiringV10PaymentsPost(
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData =
-    createPaymentOperationAcquiringV10PaymentsPostMutationRequestSchema.parse(
-      data,
-    );
+  const requestData = data;
 
   const res = await request<
     CreatePaymentOperationAcquiringV10PaymentsPostMutationResponse,
@@ -65,7 +58,5 @@ export async function createPaymentOperationAcquiringV10PaymentsPost(
     data: requestData,
     ...requestConfig,
   });
-  return createPaymentOperationAcquiringV10PaymentsPostMutationResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

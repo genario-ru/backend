@@ -19,7 +19,6 @@ import type {
   GetRetailersAcquiringV10RetailersGetQueryParams,
   GetRetailersAcquiringV10RetailersGetQueryResponse,
 } from "../models/get-retailers-acquiring-v10-retailers-get.ts";
-import { getRetailersAcquiringV10RetailersGetQueryResponseSchema } from "../zod/get-retailers-acquiring-v10-retailers-get-schema.ts";
 
 function getGetRetailersAcquiringV10RetailersGetUrl() {
   const res = { method: "GET", url: `/acquiring/v1.0/retailers` as const };
@@ -62,7 +61,5 @@ export async function getRetailersAcquiringV10RetailersGet(
     params,
     ...requestConfig,
   });
-  return getRetailersAcquiringV10RetailersGetQueryResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

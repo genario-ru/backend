@@ -20,7 +20,6 @@ import type {
   GetPaymentMethodsPaymentMethodIdPathParams,
   GetPaymentMethodsPaymentMethodIdQueryResponse,
 } from "../models/get-payment-methods-payment-method-id.ts";
-import { getPaymentMethodsPaymentMethodIdQueryResponseSchema } from "../zod/get-payment-methods-payment-method-id-schema.ts";
 
 function getGetPaymentMethodsPaymentMethodIdUrl({
   payment_method_id,
@@ -67,5 +66,5 @@ export async function getPaymentMethodsPaymentMethodId(
     }).url.toString(),
     ...requestConfig,
   });
-  return getPaymentMethodsPaymentMethodIdQueryResponseSchema.parse(res.data);
+  return res.data;
 }

@@ -8,7 +8,6 @@ import type { BadRequest } from "./bad-request.ts";
 import type { Capture } from "./capture.ts";
 import type { ClientIp } from "./client-ip.ts";
 import type { ConfirmationData } from "./confirmation-data.ts";
-import type { ConfirmationDataExternal } from "./confirmation-data-external.ts";
 import type { ConfirmationDataMobileApplication } from "./confirmation-data-mobile-application.ts";
 import type { ConfirmationDataQr } from "./confirmation-data-qr.ts";
 import type { ConfirmationDataRedirect } from "./confirmation-data-redirect.ts";
@@ -20,17 +19,14 @@ import type { Metadata } from "./metadata.ts";
 import type { MonetaryAmount } from "./monetary-amount.ts";
 import type { Payment } from "./payment.ts";
 import type { PaymentDealInfo } from "./payment-deal-info.ts";
+import type { PaymentMethodData } from "./payment-method-data.ts";
 import type { PaymentMethodDataB2BSberbank } from "./payment-method-data-b2-b-sberbank.ts";
 import type { PaymentMethodDataBankCard } from "./payment-method-data-bank-card.ts";
 import type { PaymentMethodDataCash } from "./payment-method-data-cash.ts";
 import type { PaymentMethodDataElectronicCertificate } from "./payment-method-data-electronic-certificate.ts";
 import type { PaymentMethodDataMobileBalance } from "./payment-method-data-mobile-balance.ts";
 import type { PaymentMethodDataSberBnpl } from "./payment-method-data-sber-bnpl.ts";
-import type { PaymentMethodDataSberLoan } from "./payment-method-data-sber-loan.ts";
 import type { PaymentMethodDataSberbank } from "./payment-method-data-sberbank.ts";
-import type { PaymentMethodDataSbp } from "./payment-method-data-sbp.ts";
-import type { PaymentMethodDataTinkoffBank } from "./payment-method-data-tinkoff-bank.ts";
-import type { PaymentMethodDataYooMoney } from "./payment-method-data-yoo-money.ts";
 import type { PaymentMethodId } from "./payment-method-id.ts";
 import type { PaymentOrderDataUtilities } from "./payment-order-data-utilities.ts";
 import type { PaymentOverviewStatementData } from "./payment-overview-statement-data.ts";
@@ -117,27 +113,29 @@ export type PostPaymentsMutationRequest = {
     | PaymentMethodDataBankCard
     | PaymentMethodDataCash
     | PaymentMethodDataSberbank
-    | PaymentMethodDataTinkoffBank
-    | PaymentMethodDataYooMoney
+    | PaymentMethodData
+    | PaymentMethodData
     | PaymentMethodDataMobileBalance
     | PaymentMethodDataB2BSberbank
-    | PaymentMethodDataSbp
-    | PaymentMethodDataSberLoan
+    | PaymentMethodData
+    | PaymentMethodData
     | PaymentMethodDataElectronicCertificate
     | PaymentMethodDataSberBnpl;
   confirmation?:
     | ConfirmationDataRedirect
-    | ConfirmationDataExternal
+    | ConfirmationData
     | ConfirmationDataQr
     | ConfirmationData
     | ConfirmationDataMobileApplication;
   /**
    * @description Сохранение платежных данных для проведения автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/basics. Возможные значения: * true — сохранить способ оплаты (сохранить платежные данные); * false — провести платеж без сохранения способа оплаты. Доступно только после согласования с менеджером ЮKassa.
+   * @default false
    * @type boolean | undefined
    */
   save_payment_method?: SavePaymentMethodAttribute;
   /**
    * @description Автоматический прием: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-true поступившего платежа. Возможные значения: * true — оплата списывается сразу (платеж в одну стадию); * false — оплата холдируется и списывается по вашему запросу (платеж в две стадии: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-and-cancel). По умолчанию false.
+   * @default false
    * @type boolean | undefined
    */
   capture?: Capture;

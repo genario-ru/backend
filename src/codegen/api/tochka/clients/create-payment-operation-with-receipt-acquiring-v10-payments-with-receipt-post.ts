@@ -19,10 +19,6 @@ import type {
   CreatePaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationRequest,
   CreatePaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationResponse,
 } from "../models/create-payment-operation-with-receipt-acquiring-v10-payments-with-receipt-post.ts";
-import {
-  createPaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationRequestSchema,
-  createPaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationResponseSchema,
-} from "../zod/create-payment-operation-with-receipt-acquiring-v10-payments-with-receipt-post-schema.ts";
 
 function getCreatePaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostUrl() {
   const res = {
@@ -49,10 +45,7 @@ export async function createPaymentOperationWithReceiptAcquiringV10PaymentsWithR
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData =
-    createPaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationRequestSchema.parse(
-      data,
-    );
+  const requestData = data;
 
   const res = await request<
     CreatePaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationResponse,
@@ -70,7 +63,5 @@ export async function createPaymentOperationWithReceiptAcquiringV10PaymentsWithR
     data: requestData,
     ...requestConfig,
   });
-  return createPaymentOperationWithReceiptAcquiringV10PaymentsWithReceiptPostMutationResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

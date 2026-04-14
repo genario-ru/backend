@@ -28,6 +28,7 @@ export type PaymentMethodsConfirmationRedirect = (PaymentMethodsConfirmation & {
   confirmation_url: ConfirmationUrl;
   /**
    * @description Запрос на проведение платежа с аутентификацией по 3-D Secure. Будет работать, если оплату банковской картой вы по умолчанию принимаете без подтверждения платежа пользователем. В остальных случаях аутентификацией по 3-D Secure будет управлять ЮKassa. Если хотите принимать платежи без дополнительного подтверждения пользователем, напишите вашему менеджеру ЮKassa.
+   * @default false
    * @type boolean | undefined
    */
   enforce?: Enforce;

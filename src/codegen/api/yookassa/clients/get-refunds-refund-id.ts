@@ -19,7 +19,6 @@ import type {
   GetRefundsRefundIdPathParams,
   GetRefundsRefundIdQueryResponse,
 } from "../models/get-refunds-refund-id.ts";
-import { getRefundsRefundIdQueryResponseSchema } from "../zod/get-refunds-refund-id-schema.ts";
 
 function getGetRefundsRefundIdUrl({
   refund_id,
@@ -56,5 +55,5 @@ export async function getRefundsRefundId(
     url: getGetRefundsRefundIdUrl({ refund_id }).url.toString(),
     ...requestConfig,
   });
-  return getRefundsRefundIdQueryResponseSchema.parse(res.data);
+  return res.data;
 }

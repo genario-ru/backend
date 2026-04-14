@@ -19,7 +19,6 @@ import type {
   GetPaymentOperationListAcquiringV10PaymentsGetQueryParams,
   GetPaymentOperationListAcquiringV10PaymentsGetQueryResponse,
 } from "../models/get-payment-operation-list-acquiring-v10-payments-get.ts";
-import { getPaymentOperationListAcquiringV10PaymentsGetQueryResponseSchema } from "../zod/get-payment-operation-list-acquiring-v10-payments-get-schema.ts";
 
 function getGetPaymentOperationListAcquiringV10PaymentsGetUrl() {
   const res = { method: "GET", url: `/acquiring/v1.0/payments` as const };
@@ -60,7 +59,5 @@ export async function getPaymentOperationListAcquiringV10PaymentsGet(
     params,
     ...requestConfig,
   });
-  return getPaymentOperationListAcquiringV10PaymentsGetQueryResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

@@ -19,6 +19,7 @@ export type AcquiringCreatePaymentOperationWithReceiptResponseModel = {
    */
   purpose: string;
   /**
+   * @default "CREATED"
    * @type string | undefined
    */
   status?: AcquiringPaymentStatus;

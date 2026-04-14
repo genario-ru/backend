@@ -20,10 +20,6 @@ import type {
   PostPaymentMethodsMutationRequest,
   PostPaymentMethodsMutationResponse,
 } from "../models/post-payment-methods.ts";
-import {
-  postPaymentMethodsMutationRequestSchema,
-  postPaymentMethodsMutationResponseSchema,
-} from "../zod/post-payment-methods-schema.ts";
 
 function getPostPaymentMethodsUrl() {
   const res = { method: "POST", url: `/payment_methods` as const };
@@ -49,7 +45,7 @@ export async function postPaymentMethods(
 ) {
   const { client: request = fetch, ...requestConfig } = config;
 
-  const requestData = postPaymentMethodsMutationRequestSchema.parse(data);
+  const requestData = data;
 
   const res = await request<
     PostPaymentMethodsMutationResponse,
@@ -68,5 +64,5 @@ export async function postPaymentMethods(
     ...requestConfig,
     headers: { ...headers, ...requestConfig.headers },
   });
-  return postPaymentMethodsMutationResponseSchema.parse(res.data);
+  return res.data;
 }

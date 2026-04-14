@@ -9,7 +9,6 @@ import { airlineSchema } from "./airline-schema.ts";
 import { badRequestSchema } from "./bad-request-schema.ts";
 import { captureSchema } from "./capture-schema.ts";
 import { clientIpSchema } from "./client-ip-schema.ts";
-import { confirmationDataExternalSchema } from "./confirmation-data-external-schema.ts";
 import { confirmationDataMobileApplicationSchema } from "./confirmation-data-mobile-application-schema.ts";
 import { confirmationDataQrSchema } from "./confirmation-data-qr-schema.ts";
 import { confirmationDataRedirectSchema } from "./confirmation-data-redirect-schema.ts";
@@ -27,11 +26,8 @@ import { paymentMethodDataCashSchema } from "./payment-method-data-cash-schema.t
 import { paymentMethodDataElectronicCertificateSchema } from "./payment-method-data-electronic-certificate-schema.ts";
 import { paymentMethodDataMobileBalanceSchema } from "./payment-method-data-mobile-balance-schema.ts";
 import { paymentMethodDataSberBnplSchema } from "./payment-method-data-sber-bnpl-schema.ts";
-import { paymentMethodDataSberLoanSchema } from "./payment-method-data-sber-loan-schema.ts";
 import { paymentMethodDataSberbankSchema } from "./payment-method-data-sberbank-schema.ts";
-import { paymentMethodDataSbpSchema } from "./payment-method-data-sbp-schema.ts";
-import { paymentMethodDataTinkoffBankSchema } from "./payment-method-data-tinkoff-bank-schema.ts";
-import { paymentMethodDataYooMoneySchema } from "./payment-method-data-yoo-money-schema.ts";
+import { paymentMethodDataSchema } from "./payment-method-data-schema.ts";
 import { paymentMethodIdSchema } from "./payment-method-id-schema.ts";
 import { paymentOrderDataUtilitiesSchema } from "./payment-order-data-utilities-schema.ts";
 import { paymentOverviewStatementDataSchema } from "./payment-overview-statement-data-schema.ts";
@@ -142,12 +138,12 @@ export const postPaymentsMutationRequestSchema = z.object({
         paymentMethodDataBankCardSchema,
         paymentMethodDataCashSchema,
         paymentMethodDataSberbankSchema,
-        paymentMethodDataTinkoffBankSchema,
-        paymentMethodDataYooMoneySchema,
+        paymentMethodDataSchema,
+        paymentMethodDataSchema,
         paymentMethodDataMobileBalanceSchema,
         paymentMethodDataB2BSberbankSchema,
-        paymentMethodDataSbpSchema,
-        paymentMethodDataSberLoanSchema,
+        paymentMethodDataSchema,
+        paymentMethodDataSchema,
         paymentMethodDataElectronicCertificateSchema,
         paymentMethodDataSberBnplSchema,
       ])
@@ -157,7 +153,7 @@ export const postPaymentsMutationRequestSchema = z.object({
     return z
       .union([
         confirmationDataRedirectSchema,
-        confirmationDataExternalSchema,
+        confirmationDataSchema,
         confirmationDataQrSchema,
         confirmationDataSchema,
         confirmationDataMobileApplicationSchema,
@@ -166,6 +162,7 @@ export const postPaymentsMutationRequestSchema = z.object({
   },
   get save_payment_method() {
     return savePaymentMethodAttributeSchema
+      .default(false)
       .describe(
         "Сохранение платежных данных для проведения автоплатежей: https://yookassa.ru/developers/payment-acceptance/scenario-extensions/recurring-payments/basics. Возможные значения: * true — сохранить способ оплаты (сохранить платежные данные); * false — провести платеж без сохранения способа оплаты. Доступно только после согласования с менеджером ЮKassa.",
       )
@@ -173,6 +170,7 @@ export const postPaymentsMutationRequestSchema = z.object({
   },
   get capture() {
     return captureSchema
+      .default(false)
       .describe(
         "Автоматический прием: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-true поступившего платежа. Возможные значения: * true — оплата списывается сразу (платеж в одну стадию); * false — оплата холдируется и списывается по вашему запросу (платеж в две стадии: https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#capture-and-cancel). По умолчанию false.",
       )

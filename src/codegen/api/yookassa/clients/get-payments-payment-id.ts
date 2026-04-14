@@ -19,7 +19,6 @@ import type {
   GetPaymentsPaymentIdPathParams,
   GetPaymentsPaymentIdQueryResponse,
 } from "../models/get-payments-payment-id.ts";
-import { getPaymentsPaymentIdQueryResponseSchema } from "../zod/get-payments-payment-id-schema.ts";
 
 function getGetPaymentsPaymentIdUrl({
   payment_id,
@@ -56,5 +55,5 @@ export async function getPaymentsPaymentId(
     url: getGetPaymentsPaymentIdUrl({ payment_id }).url.toString(),
     ...requestConfig,
   });
-  return getPaymentsPaymentIdQueryResponseSchema.parse(res.data);
+  return res.data;
 }

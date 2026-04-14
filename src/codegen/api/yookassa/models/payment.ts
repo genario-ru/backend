@@ -5,8 +5,8 @@
 
 import type { AccountId } from "./account-id.ts";
 import type { AuthorizationDetails } from "./authorization-details.ts";
+import type { Confirmation } from "./confirmation.ts";
 import type { ConfirmationEmbedded } from "./confirmation-embedded.ts";
-import type { ConfirmationExternal } from "./confirmation-external.ts";
 import type { ConfirmationMobileApplication } from "./confirmation-mobile-application.ts";
 import type { ConfirmationQr } from "./confirmation-qr.ts";
 import type { ConfirmationRedirect } from "./confirmation-redirect.ts";
@@ -19,23 +19,15 @@ import type { MonetaryAmount } from "./monetary-amount.ts";
 import type { PaymentCancellationDetails } from "./payment-cancellation-details.ts";
 import type { PaymentDealInfo } from "./payment-deal-info.ts";
 import type { PaymentId } from "./payment-id.ts";
+import type { PaymentMethod } from "./payment-method.ts";
 import type { PaymentMethodAlfabank } from "./payment-method-alfabank.ts";
-import type { PaymentMethodApplePay } from "./payment-method-apple-pay.ts";
 import type { PaymentMethodB2BSberbank } from "./payment-method-b2-b-sberbank.ts";
 import type { PaymentMethodBankCard } from "./payment-method-bank-card.ts";
-import type { PaymentMethodCash } from "./payment-method-cash.ts";
 import type { PaymentMethodElectronicCertificate } from "./payment-method-electronic-certificate.ts";
-import type { PaymentMethodGooglePay } from "./payment-method-google-pay.ts";
-import type { PaymentMethodInstallments } from "./payment-method-installments.ts";
-import type { PaymentMethodMobileBalance } from "./payment-method-mobile-balance.ts";
-import type { PaymentMethodQiwi } from "./payment-method-qiwi.ts";
-import type { PaymentMethodSberBnpl } from "./payment-method-sber-bnpl.ts";
 import type { PaymentMethodSberLoan } from "./payment-method-sber-loan.ts";
 import type { PaymentMethodSberbank } from "./payment-method-sberbank.ts";
 import type { PaymentMethodSbp } from "./payment-method-sbp.ts";
 import type { PaymentMethodTinkoffBank } from "./payment-method-tinkoff-bank.ts";
-import type { PaymentMethodWeChat } from "./payment-method-we-chat.ts";
-import type { PaymentMethodWebmoney } from "./payment-method-webmoney.ts";
 import type { PaymentMethodYooMoney } from "./payment-method-yoo-money.ts";
 import type { PaymentStatus } from "./payment-status.ts";
 import type { ReceiptRegistrationStatus } from "./receipt-registration-status.ts";
@@ -89,23 +81,23 @@ export type Payment = {
   };
   payment_method?:
     | PaymentMethodBankCard
-    | PaymentMethodCash
-    | PaymentMethodQiwi
+    | PaymentMethod
+    | PaymentMethod
     | PaymentMethodAlfabank
-    | PaymentMethodWebmoney
+    | PaymentMethod
     | PaymentMethodSberbank
     | PaymentMethodTinkoffBank
     | PaymentMethodYooMoney
-    | PaymentMethodApplePay
-    | PaymentMethodGooglePay
-    | PaymentMethodMobileBalance
-    | PaymentMethodInstallments
+    | PaymentMethod
+    | PaymentMethod
+    | PaymentMethod
+    | PaymentMethod
     | PaymentMethodB2BSberbank
-    | PaymentMethodWeChat
+    | PaymentMethod
     | PaymentMethodSbp
     | PaymentMethodSberLoan
     | PaymentMethodElectronicCertificate
-    | PaymentMethodSberBnpl;
+    | PaymentMethod;
   /**
    * @description Time of payment capture, based on UTC: https://en.wikipedia.org/wiki/Coordinated_Universal_Time and specified in the ISO 8601: https://en.wikipedia.org/wiki/ISO_8601 format.
    * @type string | undefined, date-time
@@ -123,7 +115,7 @@ export type Payment = {
   expires_at?: string;
   confirmation?:
     | ConfirmationRedirect
-    | ConfirmationExternal
+    | Confirmation
     | ConfirmationQr
     | ConfirmationEmbedded
     | ConfirmationMobileApplication;

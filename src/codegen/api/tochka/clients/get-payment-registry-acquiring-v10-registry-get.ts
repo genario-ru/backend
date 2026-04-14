@@ -19,7 +19,6 @@ import type {
   GetPaymentRegistryAcquiringV10RegistryGetQueryParams,
   GetPaymentRegistryAcquiringV10RegistryGetQueryResponse,
 } from "../models/get-payment-registry-acquiring-v10-registry-get.ts";
-import { getPaymentRegistryAcquiringV10RegistryGetQueryResponseSchema } from "../zod/get-payment-registry-acquiring-v10-registry-get-schema.ts";
 
 function getGetPaymentRegistryAcquiringV10RegistryGetUrl() {
   const res = { method: "GET", url: `/acquiring/v1.0/registry` as const };
@@ -53,7 +52,5 @@ export async function getPaymentRegistryAcquiringV10RegistryGet(
     params,
     ...requestConfig,
   });
-  return getPaymentRegistryAcquiringV10RegistryGetQueryResponseSchema.parse(
-    res.data,
-  );
+  return res.data;
 }

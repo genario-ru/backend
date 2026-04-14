@@ -18,7 +18,6 @@ import type {
   GetPaymentsQueryParams,
   GetPaymentsQueryResponse,
 } from "../models/get-payments.ts";
-import { getPaymentsQueryResponseSchema } from "../zod/get-payments-schema.ts";
 
 function getGetPaymentsUrl() {
   const res = { method: "GET", url: `/payments` as const };
@@ -48,5 +47,5 @@ export async function getPayments(
     params,
     ...requestConfig,
   });
-  return getPaymentsQueryResponseSchema.parse(res.data);
+  return res.data;
 }

@@ -25,7 +25,7 @@ export const receiptItemModelInputSchema = z.object({
     return paymentObjectSchema.optional();
   },
   get measure() {
-    return measureSchema.optional();
+    return measureSchema.default("шт.").optional();
   },
   get Supplier() {
     return supplierModelSchema.optional();

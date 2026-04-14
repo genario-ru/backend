@@ -22,7 +22,6 @@ export default defineConfig(() => {
       input: `${API_DIR}/tochka.json`,
       output: `${API_OUTPUT_DIR}/tochka`,
       clientConfig: {
-        parser: "zod",
         pathParamsType: "object",
         paramsType: "object",
         importPath: "@/lib/tochka/client",
@@ -35,7 +34,6 @@ export default defineConfig(() => {
       input: `${API_DIR}/yookassa.json`,
       output: `${API_OUTPUT_DIR}/yookassa`,
       clientConfig: {
-        parser: "zod",
         pathParamsType: "object",
         paramsType: "object",
         importPath: "@/lib/yookassa/client",
@@ -48,7 +46,6 @@ export default defineConfig(() => {
       input: `${API_DIR}/rutube.json`,
       output: `${API_OUTPUT_DIR}/rutube`,
       clientConfig: {
-        parser: "zod",
         pathParamsType: "object",
         paramsType: "object",
         importPath: "@/lib/rutube/client",
@@ -64,11 +61,10 @@ function kebabCaseTransformer(
   name: string,
   type?: "file" | "function" | "type" | "const",
 ): string {
-  // Только имена файлов делаем kebab-case
-  // Типы/функции/константы оставляем как есть (PascalCase/CamelCase)
   if (type === "file") {
     return kebabCase(name);
   }
+
   return name;
 }
 
@@ -90,8 +86,6 @@ function createConfig({
     plugins: [
       pluginOas({
         discriminator: "inherit",
-        // ← ЭТО ОТКЛЮЧАЕТ ВСЕ JSON-схемы полностью
-        // (в старых версиях было output: false, сейчас — generators: [])
         generators: [],
       }),
       pluginTs({

@@ -5,7 +5,7 @@
 
 import { z } from "@/lib/zod/index.ts";
 
-import { cardRequestDataWithCscSchema } from "./card-request-data-with-csc-schema.ts";
+import { cardRequestDataSchema } from "./card-request-data-schema.ts";
 import { paymentMethodDataSchema } from "./payment-method-data-schema.ts";
 
 /**
@@ -21,7 +21,11 @@ export const paymentMethodDataBankCardSchema = z
   .and(
     z.object({
       get card() {
-        return cardRequestDataWithCscSchema.optional();
+        return cardRequestDataSchema
+          .describe(
+            "Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).",
+          )
+          .optional();
       },
       type: z.enum(["bank_card"]),
     }),

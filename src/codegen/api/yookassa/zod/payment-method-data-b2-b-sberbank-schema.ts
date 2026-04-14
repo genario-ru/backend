@@ -7,7 +7,7 @@ import { z } from "@/lib/zod/index.ts";
 
 import { B2BSberbankCalculatedVatDataSchema } from "./b2-b-sberbank-calculated-vat-data-schema.ts";
 import { B2BSberbankMixedVatDataSchema } from "./b2-b-sberbank-mixed-vat-data-schema.ts";
-import { B2BSberbankUntaxedVatDataSchema } from "./b2-b-sberbank-untaxed-vat-data-schema.ts";
+import { B2BSberbankVatDataSchema } from "./b2-b-sberbank-vat-data-schema.ts";
 import { paymentMethodDataSchema } from "./payment-method-data-schema.ts";
 import { paymentPurposeSchema } from "./payment-purpose-schema.ts";
 
@@ -31,7 +31,7 @@ export const paymentMethodDataB2BSberbankSchema = z
       get vat_data() {
         return z.union([
           B2BSberbankCalculatedVatDataSchema,
-          B2BSberbankUntaxedVatDataSchema,
+          B2BSberbankVatDataSchema,
           B2BSberbankMixedVatDataSchema,
         ]);
       },

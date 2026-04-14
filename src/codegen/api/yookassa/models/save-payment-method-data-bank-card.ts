@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import type { CardRequestDataWithCsc } from "./card-request-data-with-csc.ts";
+import type { CardRequestData } from "./card-request-data.ts";
 import type { SavePaymentMethodData } from "./save-payment-method-data.ts";
 
 export const savePaymentMethodDataBankCardTypeEnum = {
@@ -20,8 +20,9 @@ export type SavePaymentMethodDataBankCard = (SavePaymentMethodData & {
   type: "bank_card";
 }) & {
   /**
+   * @description Данные банковской карты (необходимы, если вы собираете данные карты пользователей на своей стороне).
    * @type object | undefined
    */
-  card?: CardRequestDataWithCsc;
+  card?: CardRequestData;
   type: SavePaymentMethodDataBankCardTypeEnumKey;
 };

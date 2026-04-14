@@ -19,7 +19,6 @@ import type {
   PostPaymentsPaymentIdCancelMutationResponse,
   PostPaymentsPaymentIdCancelPathParams,
 } from "../models/post-payments-payment-id-cancel.ts";
-import { postPaymentsPaymentIdCancelMutationResponseSchema } from "../zod/post-payments-payment-id-cancel-schema.ts";
 
 function getPostPaymentsPaymentIdCancelUrl({
   payment_id,
@@ -65,5 +64,5 @@ export async function postPaymentsPaymentIdCancel(
     ...requestConfig,
     headers: { ...headers, ...requestConfig.headers },
   });
-  return postPaymentsPaymentIdCancelMutationResponseSchema.parse(res.data);
+  return res.data;
 }

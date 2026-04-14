@@ -40,6 +40,7 @@ export type ReceiptItemResponseModel = {
    */
   paymentObject?: PaymentObject;
   /**
+   * @default "шт."
    * @type string | undefined
    */
   measure?: Measure;
