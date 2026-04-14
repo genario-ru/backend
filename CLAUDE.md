@@ -45,16 +45,16 @@ src/
 
 ## Tech stack
 
-| Tool          | Usage                                                                    |
-| ------------- | ------------------------------------------------------------------------ |
-| Hono 4        | HTTP framework; `createHonoApp()` from `@/shared/utils/server`           |
-| Drizzle ORM   | DB queries + schema; migrations via `drizzle-kit`                        |
-| BullMQ        | Background job queues; shared Redis from `@/lib/redis`                   |
-| Better Auth   | Session management; `sessionMiddleware` reads `c.get("user")`            |
-| Zod 4         | Validation; always import from `@/lib/zod` (not `"zod"`)                 |
-| hono-openapi  | OpenAPI metadata via `openAPIResponseMiddleware` + `createOpenAPIResponse`|
-| Kubb 4        | OpenAPI → TS types for external APIs (Tochka, YooKassa)                  |
-| drizzle-zod   | `createSelectSchema(table)` for entity Zod schemas                       |
+| Tool         | Usage                                                                      |
+| ------------ | -------------------------------------------------------------------------- |
+| Hono 4       | HTTP framework; `createHonoApp()` from `@/shared/utils/server`             |
+| Drizzle ORM  | DB queries + schema; migrations via `drizzle-kit`                          |
+| BullMQ       | Background job queues; shared Redis from `@/lib/redis`                     |
+| Better Auth  | Session management; `sessionMiddleware` reads `c.get("user")`              |
+| Zod 4        | Validation; always import from `@/lib/zod` (not `"zod"`)                   |
+| hono-openapi | OpenAPI metadata via `openAPIResponseMiddleware` + `createOpenAPIResponse` |
+| Kubb 4       | OpenAPI → TS types for external APIs (Tochka, YooKassa)                    |
+| drizzle-zod  | `createSelectSchema(table)` for entity Zod schemas                         |
 
 ---
 
@@ -67,7 +67,10 @@ src/
 import { validator } from "hono-openapi";
 import { db } from "@/db";
 import { getThingParamsSchema } from "@/domains/<domain>/schemas/handlers/get-thing/params";
-import { type GetThingResponse, getThingResponseSchema } from "@/domains/<domain>/schemas/handlers/get-thing/response";
+import {
+  type GetThingResponse,
+  getThingResponseSchema,
+} from "@/domains/<domain>/schemas/handlers/get-thing/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -100,11 +103,17 @@ getThingRoute.get(
     const { thingId } = c.req.valid("param");
     const user = c.get("user");
 
-    const found = await db.query.thing.findFirst({ where: (t, { eq }) => eq(t.id, thingId) });
-    if (!found) return throwAPIError({ code: APIErrorCode.NotFound, message: "..." });
-    if (found.userId !== user.id) return throwAPIError({ code: APIErrorCode.Forbidden, message: "..." });
+    const found = await db.query.thing.findFirst({
+      where: (t, { eq }) => eq(t.id, thingId),
+    });
+    if (!found)
+      return throwAPIError({ code: APIErrorCode.NotFound, message: "..." });
+    if (found.userId !== user.id)
+      return throwAPIError({ code: APIErrorCode.Forbidden, message: "..." });
 
-    return c.json<GetThingResponse>(getThingResponseSchema.parse({ data: found }));
+    return c.json<GetThingResponse>(
+      getThingResponseSchema.parse({ data: found }),
+    );
   },
 );
 ```
@@ -158,7 +167,12 @@ export type MyJobData = { entityId: string };
 
 export const myJobQueue = new Queue<MyJobData>(MY_JOB_QUEUE_NAME, {
   connection: redis,
-  defaultJobOptions: { attempts: 3, backoff: { type: "exponential", delay: 3000 }, removeOnComplete: 100, removeOnFail: 100 },
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: { type: "exponential", delay: 3000 },
+    removeOnComplete: 100,
+    removeOnFail: 100,
+  },
 });
 export function enqueueMyJob(data: MyJobData) {
   return myJobQueue.add("my-job", data);
@@ -169,10 +183,14 @@ import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { MY_JOB_QUEUE_NAME, type MyJobData } from "./queue";
 
-export const myJobWorker = new Worker<MyJobData>(MY_JOB_QUEUE_NAME, async (job) => {
-  const { entityId } = job.data;
-  // ... processing logic
-}, { connection: redis });
+export const myJobWorker = new Worker<MyJobData>(
+  MY_JOB_QUEUE_NAME,
+  async (job) => {
+    const { entityId } = job.data;
+    // ... processing logic
+  },
+  { connection: redis },
+);
 ```
 
 After creating queue/worker: register worker in `workers.ts`, add queue to Bull Board in `server.ts`.

@@ -31,7 +31,9 @@ import { relations } from "drizzle-orm";
 export const thing = pgTable("thing", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
-  userId: uuid("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -41,6 +43,7 @@ export const thingRelations = relations(thing, ({ one }) => ({
 ```
 
 **Drizzle conventions**:
+
 - Column names: `camelCase` in code, `snake_case` in DB
 - IDs: `uuid("id").primaryKey().defaultRandom()`
 - Timestamps: `timestamp("created_at").defaultNow().notNull()`

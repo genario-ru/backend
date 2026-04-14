@@ -20,6 +20,7 @@ Every task must end with the checklist from CLAUDE.md verified: lint, typecheck,
 ## Both projects in the same monorepo
 
 The user works on two related projects:
+
 - `genario-backend` — this project (Hono API)
 - `genario-frontend` — React 19 + TanStack Router SPA that consumes this API
 

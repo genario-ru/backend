@@ -37,12 +37,15 @@ If generated output is wrong (bad naming, paths, imports): fix `kubb.config.ts` 
 After regeneration:
 
 1. **Diff the codegen output** — identify what changed:
+
    ```bash
    git diff src/codegen/
    ```
+
    Look for: renamed types, changed function signatures, removed fields, new endpoints.
 
 2. **Find all affected handwritten files**:
+
    ```bash
    grep -r "from \"@/codegen/api" src/ --include="*.ts" -l
    ```

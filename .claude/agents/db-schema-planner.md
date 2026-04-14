@@ -71,6 +71,7 @@ Reason: <why this is needed>
 ```
 
 Then list:
+
 - `src/db/schema.ts` exports to add
 - Entity schemas in `src/domains/` to create or update
 - Migration commands to run after implementation

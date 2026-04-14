@@ -41,6 +41,7 @@ git diff src/codegen/
 ```
 
 Look for:
+
 - Renamed types or functions
 - Changed function signatures
 - Removed fields
@@ -55,6 +56,7 @@ grep -r "from \"@/codegen/api" src/ --include="*.ts" -l
 ```
 
 Update in dependency order:
+
 - `src/lib/` — integrations that use client functions
 - `src/domains/` — services that use codegen types
 

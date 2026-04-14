@@ -21,12 +21,12 @@ List the reference paths before writing code.
 
 Create files in `src/domains/<domain>/schemas/handlers/<handler-name>/`:
 
-| File | When | Content |
-|------|------|---------|
-| `params.ts` | Path has `:id` params | `z.object({ thingId: z.uuid() })` |
-| `query.ts` | Query string params | `z.object({ page: z.coerce.number().optional() })` |
-| `body.ts` | POST/PATCH with JSON body | `z.object({ name: z.string().min(1) })` |
-| `response.ts` | Always | `z.object({ data: entitySchema }).meta({ title, description, ref })` |
+| File          | When                      | Content                                                              |
+| ------------- | ------------------------- | -------------------------------------------------------------------- |
+| `params.ts`   | Path has `:id` params     | `z.object({ thingId: z.uuid() })`                                    |
+| `query.ts`    | Query string params       | `z.object({ page: z.coerce.number().optional() })`                   |
+| `body.ts`     | POST/PATCH with JSON body | `z.object({ name: z.string().min(1) })`                              |
+| `response.ts` | Always                    | `z.object({ data: entitySchema }).meta({ title, description, ref })` |
 
 All schemas: import `z` from `@/lib/zod`.
 Response schema: always includes `.meta({ title: "...", description: "...", ref: "..." })`.
@@ -39,7 +39,10 @@ Create `src/routes/api/v1/<domain>/<resource>/<method>/route.ts`:
 import { validator } from "hono-openapi";
 import { db } from "@/db";
 import { getThingParamsSchema } from "@/domains/<domain>/schemas/handlers/get-thing/params";
-import { type GetThingResponse, getThingResponseSchema } from "@/domains/<domain>/schemas/handlers/get-thing/response";
+import {
+  type GetThingResponse,
+  getThingResponseSchema,
+} from "@/domains/<domain>/schemas/handlers/get-thing/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -72,11 +75,17 @@ getThingRoute.get(
     const { thingId } = c.req.valid("param");
     const user = c.get("user");
 
-    const found = await db.query.thing.findFirst({ where: (t, { eq }) => eq(t.id, thingId) });
-    if (!found) return throwAPIError({ code: APIErrorCode.NotFound, message: "..." });
-    if (found.userId !== user.id) return throwAPIError({ code: APIErrorCode.Forbidden, message: "..." });
+    const found = await db.query.thing.findFirst({
+      where: (t, { eq }) => eq(t.id, thingId),
+    });
+    if (!found)
+      return throwAPIError({ code: APIErrorCode.NotFound, message: "..." });
+    if (found.userId !== user.id)
+      return throwAPIError({ code: APIErrorCode.Forbidden, message: "..." });
 
-    return c.json<GetThingResponse>(getThingResponseSchema.parse({ data: found }));
+    return c.json<GetThingResponse>(
+      getThingResponseSchema.parse({ data: found }),
+    );
   },
 );
 ```

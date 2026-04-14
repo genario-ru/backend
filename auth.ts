@@ -104,7 +104,7 @@ export const auth = betterAuth({
       generateId: false,
     },
     defaultCookieAttributes: {
-      sameSite: "none",
+      sameSite: "lax",
     },
     crossSubDomainCookies: {
       enabled: true,

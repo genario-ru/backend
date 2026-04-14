@@ -38,7 +38,10 @@ pnpm lint:typescript   # tsc --noEmit
 
 ```typescript
 // Response type comes from the schema file
-import { type GetThingResponse, getThingResponseSchema } from "@/domains/<domain>/schemas/handlers/get-thing/response";
+import {
+  type GetThingResponse,
+  getThingResponseSchema,
+} from "@/domains/<domain>/schemas/handlers/get-thing/response";
 
 return c.json<GetThingResponse>(getThingResponseSchema.parse({ data: found }));
 ```

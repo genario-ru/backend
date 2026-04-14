@@ -1,6 +1,8 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, type PDFFont, type PDFPage, rgb } from "pdf-lib";
 
+import { sanitizeText } from "@/shared/utils/regex/sanitize-text";
+
 import { loadPdfFonts } from "../utils/load-pdf-fonts";
 
 type Script = "latin" | "cyrillic";
@@ -33,13 +35,9 @@ function isNeutralCharacter(value: string) {
   return NEUTRAL_CHARACTER_PATTERN.test(value);
 }
 
-function resolveScript(
-  character: string,
-  currentText: string,
-  currentScript: Script,
-) {
+function resolveScript(character: string): Script {
   if (isNeutralCharacter(character)) {
-    return currentText ? currentScript : "latin";
+    return "latin";
   }
 
   return hasCyrillicCharacter(character) ? "cyrillic" : "latin";
@@ -62,9 +60,7 @@ function splitTextRuns(value: string): TextRun[] {
   let currentText = "";
 
   for (const character of value) {
-    // Пробелы и пунктуация приклеиваются к текущему script,
-    // чтобы строки не распадались на лишние короткие фрагменты.
-    const nextScript = resolveScript(character, currentText, currentScript);
+    const nextScript = resolveScript(character);
 
     if (currentText && nextScript !== currentScript) {
       pushTextRun(runs, currentText, currentScript);
@@ -190,15 +186,60 @@ function wrapText(text: string, size: number, fonts: FontSet) {
   return wrappedLines;
 }
 
+// Wraps text like wrapText, but the first line has less available width due to
+// an inline prefix (e.g. a bold label) that occupies `offset` px before the text.
+function wrapTextFirstLineOffset(
+  text: string,
+  size: number,
+  fonts: FontSet,
+  offset: number,
+): string[] {
+  const lines: string[] = [];
+  let currentLine = "";
+  let firstLineActive = true;
+
+  for (const paragraph of text.split("\n")) {
+    const tokens = paragraph.match(/\S+\s*/g) ?? [""];
+
+    for (const token of tokens) {
+      const maxWidth = firstLineActive
+        ? MAX_LINE_WIDTH - offset
+        : MAX_LINE_WIDTH;
+      const nextLine = `${currentLine}${token}`;
+
+      if (currentLine && measureTextWidth(nextLine, size, fonts) > maxWidth) {
+        lines.push(currentLine.trimEnd());
+        currentLine = token.trimStart();
+        firstLineActive = false;
+        continue;
+      }
+
+      currentLine = nextLine;
+    }
+
+    lines.push(currentLine.trimEnd());
+    currentLine = "";
+    firstLineActive = false;
+  }
+
+  return lines;
+}
+
 export class PDFWriter {
   private readonly fonts: FontSet;
+  private readonly boldFonts: FontSet;
   private readonly pdfDocument: PDFDocument;
   private page: PDFPage;
   private currentY = PAGE_HEIGHT - TOP_MARGIN;
 
-  private constructor(pdfDocument: PDFDocument, fonts: FontSet) {
+  private constructor(
+    pdfDocument: PDFDocument,
+    fonts: FontSet,
+    boldFonts: FontSet,
+  ) {
     this.pdfDocument = pdfDocument;
     this.fonts = fonts;
+    this.boldFonts = boldFonts;
     this.page = pdfDocument.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   }
 
@@ -206,36 +247,126 @@ export class PDFWriter {
     const pdfDocument = await PDFDocument.create();
     pdfDocument.registerFontkit(fontkit);
 
-    const { latin, cyrillic } = await loadPdfFonts();
-    const [latinFont, cyrillicFont] = await Promise.all([
-      pdfDocument.embedFont(latin),
-      pdfDocument.embedFont(cyrillic),
-    ]);
+    const { latin, cyrillic, latinBold, cyrillicBold } = await loadPdfFonts();
+    const [latinFont, cyrillicFont, latinBoldFont, cyrillicBoldFont] =
+      await Promise.all([
+        pdfDocument.embedFont(latin),
+        pdfDocument.embedFont(cyrillic),
+        pdfDocument.embedFont(latinBold),
+        pdfDocument.embedFont(cyrillicBold),
+      ]);
 
-    return new PDFWriter(pdfDocument, {
-      latin: latinFont,
-      cyrillic: cyrillicFont,
-    });
+    return new PDFWriter(
+      pdfDocument,
+      { latin: latinFont, cyrillic: cyrillicFont },
+      { latin: latinBoldFont, cyrillic: cyrillicBoldFont },
+    );
   }
 
   addTitle(text: string) {
-    this.addTextBlock(text, 22, 12);
+    this.addTextBlock(sanitizeText(text), 18, 16, this.boldFonts);
   }
 
   addHeading(text: string) {
-    this.addTextBlock(text, 16, 8);
+    this.addTextBlock(sanitizeText(text), 16, 10, this.boldFonts);
   }
 
   addSubheading(text: string) {
-    this.addTextBlock(text, 13, 6);
+    this.addTextBlock(sanitizeText(text), 13, 8, this.boldFonts);
   }
 
   addParagraph(text: string) {
-    this.addTextBlock(text, 11, 8);
+    this.addTextBlock(sanitizeText(text), 11, 8);
   }
 
   addListItem(text: string) {
-    this.addTextBlock(`- ${text}`, 11, 6);
+    this.addTextBlock(`- ${sanitizeText(text)}`, 11, 6);
+  }
+
+  // Renders "Label: value" with the label portion in bold.
+  addLabeledParagraph(label: string, value: string) {
+    const labelText = `${sanitizeText(label)}: `;
+    const valueText = sanitizeText(value);
+    const size = 11;
+    const gapAfter = 8;
+    const lineHeight = size * 1.35;
+
+    const labelWidth = measureTextWidth(labelText, size, this.boldFonts);
+    const valueLines = wrapTextFirstLineOffset(
+      valueText,
+      size,
+      this.fonts,
+      labelWidth,
+    );
+    const lines = valueLines.length > 0 ? valueLines : [""];
+
+    this.ensureSpace(lines.length * lineHeight + gapAfter);
+
+    this.drawLineAt(labelText, size, this.boldFonts, HORIZONTAL_MARGIN);
+    if (lines[0]) {
+      this.drawLineAt(
+        lines[0],
+        size,
+        this.fonts,
+        HORIZONTAL_MARGIN + labelWidth,
+      );
+    }
+    this.currentY -= lineHeight;
+
+    for (let i = 1; i < lines.length; i++) {
+      this.drawLineAt(lines[i], size, this.fonts, HORIZONTAL_MARGIN);
+      this.currentY -= lineHeight;
+    }
+
+    this.currentY -= gapAfter;
+  }
+
+  // Renders "- Label: value" with the label portion in bold and "- " in regular.
+  addLabeledListItem(label: string, value: string) {
+    const prefixText = "- ";
+    const labelText = `${sanitizeText(label)}: `;
+    const valueText = sanitizeText(value);
+    const size = 11;
+    const gapAfter = 6;
+    const lineHeight = size * 1.35;
+
+    const prefixWidth = measureTextWidth(prefixText, size, this.fonts);
+    const labelWidth = measureTextWidth(labelText, size, this.boldFonts);
+    const totalOffset = prefixWidth + labelWidth;
+
+    const valueLines = wrapTextFirstLineOffset(
+      valueText,
+      size,
+      this.fonts,
+      totalOffset,
+    );
+    const lines = valueLines.length > 0 ? valueLines : [""];
+
+    this.ensureSpace(lines.length * lineHeight + gapAfter);
+
+    this.drawLineAt(prefixText, size, this.fonts, HORIZONTAL_MARGIN);
+    this.drawLineAt(
+      labelText,
+      size,
+      this.boldFonts,
+      HORIZONTAL_MARGIN + prefixWidth,
+    );
+    if (lines[0]) {
+      this.drawLineAt(
+        lines[0],
+        size,
+        this.fonts,
+        HORIZONTAL_MARGIN + totalOffset,
+      );
+    }
+    this.currentY -= lineHeight;
+
+    for (let i = 1; i < lines.length; i++) {
+      this.drawLineAt(lines[i], size, this.fonts, HORIZONTAL_MARGIN);
+      this.currentY -= lineHeight;
+    }
+
+    this.currentY -= gapAfter;
   }
 
   addSpacer(height = 6) {
@@ -248,25 +379,35 @@ export class PDFWriter {
     return Buffer.from(bytes);
   }
 
-  private addTextBlock(text: string, size: number, gapAfter: number) {
-    const lines = wrapText(text, size, this.fonts);
+  private addTextBlock(
+    text: string,
+    size: number,
+    gapAfter: number,
+    fonts: FontSet = this.fonts,
+  ) {
+    const lines = wrapText(text, size, fonts);
     const lineHeight = size * 1.35;
 
     this.ensureSpace(lines.length * lineHeight + gapAfter);
 
     for (const line of lines) {
-      this.drawLine(line, size);
+      this.drawLine(line, size, fonts);
       this.currentY -= lineHeight;
     }
 
     this.currentY -= gapAfter;
   }
 
-  private drawLine(text: string, size: number) {
-    let currentX = HORIZONTAL_MARGIN;
+  private drawLineAt(
+    text: string,
+    size: number,
+    fonts: FontSet,
+    startX: number,
+  ) {
+    let currentX = startX;
 
     for (const run of splitTextRuns(text)) {
-      const font = getFontForScript(this.fonts, run.script);
+      const font = getFontForScript(fonts, run.script);
       this.page.drawText(run.text, {
         x: currentX,
         y: this.currentY,
@@ -276,6 +417,10 @@ export class PDFWriter {
       });
       currentX += font.widthOfTextAtSize(run.text, size);
     }
+  }
+
+  private drawLine(text: string, size: number, fonts: FontSet = this.fonts) {
+    this.drawLineAt(text, size, fonts, HORIZONTAL_MARGIN);
   }
 
   private ensureSpace(requiredHeight: number) {

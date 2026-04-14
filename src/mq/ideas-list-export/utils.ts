@@ -1,7 +1,9 @@
-import { Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
+import { Paragraph, TextRun } from "docx";
 import slugify from "slugify";
 
+import { createDocxDocument, labeledParagraph } from "@/lib/docx";
 import { PDFWriter } from "@/lib/pdf/classes/pdf-writer";
+import { sanitizeText } from "@/shared/utils/regex/sanitize-text";
 
 import type { IdeasListExportData } from "./types";
 
@@ -16,6 +18,8 @@ export type RenderedDocumentFile = {
   mimeType: string;
 };
 
+type MetaItem = { label: string; value: string };
+
 function getIdeasListTitle(data: IdeasListExportData) {
   return data.name?.trim() || "Список идей";
 }
@@ -26,36 +30,42 @@ function getIdeasListFileName(data: IdeasListExportData, format: string) {
   return `${baseName}.${format}`;
 }
 
-function getIdeasListMetaLines(data: IdeasListExportData) {
-  const metaLines = [`Количество идей: ${data.ideas.length}`];
+function getIdeasListMetaItems(data: IdeasListExportData): MetaItem[] {
+  const items: MetaItem[] = [
+    { label: "Количество идей", value: String(data.ideas.length) },
+  ];
 
   if (data.description) {
-    metaLines.push(`Описание: ${data.description}`);
+    items.push({ label: "Описание", value: data.description });
   }
 
   if (data.targetAudience) {
-    metaLines.push(`Целевая аудитория: ${data.targetAudience}`);
+    items.push({ label: "Целевая аудитория", value: data.targetAudience });
   }
 
   if (data.profile) {
-    metaLines.push(`Профиль: ${data.profile.name}`);
+    items.push({ label: "Профиль", value: data.profile.name });
   }
 
   if (data.template) {
-    metaLines.push(`Шаблон: ${data.template.name}`);
+    items.push({ label: "Шаблон", value: data.template.name });
   }
 
   if (data.tones.length > 0) {
-    metaLines.push(`Тоны: ${data.tones.map(({ name }) => name).join(", ")}`);
+    items.push({
+      label: "Тона",
+      value: data.tones.map(({ name }) => name).join(", "),
+    });
   }
 
   if (data.videoTypes.length > 0) {
-    metaLines.push(
-      `Типы видео: ${data.videoTypes.map(({ name }) => name).join(", ")}`,
-    );
+    items.push({
+      label: "Типы видео",
+      value: data.videoTypes.map(({ name }) => name).join(", "),
+    });
   }
 
-  return metaLines;
+  return items;
 }
 
 async function renderIdeasListPdf(
@@ -64,11 +74,13 @@ async function renderIdeasListPdf(
   const writer = await PDFWriter.create();
 
   writer.addTitle(getIdeasListTitle(data));
+  writer.addHeading("Основная информация");
 
-  for (const line of getIdeasListMetaLines(data)) {
-    writer.addParagraph(line);
+  for (const { label, value } of getIdeasListMetaItems(data)) {
+    writer.addLabeledParagraph(label, value);
   }
 
+  writer.addSpacer(20);
   writer.addHeading("Идеи");
 
   if (data.ideas.length === 0) {
@@ -77,12 +89,16 @@ async function renderIdeasListPdf(
 
   data.ideas.forEach((ideaItem, index) => {
     writer.addSubheading(`${index + 1}. ${ideaItem.name || "Без названия"}`);
-    writer.addParagraph(`Тип видео: ${ideaItem.videoType.name}`);
-    writer.addParagraph(`Описание: ${ideaItem.description || "Не указано"}`);
-    writer.addParagraph(
-      `Почему это сработает: ${ideaItem.reason || "Не указано"}`,
+    writer.addLabeledParagraph("Тип видео", ideaItem.videoType.name);
+    writer.addLabeledParagraph(
+      "Описание",
+      ideaItem.description || "Не указано",
     );
-    writer.addParagraph(`Сохранена: ${ideaItem.saved ? "Да" : "Нет"}`);
+    writer.addLabeledParagraph(
+      "Почему это сработает",
+      ideaItem.reason || "Не указано",
+    );
+    writer.addLabeledParagraph("Сохранена", ideaItem.saved ? "Да" : "Нет");
     writer.addSpacer();
   });
 
@@ -98,25 +114,54 @@ async function renderIdeasListDocx(
 ): Promise<RenderedDocumentFile> {
   const children: Paragraph[] = [
     new Paragraph({
-      text: getIdeasListTitle(data),
-      heading: HeadingLevel.TITLE,
-    }),
-    ...getIdeasListMetaLines(data).map(
-      (line) =>
-        new Paragraph({
-          text: line,
+      spacing: { before: 0, after: 240 },
+      children: [
+        new TextRun({
+          text: sanitizeText(getIdeasListTitle(data)),
+          font: "Arial",
+          bold: true,
+          size: 40,
         }),
+      ],
+    }),
+    new Paragraph({
+      spacing: { before: 0, after: 120 },
+      children: [
+        new TextRun({
+          text: "Основная информация",
+          font: "Arial",
+          bold: true,
+          size: 36,
+        }),
+      ],
+    }),
+    ...getIdeasListMetaItems(data).map(({ label, value }) =>
+      labeledParagraph(label, value),
     ),
     new Paragraph({
-      text: "Идеи",
-      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 240, after: 120 },
+      children: [
+        new TextRun({
+          text: "Идеи",
+          font: "Arial",
+          bold: true,
+          size: 36,
+        }),
+      ],
     }),
   ];
 
   if (data.ideas.length === 0) {
     children.push(
       new Paragraph({
-        text: "По выбранным параметрам идеи отсутствуют.",
+        spacing: { before: 0, after: 60 },
+        children: [
+          new TextRun({
+            text: "По выбранным параметрам идеи отсутствуют.",
+            font: "Arial",
+            size: 22,
+          }),
+        ],
       }),
     );
   }
@@ -124,41 +169,26 @@ async function renderIdeasListDocx(
   data.ideas.forEach((ideaItem, index) => {
     children.push(
       new Paragraph({
-        text: `${index + 1}. ${ideaItem.name || "Без названия"}`,
-        heading: HeadingLevel.HEADING_2,
-      }),
-      new Paragraph({
-        children: [new TextRun(`Тип видео: ${ideaItem.videoType.name}`)],
-      }),
-      new Paragraph({
+        spacing: { before: 200, after: 80 },
         children: [
-          new TextRun(`Описание: ${ideaItem.description || "Не указано"}`),
+          new TextRun({
+            text: sanitizeText(
+              `${index + 1}. ${ideaItem.name || "Без названия"}`,
+            ),
+            font: "Arial",
+            bold: true,
+            size: 28,
+          }),
         ],
       }),
-      new Paragraph({
-        children: [
-          new TextRun(
-            `Почему это сработает: ${ideaItem.reason || "Не указано"}`,
-          ),
-        ],
-      }),
-      new Paragraph({
-        children: [new TextRun(`Сохранена: ${ideaItem.saved ? "Да" : "Нет"}`)],
-      }),
+      labeledParagraph("Тип видео", ideaItem.videoType.name),
+      labeledParagraph("Описание", ideaItem.description || "Не указано"),
+      labeledParagraph("Почему это сработает", ideaItem.reason || "Не указано"),
     );
   });
 
-  const document = new Document({
-    sections: [
-      {
-        properties: {},
-        children,
-      },
-    ],
-  });
-
   return {
-    buffer: await Packer.toBuffer(document),
+    buffer: await createDocxDocument(children),
     fileName: getIdeasListFileName(data, "docx"),
     mimeType:
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
