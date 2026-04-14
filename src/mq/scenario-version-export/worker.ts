@@ -147,7 +147,7 @@ export const scenarioVersionExportWorker =
         const s3Key = createS3Key({
           userId: foundExportDocument.userId,
           folderName: "scenario-version-exports",
-          fileName: `${exportDocumentId}-${renderedExportFile.fileName}`,
+          fileName: renderedExportFile.fileName,
         });
 
         await uploadBufferToS3({

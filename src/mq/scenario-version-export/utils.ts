@@ -34,7 +34,7 @@ function getScenarioTitle(data: ScenarioVersionExportData) {
 
 function getScenarioFileName(data: ScenarioVersionExportData, format: string) {
   const scenarioSlug = slugify(getScenarioTitle(data)) || "scenario";
-  return `${scenarioSlug}-version-${data.id.slice(0, 8)}.${format}`;
+  return `${scenarioSlug}-${data.id.slice(0, 8)}.${format}`;
 }
 
 function getScenarioMetaItems(data: ScenarioVersionExportData): MetaItem[] {

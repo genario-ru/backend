@@ -114,7 +114,7 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
       const s3Key = createS3Key({
         userId: foundExportDocument.userId,
         folderName: "ideas-list-exports",
-        fileName: `${exportDocumentId}-${renderedExportFile.fileName}`,
+        fileName: renderedExportFile.fileName,
       });
 
       await uploadBufferToS3({
