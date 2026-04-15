@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { type AnyPgColumn, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -17,11 +17,8 @@ export const scenarioVersionStatus = pgEnum("scenario_version_status", [
 
 export const scenarioVersion = pgTable("scenario_version", {
   id: uuid("id").defaultRandom().primaryKey(),
-  // TODO: Проблема с наследованием типов TypeScript при кросс-референсах. Убрать 'AnyPgColumn', если пофиксится в будущем
-  // https://github.com/drizzle-team/drizzle-orm/issues/2476
-  // https://github.com/drizzle-team/drizzle-orm/issues/435
   scenarioId: uuid("scenario_id")
-    .references((): AnyPgColumn => scenario.id, {
+    .references(() => scenario.id, {
       onUpdate: "cascade",
       onDelete: "cascade",
     })
@@ -34,7 +31,6 @@ export const scenarioVersionRelations = relations(
   scenarioVersion,
   ({ one, many }) => ({
     scenario: one(scenario, {
-      relationName: "scenarioVersions",
       fields: [scenarioVersion.scenarioId],
       references: [scenario.id],
     }),

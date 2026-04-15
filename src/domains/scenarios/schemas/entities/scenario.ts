@@ -21,7 +21,6 @@ export type Scenario = z.infer<typeof scenarioSchema>;
 
 export const scenarioExtendedSchema = scenarioSchema
   .extend({
-    version: scenarioVersionExtendedSchema.nullish(),
     currentVersion: scenarioVersionExtendedSchema.nullish(),
     profile: profileSchema.nullish(),
     template: templateSchema.nullish(),

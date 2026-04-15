@@ -20,13 +20,6 @@ export const scenario = pgTable("scenario", {
       onDelete: "cascade",
     })
     .notNull(),
-  currentVersionId: uuid("current_version_id").references(
-    () => scenarioVersion.id,
-    {
-      onUpdate: "cascade",
-      onDelete: "set null",
-    },
-  ),
   profileId: uuid("profile_id").references(() => profile.id, {
     onUpdate: "cascade",
     onDelete: "set null",
@@ -62,11 +55,6 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
     fields: [scenario.userId],
     references: [user.id],
   }),
-  currentVersion: one(scenarioVersion, {
-    relationName: "currentVersion",
-    fields: [scenario.currentVersionId],
-    references: [scenarioVersion.id],
-  }),
   profile: one(profile, {
     fields: [scenario.profileId],
     references: [profile.id],
@@ -87,6 +75,6 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
     fields: [scenario.videoDurationId],
     references: [videoDuration.id],
   }),
-  versions: many(scenarioVersion, { relationName: "scenarioVersions" }),
+  versions: many(scenarioVersion),
   scenarioToTone: many(scenarioToTone),
 }));

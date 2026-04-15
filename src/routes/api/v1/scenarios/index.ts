@@ -4,7 +4,6 @@ export { updateScenarioChapterRoute } from "./chapters/chapter/patch/route";
 export { getMyScenariosRoute } from "./my/get/route";
 export { createScenarioRoute } from "./root/post/route";
 export { getScenarioCurrentVersionRoute } from "./scenario/current-version/get/route";
-export { updateScenarioCurrentVersionRoute } from "./scenario/current-version/patch/route";
 export { createScenarioExportRoute } from "./scenario/export/post/route";
 export { getScenarioExportsRoute } from "./scenario/exports/get/route";
 export { deleteScenarioRoute } from "./scenario/root/delete/route";
@@ -17,5 +16,3 @@ export { updateScenarioSceneComponentRoute } from "./scene-components/scene-comp
 export { createScenarioScenePreviewRoute } from "./scenes/scene/preview/post/route";
 export { deleteScenarioSceneRoute } from "./scenes/scene/root/delete/route";
 export { updateScenarioSceneRoute } from "./scenes/scene/root/patch/route";
-export { deleteScenarioVersionRoute } from "./versions/version/root/delete/route";
-export { getScenarioVersionRoute } from "./versions/version/root/get/route";

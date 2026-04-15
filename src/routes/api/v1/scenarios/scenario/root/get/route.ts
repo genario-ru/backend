@@ -54,7 +54,6 @@ getScenarioRoute.get(
       where: (scenario, { eq, and }) =>
         and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
       with: {
-        currentVersion: true,
         profile: true,
         template: true,
         platform: true,
@@ -102,7 +101,7 @@ getScenarioRoute.get(
       getScenarioResponseSchema.parse({
         data: {
           ...scenario,
-          version: foundScenarioVersion,
+          currentVersion: foundScenarioVersion,
           tones: scenarioToTone.map(({ tone }) => tone),
         },
       }),

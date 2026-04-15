@@ -1,7 +1,10 @@
+import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
+import { scenarioVersion } from "@/db/schema";
 import { getScenarioCurrentVersionParamsSchema } from "@/domains/scenarios/schemas/handlers/get-scenario-current-version/params";
+import { getScenarioCurrentVersionQuerySchema } from "@/domains/scenarios/schemas/handlers/get-scenario-current-version/query";
 import {
   type GetScenarioCurrentVersionResponse,
   getScenarioCurrentVersionResponseSchema,
@@ -41,8 +44,10 @@ getScenarioCurrentVersionRoute.get(
     },
   }),
   validator("param", getScenarioCurrentVersionParamsSchema),
+  validator("query", getScenarioCurrentVersionQuerySchema),
   async (c) => {
     const { scenarioId } = c.req.valid("param");
+    const { versionId } = c.req.valid("query");
     const user = c.get("user");
 
     const scenario = await db.query.scenario.findFirst({
@@ -58,21 +63,19 @@ getScenarioCurrentVersionRoute.get(
       });
     }
 
-    const currentVersionId = scenario.currentVersionId;
+    const scenarioVersionQueryWhereConditions = [
+      eq(scenarioVersion.scenarioId, scenarioId),
+    ];
 
-    if (!currentVersionId) {
-      return throwAPIError({
-        code: APIErrorCode.NotFound,
-        message: "Текущая версия сценария не найдена",
-      });
+    if (versionId) {
+      scenarioVersionQueryWhereConditions.push(
+        eq(scenarioVersion.id, versionId),
+      );
     }
 
-    const version = await db.query.scenarioVersion.findFirst({
-      where: (scenarioVersion, { eq, and }) =>
-        and(
-          eq(scenarioVersion.id, currentVersionId),
-          eq(scenarioVersion.scenarioId, scenarioId),
-        ),
+    const foundScenarioVersion = await db.query.scenarioVersion.findFirst({
+      orderBy: (scenarioVersion, { desc }) => [desc(scenarioVersion.createdAt)],
+      where: and(...scenarioVersionQueryWhereConditions),
       with: {
         scenario: {
           with: {
@@ -93,15 +96,15 @@ getScenarioCurrentVersionRoute.get(
       },
     });
 
-    if (!version) {
+    if (!foundScenarioVersion) {
       return throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Версия сценария не найдена",
       });
     }
 
-    const { scenarioToTone, ...scenarioData } = version.scenario;
-    const { scenario: _scenario, ...versionData } = version;
+    const { scenarioToTone, ...scenarioData } = foundScenarioVersion.scenario;
+    const { scenario: _scenario, ...versionData } = foundScenarioVersion;
 
     return c.json<GetScenarioCurrentVersionResponse>(
       getScenarioCurrentVersionResponseSchema.parse({

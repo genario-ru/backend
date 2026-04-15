@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
@@ -47,7 +46,6 @@ createScenarioRoute.post(
   async (c) => {
     const { toneIds, ...createScenarioParams } = c.req.valid("json");
     const user = c.get("user");
-
     const creditsBalance = await getCreditsBalance({ userId: user.id });
 
     if (creditsBalance < AVERAGE_SCENARIO_CREDITS_COST) {
@@ -72,25 +70,14 @@ createScenarioRoute.post(
           .values({ scenarioId: createdScenario.id })
           .returning();
 
-        const scenarioPromises: Promise<any>[] = [
-          tx
-            .update(scenario)
-            .set({ currentVersionId: createdScenarioVersion.id })
-            .where(eq(scenario.id, createdScenario.id)),
-        ];
-
         if (toneIds && toneIds.length > 0) {
-          scenarioPromises.push(
-            tx.insert(scenarioToTone).values(
-              toneIds.map((toneId) => ({
-                scenarioId: createdScenario.id,
-                toneId,
-              })),
-            ),
+          await tx.insert(scenarioToTone).values(
+            toneIds.map((toneId) => ({
+              scenarioId: createdScenario.id,
+              toneId,
+            })),
           );
         }
-
-        await Promise.all(scenarioPromises);
 
         return {
           createdScenario,
@@ -108,10 +95,7 @@ createScenarioRoute.post(
 
     return c.json<CreateScenarioResponse>(
       createScenarioResponseSchema.parse({
-        data: {
-          ...createdScenario,
-          currentVersionId: createdScenarioVersion.id,
-        },
+        data: createdScenario,
       }),
       HTTPStatusCode.Created,
     );
