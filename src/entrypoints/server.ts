@@ -74,6 +74,7 @@ import {
   getReferralInfoRoute,
 } from "@/routes/api/v1/referral";
 import {
+  createScenarioExportRoute,
   createScenarioRoute,
   createScenarioScenePreviewRoute,
   deleteScenarioChapterRoute,
@@ -84,6 +85,7 @@ import {
   getMyScenariosRoute,
   getScenarioChapterRoute,
   getScenarioCurrentVersionRoute,
+  getScenarioExportsRoute,
   getScenarioRoute,
   getScenarioVersionExportRoute,
   getScenarioVersionExportsRoute,
@@ -197,6 +199,8 @@ const appAPIv1RoutesList = [
   updateScenarioSceneRoute,
   deleteScenarioSceneComponentRoute,
   updateScenarioSceneComponentRoute,
+  createScenarioExportRoute,
+  getScenarioExportsRoute,
   getMySubscriptionsRoute,
   cancelSubscriptionRoute,
   initiateSubscriptionPaymentRoute,

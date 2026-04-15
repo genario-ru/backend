@@ -5,6 +5,8 @@ export { getMyScenariosRoute } from "./my/get/route";
 export { createScenarioRoute } from "./root/post/route";
 export { getScenarioCurrentVersionRoute } from "./scenario/current-version/get/route";
 export { updateScenarioCurrentVersionRoute } from "./scenario/current-version/patch/route";
+export { createScenarioExportRoute } from "./scenario/export/post/route";
+export { getScenarioExportsRoute } from "./scenario/exports/get/route";
 export { deleteScenarioRoute } from "./scenario/root/delete/route";
 export { getScenarioRoute } from "./scenario/root/get/route";
 export { updateScenarioRoute } from "./scenario/root/patch/route";

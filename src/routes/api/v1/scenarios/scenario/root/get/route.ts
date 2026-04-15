@@ -1,7 +1,10 @@
+import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
+import { scenarioVersion } from "@/db/schema";
 import { getScenarioParamsSchema } from "@/domains/scenarios/schemas/handlers/get-scenario/params";
+import { getScenarioQuerySchema } from "@/domains/scenarios/schemas/handlers/get-scenario/query";
 import {
   type GetScenarioResponse,
   getScenarioResponseSchema,
@@ -41,14 +44,15 @@ getScenarioRoute.get(
     },
   }),
   validator("param", getScenarioParamsSchema),
+  validator("query", getScenarioQuerySchema),
   async (c) => {
     const { scenarioId } = c.req.valid("param");
+    const { versionId } = c.req.valid("query");
     const user = c.get("user");
 
     const foundScenario = await db.query.scenario.findFirst({
-      where: (scenario, { eq, and }) => {
-        return and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id));
-      },
+      where: (scenario, { eq, and }) =>
+        and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
       with: {
         currentVersion: true,
         profile: true,
@@ -70,12 +74,35 @@ getScenarioRoute.get(
       });
     }
 
+    const scenarioVersionQueryWhereConditions = [
+      eq(scenarioVersion.scenarioId, scenarioId),
+    ];
+
+    if (versionId) {
+      scenarioVersionQueryWhereConditions.push(
+        eq(scenarioVersion.id, versionId),
+      );
+    }
+
+    const foundScenarioVersion = await db.query.scenarioVersion.findFirst({
+      orderBy: (version, { desc }) => desc(version.createdAt),
+      where: and(...scenarioVersionQueryWhereConditions),
+    });
+
+    if (versionId && !foundScenarioVersion) {
+      return throwAPIError({
+        code: APIErrorCode.NotFound,
+        message: "Данная версия сценария не существует",
+      });
+    }
+
     const { scenarioToTone, ...scenario } = foundScenario;
 
     return c.json<GetScenarioResponse>(
       getScenarioResponseSchema.parse({
         data: {
           ...scenario,
+          version: foundScenarioVersion,
           tones: scenarioToTone.map(({ tone }) => tone),
         },
       }),
