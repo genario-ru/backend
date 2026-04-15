@@ -1,6 +1,6 @@
 services:
   server:
-    build: .
+    image: ghcr.io/genario-ru/backend:latest
     pull_policy: always
     command: pnpm run start
     ports:
@@ -42,7 +42,7 @@ services:
       - BACKEND_BASE_URL=${BACKEND_BASE_URL}
 
   workers:
-    build: .
+    image: ghcr.io/genario-ru/backend:latest
     pull_policy: always
     command: pnpm run start:workers
     restart: unless-stopped
