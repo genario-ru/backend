@@ -2,6 +2,7 @@ import { createSelectSchema } from "drizzle-zod";
 
 import { scenario } from "@/db/schema";
 import { platformSchema } from "@/domains/platforms/schemas/entities/platform";
+import { productionStatusSchema } from "@/domains/production-statuses/entities/production-status";
 import { profileSchema } from "@/domains/profiles/schemas/entities/profile";
 import { templateSchema } from "@/domains/templates/schemas/entities/template";
 import { toneSchema } from "@/domains/tones/schemas/entities/tone";
@@ -27,6 +28,7 @@ export const scenarioExtendedSchema = scenarioSchema
     platform: platformSchema.nullish(),
     videoType: videoTypeSchema.nullish(),
     videoDuration: videoDurationSchema.nullish(),
+    productionStatus: productionStatusSchema.nullish(),
     tones: z.array(toneSchema).nullish(),
   })
   .meta({

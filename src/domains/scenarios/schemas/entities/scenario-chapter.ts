@@ -1,6 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { scenarioChapter } from "@/db/schema";
+import { productionStatusSchema } from "@/domains/production-statuses/entities/production-status";
 import { z } from "@/lib/zod";
 
 import { scenarioSceneExtendedSchema } from "./scenario-scene";
@@ -37,6 +38,7 @@ export type ScenarioChapterGenerated = z.infer<
 
 export const scenarioChapterExtendedSchema = scenarioChapterSchema
   .extend({
+    productionStatus: productionStatusSchema.nullish(),
     scenes: z.array(scenarioSceneExtendedSchema),
   })
   .meta({

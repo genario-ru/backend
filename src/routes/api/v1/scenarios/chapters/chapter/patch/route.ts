@@ -50,7 +50,6 @@ updateScenarioChapterRoute.patch(
     const updateData = c.req.valid("json");
     const user = c.get("user");
 
-    // Проверяем владельца через JOIN
     const existingChapter = await db.query.scenarioChapter.findFirst({
       where: (scenarioChapter, { eq }) => eq(scenarioChapter.id, chapterId),
       with: {

@@ -4,6 +4,7 @@ export const updateScenarioChapterBodySchema = z
   .object({
     name: z.string().min(3).max(256),
     description: z.string().min(16).max(4096),
+    productionStatusId: z.uuid().optional(),
   })
   .meta({
     title: "Update scenario chapter body",

@@ -12,6 +12,7 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
     videoDurationId: true,
     platformId: true,
     profileId: true,
+    productionStatusId: true,
     targetAudience: true,
   })
   .extend({

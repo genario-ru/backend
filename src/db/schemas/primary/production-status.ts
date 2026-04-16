@@ -12,6 +12,7 @@ export const productionStatus = pgTable("production_status", {
   description: text("description"),
   icon: text("icon"),
   color: text("color"),
+  isDefault: boolean("is_default").notNull().default(false),
   forScenario: boolean("for_scenario").notNull().default(false),
   forScenarioChapter: boolean("for_scenario_chapter").notNull().default(false),
   ...timestamps,
