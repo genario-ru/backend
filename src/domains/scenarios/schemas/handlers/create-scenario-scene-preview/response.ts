@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { scenarioScenePreviewSchema } from "../../entities/scenario-scene-preview";
+
 export const createScenarioScenePreviewResponseSchema = z
   .object({
     data: scenarioScenePreviewSchema,

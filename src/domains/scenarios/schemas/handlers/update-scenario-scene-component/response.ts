@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { scenarioSceneComponentSchema } from "../../entities/scenario-scene-component";
+
 export const updateScenarioSceneComponentResponseSchema = z
   .object({
     data: scenarioSceneComponentSchema,

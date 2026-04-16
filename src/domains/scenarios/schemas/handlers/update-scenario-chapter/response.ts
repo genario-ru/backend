@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { scenarioChapterSchema } from "../../entities/scenario-chapter";
+
 export const updateScenarioChapterResponseSchema = z
   .object({
     data: scenarioChapterSchema,

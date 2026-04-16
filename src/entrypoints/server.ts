@@ -56,6 +56,7 @@ import {
   updateIdeasListRoute,
 } from "@/routes/api/v1/ideas-lists";
 import { getPlatformsRoute } from "@/routes/api/v1/platforms";
+import { getProductionStatusesRoute } from "@/routes/api/v1/production-statuses";
 import {
   createProfileRoute,
   createProfilesFromChannelsRoute,
@@ -138,6 +139,7 @@ const appAPIv1RoutesList = [
   getIdeaRoute,
   updateIdeaRoute,
   saveIdeaRoute,
+  getProductionStatusesRoute,
   getAttachmentDownloadRoute,
   addPaymentMethodRoute,
   deletePaymentMethodRoute,

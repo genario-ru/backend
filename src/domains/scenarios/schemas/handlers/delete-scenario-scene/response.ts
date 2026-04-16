@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { scenarioSceneSchema } from "../../entities/scenario-scene";
+
 export const deleteScenarioSceneResponseSchema = z
   .object({
     data: scenarioSceneSchema,
