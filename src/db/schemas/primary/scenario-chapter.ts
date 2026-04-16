@@ -22,7 +22,7 @@ export const scenarioChapter = pgTable("scenario_chapter", {
       onDelete: "cascade",
     })
     .notNull(),
-  productionStatus: uuid("production_status_id").references(
+  productionStatusId: uuid("production_status_id").references(
     () => productionStatus.id,
     {
       onUpdate: "cascade",
@@ -45,7 +45,7 @@ export const scenarioChapterRelations = relations(
       references: [scenarioVersion.id],
     }),
     productionStatus: one(productionStatus, {
-      fields: [scenarioChapter.productionStatus],
+      fields: [scenarioChapter.productionStatusId],
       references: [productionStatus.id],
     }),
     scenes: many(scenarioScene),
