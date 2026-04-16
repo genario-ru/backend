@@ -53,6 +53,7 @@ export * from "./schemas/primary/profile-channel-video";
 export * from "./schemas/primary/profile-type";
 export * from "./schemas/primary/scenario";
 export * from "./schemas/primary/scenario-chapter";
+export * from "./schemas/primary/scenario-chapter-production-status";
 export * from "./schemas/primary/scenario-scene";
 export * from "./schemas/primary/scenario-scene-component";
 export * from "./schemas/primary/scenario-scene-component-type";
