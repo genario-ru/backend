@@ -3,7 +3,7 @@ import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
-import { scenarioChapterProductionStatus } from "./scenario-chapter-production-status";
+import { productionStatus } from "./production-status";
 import { scenarioScene } from "./scenario-scene";
 import { scenarioVersion } from "./scenario-version";
 
@@ -23,7 +23,7 @@ export const scenarioChapter = pgTable("scenario_chapter", {
     })
     .notNull(),
   productionStatus: uuid("production_status_id").references(
-    () => scenarioChapterProductionStatus.id,
+    () => productionStatus.id,
     {
       onUpdate: "cascade",
       onDelete: "set null",
@@ -44,9 +44,9 @@ export const scenarioChapterRelations = relations(
       fields: [scenarioChapter.scenarioVersionId],
       references: [scenarioVersion.id],
     }),
-    productionStatus: one(scenarioChapterProductionStatus, {
+    productionStatus: one(productionStatus, {
       fields: [scenarioChapter.productionStatus],
-      references: [scenarioChapterProductionStatus.id],
+      references: [productionStatus.id],
     }),
     scenes: many(scenarioScene),
   }),

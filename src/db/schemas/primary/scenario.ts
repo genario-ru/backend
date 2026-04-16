@@ -5,6 +5,7 @@ import { timestamps } from "@/db/constants/timestamps";
 
 import { scenarioToTone } from "../linking/scenario-to-tone";
 import { platform } from "./platform";
+import { productionStatus } from "./production-status";
 import { profile } from "./profile";
 import { scenarioVersion } from "./scenario-version";
 import { template } from "./template";
@@ -43,6 +44,13 @@ export const scenario = pgTable("scenario", {
       onDelete: "set null",
     },
   ),
+  productionStatusId: uuid("production_status_id").references(
+    () => productionStatus.id,
+    {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    },
+  ),
   saved: boolean("saved").notNull().default(false),
   name: text("name").notNull(),
   description: text("description").notNull(),
@@ -74,6 +82,10 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
   videoDuration: one(videoDuration, {
     fields: [scenario.videoDurationId],
     references: [videoDuration.id],
+  }),
+  productionStatus: one(productionStatus, {
+    fields: [scenario.productionStatusId],
+    references: [productionStatus.id],
   }),
   versions: many(scenarioVersion),
   scenarioToTone: many(scenarioToTone),
