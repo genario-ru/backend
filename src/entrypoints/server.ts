@@ -52,7 +52,6 @@ import {
   getIdeasListExportRoute,
   getIdeasListExportsRoute,
   getIdeasListRoute,
-  getMyIdeasListsRoute,
   updateIdeasListRoute,
 } from "@/routes/api/v1/ideas-lists";
 import { getPlatformsRoute } from "@/routes/api/v1/platforms";
@@ -82,7 +81,6 @@ import {
   deleteScenarioRoute,
   deleteScenarioSceneComponentRoute,
   deleteScenarioSceneRoute,
-  getMyScenariosRoute,
   getScenarioChapterRoute,
   getScenarioCurrentVersionRoute,
   getScenarioExportsRoute,
@@ -157,7 +155,6 @@ const appAPIv1RoutesList = [
   getIdeasListExportsRoute,
   getIdeasListRoute,
   createIdeaRoute,
-  getMyIdeasListsRoute,
   getMyArchiveItemsRoute,
   getArchiveFiltersRoute,
   updateIdeasListRoute,
@@ -177,7 +174,6 @@ const appAPIv1RoutesList = [
   getReferralInfoRoute,
   createScenarioRoute,
   deleteScenarioRoute,
-  getMyScenariosRoute,
   getScenarioRoute,
   getScenarioCurrentVersionRoute,
   updateScenarioRoute,

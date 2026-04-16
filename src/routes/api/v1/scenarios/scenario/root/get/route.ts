@@ -59,6 +59,7 @@ getScenarioRoute.get(
         platform: true,
         videoType: true,
         videoDuration: true,
+        productionStatus: true,
         scenarioToTone: {
           with: { tone: true },
         },

@@ -46,7 +46,6 @@ getScenarioChapterRoute.get(
     const { chapterId } = c.req.valid("param");
     const user = c.get("user");
 
-    // Получаем chapter со всеми scenes и их components, а также проверяем владельца через JOIN
     const chapter = await db.query.scenarioChapter.findFirst({
       where: (scenarioChapter, { eq }) => eq(scenarioChapter.id, chapterId),
       with: {
@@ -71,6 +70,7 @@ getScenarioChapterRoute.get(
             },
           },
         },
+        productionStatus: true,
       },
     });
 
@@ -81,7 +81,6 @@ getScenarioChapterRoute.get(
       });
     }
 
-    // Проверяем, что сценарий принадлежит пользователю
     if (chapter.scenarioVersion.scenario.userId !== user.id) {
       return throwAPIError({
         code: APIErrorCode.Forbidden,
@@ -89,7 +88,6 @@ getScenarioChapterRoute.get(
       });
     }
 
-    // Убираем вложенные данные для response
     const { scenarioVersion: _scenarioVersion, ...chapterData } = chapter;
 
     const scenes = await Promise.all(
