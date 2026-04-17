@@ -3,7 +3,12 @@ import { difference } from "es-toolkit";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
+import {
+  scenario,
+  scenarioToPlatform,
+  scenarioToTone,
+  scenarioVersion,
+} from "@/db/schema";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { AVERAGE_SCENARIO_CREDITS_COST } from "@/domains/scenarios/constants/credits-pricing";
 import {
@@ -58,6 +63,7 @@ updateScenarioRoute.patch(
     const requestBody = c.req.valid("json") as UpdateScenarioBody;
 
     const {
+      platformIds: newPlatformIds,
       toneIds: newToneIds,
       regenerate: shouldRegenerate,
       ...updateScenarioParams
@@ -77,7 +83,7 @@ updateScenarioRoute.patch(
     const foundScenario = await db.query.scenario.findFirst({
       where: (scenario, { eq, and }) =>
         and(eq(scenario.id, scenarioId), eq(scenario.userId, user.id)),
-      with: { scenarioToTone: true },
+      with: { scenarioToPlatform: true, scenarioToTone: true },
     });
 
     if (!foundScenario) {
@@ -88,12 +94,48 @@ updateScenarioRoute.patch(
       });
     }
 
+    const oldPlatformIds = foundScenario.scenarioToPlatform.map(
+      ({ platformId }) => platformId,
+    );
+
+    const createPlatformIds = newPlatformIds
+      ? difference(newPlatformIds, oldPlatformIds)
+      : [];
+
+    const deletePlatformIds = newPlatformIds
+      ? difference(oldPlatformIds, newPlatformIds)
+      : [];
+
     const oldToneIds = foundScenario.scenarioToTone.map(({ toneId }) => toneId);
     const createToneIds = newToneIds ? difference(newToneIds, oldToneIds) : [];
     const deleteToneIds = newToneIds ? difference(oldToneIds, newToneIds) : [];
 
     const updatedScenario = await db.transaction(async (tx) => {
       const updateScenarioPromises: Promise<any>[] = [];
+
+      if (createPlatformIds.length > 0) {
+        updateScenarioPromises.push(
+          tx.insert(scenarioToPlatform).values(
+            createPlatformIds.map((platformId) => ({
+              scenarioId,
+              platformId,
+            })),
+          ),
+        );
+      }
+
+      if (deletePlatformIds.length > 0) {
+        updateScenarioPromises.push(
+          tx
+            .delete(scenarioToPlatform)
+            .where(
+              and(
+                eq(scenarioToPlatform.scenarioId, scenarioId),
+                inArray(scenarioToPlatform.platformId, deletePlatformIds),
+              ),
+            ),
+        );
+      }
 
       if (createToneIds.length > 0) {
         updateScenarioPromises.push(

@@ -35,9 +35,11 @@ export const scenarioChaptersGenerationWorker =
           with: {
             profile: true,
             template: true,
-            platform: true,
             videoType: true,
             videoDuration: true,
+            scenarioToPlatform: {
+              with: { platform: true },
+            },
             scenarioToTone: {
               with: { tone: true },
             },
@@ -72,7 +74,9 @@ export const scenarioChaptersGenerationWorker =
             scenarioTemplateDescription: foundScenario.template?.description,
             scenarioProfileName: foundScenario.profile?.name,
             scenarioProfileDescription: foundScenario.profile?.description,
-            scenarioPlatformName: foundScenario.platform?.name,
+            scenarioPlatformNames: foundScenario.scenarioToPlatform.map(
+              ({ platform }) => platform.name,
+            ),
             scenarioVideoTypeName: foundScenario.videoType?.name,
             scenarioVideoDurationName: foundScenario.videoDuration?.name,
             scenarioMinimumDurationSeconds:

@@ -166,9 +166,11 @@ getMyArchiveItemsRoute.get(
             with: {
               profile: true,
               template: true,
-              platform: true,
               videoType: true,
               videoDuration: true,
+              scenarioToPlatform: {
+                with: { platform: true },
+              },
               scenarioToTone: {
                 with: { tone: true },
               },
@@ -194,12 +196,15 @@ getMyArchiveItemsRoute.get(
     });
 
     const preparedScenarios = foundScenarios.map((scenario) => {
-      const { scenarioToTone, ...scenarioData } = scenario;
+      const { scenarioToPlatform, scenarioToTone, ...scenarioData } = scenario;
 
       return {
         entity: archiveEntitySchema.enum.scenario,
         data: {
           ...scenarioData,
+          platforms: scenarioToPlatform.map(
+            (scenarioPlatform) => scenarioPlatform.platform,
+          ),
           tones: scenarioToTone.map((scenarioTone) => scenarioTone.tone),
         },
       };
@@ -254,11 +259,13 @@ getMyArchiveItemsRoute.get(
           return false;
         }
 
-        const archiveItemPlatformId = data.platform?.id;
+        const archiveItemPlatformIds =
+          data.platforms?.map((platform) => platform.id) ?? [];
 
         if (
-          !archiveItemPlatformId ||
-          !platformIdsSet.has(archiveItemPlatformId)
+          !archiveItemPlatformIds.some((platformId) =>
+            platformIdsSet.has(platformId),
+          )
         ) {
           return false;
         }

@@ -57,8 +57,11 @@ function getScenarioMetaItems(data: ScenarioVersionExportData): MetaItem[] {
     items.push({ label: "Профиль", value: data.scenario.profile.name });
   }
 
-  if (data.scenario.platform) {
-    items.push({ label: "Платформа", value: data.scenario.platform.name });
+  if (data.scenario.platforms && data.scenario.platforms.length > 0) {
+    items.push({
+      label: "Платформы",
+      value: data.scenario.platforms.map(({ name }) => name).join(", "),
+    });
   }
 
   if (data.scenario.videoType) {

@@ -73,9 +73,13 @@ export const scenarioVersionExportWorker =
             scenario: {
               with: {
                 profile: true,
-                platform: true,
                 videoType: true,
                 videoDuration: true,
+                scenarioToPlatform: {
+                  with: {
+                    platform: true,
+                  },
+                },
                 scenarioToTone: {
                   with: {
                     tone: true,
@@ -128,12 +132,14 @@ export const scenarioVersionExportWorker =
           ...scenarioVersionData
         } = foundScenarioVersion;
 
-        const { scenarioToTone, ...scenarioData } = foundScenario;
+        const { scenarioToPlatform, scenarioToTone, ...scenarioData } =
+          foundScenario;
 
         const scenarioVersionExportData: ScenarioVersionExportData = {
           ...scenarioVersionData,
           scenario: {
             ...scenarioData,
+            platforms: scenarioToPlatform.map((item) => item.platform),
             tones: scenarioToTone.map((item) => item.tone),
           },
           chapters,

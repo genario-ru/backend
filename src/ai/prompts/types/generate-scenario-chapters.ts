@@ -6,7 +6,7 @@ export type GenerateScenarioChaptersPromptContext = {
   scenarioTemplateDescription?: string | null;
   scenarioProfileName?: string | null;
   scenarioProfileDescription?: string | null;
-  scenarioPlatformName?: string | null;
+  scenarioPlatformNames?: string[];
   scenarioVideoTypeName?: string | null;
   scenarioVideoDurationName?: string | null;
   scenarioMinimumDurationSeconds?: number | null;

@@ -1,6 +1,7 @@
 import { ideasListExtendedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list";
 import { scenarioExtendedSchema } from "@/domains/scenarios/schemas/entities/scenario";
 import { z } from "@/lib/zod";
+
 export const archiveEntitySchema = z.enum(["ideasList", "scenario"]).meta({
   title: "Archive entity",
   description: "Archive entity discriminator",
@@ -51,7 +52,7 @@ export type ArchiveItemWithFilters = {
     tones?: Array<{ id: string }>;
     videoTypes?: Array<{ id: string }>;
     videoType?: { id: string } | null;
-    platform?: { id: string } | null;
+    platforms?: Array<{ id: string }> | null;
     videoDuration?: { id: string } | null;
     createdAt: string | Date;
     updatedAt: string | Date;

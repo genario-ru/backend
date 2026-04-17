@@ -34,6 +34,7 @@ export * from "./schemas/linking/profile-channel-to-profiles-from-channels-job";
 export * from "./schemas/linking/profile-to-platform";
 export * from "./schemas/linking/profile-to-profiles-from-channels-job";
 export * from "./schemas/linking/profile-to-tone";
+export * from "./schemas/linking/scenario-to-platform";
 export * from "./schemas/linking/scenario-to-tone";
 export * from "./schemas/linking/scenario-version-to-export-document";
 export * from "./schemas/linking/subscription-to-credits-batch";

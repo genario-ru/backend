@@ -56,10 +56,12 @@ getScenarioRoute.get(
       with: {
         profile: true,
         template: true,
-        platform: true,
         videoType: true,
         videoDuration: true,
         productionStatus: true,
+        scenarioToPlatform: {
+          with: { platform: true },
+        },
         scenarioToTone: {
           with: { tone: true },
         },
@@ -96,13 +98,14 @@ getScenarioRoute.get(
       });
     }
 
-    const { scenarioToTone, ...scenario } = foundScenario;
+    const { scenarioToPlatform, scenarioToTone, ...scenario } = foundScenario;
 
     return c.json<GetScenarioResponse>(
       getScenarioResponseSchema.parse({
         data: {
           ...scenario,
           currentVersion: foundScenarioVersion,
+          platforms: scenarioToPlatform.map(({ platform }) => platform),
           tones: scenarioToTone.map(({ tone }) => tone),
         },
       }),

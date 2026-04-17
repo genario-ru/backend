@@ -3,8 +3,8 @@ import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { scenarioToPlatform } from "../linking/scenario-to-platform";
 import { scenarioToTone } from "../linking/scenario-to-tone";
-import { platform } from "./platform";
 import { productionStatus } from "./production-status";
 import { profile } from "./profile";
 import { scenarioVersion } from "./scenario-version";
@@ -26,10 +26,6 @@ export const scenario = pgTable("scenario", {
     onDelete: "set null",
   }),
   templateId: uuid("template_id").references(() => template.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
-  platformId: uuid("platform_id").references(() => platform.id, {
     onUpdate: "cascade",
     onDelete: "set null",
   }),
@@ -71,10 +67,6 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
     fields: [scenario.templateId],
     references: [template.id],
   }),
-  platform: one(platform, {
-    fields: [scenario.platformId],
-    references: [platform.id],
-  }),
   videoType: one(videoType, {
     fields: [scenario.videoTypeId],
     references: [videoType.id],
@@ -89,4 +81,5 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
   }),
   versions: many(scenarioVersion),
   scenarioToTone: many(scenarioToTone),
+  scenarioToPlatform: many(scenarioToPlatform),
 }));

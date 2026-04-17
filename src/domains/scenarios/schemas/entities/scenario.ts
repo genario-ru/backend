@@ -25,10 +25,10 @@ export const scenarioExtendedSchema = scenarioSchema
     currentVersion: scenarioVersionExtendedSchema.nullish(),
     profile: profileSchema.nullish(),
     template: templateSchema.nullish(),
-    platform: platformSchema.nullish(),
     videoType: videoTypeSchema.nullish(),
     videoDuration: videoDurationSchema.nullish(),
     productionStatus: productionStatusSchema.nullish(),
+    platforms: z.array(platformSchema).nullish(),
     tones: z.array(toneSchema).nullish(),
   })
   .meta({

@@ -14,7 +14,7 @@ export function generateScenarioChaptersPrompt({
     scenarioTemplateDescription,
     scenarioProfileName,
     scenarioProfileDescription,
-    scenarioPlatformName,
+    scenarioPlatformNames,
     scenarioVideoTypeName,
     scenarioVideoDurationName,
     scenarioMinimumDurationSeconds,
@@ -35,9 +35,9 @@ export function generateScenarioChaptersPrompt({
     ["Template description", scenarioTemplateDescription],
     ["Profile name", scenarioProfileName],
     ["Profile description", scenarioProfileDescription],
-    ["Platform", scenarioPlatformName],
     ["Video type", scenarioVideoTypeName],
     ["Video duration", scenarioVideoDurationName],
+    ["Platforms", scenarioPlatformNames?.join(", ")],
     ["Tones", scenarioTones?.join(", ")],
   ]);
 

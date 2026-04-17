@@ -80,9 +80,11 @@ getScenarioCurrentVersionRoute.get(
         scenario: {
           with: {
             profile: true,
-            platform: true,
             videoType: true,
             videoDuration: true,
+            scenarioToPlatform: {
+              with: { platform: true },
+            },
             scenarioToTone: {
               with: { tone: true },
             },
@@ -103,7 +105,8 @@ getScenarioCurrentVersionRoute.get(
       });
     }
 
-    const { scenarioToTone, ...scenarioData } = foundScenarioVersion.scenario;
+    const { scenarioToPlatform, scenarioToTone, ...scenarioData } =
+      foundScenarioVersion.scenario;
     const { scenario: _scenario, ...versionData } = foundScenarioVersion;
 
     return c.json<GetScenarioCurrentVersionResponse>(
@@ -111,7 +114,7 @@ getScenarioCurrentVersionRoute.get(
         data: {
           ...versionData,
           profile: scenarioData.profile,
-          platform: scenarioData.platform,
+          platforms: scenarioToPlatform.map((item) => item.platform),
           videoType: scenarioData.videoType,
           videoDuration: scenarioData.videoDuration,
           tones: scenarioToTone.map((item) => item.tone),

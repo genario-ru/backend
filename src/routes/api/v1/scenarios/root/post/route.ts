@@ -1,7 +1,12 @@
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import { scenario, scenarioToTone, scenarioVersion } from "@/db/schema";
+import {
+  scenario,
+  scenarioToPlatform,
+  scenarioToTone,
+  scenarioVersion,
+} from "@/db/schema";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { AVERAGE_SCENARIO_CREDITS_COST } from "@/domains/scenarios/constants/credits-pricing";
 import { createScenarioBodySchema } from "@/domains/scenarios/schemas/handlers/create-scenario/body";
@@ -44,7 +49,8 @@ createScenarioRoute.post(
   }),
   validator("json", createScenarioBodySchema),
   async (c) => {
-    const { toneIds, ...createScenarioParams } = c.req.valid("json");
+    const { platformIds, toneIds, ...createScenarioParams } =
+      c.req.valid("json");
     const user = c.get("user");
     const creditsBalance = await getCreditsBalance({ userId: user.id });
 
@@ -69,6 +75,15 @@ createScenarioRoute.post(
           .insert(scenarioVersion)
           .values({ scenarioId: createdScenario.id })
           .returning();
+
+        if (platformIds && platformIds.length > 0) {
+          await tx.insert(scenarioToPlatform).values(
+            platformIds.map((platformId) => ({
+              scenarioId: createdScenario.id,
+              platformId,
+            })),
+          );
+        }
 
         if (toneIds && toneIds.length > 0) {
           await tx.insert(scenarioToTone).values(
