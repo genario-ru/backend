@@ -2,8 +2,8 @@ import { z } from "@/lib/zod";
 
 export const updateScenarioSceneComponentBodySchema = z
   .object({
-    name: z.string().min(3).max(256),
-    content: z.string().min(16).max(4096),
+    name: z.string().min(1).max(256),
+    content: z.string().min(1).max(4096),
   })
   .meta({
     title: "Update scenario scene component body",
