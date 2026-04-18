@@ -50,7 +50,6 @@ updateScenarioSceneRoute.patch(
     const updateData = c.req.valid("json");
     const user = c.get("user");
 
-    // Проверяем владельца через JOIN
     const existingScene = await db.query.scenarioScene.findFirst({
       where: (scenarioScene, { eq }) => eq(scenarioScene.id, sceneId),
       with: {
