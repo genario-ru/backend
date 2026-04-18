@@ -1,5 +1,6 @@
 import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
+import { mailSendWorker } from "@/mq/mail-send/worker";
 import { profilesFromChannelsGenerationWorker } from "@/mq/profiles-from-channels-generation/worker";
 import { scenarioChaptersGenerationWorker } from "@/mq/scenario-chapters-generation/worker";
 import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario-scene-preview-generation/worker";
@@ -14,6 +15,7 @@ const shutdown = async () => {
   await scenarioScenesGenerationWorker.close();
   await scenarioScenePreviewsGenerationWorker.close();
   await scenarioVersionExportWorker.close();
+  await mailSendWorker.close();
   process.exit(0);
 };
 

@@ -14,6 +14,7 @@ import { openAPIRouteHandler } from "hono-openapi";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
+import { mailSendQueue } from "@/mq/mail-send/queue";
 import { profilesFromChannelsGenerationQueue } from "@/mq/profiles-from-channels-generation/queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/scenario-chapters-generation/queue";
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview-generation/queue";
@@ -125,6 +126,7 @@ createBullBoard({
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
     new BullMQAdapter(scenarioVersionExportQueue),
+    new BullMQAdapter(mailSendQueue),
   ],
   serverAdapter: bullBoardAdapter,
 });

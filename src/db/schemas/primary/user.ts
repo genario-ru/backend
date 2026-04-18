@@ -17,6 +17,7 @@ import { payment } from "../billing/payment";
 import { subscription } from "../billing/subscription";
 import { tariffDiscount } from "../billing/tariff-discount";
 import { profilesFromChannelsJob } from "../jobs/profiles-from-channels-job";
+import { emailLog } from "../logs/email-log";
 import { referralCode } from "../referral/referral-code";
 import { referralInvite } from "../referral/referral-invite";
 import { notification } from "../secondary/notification";
@@ -62,6 +63,7 @@ export const userRelations = relations(user, ({ many }) => ({
   subscriptions: many(subscription),
   referralCodes: many(referralCode),
   notifications: many(notification),
+  emailLogs: many(emailLog),
   referralInvitesAsSource: many(referralInvite, {
     relationName: "referralSourceUser",
   }),

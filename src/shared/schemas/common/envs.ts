@@ -34,6 +34,12 @@ export const envsSchema = z.object({
   RUTUBE_BASE_API_URL: z.string(),
   FRONTEND_BASE_URL: z.string(),
   BACKEND_BASE_URL: z.string(),
+  SMTP_HOST: z.string(),
+  SMTP_PORT: z.coerce.number().int(),
+  SMTP_SECURE: z.stringbool(),
+  SMTP_USER: z.string(),
+  SMTP_PASSWORD: z.string(),
+  SMTP_FROM: z.string(),
 });
 
 export type EnvsSchema = z.infer<typeof envsSchema>;

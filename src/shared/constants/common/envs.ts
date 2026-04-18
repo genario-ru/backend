@@ -61,4 +61,12 @@ export const envs = envsSchema.parse({
   // Web urls
   FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
   BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
+
+  // SMTP
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: process.env.SMTP_PORT,
+  SMTP_SECURE: process.env.SMTP_SECURE,
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+  SMTP_FROM: process.env.SMTP_FROM,
 });

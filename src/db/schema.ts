@@ -7,8 +7,9 @@ export * from "./schemas/auth/account";
 export * from "./schemas/auth/session";
 export * from "./schemas/auth/verification";
 
-// AI
-export * from "./schemas/ai/generation-log";
+// Logs
+export * from "./schemas/logs/email-log";
+export * from "./schemas/logs/generation-log";
 
 // Billing
 export * from "./schemas/billing/credits-batch";

@@ -4,6 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP, openAPI } from "better-auth/plugins";
 
 import { db, schema } from "@/db";
+import { sendEmail } from "@/domains/mail/services/send-email";
 import { redis } from "@/lib/redis";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import {
@@ -28,12 +29,12 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    // Required to send the verification email
     sendVerificationEmail: async ({ user, url, token }) => {
-      console.log("sendVerificationEmail", {
-        email: user.email,
-        url,
-        token,
+      await sendEmail({
+        to: user.email,
+        userId: user.id,
+        templateKey: "email_verification",
+        payload: { url, token },
       });
     },
   },
@@ -84,8 +85,11 @@ export const auth = betterAuth({
     openAPI(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        // TODO: Implement the sendVerificationOTP method to send the OTP to the user's email address
-        console.log("sendVerificationOTP", { email, otp, type });
+        await sendEmail({
+          to: email,
+          templateKey: "otp",
+          payload: { otp, type },
+        });
       },
     }),
     // An admin is any user assigned the admin role or any user whose ID is included in the adminUserIds option
