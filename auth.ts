@@ -84,6 +84,7 @@ export const auth = betterAuth({
   plugins: [
     openAPI(),
     emailOTP({
+      disableSignUp: true,
       async sendVerificationOTP({ email, otp, type }) {
         await sendEmail({
           to: email,
