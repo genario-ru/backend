@@ -1,6 +1,8 @@
+import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
+import { productionStatus } from "@/db/schemas/primary/production-status";
 import { getProductionStatusesQuerySchema } from "@/domains/production-statuses/handlers/get-production-statuses/query";
 import {
   type GetProductionStatusesResponse,
@@ -38,12 +40,20 @@ getProductionStatusesRoute.get(
   async (c) => {
     const { entity } = c.req.valid("query");
 
+    const productionStatusQueryWhereConditions = [];
+
+    if (entity === "scenario") {
+      productionStatusQueryWhereConditions.push(
+        eq(productionStatus.forScenario, true),
+      );
+    } else if (entity === "scenarioChapter") {
+      productionStatusQueryWhereConditions.push(
+        eq(productionStatus.forScenarioChapter, true),
+      );
+    }
+
     const foundProductionStatuses = await db.query.productionStatus.findMany({
-      where: (productionStatus, { and, eq }) =>
-        and(
-          eq(productionStatus.forScenario, entity === "scenario"),
-          eq(productionStatus.forScenarioChapter, entity === "scenarioChapter"),
-        ),
+      where: and(...productionStatusQueryWhereConditions),
     });
 
     return c.json<GetProductionStatusesResponse>(
