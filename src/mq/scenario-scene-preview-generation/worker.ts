@@ -9,9 +9,9 @@ import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";
+import { optimizeBase64Image } from "@/lib/image/utils/optimize-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
-import { uploadBase64ToS3 } from "@/lib/s3/utils/upload-base-64-to-s3";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { envs } from "@/shared/constants/common/envs";
 
@@ -19,6 +19,7 @@ import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
   type ScenarioScenePreviewGenerationJobData,
 } from "./queue";
+import { resolveImageSize } from "./utils";
 
 export const scenarioScenePreviewsGenerationWorker =
   new Worker<ScenarioScenePreviewGenerationJobData>(
@@ -55,6 +56,7 @@ export const scenarioScenePreviewsGenerationWorker =
 
         const scenario = await db.query.scenario.findFirst({
           where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+          with: { videoType: true },
         });
 
         if (!scenario) {
@@ -87,15 +89,12 @@ export const scenarioScenePreviewsGenerationWorker =
           sceneEndTime: scene.endTime,
         });
 
-        const {
-          data,
-          usage,
-          output_format = "jpeg",
-        } = await vsellm.images.generate({
+        const { data, usage } = await vsellm.images.generate({
           model: envs.VSELLM_IMAGE_MODEL,
           prompt,
           quality: "medium",
           output_format: "jpeg",
+          size: resolveImageSize(scenario.videoType?.slug),
         });
 
         const image = data?.[0]?.b64_json;
@@ -107,7 +106,7 @@ export const scenarioScenePreviewsGenerationWorker =
         const s3KeyOriginal = createS3Key({
           userId: scenario.userId,
           folderName: "scenario-scene-previews",
-          fileName: `${scenarioScenePreviewId}.png`,
+          fileName: `${scenarioScenePreviewId}.webp`,
         });
 
         const s3KeyCompressed = createS3Key({
@@ -116,22 +115,26 @@ export const scenarioScenePreviewsGenerationWorker =
           fileName: `${scenarioScenePreviewId}-compressed.webp`,
         });
 
-        const mimeType = `image/${output_format}`;
+        const [
+          { buffer: originalBuffer, mimeType: originalMimeType },
+          { buffer: compressedBuffer, mimeType: compressedMimeType },
+        ] = await Promise.all([
+          optimizeBase64Image(image),
+          compressBase64Image(image),
+        ]);
 
-        await uploadBase64ToS3({
-          key: s3KeyOriginal,
-          mimeType,
-          base64: image,
-        });
-
-        const { buffer: compressedBuffer, mimeType: compressedMimeType } =
-          await compressBase64Image(image);
-
-        await uploadBufferToS3({
-          key: s3KeyCompressed,
-          mimeType: compressedMimeType,
-          buffer: compressedBuffer,
-        });
+        await Promise.all([
+          uploadBufferToS3({
+            key: s3KeyOriginal,
+            mimeType: originalMimeType,
+            buffer: originalBuffer,
+          }),
+          uploadBufferToS3({
+            key: s3KeyCompressed,
+            mimeType: compressedMimeType,
+            buffer: compressedBuffer,
+          }),
+        ]);
 
         const { createdAttachment, createdCompressedAttachment } =
           await db.transaction(async (tx) => {
@@ -143,7 +146,7 @@ export const scenarioScenePreviewsGenerationWorker =
                     userId: scenario.userId,
                     key: s3KeyOriginal,
                     bucketName: envs.S3_BUCKET_NAME,
-                    mimeType,
+                    mimeType: originalMimeType,
                   })
                   .returning(),
                 tx
