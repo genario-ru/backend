@@ -9,11 +9,14 @@ export const alertType = pgEnum("alert_type", [
   "positive",
 ]);
 
+export const alertStatus = pgEnum("alert_status", ["active", "inactive"]);
+
 export const alert = pgTable("alert", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
   type: alertType("type").default("info").notNull(),
+  status: alertStatus("status").default("active").notNull(),
   expiresAt: timestamp("expires_at", {
     withTimezone: true,
     mode: "string",

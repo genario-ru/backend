@@ -21,6 +21,7 @@ import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview
 import { scenarioScenesGenerationQueue } from "@/mq/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario-version-export/queue";
 import { authRoute } from "@/routes/api/auth/route";
+import { getAlertsRoute } from "@/routes/api/v1/alerts";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
@@ -135,6 +136,7 @@ bullBoardAdapter.setBasePath(bullBoardBasePath);
 app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
 const appAPIv1RoutesList = [
+  getAlertsRoute,
   deleteIdeaRoute,
   getIdeaRoute,
   updateIdeaRoute,
