@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -51,6 +51,14 @@ export const scenario = pgTable("scenario", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   targetAudience: text("target_audience"),
+  scheduledStartAt: timestamp("scheduled_start_at", {
+    withTimezone: true,
+    mode: "string",
+  }),
+  scheduledEndAt: timestamp("scheduled_end_at", {
+    withTimezone: true,
+    mode: "string",
+  }),
   ...timestamps,
 });
 

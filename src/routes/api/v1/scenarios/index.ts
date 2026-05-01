@@ -1,6 +1,8 @@
 export { deleteScenarioChapterRoute } from "./chapters/chapter/delete/route";
 export { getScenarioChapterRoute } from "./chapters/chapter/get/route";
 export { updateScenarioChapterRoute } from "./chapters/chapter/patch/route";
+export { getScenariosFiltersRoute } from "./filters/get/route";
+export { getMyScenariosRoute } from "./root/get/route";
 export { createScenarioRoute } from "./root/post/route";
 export { getScenarioCurrentVersionRoute } from "./scenario/current-version/get/route";
 export { createScenarioExportRoute } from "./scenario/export/post/route";

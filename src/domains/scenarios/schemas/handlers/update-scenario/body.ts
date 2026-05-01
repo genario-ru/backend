@@ -13,6 +13,8 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
     profileId: true,
     productionStatusId: true,
     targetAudience: true,
+    scheduledStartAt: true,
+    scheduledEndAt: true,
   })
   .extend({
     name: z.string().min(3).max(256).optional(),
@@ -21,6 +23,17 @@ export const updateScenarioBodySchema = createUpdateSchema(scenario)
     toneIds: z.array(z.uuid()).nullish(),
     regenerate: z.boolean().nullish(),
   })
+  .refine(
+    (data) =>
+      !data.scheduledStartAt ||
+      !data.scheduledEndAt ||
+      new Date(data.scheduledEndAt).getTime() >=
+        new Date(data.scheduledStartAt).getTime(),
+    {
+      message: "scheduledEndAt должен быть >= scheduledStartAt",
+      path: ["scheduledEndAt"],
+    },
+  )
   .meta({
     title: "Update scenario body",
     description: "Update scenario body description",
