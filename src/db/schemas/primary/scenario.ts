@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -7,11 +14,19 @@ import { scenarioToPlatform } from "../linking/scenario-to-platform";
 import { scenarioToTone } from "../linking/scenario-to-tone";
 import { productionStatus } from "./production-status";
 import { profile } from "./profile";
+import { scenarioMetadata } from "./scenario-metadata";
 import { scenarioVersion } from "./scenario-version";
 import { template } from "./template";
 import { user } from "./user";
 import { videoDuration } from "./video-duration";
 import { videoType } from "./video-type";
+
+export const scenarioMetadataStatus = pgEnum("scenario_metadata_status", [
+  "pending",
+  "generation",
+  "failed",
+  "ready",
+]);
 
 export const scenario = pgTable("scenario", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -48,6 +63,9 @@ export const scenario = pgTable("scenario", {
     },
   ),
   saved: boolean("saved").notNull().default(false),
+  metadataStatus: scenarioMetadataStatus("metadata_status")
+    .default("pending")
+    .notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   targetAudience: text("target_audience"),
@@ -90,4 +108,5 @@ export const scenarioRelations = relations(scenario, ({ one, many }) => ({
   versions: many(scenarioVersion),
   scenarioToTone: many(scenarioToTone),
   scenarioToPlatform: many(scenarioToPlatform),
+  metadata: many(scenarioMetadata),
 }));

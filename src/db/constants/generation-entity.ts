@@ -5,4 +5,5 @@ export const generationEntity = pgEnum("generation_entity", [
   "scenario-chapters",
   "scenario-chapter-scenes",
   "scenario-scene-preview",
+  "scenario-metadata",
 ]);
