@@ -1,19 +1,13 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
+import { pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
+import { generationStatus } from "@/db/schema";
 
 import { scenarioVersionToExportDocument } from "../linking/scenario-version-to-export-document";
 import { scenario } from "./scenario";
 import { scenarioChapter } from "./scenario-chapter";
 import { scenarioVideoReference } from "./scenario-video-reference";
-
-export const scenarioVersionStatus = pgEnum("scenario_version_status", [
-  "pending",
-  "generation",
-  "failed",
-  "ready",
-]);
 
 export const scenarioVersion = pgTable("scenario_version", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -23,7 +17,7 @@ export const scenarioVersion = pgTable("scenario_version", {
       onDelete: "cascade",
     })
     .notNull(),
-  status: scenarioVersionStatus("status").default("pending").notNull(),
+  status: generationStatus("status").default("pending").notNull(),
   ...timestamps,
 });
 

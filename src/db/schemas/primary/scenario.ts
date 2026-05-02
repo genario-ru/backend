@@ -1,13 +1,7 @@
 import { relations } from "drizzle-orm";
-import {
-  boolean,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
+import { generationStatus } from "@/db/constants/generation-status";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { scenarioToPlatform } from "../linking/scenario-to-platform";
@@ -20,13 +14,6 @@ import { template } from "./template";
 import { user } from "./user";
 import { videoDuration } from "./video-duration";
 import { videoType } from "./video-type";
-
-export const scenarioMetadataStatus = pgEnum("scenario_metadata_status", [
-  "pending",
-  "generation",
-  "failed",
-  "ready",
-]);
 
 export const scenario = pgTable("scenario", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -63,9 +50,7 @@ export const scenario = pgTable("scenario", {
     },
   ),
   saved: boolean("saved").notNull().default(false),
-  metadataStatus: scenarioMetadataStatus("metadata_status")
-    .default("pending")
-    .notNull(),
+  metadataStatus: generationStatus("metadata_status").default("idle").notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   targetAudience: text("target_audience"),
