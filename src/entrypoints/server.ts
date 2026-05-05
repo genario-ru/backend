@@ -18,6 +18,7 @@ import { mailSendQueue } from "@/mq/mail-send/queue";
 import { profilesFromChannelsGenerationQueue } from "@/mq/profiles-from-channels-generation/queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/scenario-chapters-generation/queue";
 import { scenarioMetadataGenerationQueue } from "@/mq/scenario-metadata-generation/queue";
+import { scenarioMetadataRegenerationQueue } from "@/mq/scenario-metadata-regeneration/queue";
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview-generation/queue";
 import { scenarioScenesGenerationQueue } from "@/mq/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario-version-export/queue";
@@ -95,6 +96,7 @@ import {
   getScenarioRoute,
   getScenariosFiltersRoute,
   getScenarioVersionsRoute,
+  regenerateScenarioMetadataRoute,
   saveScenarioRoute,
   updateScenarioChapterRoute,
   updateScenarioRoute,
@@ -134,6 +136,7 @@ createBullBoard({
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
     new BullMQAdapter(scenarioMetadataGenerationQueue),
+    new BullMQAdapter(scenarioMetadataRegenerationQueue),
     new BullMQAdapter(scenarioVersionExportQueue),
     new BullMQAdapter(mailSendQueue),
   ],
@@ -207,6 +210,7 @@ const appAPIv1RoutesList = [
   getScenarioExportsRoute,
   generateScenarioMetadataRoute,
   getScenarioMetadataRoute,
+  regenerateScenarioMetadataRoute,
   getMySubscriptionsRoute,
   cancelSubscriptionRoute,
   initiateSubscriptionPaymentRoute,

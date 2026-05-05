@@ -7,6 +7,7 @@ import { buildContextLines } from "@/ai/utils/build-context-lines";
 import { interpolate } from "@/ai/utils/interpolate-template";
 
 export function generateScenarioMetadataPrompt({
+  userPrompt,
   context,
   platforms,
 }: GenerateScenarioMetadataPromptProps) {
@@ -26,6 +27,7 @@ export function generateScenarioMetadataPrompt({
   const contextLines = buildContextLines([
     ["Scenario name", scenarioName],
     ["Scenario description", scenarioDescription],
+    ["Additional instructions", userPrompt],
     ["Target audience", scenarioTargetAudience],
     ["Template name", scenarioTemplateName],
     ["Template description", scenarioTemplateDescription],

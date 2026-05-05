@@ -9,6 +9,7 @@ export { createScenarioExportRoute } from "./scenario/export/post/route";
 export { getScenarioExportsRoute } from "./scenario/exports/get/route";
 export { generateScenarioMetadataRoute } from "./scenario/metadata/generate/post/route";
 export { getScenarioMetadataRoute } from "./scenario/metadata/get/route";
+export { regenerateScenarioMetadataRoute } from "./scenario/metadata/regenerate/post/route";
 export { deleteScenarioRoute } from "./scenario/root/delete/route";
 export { getScenarioRoute } from "./scenario/root/get/route";
 export { updateScenarioRoute } from "./scenario/root/patch/route";

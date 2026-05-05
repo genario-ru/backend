@@ -19,6 +19,7 @@ export type GenerateScenarioMetadataPromptContext = {
 };
 
 export type GenerateScenarioMetadataPromptProps = {
+  userPrompt?: string | null;
   context: GenerateScenarioMetadataPromptContext;
   platforms: GenerateScenarioMetadataPromptPlatform[];
 };

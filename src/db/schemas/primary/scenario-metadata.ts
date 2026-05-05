@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 
+import { generationStatus } from "@/db/constants/generation-status";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { platform } from "./platform";
@@ -20,6 +21,7 @@ export const scenarioMetadata = pgTable("scenario_metadata", {
       onDelete: "cascade",
     })
     .notNull(),
+  status: generationStatus("status").default("idle").notNull(),
   title: text("title").notNull(),
   body: text("body").notNull(),
   tags: text("tags").notNull(),

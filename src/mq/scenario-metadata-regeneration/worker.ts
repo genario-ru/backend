@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { zodTextFormat } from "openai/helpers/zod";
 
 import { generateScenarioMetadataPrompt } from "@/ai/prompts/builders/generate-scenario-metadata";
@@ -16,17 +16,17 @@ import { z } from "@/lib/zod";
 import { envs } from "@/shared/constants/common/envs";
 
 import {
-  SCENARIO_METADATA_GENERATION_QUEUE_NAME,
-  type ScenarioMetadataGenerationJobData,
+  SCENARIO_METADATA_REGENERATION_QUEUE_NAME,
+  type ScenarioMetadataRegenerationJobData,
 } from "./queue";
 
-export const scenarioMetadataGenerationWorker =
-  new Worker<ScenarioMetadataGenerationJobData>(
-    SCENARIO_METADATA_GENERATION_QUEUE_NAME,
+export const scenarioMetadataRegenerationWorker =
+  new Worker<ScenarioMetadataRegenerationJobData>(
+    SCENARIO_METADATA_REGENERATION_QUEUE_NAME,
     async (job) => {
-      const { scenarioId } = job.data;
+      const { scenarioId, platformId, prompt: userPrompt } = job.data;
 
-      console.log("Worker генерации метаданных сценария запущен", job.data);
+      console.log("Scenario metadata regeneration worker started", job.data);
 
       try {
         const foundScenario = await db.query.scenario.findFirst({
@@ -46,18 +46,30 @@ export const scenarioMetadataGenerationWorker =
         });
 
         if (!foundScenario) {
-          console.warn(`Сценарий с id ${scenarioId} не найден`);
+          console.warn(`Scenario with id ${scenarioId} not found`);
 
           return;
         }
 
-        const platforms = foundScenario.scenarioToPlatform.map(
-          ({ platform }) => platform,
-        );
+        const targetPlatform = foundScenario.scenarioToPlatform.find(
+          ({ platformId: itemPlatformId }) => itemPlatformId === platformId,
+        )?.platform;
 
-        if (platforms.length === 0) {
+        if (!targetPlatform) {
+          throw new Error("Target platform is not linked to the scenario");
+        }
+
+        const foundMetadata = await db.query.scenarioMetadata.findFirst({
+          where: (scenarioMetadata, { and, eq }) =>
+            and(
+              eq(scenarioMetadata.scenarioId, scenarioId),
+              eq(scenarioMetadata.platformId, platformId),
+            ),
+        });
+
+        if (!foundMetadata) {
           throw new Error(
-            "У сценария нет привязанных платформ для генерации метаданных",
+            "Scenario metadata for the target platform not found",
           );
         }
 
@@ -66,15 +78,24 @@ export const scenarioMetadataGenerationWorker =
         });
 
         if (creditsBalance < creditsPricing["scenario-metadata"]) {
-          throw new Error("Недостаточно кредитов для выполнения операции");
+          throw new Error("Insufficient credits to complete the operation");
         }
 
-        await db
-          .update(scenario)
-          .set({ metadataStatus: "generation" })
-          .where(eq(scenario.id, scenarioId));
+        await db.transaction(async (tx) => {
+          await Promise.all([
+            tx
+              .update(scenario)
+              .set({ metadataStatus: "generation" })
+              .where(eq(scenario.id, scenarioId)),
+            tx
+              .update(scenarioMetadata)
+              .set({ status: "generation" })
+              .where(eq(scenarioMetadata.id, foundMetadata.id)),
+          ]);
+        });
 
         const prompt = generateScenarioMetadataPrompt({
+          userPrompt,
           context: {
             scenarioName: foundScenario.name,
             scenarioDescription: foundScenario.description,
@@ -89,12 +110,14 @@ export const scenarioMetadataGenerationWorker =
               ({ tone }) => tone.name,
             ),
           },
-          platforms: platforms.map((platform) => ({
-            id: platform.id,
-            name: platform.name,
-            slug: platform.slug,
-            metadataDetails: platform.metadataDetails,
-          })),
+          platforms: [
+            {
+              id: targetPlatform.id,
+              name: targetPlatform.name,
+              slug: targetPlatform.slug,
+              metadataDetails: targetPlatform.metadataDetails,
+            },
+          ],
         });
 
         const { output_parsed: generatedMetadataObject, usage } =
@@ -119,49 +142,34 @@ export const scenarioMetadataGenerationWorker =
           });
 
         if (!generatedMetadataObject) {
-          throw new Error("Не удалось сгенерировать метаданные сценария");
+          throw new Error("Failed to regenerate scenario metadata");
         }
 
-        console.log("Метаданные сценария успешно сгенерированы");
-
-        const allowedPlatformIds = new Set(
-          platforms.map((platform) => platform.id),
+        const generatedItem = generatedMetadataObject.items.find(
+          (item) => item.platformId === platformId,
         );
-        const itemsByPlatformId = new Map<
-          string,
-          (typeof generatedMetadataObject.items)[number]
-        >();
 
-        for (const item of generatedMetadataObject.items) {
-          if (!allowedPlatformIds.has(item.platformId)) continue;
-          if (itemsByPlatformId.has(item.platformId)) continue;
-
-          itemsByPlatformId.set(item.platformId, item);
-        }
-
-        if (itemsByPlatformId.size === 0) {
+        if (!generatedItem) {
           throw new Error(
-            "Сгенерированные метаданные не содержат записей для платформ сценария",
+            "Generated metadata does not contain target platform",
           );
         }
 
-        const itemsToInsert = Array.from(itemsByPlatformId.values()).map(
-          (item) => ({
-            scenarioId,
-            platformId: item.platformId,
-            status: "ready" as const,
-            title: item.title,
-            body: item.body,
-            tags: item.tags,
-          }),
-        );
-
         await db.transaction(async (tx) => {
           await tx
-            .delete(scenarioMetadata)
-            .where(eq(scenarioMetadata.scenarioId, scenarioId));
+            .update(scenario)
+            .set({ metadataStatus: "ready" })
+            .where(eq(scenario.id, scenarioId));
 
-          await tx.insert(scenarioMetadata).values(itemsToInsert);
+          await tx
+            .update(scenarioMetadata)
+            .set({
+              status: "ready",
+              title: generatedItem.title,
+              body: generatedItem.body,
+              tags: generatedItem.tags,
+            })
+            .where(eq(scenarioMetadata.id, foundMetadata.id));
 
           await Promise.all([
             tx.insert(generationLog).values({
@@ -171,7 +179,7 @@ export const scenarioMetadataGenerationWorker =
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
-            await chargeCredits({
+            chargeCredits({
               userId: foundScenario.userId,
               entity: "scenario-metadata",
               entityId: scenarioId,
@@ -179,21 +187,28 @@ export const scenarioMetadataGenerationWorker =
               transaction: tx,
             }),
           ]);
-
-          await tx
-            .update(scenario)
-            .set({ metadataStatus: "ready" })
-            .where(eq(scenario.id, scenarioId));
         });
       } catch (error) {
         try {
-          await db
-            .update(scenario)
-            .set({ metadataStatus: "failed" })
-            .where(eq(scenario.id, scenarioId));
+          await db.transaction(async (tx) => {
+            await tx
+              .update(scenario)
+              .set({ metadataStatus: "failed" })
+              .where(eq(scenario.id, scenarioId));
+
+            await tx
+              .update(scenarioMetadata)
+              .set({ status: "failed" })
+              .where(
+                and(
+                  eq(scenarioMetadata.scenarioId, scenarioId),
+                  eq(scenarioMetadata.platformId, platformId),
+                ),
+              );
+          });
         } catch (updateError) {
           console.error(
-            "Не удалось обновить статус метаданных сценария",
+            "Failed to update scenario metadata regeneration status",
             updateError,
           );
         }
@@ -207,18 +222,18 @@ export const scenarioMetadataGenerationWorker =
     },
   );
 
-scenarioMetadataGenerationWorker.on("error", (error) => {
-  console.error("Worker генерации метаданных сценария упал с ошибкой", error);
+scenarioMetadataRegenerationWorker.on("error", (error) => {
+  console.error("Scenario metadata regeneration worker error", error);
 });
 
-scenarioMetadataGenerationWorker.on("failed", (job, error) => {
+scenarioMetadataRegenerationWorker.on("failed", (job, error) => {
   console.error(
-    "Worker генерации метаданных сценария упал с ошибкой",
+    "Scenario metadata regeneration worker failed",
     job?.toJSON(),
     error,
   );
 });
 
-scenarioMetadataGenerationWorker.on("completed", (job) => {
-  console.log("Worker генерации метаданных сценария отработал успешно", job.id);
+scenarioMetadataRegenerationWorker.on("completed", (job) => {
+  console.log("Scenario metadata regeneration worker completed", job.id);
 });
