@@ -10,7 +10,7 @@ import { generationLog, idea, ideasList } from "@/db/schema";
 import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
-import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list";
+import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list-generated";
 import { redis } from "@/lib/redis";
 import { envs } from "@/shared/constants/common/envs";
 
