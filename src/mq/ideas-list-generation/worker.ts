@@ -10,9 +10,8 @@ import { generationLog, idea, ideasList } from "@/db/schema";
 import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
-import { ideaGeneratedSchema } from "@/domains/ideas/schemas/entities/idea";
+import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list";
 import { redis } from "@/lib/redis";
-import { z } from "@/lib/zod";
 import { envs } from "@/shared/constants/common/envs";
 
 import {
@@ -69,8 +68,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       const prompt = generateIdeasListPrompt({
         userPrompt,
         ideasCount: IDEAS_PER_LIST_COUNT,
-        ideasListName: foundIdeasList.name,
-        ideasListDescription: foundIdeasList.description,
+        ideasListPrompt: foundIdeasList.prompt,
         ideasListTargetAudience: foundIdeasList.targetAudience,
         ideasListTemplateName: foundIdeasList.template?.name,
         ideasListTemplateDescription: foundIdeasList.template?.description,
@@ -95,7 +93,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         })),
       });
 
-      const { output_parsed: generatedIdeasObject, usage } =
+      const { output_parsed: generatedObject, usage } =
         await polzaAI.responses.parse({
           model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
           temperature: 0.7,
@@ -107,20 +105,17 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             },
           ],
           text: {
-            format: zodTextFormat(
-              z.object({ ideas: z.array(ideaGeneratedSchema) }),
-              "ideasList",
-            ),
+            format: zodTextFormat(ideasListGeneratedSchema, "ideasList"),
           },
         });
 
-      if (!generatedIdeasObject) {
+      if (!generatedObject) {
         throw new Error("Не удалось сгенерировать список идей");
       }
 
       console.log("Список идей успешно сгенерирован");
 
-      const generatedIdeas = generatedIdeasObject.ideas;
+      const generatedIdeas = generatedObject.ideas;
 
       await db.transaction(async (tx) => {
         const createdIdeas = await tx
@@ -160,7 +155,11 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
         await tx
           .update(ideasList)
-          .set({ status: "ready" })
+          .set({
+            status: "ready",
+            name: generatedObject.name,
+            description: generatedObject.description,
+          })
           .where(eq(ideasList.id, ideasListId));
       });
     } catch (error) {

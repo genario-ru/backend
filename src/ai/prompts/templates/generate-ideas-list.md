@@ -31,6 +31,20 @@ videoTypeId:
 - Pick from the available video types listed in Data.
 - Distribute evenly across types when multiple are available (aim for ≥40% of each type).
 
+## Ideas list metadata
+
+Also return a name and description for the ideas list itself.
+
+name (max 80 characters):
+
+- A concise title summarizing the theme of this ideas collection.
+- Should reflect the main direction from the prompt.
+
+description (max 500 characters):
+
+- A brief summary of what this collection covers and its creative direction.
+- Should help the creator understand the scope at a glance.
+
 ## Context
 
 {{CONTEXT}}

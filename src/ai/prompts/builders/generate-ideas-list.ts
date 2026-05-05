@@ -9,8 +9,7 @@ import { interpolate } from "@/ai/utils/interpolate-template";
 export function generateIdeasListPrompt({
   userPrompt,
   ideasCount,
-  ideasListName,
-  ideasListDescription,
+  ideasListPrompt,
   ideasListTargetAudience,
   ideasListTemplateName,
   ideasListTemplateDescription,
@@ -21,9 +20,8 @@ export function generateIdeasListPrompt({
   previousGeneratedIdeas,
 }: GenerateIdeasListPromptProps) {
   const contextLines = buildContextLines([
-    ["User prompt", userPrompt],
-    ["Ideas list name", ideasListName],
-    ["Ideas list description", ideasListDescription],
+    ["Ideas list prompt", ideasListPrompt],
+    ["Additional instructions", userPrompt],
     ["Target audience", ideasListTargetAudience],
     ["Template name", ideasListTemplateName],
     ["Template description", ideasListTemplateDescription],

@@ -10,8 +10,7 @@ export const createIdeasListBodySchema = createInsertSchema(ideasList)
     targetAudience: true,
   })
   .extend({
-    name: z.string().min(3).max(256),
-    description: z.string().min(16).max(4096),
+    prompt: z.string().min(3).max(4096),
     toneIds: z.array(z.uuid()).nullish(),
     videoTypeIds: z.array(z.uuid()).min(1),
   })

@@ -26,8 +26,9 @@ export const ideasList = pgTable("ideas_list", {
     onDelete: "set null",
   }),
   status: generationStatus("status").default("pending").notNull(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
+  prompt: text("prompt").notNull(),
+  name: text("name"),
+  description: text("description"),
   targetAudience: text("target_audience"),
   ...timestamps,
 });

@@ -35,6 +35,10 @@ function getIdeasListMetaItems(data: IdeasListExportData): MetaItem[] {
     { label: "Количество идей", value: String(data.ideas.length) },
   ];
 
+  if (data.prompt) {
+    items.push({ label: "Промпт", value: data.prompt });
+  }
+
   if (data.description) {
     items.push({ label: "Описание", value: data.description });
   }

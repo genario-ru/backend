@@ -12,8 +12,7 @@ export type PreviousIdea = {
 export type GenerateIdeasListPromptProps = {
   userPrompt?: string | null;
   ideasCount?: number | null;
-  ideasListName?: string | null;
-  ideasListDescription?: string | null;
+  ideasListPrompt: string;
   ideasListTargetAudience?: string | null;
   ideasListTemplateName?: string | null;
   ideasListTemplateDescription?: string | null;
