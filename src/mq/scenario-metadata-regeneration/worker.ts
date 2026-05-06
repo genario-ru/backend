@@ -6,7 +6,7 @@ import { generateScenarioMetadataPrompt } from "@/ai/prompts/builders/generate-s
 import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import { db } from "@/db";
-import { generationLog, scenario, scenarioMetadata } from "@/db/schema";
+import { generationLog, scenarioMetadata } from "@/db/schema";
 import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
@@ -77,22 +77,14 @@ export const scenarioMetadataRegenerationWorker =
           userId: foundScenario.userId,
         });
 
-        if (creditsBalance < creditsPricing["scenario-metadata"]) {
+        if (creditsBalance < creditsPricing["scenario-metadata-item"]) {
           throw new Error("Insufficient credits to complete the operation");
         }
 
-        await db.transaction(async (tx) => {
-          await Promise.all([
-            tx
-              .update(scenario)
-              .set({ metadataStatus: "generation" })
-              .where(eq(scenario.id, scenarioId)),
-            tx
-              .update(scenarioMetadata)
-              .set({ status: "generation" })
-              .where(eq(scenarioMetadata.id, foundMetadata.id)),
-          ]);
-        });
+        await db
+          .update(scenarioMetadata)
+          .set({ status: "generation" })
+          .where(eq(scenarioMetadata.id, foundMetadata.id));
 
         const prompt = generateScenarioMetadataPrompt({
           userPrompt,
@@ -156,10 +148,22 @@ export const scenarioMetadataRegenerationWorker =
         }
 
         await db.transaction(async (tx) => {
-          await tx
-            .update(scenario)
-            .set({ metadataStatus: "ready" })
-            .where(eq(scenario.id, scenarioId));
+          await Promise.all([
+            tx.insert(generationLog).values({
+              entity: "scenario-metadata-item",
+              entityId: scenarioId,
+              prompt,
+              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              tokens: usage?.total_tokens ?? 0,
+            }),
+            chargeCredits({
+              userId: foundScenario.userId,
+              entity: "scenario-metadata-item",
+              entityId: scenarioId,
+              totalTokens: usage?.total_tokens ?? 0,
+              transaction: tx,
+            }),
+          ]);
 
           await tx
             .update(scenarioMetadata)
@@ -170,42 +174,18 @@ export const scenarioMetadataRegenerationWorker =
               tags: generatedItem.tags,
             })
             .where(eq(scenarioMetadata.id, foundMetadata.id));
-
-          await Promise.all([
-            tx.insert(generationLog).values({
-              entity: "scenario-metadata",
-              entityId: scenarioId,
-              prompt,
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            }),
-            chargeCredits({
-              userId: foundScenario.userId,
-              entity: "scenario-metadata",
-              entityId: scenarioId,
-              totalTokens: usage?.total_tokens ?? 0,
-              transaction: tx,
-            }),
-          ]);
         });
       } catch (error) {
         try {
-          await db.transaction(async (tx) => {
-            await tx
-              .update(scenario)
-              .set({ metadataStatus: "failed" })
-              .where(eq(scenario.id, scenarioId));
-
-            await tx
-              .update(scenarioMetadata)
-              .set({ status: "failed" })
-              .where(
-                and(
-                  eq(scenarioMetadata.scenarioId, scenarioId),
-                  eq(scenarioMetadata.platformId, platformId),
-                ),
-              );
-          });
+          await db
+            .update(scenarioMetadata)
+            .set({ status: "failed" })
+            .where(
+              and(
+                eq(scenarioMetadata.scenarioId, scenarioId),
+                eq(scenarioMetadata.platformId, platformId),
+              ),
+            );
         } catch (updateError) {
           console.error(
             "Failed to update scenario metadata regeneration status",

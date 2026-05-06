@@ -6,4 +6,5 @@ export const creditsPricing: Record<CreditsPricingEntity, number> = {
   "scenario-chapter-scenes": 1,
   "scenario-scene-preview": 5,
   "scenario-metadata": 2,
+  "scenario-metadata-item": 1,
 } as const;
