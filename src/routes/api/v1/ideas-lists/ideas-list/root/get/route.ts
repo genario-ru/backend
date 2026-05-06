@@ -57,7 +57,10 @@ getIdeasListRoute.get(
       },
       with: {
         ideas: {
-          orderBy: (idea, { desc }) => [desc(idea.createdAt)],
+          orderBy: (idea, { asc, desc }) => [
+            desc(idea.createdAt),
+            asc(idea.name),
+          ],
           where: (idea, { eq }) => {
             if (saved !== undefined) {
               return eq(idea.saved, saved);
