@@ -40,6 +40,8 @@ getMyProfilesFromChannelsJobs.get(
 
     const foundProfilesFromChannelsJobs =
       await db.query.profilesFromChannelsJob.findMany({
+        orderBy: (profilesFromChannelsJob, { desc }) =>
+          desc(profilesFromChannelsJob.createdAt),
         where: (profilesFromChannelsJob, { eq }) =>
           eq(profilesFromChannelsJob.userId, user.id),
       });

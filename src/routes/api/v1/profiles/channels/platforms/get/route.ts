@@ -33,6 +33,7 @@ getPlatformsForChannelsRoute.get(
   }),
   async (c) => {
     const foundPlatforms = await db.query.platform.findMany({
+      orderBy: (platform, { asc }) => asc(platform.name),
       where: (platform, { eq }) => eq(platform.hasAutoImport, true),
     });
 

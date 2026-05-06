@@ -31,6 +31,10 @@ getAlertsRoute.get(
   }),
   async (c) => {
     const foundAlerts = await db.query.alert.findMany({
+      orderBy: (alert, { desc }) => [
+        desc(alert.expiresAt),
+        desc(alert.createdAt),
+      ],
       where: (alert, { and, eq, gt }) =>
         and(
           eq(alert.status, "active"),

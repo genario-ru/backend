@@ -36,6 +36,7 @@ getCreditsPackagesRoute.get(
   }),
   async (c) => {
     const foundCreditsPackages = await db.query.creditsPackage.findMany({
+      orderBy: (creditsPackage, { asc }) => asc(creditsPackage.price),
       where: (creditsPackage, { eq }) => eq(creditsPackage.forPurchase, true),
     });
 

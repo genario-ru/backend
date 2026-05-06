@@ -37,6 +37,10 @@ getMySubscriptionsRoute.get(
     const user = c.get("user");
 
     const foundSubscriptions = await db.query.subscription.findMany({
+      orderBy: (subscription, { desc }) => [
+        desc(subscription.cycleEndsAt),
+        desc(subscription.createdAt),
+      ],
       where: (subscription, { eq }) => eq(subscription.userId, user.id),
       with: {
         tariff: {

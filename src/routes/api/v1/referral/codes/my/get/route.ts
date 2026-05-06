@@ -39,6 +39,7 @@ getMyReferralCodesRoute.get(
     const user = c.get("user");
 
     const referralCodes = await db.query.referralCode.findMany({
+      orderBy: (referralCode, { desc }) => [desc(referralCode.createdAt)],
       where: (referralCode, { eq }) => eq(referralCode.userId, user.id),
       with: {
         referralReward: true,

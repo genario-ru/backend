@@ -34,7 +34,9 @@ getTonesRoute.get(
     },
   }),
   async (c) => {
-    const foundTones = await db.query.tone.findMany();
+    const foundTones = await db.query.tone.findMany({
+      orderBy: (tone, { asc }) => asc(tone.name),
+    });
 
     return c.json<GetTonesResponse>(
       getTonesResponseSchema.parse({

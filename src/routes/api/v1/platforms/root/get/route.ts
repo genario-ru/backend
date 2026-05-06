@@ -31,6 +31,7 @@ getPlatformsRoute.get(
   }),
   async (c) => {
     const foundPlatforms = await db.query.platform.findMany({
+      orderBy: (platform, { asc }) => asc(platform.name),
       with: {
         platformToVideoType: {
           with: { videoType: true },

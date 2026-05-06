@@ -51,7 +51,7 @@ getScenarioMetadataRoute.get(
       with: {
         metadata: {
           with: { platform: true },
-          orderBy: (item, { asc }) => [asc(item.createdAt)],
+          orderBy: (item, { desc }) => [desc(item.createdAt)],
         },
       },
     });

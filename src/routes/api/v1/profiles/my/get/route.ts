@@ -37,6 +37,7 @@ getMyProfilesRoute.get(
     const user = c.get("user");
 
     const foundProfiles = await db.query.profile.findMany({
+      orderBy: (profile, { desc }) => [desc(profile.createdAt)],
       where: (profile, { eq }) => eq(profile.userId, user.id),
       with: {
         user: true,
