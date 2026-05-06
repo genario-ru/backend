@@ -1,0 +1,1 @@
+ALTER TYPE "public"."generation_entity" ADD VALUE 'scenario-metadata-item';
