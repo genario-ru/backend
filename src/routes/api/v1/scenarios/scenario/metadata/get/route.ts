@@ -51,7 +51,6 @@ getScenarioMetadataRoute.get(
       with: {
         metadata: {
           with: { platform: true },
-          orderBy: (item, { asc }) => [asc(item.title)],
         },
       },
     });
@@ -64,11 +63,15 @@ getScenarioMetadataRoute.get(
       });
     }
 
+    const foundMetadataItemsSorted = foundScenario.metadata.sort((a, b) => {
+      return a.platform.name.localeCompare(b.platform.name);
+    });
+
     return c.json<GetScenarioMetadataResponse>(
       getScenarioMetadataResponseSchema.parse({
         data: {
           status: foundScenario.metadataStatus,
-          items: foundScenario.metadata,
+          items: foundMetadataItemsSorted,
         },
       }),
     );
