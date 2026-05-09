@@ -169,6 +169,13 @@
       "when": 1778026177203,
       "tag": "0023_modern_sauron",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1778325380920,
+      "tag": "0024_mature_stellaris",
+      "breakpoints": true
     }
   ]
 }

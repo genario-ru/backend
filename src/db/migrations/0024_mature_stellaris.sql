@@ -1,0 +1,1 @@
+ALTER TABLE "credits_package" ADD COLUMN "is_preferred" boolean DEFAULT false NOT NULL;
