@@ -14,6 +14,7 @@ import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
@@ -27,7 +28,10 @@ export const scenarioScenePreviewsGenerationWorker =
     async (job) => {
       const { scenarioScenePreviewId } = job.data;
 
-      console.log("Worker генерации превью сцены сценария запущен", job.data);
+      console.log("Worker генерации превью сцены сценария запущен", {
+        scenarioScenePreviewId,
+        jobId: job.id,
+      });
 
       try {
         const foundPreview = await db.query.scenarioScenePreview.findFirst({
@@ -172,7 +176,6 @@ export const scenarioScenePreviewsGenerationWorker =
               tx.insert(generationLog).values({
                 entity: "scenario-scene-preview" as const,
                 entityId: scenarioScenePreviewId,
-                prompt,
                 model: envs.VSELLM_IMAGE_MODEL,
                 tokens: usage?.total_tokens ?? 0,
               }),
@@ -230,7 +233,7 @@ scenarioScenePreviewsGenerationWorker.on("error", (error) => {
 scenarioScenePreviewsGenerationWorker.on("failed", (job, error) => {
   console.error(
     "Worker генерации превью сцены сценария упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

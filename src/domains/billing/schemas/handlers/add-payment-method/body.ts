@@ -1,8 +1,9 @@
 import { z } from "@/lib/zod";
+import { internalRedirectPathSchema } from "@/shared/schemas/common/internal-redirect-path";
 
 export const addPaymentMethodBodySchema = z
   .object({
-    redirectPath: z.string().optional(),
+    redirectPath: internalRedirectPathSchema.optional(),
   })
   .meta({
     title: "Add payment method body",

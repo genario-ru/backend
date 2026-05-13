@@ -6,6 +6,7 @@ import { emailLog } from "@/db/schemas/logs/email-log";
 import { renderEmail } from "@/domains/mail/utils/render-email";
 import { sendMail } from "@/lib/nodemailer";
 import { redis } from "@/lib/redis";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import { MAIL_SEND_QUEUE_NAME, type MailSendJobData } from "./queue";
 
@@ -14,7 +15,10 @@ export const mailSendWorker = new Worker<MailSendJobData>(
   async (job) => {
     const { emailLogId, to, templateKey, payload } = job.data;
 
-    console.log("Worker отправки email запущен", { emailLogId, templateKey });
+    console.log("Worker отправки email запущен", {
+      emailLogId,
+      templateKey,
+    });
 
     try {
       const rendered = await renderEmail({ templateKey, payload });
@@ -68,7 +72,11 @@ mailSendWorker.on("error", (error) => {
 });
 
 mailSendWorker.on("failed", (job, error) => {
-  console.error("Worker отправки email упал с ошибкой", job?.toJSON(), error);
+  console.error(
+    "Worker отправки email упал с ошибкой",
+    getSafeJobLogContext(job),
+    error,
+  );
 });
 
 mailSendWorker.on("completed", (job) => {

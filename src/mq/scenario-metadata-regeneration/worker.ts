@@ -14,6 +14,7 @@ import { scenarioMetadataItemGeneratedSchema } from "@/domains/scenarios/schemas
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   SCENARIO_METADATA_REGENERATION_QUEUE_NAME,
@@ -26,7 +27,11 @@ export const scenarioMetadataRegenerationWorker =
     async (job) => {
       const { scenarioId, platformId, prompt: userPrompt } = job.data;
 
-      console.log("Scenario metadata regeneration worker started", job.data);
+      console.log("Scenario metadata regeneration worker started", {
+        scenarioId,
+        platformId,
+        jobId: job.id,
+      });
 
       try {
         const foundScenario = await db.query.scenario.findFirst({
@@ -152,7 +157,6 @@ export const scenarioMetadataRegenerationWorker =
             tx.insert(generationLog).values({
               entity: "scenario-metadata-item",
               entityId: scenarioId,
-              prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
@@ -209,7 +213,7 @@ scenarioMetadataRegenerationWorker.on("error", (error) => {
 scenarioMetadataRegenerationWorker.on("failed", (job, error) => {
   console.error(
     "Scenario metadata regeneration worker failed",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

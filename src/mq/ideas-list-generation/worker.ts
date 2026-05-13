@@ -13,6 +13,7 @@ import { getCreditsBalance } from "@/domains/credits/services/get-credits-balanc
 import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list-generated";
 import { redis } from "@/lib/redis";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,
@@ -26,7 +27,10 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
   async (job) => {
     const { ideasListId, userPrompt } = job.data;
 
-    console.log("Worker генерации списка идей запущен", job.data);
+    console.log("Worker генерации списка идей запущен", {
+      ideasListId,
+      jobId: job.id,
+    });
 
     try {
       const foundIdeasList = await db.query.ideasList.findFirst({
@@ -136,7 +140,6 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             tx.insert(generationLog).values({
               entity: "ideas-list",
               entityId: foundIdeasList.id,
-              prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
@@ -188,7 +191,7 @@ ideasListGenerationWorker.on("error", (error) => {
 ideasListGenerationWorker.on("failed", (job, error) => {
   console.error(
     "Worker генерации списка идей упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

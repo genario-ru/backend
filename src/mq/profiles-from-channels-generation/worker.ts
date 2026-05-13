@@ -19,6 +19,7 @@ import {
 import { profileGeneratedSchema } from "@/domains/profiles/schemas/entities/profile-generated";
 import { redis } from "@/lib/redis";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   PROFILES_FROM_CHANNELS_GENERATION_QUEUE_NAME,
@@ -32,7 +33,12 @@ export const profilesFromChannelsGenerationWorker =
     async (job) => {
       const { jobId, userId, channels } = job.data;
 
-      console.log("Worker генерации профилей из каналов запущен", job.data);
+      console.log("Worker генерации профилей из каналов запущен", {
+        jobId,
+        userId,
+        channelsCount: channels.length,
+        bullJobId: job.id,
+      });
 
       try {
         await db
@@ -89,7 +95,10 @@ export const profilesFromChannelsGenerationWorker =
             });
 
           if (!generatedProfile) {
-            console.error("Не удалось сгенерировать профиль", groupChannels);
+            console.error("Не удалось сгенерировать профиль", {
+              jobId,
+              channelsCount: groupChannels.length,
+            });
 
             continue;
           }
@@ -228,7 +237,7 @@ profilesFromChannelsGenerationWorker.on("error", (error) => {
 profilesFromChannelsGenerationWorker.on("failed", (job, error) => {
   console.error(
     "Worker генерации профилей из каналов упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

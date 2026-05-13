@@ -14,6 +14,7 @@ import { scenarioChapterGeneratedSchema } from "@/domains/scenarios/schemas/enti
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
 import {
@@ -27,7 +28,11 @@ export const scenarioChaptersGenerationWorker =
     async (job) => {
       const { scenarioId, scenarioVersionId } = job.data;
 
-      console.log("Worker генерации глав сценария запущен", job.data);
+      console.log("Worker генерации глав сценария запущен", {
+        scenarioId,
+        scenarioVersionId,
+        jobId: job.id,
+      });
 
       try {
         const foundScenario = await db.query.scenario.findFirst({
@@ -135,7 +140,6 @@ export const scenarioChaptersGenerationWorker =
               await tx.insert(generationLog).values({
                 entity: "scenario-chapters" as const,
                 entityId: scenarioVersionId,
-                prompt,
                 model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
                 tokens: usage?.total_tokens ?? 0,
               }),
@@ -193,7 +197,7 @@ scenarioChaptersGenerationWorker.on("error", (error) => {
 scenarioChaptersGenerationWorker.on("failed", (job, error) => {
   console.error(
     "Worker генерации глав сценария упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

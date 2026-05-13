@@ -8,6 +8,7 @@ import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { envs } from "@/shared/constants/common/envs";
 import { SUPPORTED_EXPORT_FORMATS } from "@/shared/constants/common/supported-export-format";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   IDEAS_LIST_EXPORT_QUEUE_NAME,
@@ -21,7 +22,11 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
   async (job) => {
     const { exportDocumentId, ideasListId } = job.data;
 
-    console.log("Worker экспорта списка идей запущен", job.data);
+    console.log("Worker экспорта списка идей запущен", {
+      exportDocumentId,
+      ideasListId,
+      jobId: job.id,
+    });
 
     try {
       const foundIdeasListToExportDocument =
@@ -186,7 +191,7 @@ ideasListExportWorker.on("error", (error) => {
 ideasListExportWorker.on("failed", (job, error) => {
   console.error(
     "Worker экспорта списка идей упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

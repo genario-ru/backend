@@ -8,6 +8,7 @@ import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { envs } from "@/shared/constants/common/envs";
 import { SUPPORTED_EXPORT_FORMATS } from "@/shared/constants/common/supported-export-format";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   SCENARIO_VERSION_EXPORT_QUEUE_NAME,
@@ -22,7 +23,11 @@ export const scenarioVersionExportWorker =
     async (job) => {
       const { exportDocumentId, scenarioVersionId } = job.data;
 
-      console.log("Worker экспорта версии сценария запущен", job.data);
+      console.log("Worker экспорта версии сценария запущен", {
+        exportDocumentId,
+        scenarioVersionId,
+        jobId: job.id,
+      });
 
       try {
         const foundScenarioVersionToExportDocument =
@@ -219,7 +224,7 @@ scenarioVersionExportWorker.on("error", (error) => {
 scenarioVersionExportWorker.on("failed", (job, error) => {
   console.error(
     "Worker экспорта версии сценария упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

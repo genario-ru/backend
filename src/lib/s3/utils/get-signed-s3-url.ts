@@ -12,6 +12,6 @@ export async function getSignedS3Url(key: string): Promise<string> {
   });
 
   return getSignedUrl(s3, command, {
-    expiresIn: 3600 * 24,
+    expiresIn: 60 * 15,
   });
 }

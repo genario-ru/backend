@@ -9,9 +9,11 @@ import { showRoutes } from "hono/dev";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { requestId } from "hono/request-id";
+import { secureHeaders } from "hono/secure-headers";
 import { openAPIRouteHandler } from "hono-openapi";
 
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
+import { originValidationMiddleware } from "@/middleware/origin-validation-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
 import { mailSendQueue } from "@/mq/mail-send/queue";
@@ -123,7 +125,7 @@ import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 const app = createHonoApp();
 const appAPI = app.basePath("/api");
 const appAPIV1Routes = appAPI.basePath("/v1");
-
+const isNotProduction = envs.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
 const bullBoardBasePath = "/admin/queues";
 
@@ -144,7 +146,6 @@ createBullBoard({
 });
 
 bullBoardAdapter.setBasePath(bullBoardBasePath);
-app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
 const appAPIv1RoutesList = [
   getAlertsRoute,
@@ -226,6 +227,7 @@ const appAPIv1RoutesList = [
 app.use(prettyJSON());
 app.use(requestId());
 app.use(logger());
+app.use(secureHeaders());
 
 app.use(
   cors({
@@ -235,10 +237,21 @@ app.use(
   }),
 );
 
-app.use(errorHandlerMiddleware);
+app.use(
+  "/api/*",
+  originValidationMiddleware({
+    trustedOrigins: TRUSTED_ORIGINS,
+    skipPaths: ["/api/v1/billing/webhook"],
+  }),
+);
 
+app.use(errorHandlerMiddleware);
 app.route("/", rootRoute);
 app.route("/", healthRoute);
+
+if (isNotProduction) {
+  app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
+}
 
 appAPI.route("/", authRoute);
 
@@ -246,40 +259,40 @@ appAPIv1RoutesList.forEach((route) => {
   appAPIV1Routes.route("/", route);
 });
 
-// OpenAPI
-app.get(
-  "/api/open-api",
-  openAPIRouteHandler(appAPI, {
-    documentation: {
-      info: {
-        title: "Genario API",
-        version: "1.0.0",
-        description: "API for Genario application",
-      },
-      servers: [
-        {
-          url: envs.BACKEND_BASE_URL,
+if (isNotProduction) {
+  app.get(
+    "/api/open-api",
+    openAPIRouteHandler(appAPI, {
+      documentation: {
+        info: {
+          title: "Genario API",
+          version: "1.0.0",
+          description: "API for Genario application",
         },
+        servers: [
+          {
+            url: envs.BACKEND_BASE_URL,
+          },
+        ],
+      },
+    }),
+  );
+
+  app.get(
+    "/api/docs",
+    Scalar({
+      pageTitle: "API Documentation",
+      sources: [
+        { url: "/api/open-api", title: "Product API" },
+        { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
       ],
-    },
-  }),
-);
+    }),
+  );
+}
 
-// Docs
-app.get(
-  "/api/docs",
-  Scalar({
-    pageTitle: "API Documentation",
-    sources: [
-      { url: "/api/open-api", title: "Product API" },
-      { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
-    ],
-  }),
-);
-
-showRoutes(app, {
-  verbose: true,
-});
+if (isNotProduction) {
+  showRoutes(app, { verbose: true });
+}
 
 const server = serve(
   {

@@ -9,6 +9,7 @@ import { processPaymentCanceledEvent } from "@/domains/billing/services/process-
 import { processPaymentMethodActiveEvent } from "@/domains/billing/services/process-payment-method-active-event";
 import { processPaymentSucceededEvent } from "@/domains/billing/services/process-payment-succeeded-event";
 import { processRefundSucceededEvent } from "@/domains/billing/services/process-refund-succeeded-event";
+import { verifyWebhook } from "@/domains/billing/services/verify-webhook";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
@@ -24,6 +25,8 @@ processWebhookRoute.post(
   zValidator("json", processWebhookBodySchema),
   async (c) => {
     const body = c.req.valid("json");
+
+    await verifyWebhook(body);
 
     switch (body.event) {
       case "payment.succeeded":

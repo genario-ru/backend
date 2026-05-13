@@ -5,6 +5,16 @@ import { redis } from "@/lib/redis";
 export const SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME =
   "scenario-scene-preview-generation";
 
+const REMOVE_ON_COMPLETE = {
+  age: 60 * 60,
+  count: 10,
+};
+
+const REMOVE_ON_FAIL = {
+  age: 60 * 60 * 24,
+  count: 20,
+};
+
 export type ScenarioScenePreviewGenerationJobData = {
   scenarioScenePreviewId: string;
 };
@@ -20,8 +30,8 @@ export const scenarioScenePreviewGenerationQueue =
           type: "exponential",
           delay: 3000,
         },
-        removeOnComplete: 100,
-        removeOnFail: 100,
+        removeOnComplete: REMOVE_ON_COMPLETE,
+        removeOnFail: REMOVE_ON_FAIL,
       },
     },
   );

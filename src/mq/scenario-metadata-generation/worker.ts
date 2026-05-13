@@ -14,6 +14,7 @@ import { scenarioMetadataItemGeneratedSchema } from "@/domains/scenarios/schemas
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
 import { envs } from "@/shared/constants/common/envs";
+import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
   SCENARIO_METADATA_GENERATION_QUEUE_NAME,
@@ -26,7 +27,10 @@ export const scenarioMetadataGenerationWorker =
     async (job) => {
       const { scenarioId } = job.data;
 
-      console.log("Worker генерации метаданных сценария запущен", job.data);
+      console.log("Worker генерации метаданных сценария запущен", {
+        scenarioId,
+        jobId: job.id,
+      });
 
       try {
         const foundScenario = await db.query.scenario.findFirst({
@@ -167,7 +171,6 @@ export const scenarioMetadataGenerationWorker =
             tx.insert(generationLog).values({
               entity: "scenario-metadata",
               entityId: scenarioId,
-              prompt,
               model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
@@ -214,7 +217,7 @@ scenarioMetadataGenerationWorker.on("error", (error) => {
 scenarioMetadataGenerationWorker.on("failed", (job, error) => {
   console.error(
     "Worker генерации метаданных сценария упал с ошибкой",
-    job?.toJSON(),
+    getSafeJobLogContext(job),
     error,
   );
 });

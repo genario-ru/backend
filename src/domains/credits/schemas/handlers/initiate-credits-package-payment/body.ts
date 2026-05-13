@@ -1,9 +1,10 @@
 import { z } from "@/lib/zod";
+import { internalRedirectPathSchema } from "@/shared/schemas/common/internal-redirect-path";
 
 export const initiateCreditsPackagePaymentBodySchema = z
   .object({
     creditsPackageId: z.string(),
-    redirect: z.string().optional(),
+    redirect: internalRedirectPathSchema.optional(),
   })
   .meta({
     title: "Initiate credits package payment body",

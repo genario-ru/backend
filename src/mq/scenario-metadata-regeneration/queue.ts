@@ -5,6 +5,16 @@ import { redis } from "@/lib/redis";
 export const SCENARIO_METADATA_REGENERATION_QUEUE_NAME =
   "scenario-metadata-regeneration";
 
+const REMOVE_ON_COMPLETE = {
+  age: 60 * 60,
+  count: 10,
+};
+
+const REMOVE_ON_FAIL = {
+  age: 60 * 60 * 24,
+  count: 20,
+};
+
 export type ScenarioMetadataRegenerationJobData = {
   scenarioId: string;
   platformId: string;
@@ -22,8 +32,8 @@ export const scenarioMetadataRegenerationQueue =
           type: "exponential",
           delay: 3000,
         },
-        removeOnComplete: 100,
-        removeOnFail: 100,
+        removeOnComplete: REMOVE_ON_COMPLETE,
+        removeOnFail: REMOVE_ON_FAIL,
       },
     },
   );
