@@ -20,7 +20,6 @@ export async function uploadBufferToS3({
     Key: key,
     Body: buffer,
     ContentType: mimeType,
-    ServerSideEncryption: "AES256",
   });
 
   await s3.send(command);
