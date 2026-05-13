@@ -127,7 +127,7 @@ const appAPI = app.basePath("/api");
 const appAPIV1Routes = appAPI.basePath("/v1");
 const isNotProduction = envs.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
-const bullBoardBasePath = "/admin/queues";
+const bullBoardBasePath = "/admin/ewf89-23aE3_93/queues";
 
 createBullBoard({
   queues: [
@@ -248,10 +248,7 @@ app.use(
 app.use(errorHandlerMiddleware);
 app.route("/", rootRoute);
 app.route("/", healthRoute);
-
-if (isNotProduction) {
-  app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
-}
+app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
 appAPI.route("/", authRoute);
 
