@@ -15,16 +15,6 @@ export type MailSendJobData = {
 
 export const MAIL_SEND_QUEUE_NAME = "mail-send";
 
-const REMOVE_ON_COMPLETE = {
-  age: 60 * 30,
-  count: 10,
-};
-
-const REMOVE_ON_FAIL = {
-  age: 60 * 60 * 12,
-  count: 20,
-};
-
 export const mailSendQueue = new Queue<MailSendJobData>(MAIL_SEND_QUEUE_NAME, {
   connection: redis,
   defaultJobOptions: {
@@ -33,8 +23,8 @@ export const mailSendQueue = new Queue<MailSendJobData>(MAIL_SEND_QUEUE_NAME, {
       type: "exponential",
       delay: 5000,
     },
-    removeOnComplete: REMOVE_ON_COMPLETE,
-    removeOnFail: REMOVE_ON_FAIL,
+    removeOnComplete: 200,
+    removeOnFail: 500,
   },
 });
 

@@ -4,16 +4,6 @@ import { redis } from "@/lib/redis";
 
 export const SCENARIO_VERSION_EXPORT_QUEUE_NAME = "scenario-version-export";
 
-const REMOVE_ON_COMPLETE = {
-  age: 60 * 60,
-  count: 10,
-};
-
-const REMOVE_ON_FAIL = {
-  age: 60 * 60 * 24,
-  count: 20,
-};
-
 export type ScenarioVersionExportJobData = {
   exportDocumentId: string;
   scenarioVersionId: string;
@@ -28,8 +18,8 @@ export const scenarioVersionExportQueue =
         type: "exponential",
         delay: 3000,
       },
-      removeOnComplete: REMOVE_ON_COMPLETE,
-      removeOnFail: REMOVE_ON_FAIL,
+      removeOnComplete: 100,
+      removeOnFail: 100,
     },
   });
 
