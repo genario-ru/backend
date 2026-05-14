@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Копируем файлы зависимостей
 COPY package.json pnpm-lock.yaml ./
-COPY tsconfig.json tsup.config.ts drizzle.config.ts auth.ts ./
+COPY tsconfig.json tsup.config.ts drizzle.config.ts auth.ts env.ts ./
 
 # Копируем исходный код
 COPY src ./src
