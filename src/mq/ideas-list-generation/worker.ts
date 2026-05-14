@@ -11,8 +11,8 @@ import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities/ideas-list-generated";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
-import { envs } from "@/shared/constants/common/envs";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
@@ -99,7 +99,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
       const { output_parsed: generatedObject, usage } =
         await polzaAI.responses.parse({
-          model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+          model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
           temperature: 0.7,
           input: [
             { role: "system", content: systemPrompt() },
@@ -140,7 +140,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             tx.insert(generationLog).values({
               entity: "ideas-list",
               entityId: foundIdeasList.id,
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
 

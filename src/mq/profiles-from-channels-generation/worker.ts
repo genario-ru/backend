@@ -17,8 +17,8 @@ import {
   profileToTone,
 } from "@/db/schema";
 import { profileGeneratedSchema } from "@/domains/profiles/schemas/entities/profile-generated";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
-import { envs } from "@/shared/constants/common/envs";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
@@ -83,7 +83,7 @@ export const profilesFromChannelsGenerationWorker =
 
           const { output_parsed: generatedProfile } =
             await polzaAI.responses.parse({
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               temperature: 0.5,
               input: [
                 { role: "system", content: systemPrompt() },

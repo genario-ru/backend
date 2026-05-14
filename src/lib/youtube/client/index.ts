@@ -1,6 +1,6 @@
 import { youtube, type youtube_v3 } from "@googleapis/youtube";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 export type YouTubeClient = youtube_v3.Youtube;
 
@@ -10,5 +10,5 @@ export type YouTubeClient = youtube_v3.Youtube;
  */
 export const youTubeClient: YouTubeClient = youtube({
   version: "v3",
-  auth: envs.YOUTUBE_API_KEY,
+  auth: env.YOUTUBE_API_KEY,
 });

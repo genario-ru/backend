@@ -1,6 +1,6 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 import { s3 } from "../client";
 
@@ -16,7 +16,7 @@ export async function uploadBufferToS3({
   buffer,
 }: UploadBufferToS3Params): Promise<void> {
   const command = new PutObjectCommand({
-    Bucket: envs.S3_BUCKET_NAME,
+    Bucket: env.S3_BUCKET_NAME,
     Key: key,
     Body: buffer,
     ContentType: mimeType,

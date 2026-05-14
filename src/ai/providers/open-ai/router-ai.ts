@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 export const routerAI = new OpenAI({
-  baseURL: envs.ROUTER_AI_BASE_URL,
-  apiKey: envs.ROUTER_AI_API_KEY,
+  baseURL: env.ROUTER_AI_BASE_URL,
+  apiKey: env.ROUTER_AI_API_KEY,
 });

@@ -1,7 +1,7 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 import { s3 } from "../client";
 
@@ -19,7 +19,7 @@ export async function uploadBase64ToS3({
   const buffer = Buffer.from(base64, "base64");
 
   const command = new PutObjectCommand({
-    Bucket: envs.S3_BUCKET_NAME,
+    Bucket: env.S3_BUCKET_NAME,
     Key: key,
     Body: buffer,
     ContentType: mimeType,

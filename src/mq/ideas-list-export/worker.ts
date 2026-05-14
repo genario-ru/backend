@@ -3,10 +3,10 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { attachment, exportDocument } from "@/db/schema";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
-import { envs } from "@/shared/constants/common/envs";
 import { SUPPORTED_EXPORT_FORMATS } from "@/shared/constants/common/supported-export-format";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
@@ -134,7 +134,7 @@ export const ideasListExportWorker = new Worker<IdeasListExportJobData>(
           .values({
             userId: foundExportDocument.userId,
             key: s3Key,
-            bucketName: envs.S3_BUCKET_NAME,
+            bucketName: env.S3_BUCKET_NAME,
             mimeType: renderedExportFile.mimeType,
           })
           .returning();

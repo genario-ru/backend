@@ -197,10 +197,9 @@ After creating queue/worker: register worker in `workers.ts`, add queue to Bull 
 
 ### New env variable — 4 required update points
 
-1. `src/schemas/common/envs.ts` — Zod schema
-2. `src/constants/common/envs.ts` — `process.env` mapping
-3. `docker-compose.yml` — both `server` and `workers` services
-4. `.env.example` — documentation
+1. `env.ts` — Zod schema
+2. `docker-compose.yml` — both `server` and `workers` services
+3. `.env.example` — documentation
 
 ### Route registration in server.ts
 

@@ -10,11 +10,11 @@ import {
   type InitiateCreditsPackagePaymentResponse,
   initiateCreditsPackagePaymentResponseSchema,
 } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/response";
+import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { envs } from "@/shared/constants/common/envs";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
@@ -101,12 +101,12 @@ initiateCreditsPackagePaymentRoute.post(
       randomUUID();
 
     const returnUrl = redirectPath
-      ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
-      : `${envs.FRONTEND_BASE_URL}/billing`;
+      ? `${env.FRONTEND_BASE_URL}${redirectPath}`
+      : `${env.FRONTEND_BASE_URL}/billing`;
 
     const amountValue = foundCreditsPackage.price;
     const description = `Оплата пакета кредитов "${foundCreditsPackage.name}" для ${user.email}`;
-    const receiptItemDescription = `Пакет кредитов "${foundCreditsPackage.name}" в сервисе ${envs.FRONTEND_BASE_URL}`;
+    const receiptItemDescription = `Пакет кредитов "${foundCreditsPackage.name}" в сервисе ${env.FRONTEND_BASE_URL}`;
 
     // Отправляем запрос к API ЮKassa
 

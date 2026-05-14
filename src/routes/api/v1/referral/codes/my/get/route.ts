@@ -3,11 +3,11 @@ import {
   type GetMyReferralCodesResponse,
   getMyReferralCodesResponseSchema,
 } from "@/domains/referral/schemas/handlers/get-my-referral-codes/response";
+import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
-import { envs } from "@/shared/constants/common/envs";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
@@ -48,7 +48,7 @@ getMyReferralCodesRoute.get(
 
     const referralCodesWithUrl = referralCodes.map((referralCode) => ({
       ...referralCode,
-      referralUrl: `${envs.FRONTEND_BASE_URL}/sign-in?referralCode=${referralCode.code}`,
+      referralUrl: `${env.FRONTEND_BASE_URL}/sign-in?referralCode=${referralCode.code}`,
     }));
 
     return c.json<GetMyReferralCodesResponse>(

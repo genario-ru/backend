@@ -8,12 +8,12 @@ import { attachment, generationLog, scenarioScenePreview } from "@/db/schema";
 import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
+import { env } from "@/env";
 import { compressBase64Image } from "@/lib/image/utils/compress-base64-image";
 import { optimizeBase64Image } from "@/lib/image/utils/optimize-base64-image";
 import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
-import { envs } from "@/shared/constants/common/envs";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
@@ -94,7 +94,7 @@ export const scenarioScenePreviewsGenerationWorker =
         });
 
         const { data, usage } = await vsellm.images.generate({
-          model: envs.VSELLM_IMAGE_MODEL,
+          model: env.VSELLM_IMAGE_MODEL,
           prompt,
           quality: "medium",
           output_format: "jpeg",
@@ -149,7 +149,7 @@ export const scenarioScenePreviewsGenerationWorker =
                   .values({
                     userId: scenario.userId,
                     key: s3KeyOriginal,
-                    bucketName: envs.S3_BUCKET_NAME,
+                    bucketName: env.S3_BUCKET_NAME,
                     mimeType: originalMimeType,
                   })
                   .returning(),
@@ -158,7 +158,7 @@ export const scenarioScenePreviewsGenerationWorker =
                   .values({
                     userId: scenario.userId,
                     key: s3KeyCompressed,
-                    bucketName: envs.S3_BUCKET_NAME,
+                    bucketName: env.S3_BUCKET_NAME,
                     mimeType: compressedMimeType,
                   })
                   .returning(),
@@ -176,7 +176,7 @@ export const scenarioScenePreviewsGenerationWorker =
               tx.insert(generationLog).values({
                 entity: "scenario-scene-preview" as const,
                 entityId: scenarioScenePreviewId,
-                model: envs.VSELLM_IMAGE_MODEL,
+                model: env.VSELLM_IMAGE_MODEL,
                 tokens: usage?.total_tokens ?? 0,
               }),
               chargeCredits({

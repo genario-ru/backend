@@ -1,4 +1,4 @@
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 import { mailTransporter } from "../client";
 
@@ -16,7 +16,7 @@ export async function sendMail({
   text,
 }: SendMailParams): Promise<{ messageId: string }> {
   const info = await mailTransporter.sendMail({
-    from: envs.SMTP_FROM,
+    from: env.SMTP_FROM,
     to,
     subject,
     html,

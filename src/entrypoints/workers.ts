@@ -1,3 +1,5 @@
+import "@/env";
+
 import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
 import { mailSendWorker } from "@/mq/mail-send/worker";

@@ -1,18 +1,15 @@
 import nodemailer from "nodemailer";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 export const mailTransporter = nodemailer.createTransport({
-  host: envs.SMTP_HOST,
-  port: envs.SMTP_PORT,
-  secure: envs.SMTP_SECURE,
-  auth:
-    envs.SMTP_USER || envs.SMTP_PASSWORD
-      ? {
-          user: envs.SMTP_USER,
-          pass: envs.SMTP_PASSWORD,
-        }
-      : undefined,
+  host: env.SMTP_HOST,
+  port: env.SMTP_PORT,
+  secure: env.SMTP_SECURE,
+  auth: {
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASSWORD,
+  },
   pool: true,
   maxConnections: 5,
   maxMessages: 100,

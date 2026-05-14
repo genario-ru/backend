@@ -47,10 +47,9 @@ This file defines project context for AI agents and serves as an architecture en
   2. registration in `src/entrypoints/workers.ts`,
   3. queue registration in Bull Board inside `src/entrypoints/server.ts`.
 - New env variable:
-  1. `src/schemas/common/envs.ts`,
-  2. `src/constants/common/envs.ts`,
-  3. `docker-compose.yml` and `Dockerfile`,
-  4. `.env.example`.
+  1. `env.ts`,
+  2. `docker-compose.yml` and `Dockerfile`,
+  3. `.env.example`.
 
 ## Recommended Skills / Commands
 

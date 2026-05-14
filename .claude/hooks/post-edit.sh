@@ -40,13 +40,13 @@ if [[ "$FILE" == */src/mq/*/worker.ts ]]; then
 fi
 
 # Env schema or constants changed → remind about all 4 propagation points
-if [[ "$FILE" == */schemas/common/envs.ts ]] || [[ "$FILE" == */constants/common/envs.ts ]]; then
-  echo "[hook] Env config modified → check all 4 points: schemas/common/envs.ts, constants/common/envs.ts, docker-compose.yml, .env.example"
+if [[ "$FILE" == */env.ts ]]; then
+  echo "[hook] Env config modified → check all 4 points: env.ts, docker-compose.yml, .env.example"
 fi
 
 # .env.example changed → remind about schema
 if [[ "$FILE" == */.env.example ]]; then
-  echo "[hook] .env.example modified → verify variable is also in src/schemas/common/envs.ts and src/constants/common/envs.ts"
+  echo "[hook] .env.example modified → verify variable is also in env.ts"
 fi
 
 # docker-compose.yml changed → remind about env consistency

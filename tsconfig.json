@@ -20,7 +20,8 @@
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@/auth": ["./auth.ts"]
+      "@/auth": ["./auth.ts"],
+      "@/env": ["./env.ts"]
     }
   },
   "include": ["src/globals/**/*.d.ts", "**/*.ts"],

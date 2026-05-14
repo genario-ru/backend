@@ -11,10 +11,10 @@ import {
   initiateSubscriptionPaymentResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/initiate-subscriptions-payment/response";
 import type { Tariff } from "@/domains/tariffs/schemas/entities/tariff";
+import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { envs } from "@/shared/constants/common/envs";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
@@ -113,8 +113,8 @@ initiateSubscriptionPaymentRoute.post(
     const idempotenceKey = lastPendingSubscriptionPayment?.id ?? randomUUID();
 
     const returnUrl = redirectPath
-      ? `${envs.FRONTEND_BASE_URL}${redirectPath}`
-      : `${envs.FRONTEND_BASE_URL}/home`;
+      ? `${env.FRONTEND_BASE_URL}${redirectPath}`
+      : `${env.FRONTEND_BASE_URL}/home`;
 
     const amountValue = foundTrialTariff
       ? foundTrialTariff.price
@@ -125,8 +125,8 @@ initiateSubscriptionPaymentRoute.post(
       : `Оплата тарифа "${foundTariff.name}" для ${user.email}`;
 
     const receiptItemDescription = foundTrialTariff
-      ? `Пробный период "${foundTrialTariff.name}" в сервисе ${envs.FRONTEND_BASE_URL}`
-      : `Тариф "${foundTariff.name}" в сервисе ${envs.FRONTEND_BASE_URL}`;
+      ? `Пробный период "${foundTrialTariff.name}" в сервисе ${env.FRONTEND_BASE_URL}`
+      : `Тариф "${foundTariff.name}" в сервисе ${env.FRONTEND_BASE_URL}`;
 
     // Отправляем запрос к API ЮKassa
 

@@ -5,14 +5,14 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { openapiFilter } from "openapi-format";
 import { join } from "path";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 // ====================== НАСТРОЙКИ ======================
 
 const OUTPUT_DIR = "deps/api";
 const FINAL_FILENAME = "tochka.json";
 const TARGET_TAGS = ["Работа с платёжными ссылками"];
-const DOWNLOAD_URL = envs.TOCHKA_OPENAPI_URL;
+const DOWNLOAD_URL = env.TOCHKA_OPENAPI_URL;
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================
 

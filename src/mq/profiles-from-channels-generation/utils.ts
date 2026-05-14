@@ -8,13 +8,13 @@ import {
   getVideosByAuthorId as getRuTubeVideosByAuthorId,
 } from "@/codegen/api/rutube/clients";
 import { channelGroupsGeneratedSchema } from "@/domains/profiles/schemas/entities/channel-groups-generated";
+import { env } from "@/env";
 import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
   extractYouTubeChannelIdentifier,
   getYouTubeChannel,
   getYouTubeChannelVideos,
 } from "@/lib/youtube";
-import { envs } from "@/shared/constants/common/envs";
 
 import type { ChannelInput } from "./queue";
 import type { FetchedChannel } from "./types";
@@ -169,7 +169,7 @@ export async function groupChannelsByCreator(
 
   try {
     const { output_parsed } = await polzaAI.responses.parse({
-      model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+      model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
       temperature: 0.1,
       input: [
         { role: "system", content: systemPrompt() },

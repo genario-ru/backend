@@ -11,9 +11,9 @@ import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { scenarioMetadataItemGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-metadata";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { envs } from "@/shared/constants/common/envs";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import {
@@ -103,7 +103,7 @@ export const scenarioMetadataGenerationWorker =
 
         const { output_parsed: generatedMetadataObject, usage } =
           await polzaAI.responses.parse({
-            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
             temperature: 0.6,
             input: [
               { role: "system", content: systemPrompt() },
@@ -171,7 +171,7 @@ export const scenarioMetadataGenerationWorker =
             tx.insert(generationLog).values({
               entity: "scenario-metadata",
               entityId: scenarioId,
-              model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
               tokens: usage?.total_tokens ?? 0,
             }),
             await chargeCredits({

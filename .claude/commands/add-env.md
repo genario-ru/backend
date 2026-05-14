@@ -8,7 +8,7 @@ Add a new environment variable across all required backend layers.
 
 ## All 4 update points are mandatory
 
-### 1. `src/schemas/common/envs.ts` — Zod validation schema
+### 1. `env.ts` — Zod validation schema
 
 ```typescript
 export const envsSchema = z.object({
@@ -17,7 +17,7 @@ export const envsSchema = z.object({
 });
 ```
 
-### 2. `src/constants/common/envs.ts` — runtime mapping
+### 2. `env.ts` — runtime mapping
 
 ```typescript
 const parsed = envsSchema.parse(process.env);
@@ -63,8 +63,8 @@ MY_VAR=example_value
 
 ## Finish checklist
 
-- [ ] Variable in `src/schemas/common/envs.ts` (Zod schema)
-- [ ] Variable mapped in `src/constants/common/envs.ts`
+- [ ] Variable in `env.ts` (Zod schema)
+- [ ] Variable mapped in `env.ts`
 - [ ] Both `server` and `workers` in `docker-compose.yml` have the variable
 - [ ] `.env.example` updated with an example value and comment
 - [ ] Local `.env` has the real value

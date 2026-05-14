@@ -11,9 +11,9 @@ import { creditsPricing } from "@/domains/credits/constants/credits-pricing";
 import { chargeCredits } from "@/domains/credits/services/charge-credits";
 import { getCreditsBalance } from "@/domains/credits/services/get-credits-balance";
 import { scenarioChapterGeneratedSchema } from "@/domains/scenarios/schemas/entities/scenario-chapter";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
-import { envs } from "@/shared/constants/common/envs";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 
 import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
@@ -96,7 +96,7 @@ export const scenarioChaptersGenerationWorker =
 
         const { output_parsed: generatedChaptersObject, usage } =
           await polzaAI.responses.parse({
-            model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
             temperature: 0.5,
             input: [
               { role: "system", content: systemPrompt() },
@@ -140,7 +140,7 @@ export const scenarioChaptersGenerationWorker =
               await tx.insert(generationLog).values({
                 entity: "scenario-chapters" as const,
                 entityId: scenarioVersionId,
-                model: envs.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+                model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
                 tokens: usage?.total_tokens ?? 0,
               }),
               await chargeCredits({

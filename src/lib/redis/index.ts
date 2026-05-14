@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
-export const redis = new Redis(envs.REDIS_URL, {
+export const redis = new Redis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
 });

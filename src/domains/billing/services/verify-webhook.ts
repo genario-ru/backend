@@ -7,7 +7,7 @@ import type { PaymentMethodWebhookData } from "@/domains/billing/schemas/entitie
 import type { PaymentWebhookData } from "@/domains/billing/schemas/entities/payment-webhook-data";
 import type { RefundWebhookData } from "@/domains/billing/schemas/entities/refund-webhook-data";
 import type { ProcessWebhookBody } from "@/domains/billing/schemas/handlers/process-webhook/body";
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
@@ -43,7 +43,7 @@ async function verifyPaymentWebhook(body: PaymentWebhookData) {
   );
 
   assert(
-    payment.recipient.account_id === envs.YOOKASSA_SHOP_ID,
+    payment.recipient.account_id === env.YOOKASSA_SHOP_ID,
     "Webhook payment recipient mismatch",
   );
 }
@@ -75,7 +75,7 @@ async function verifyRefundWebhook(body: RefundWebhookData) {
   });
 
   assert(
-    payment.recipient.account_id === envs.YOOKASSA_SHOP_ID,
+    payment.recipient.account_id === env.YOOKASSA_SHOP_ID,
     "Webhook refund recipient mismatch",
   );
 }
@@ -96,7 +96,7 @@ async function verifyPaymentMethodWebhook(body: PaymentMethodWebhookData) {
   );
 
   assert(
-    paymentMethod.holder.account_id === envs.YOOKASSA_SHOP_ID,
+    paymentMethod.holder.account_id === env.YOOKASSA_SHOP_ID,
     "Webhook payment method holder mismatch",
   );
 }

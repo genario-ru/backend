@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "tsx watch src/entrypoints/server.ts",
     "dev:workers": "tsx watch src/entrypoints/workers.ts",
+    "validate:env": "tsx env.ts",
     "build": "tsup",
     "start": "node dist/server.js",
     "start:workers": "node dist/workers.js",
@@ -36,6 +37,7 @@
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.7",
     "@scalar/hono-api-reference": "^0.9.19",
+    "@t3-oss/env-core": "^0.13.11",
     "better-auth": "^1.4.10",
     "bullmq": "^5.67.3",
     "date-fns": "^4.1.0",

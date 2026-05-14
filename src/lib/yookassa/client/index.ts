@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import {
   type Client,
   createApiClient,
@@ -5,15 +6,14 @@ import {
   type ResponseConfig,
   type ResponseErrorConfig,
 } from "@/lib/api-client";
-import { envs } from "@/shared/constants/common/envs";
 
 const auth = Buffer.from(
-  `${envs.YOOKASSA_SHOP_ID}:${envs.YOOKASSA_SECRET_KEY}`,
+  `${env.YOOKASSA_SHOP_ID}:${env.YOOKASSA_SECRET_KEY}`,
   "utf8",
 ).toString("base64");
 
 export const client: Client = createApiClient({
-  baseUrl: envs.YOOKASSA_BASE_URL,
+  baseUrl: env.YOOKASSA_BASE_URL,
   defaultHeaders: {
     Authorization: `Basic ${auth}`,
   },

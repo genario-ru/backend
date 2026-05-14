@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 export const polzaAI = new OpenAI({
-  baseURL: envs.POLZA_AI_BASE_URL,
-  apiKey: envs.POLZA_AI_API_KEY,
+  baseURL: env.POLZA_AI_BASE_URL,
+  apiKey: env.POLZA_AI_API_KEY,
 });

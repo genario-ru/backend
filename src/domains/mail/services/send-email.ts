@@ -6,8 +6,8 @@ import {
   emailPayloadSchemas,
 } from "@/domains/mail/schemas/payloads";
 import { buildEmailSubject } from "@/domains/mail/utils/render-email";
+import { env } from "@/env";
 import { enqueueMailSend } from "@/mq/mail-send/queue";
-import { envs } from "@/shared/constants/common/envs";
 
 export type SendEmailParams<K extends EmailTemplateKey> = {
   to: string;
@@ -26,7 +26,7 @@ export async function sendEmail<K extends EmailTemplateKey>({
   const validPayload = schema.parse(payload) as EmailPayloadByKey[K];
 
   const subject = buildEmailSubject(templateKey, validPayload);
-  const from = envs.SMTP_FROM;
+  const from = env.SMTP_FROM;
 
   const [created] = await db
     .insert(emailLog)

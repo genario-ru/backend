@@ -12,6 +12,7 @@ import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import { openAPIRouteHandler } from "hono-openapi";
 
+import { env } from "@/env";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import { originValidationMiddleware } from "@/middleware/origin-validation-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
@@ -118,14 +119,13 @@ import { getVideoTypesRoute } from "@/routes/api/v1/video-types";
 import { healthRoute } from "@/routes/health";
 import { rootRoute } from "@/routes/root";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
-import { envs } from "@/shared/constants/common/envs";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 const app = createHonoApp();
 const appAPI = app.basePath("/api");
 const appAPIV1Routes = appAPI.basePath("/v1");
-const isNotProduction = envs.NODE_ENV !== "production";
+const isNotProduction = env.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
 const bullBoardBasePath = "/admin/ewf89-23aE3_93/queues";
 
@@ -268,7 +268,7 @@ if (isNotProduction) {
         },
         servers: [
           {
-            url: envs.BACKEND_BASE_URL,
+            url: env.BACKEND_BASE_URL,
           },
         ],
       },

@@ -11,11 +11,9 @@ When adding, renaming, or removing an environment variable.
 
 ## Required Update Points
 
-1. `src/schemas/common/envs.ts` - variable type and validation.
-2. `src/constants/common/envs.ts` - mapping from `process.env`.
-3. `docker-compose.yml` - variable for both `server` and `workers`.
-4. `Dockerfile` - `ARG`/`ENV` if variable is needed at build/runtime image level.
-5. `.env.example` - example and documentation for the variable.
+1. `env.ts` - mapping from `process.env`.
+2. `docker-compose.yml` - variable for both `server` and `workers`.
+3. `.env.example` - example and documentation for the variable.
 
 ## Steps
 

@@ -1,11 +1,11 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-import { envs } from "@/shared/constants/common/envs";
+import { env } from "@/env";
 
 export const routerAI = createOpenAICompatible({
   name: "router-ai",
-  baseURL: envs.ROUTER_AI_BASE_URL,
-  apiKey: envs.ROUTER_AI_API_KEY,
+  baseURL: env.ROUTER_AI_BASE_URL,
+  apiKey: env.ROUTER_AI_API_KEY,
   includeUsage: true,
   supportsStructuredOutputs: true,
 });
