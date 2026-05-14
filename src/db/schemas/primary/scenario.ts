@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { generationStatus } from "@/db/constants/generation-status";
 import { timestamps } from "@/db/constants/timestamps";
@@ -15,55 +22,73 @@ import { user } from "./user";
 import { videoDuration } from "./video-duration";
 import { videoType } from "./video-type";
 
-export const scenario = pgTable("scenario", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => user.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
-  profileId: uuid("profile_id").references(() => profile.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
-  templateId: uuid("template_id").references(() => template.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
-  videoTypeId: uuid("video_type_id").references(() => videoType.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
-  videoDurationId: uuid("video_duration_id").references(
-    () => videoDuration.id,
-    {
+export const scenario = pgTable(
+  "scenario",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .references(() => user.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
+    profileId: uuid("profile_id").references(() => profile.id, {
       onUpdate: "cascade",
       onDelete: "set null",
-    },
-  ),
-  productionStatusId: uuid("production_status_id").references(
-    () => productionStatus.id,
-    {
+    }),
+    templateId: uuid("template_id").references(() => template.id, {
       onUpdate: "cascade",
       onDelete: "set null",
-    },
-  ),
-  saved: boolean("saved").notNull().default(false),
-  metadataStatus: generationStatus("metadata_status").default("idle").notNull(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  targetAudience: text("target_audience"),
-  scheduledStartAt: timestamp("scheduled_start_at", {
-    withTimezone: true,
-    mode: "string",
-  }),
-  scheduledEndAt: timestamp("scheduled_end_at", {
-    withTimezone: true,
-    mode: "string",
-  }),
-  ...timestamps,
-});
+    }),
+    videoTypeId: uuid("video_type_id").references(() => videoType.id, {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    }),
+    videoDurationId: uuid("video_duration_id").references(
+      () => videoDuration.id,
+      {
+        onUpdate: "cascade",
+        onDelete: "set null",
+      },
+    ),
+    productionStatusId: uuid("production_status_id").references(
+      () => productionStatus.id,
+      {
+        onUpdate: "cascade",
+        onDelete: "set null",
+      },
+    ),
+    saved: boolean("saved").notNull().default(false),
+    metadataStatus: generationStatus("metadata_status")
+      .default("idle")
+      .notNull(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    targetAudience: text("target_audience"),
+    scheduledStartAt: timestamp("scheduled_start_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
+    scheduledEndAt: timestamp("scheduled_end_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
+    ...timestamps,
+  },
+  (table) => [
+    index("scenario_user_id_created_at_idx").on(table.userId, table.createdAt),
+    index("scenario_user_id_updated_at_idx").on(table.userId, table.updatedAt),
+    index("scenario_user_id_scheduled_start_at_idx").on(
+      table.userId,
+      table.scheduledStartAt,
+    ),
+    index("scenario_profile_id_idx").on(table.profileId),
+    index("scenario_template_id_idx").on(table.templateId),
+    index("scenario_video_type_id_idx").on(table.videoTypeId),
+    index("scenario_video_duration_id_idx").on(table.videoDurationId),
+    index("scenario_production_status_id_idx").on(table.productionStatusId),
+  ],
+);
 
 export const scenarioRelations = relations(scenario, ({ one, many }) => ({
   user: one(user, {

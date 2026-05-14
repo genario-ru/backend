@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  index,
   integer,
   pgEnum,
   pgTable,
@@ -22,27 +23,42 @@ export const creditsBatchStatus = pgEnum("credits_batch_status", [
   "terminated", // Пакет кредитов недоступен для использования (например, был выполнен возврат платежа)
 ]);
 
-export const creditsBatch = pgTable("credits_batch", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
-    .notNull(),
-  creditsPackageId: uuid("credits_package_id")
-    .references(() => creditsPackage.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
-  name: text("name").notNull(),
-  description: text("description"),
-  remainingAmount: integer("remaining_amount").notNull(),
-  status: creditsBatchStatus("status").notNull().default("pending"),
-  expiresAt: timestamp("expires_at", {
-    withTimezone: true,
-    mode: "string",
-  }),
-  ...timestamps,
-});
+export const creditsBatch = pgTable(
+  "credits_batch",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
+      .notNull(),
+    creditsPackageId: uuid("credits_package_id")
+      .references(() => creditsPackage.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    remainingAmount: integer("remaining_amount").notNull(),
+    status: creditsBatchStatus("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
+    ...timestamps,
+  },
+  (table) => [
+    index("credits_batch_user_id_created_at_idx").on(
+      table.userId,
+      table.createdAt,
+    ),
+    index("credits_batch_user_id_status_expires_at_idx").on(
+      table.userId,
+      table.status,
+      table.expiresAt,
+    ),
+    index("credits_batch_credits_package_id_idx").on(table.creditsPackageId),
+  ],
+);
 
 export const creditsBatchRelations = relations(creditsBatch, ({ one }) => ({
   user: one(user, {

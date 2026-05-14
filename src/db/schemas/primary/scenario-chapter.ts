@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -14,28 +21,40 @@ export const scenarioChapterStatus = pgEnum("scenario_chapter_status", [
   "ready",
 ]);
 
-export const scenarioChapter = pgTable("scenario_chapter", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  scenarioVersionId: uuid("scenario_version_id")
-    .references(() => scenarioVersion.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
-  productionStatusId: uuid("production_status_id").references(
-    () => productionStatus.id,
-    {
-      onUpdate: "cascade",
-      onDelete: "set null",
-    },
-  ),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  status: scenarioChapterStatus("status").default("pending").notNull(),
-  startTime: integer("start_time").notNull(),
-  endTime: integer("end_time").notNull(),
-  ...timestamps,
-});
+export const scenarioChapter = pgTable(
+  "scenario_chapter",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    scenarioVersionId: uuid("scenario_version_id")
+      .references(() => scenarioVersion.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
+    productionStatusId: uuid("production_status_id").references(
+      () => productionStatus.id,
+      {
+        onUpdate: "cascade",
+        onDelete: "set null",
+      },
+    ),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    status: scenarioChapterStatus("status").default("pending").notNull(),
+    startTime: integer("start_time").notNull(),
+    endTime: integer("end_time").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("scenario_chapter_version_id_start_time_idx").on(
+      table.scenarioVersionId,
+      table.startTime,
+    ),
+    index("scenario_chapter_production_status_id_idx").on(
+      table.productionStatusId,
+    ),
+  ],
+);
 
 export const scenarioChapterRelations = relations(
   scenarioChapter,

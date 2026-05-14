@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -24,6 +24,14 @@ export const subscriptionToCreditsBatch = pgTable(
       .notNull(),
     ...timestamps,
   },
+  (table) => [
+    index("subscription_to_credits_batch_subscription_id_idx").on(
+      table.subscriptionId,
+    ),
+    index("subscription_to_credits_batch_credits_batch_id_idx").on(
+      table.creditsBatchId,
+    ),
+  ],
 );
 
 export const subscriptionToCreditsBatchRelations = relations(

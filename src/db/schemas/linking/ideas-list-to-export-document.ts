@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, uuid } from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -24,6 +24,17 @@ export const ideasListToExportDocument = pgTable(
     savedOnly: boolean("saved_only").default(false).notNull(),
     ...timestamps,
   },
+  (table) => [
+    index("ideas_list_to_export_document_list_saved_created_idx").on(
+      table.ideasListId,
+      table.savedOnly,
+      table.createdAt,
+    ),
+    index("ideas_list_to_export_document_list_export_idx").on(
+      table.ideasListId,
+      table.exportDocumentId,
+    ),
+  ],
 );
 
 export const ideasListToExportDocumentRelations = relations(

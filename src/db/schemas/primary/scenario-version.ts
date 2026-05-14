@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 import { generationStatus } from "@/db/schema";
@@ -9,17 +9,26 @@ import { scenario } from "./scenario";
 import { scenarioChapter } from "./scenario-chapter";
 import { scenarioVideoReference } from "./scenario-video-reference";
 
-export const scenarioVersion = pgTable("scenario_version", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  scenarioId: uuid("scenario_id")
-    .references(() => scenario.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
-  status: generationStatus("status").default("pending").notNull(),
-  ...timestamps,
-});
+export const scenarioVersion = pgTable(
+  "scenario_version",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    scenarioId: uuid("scenario_id")
+      .references(() => scenario.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
+    status: generationStatus("status").default("pending").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("scenario_version_scenario_id_created_at_idx").on(
+      table.scenarioId,
+      table.createdAt,
+    ),
+  ],
+);
 
 export const scenarioVersionRelations = relations(
   scenarioVersion,

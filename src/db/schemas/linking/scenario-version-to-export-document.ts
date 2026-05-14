@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -23,6 +23,16 @@ export const scenarioVersionToExportDocument = pgTable(
       .notNull(),
     ...timestamps,
   },
+  (table) => [
+    index("scenario_version_to_export_document_version_created_idx").on(
+      table.scenarioVersionId,
+      table.createdAt,
+    ),
+    index("scenario_version_to_export_document_version_export_idx").on(
+      table.scenarioVersionId,
+      table.exportDocumentId,
+    ),
+  ],
 );
 
 export const scenarioVersionToExportDocumentRelations = relations(

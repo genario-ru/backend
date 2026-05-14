@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -11,28 +11,34 @@ export const scenarioScenePreviewStatus = pgEnum(
   ["pending", "generation", "failed", "ready"],
 );
 
-export const scenarioScenePreview = pgTable("scenario_scene_preview", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  scenarioSceneId: uuid("scenario_scene_id")
-    .references(() => scenarioScene.id, {
+export const scenarioScenePreview = pgTable(
+  "scenario_scene_preview",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    scenarioSceneId: uuid("scenario_scene_id")
+      .references(() => scenarioScene.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
+    attachmentId: uuid("attachment_id").references(() => attachment.id, {
       onUpdate: "cascade",
       onDelete: "cascade",
-    })
-    .notNull(),
-  attachmentId: uuid("attachment_id").references(() => attachment.id, {
-    onUpdate: "cascade",
-    onDelete: "cascade",
-  }),
-  compressedAttachmentId: uuid("compressed_attachment_id").references(
-    () => attachment.id,
-    {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    },
-  ),
-  status: scenarioScenePreviewStatus("status").default("pending").notNull(),
-  ...timestamps,
-});
+    }),
+    compressedAttachmentId: uuid("compressed_attachment_id").references(
+      () => attachment.id,
+      {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      },
+    ),
+    status: scenarioScenePreviewStatus("status").default("pending").notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    index("scenario_scene_preview_scene_id_idx").on(table.scenarioSceneId),
+  ],
+);
 
 export const scenarioScenePreviewRelations = relations(
   scenarioScenePreview,

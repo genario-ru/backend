@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
+import { index, pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -21,26 +21,39 @@ export const paymentStatus = pgEnum("payment_status", [
   "failed",
 ]);
 
-export const payment = pgTable("payment", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
-    .notNull(),
-  paymentMethodId: uuid("payment_method_id").references(
-    () => paymentMethod.id,
-    {
-      onUpdate: "cascade",
-      onDelete: "set null",
-    },
-  ),
-  paymentId: text("payment_id").notNull(),
-  paymentLink: text("payment_link"),
-  amount: real("amount").notNull(),
-  currency: text("currency").notNull(),
-  status: paymentStatus("status").notNull(),
-  statusDetails: text("status_details"),
-  ...timestamps,
-});
+export const payment = pgTable(
+  "payment",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
+      .notNull(),
+    paymentMethodId: uuid("payment_method_id").references(
+      () => paymentMethod.id,
+      {
+        onUpdate: "cascade",
+        onDelete: "set null",
+      },
+    ),
+    paymentId: text("payment_id").notNull(),
+    paymentLink: text("payment_link"),
+    amount: real("amount").notNull(),
+    currency: text("currency").notNull(),
+    status: paymentStatus("status").notNull(),
+    statusDetails: text("status_details"),
+    ...timestamps,
+  },
+  (table) => [
+    index("payment_payment_id_idx").on(table.paymentId),
+    index("payment_user_id_created_at_idx").on(table.userId, table.createdAt),
+    index("payment_user_id_status_created_at_idx").on(
+      table.userId,
+      table.status,
+      table.createdAt,
+    ),
+    index("payment_payment_method_id_idx").on(table.paymentMethodId),
+  ],
+);
 
 export const paymentRelations = relations(payment, ({ one }) => ({
   user: one(user, {

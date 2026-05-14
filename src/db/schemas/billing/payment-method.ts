@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { jsonb, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { index, jsonb, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -12,20 +12,35 @@ export const paymentMethodStatus = pgEnum("payment_method_status", [
   "inactive",
 ]);
 
-export const paymentMethod = pgTable("payment_method", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
-    .notNull(),
-  paymentMethodId: text("payment_method_id").notNull(),
-  status: paymentMethodStatus("status").notNull(),
-  statusDetails: text("status_details"),
-  type: text("type").notNull(),
-  title: text("title"),
-  confirmationUrl: text("confirmation_url"),
-  data: jsonb("data"),
-  ...timestamps,
-});
+export const paymentMethod = pgTable(
+  "payment_method",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
+      .notNull(),
+    paymentMethodId: text("payment_method_id").notNull(),
+    status: paymentMethodStatus("status").notNull(),
+    statusDetails: text("status_details"),
+    type: text("type").notNull(),
+    title: text("title"),
+    confirmationUrl: text("confirmation_url"),
+    data: jsonb("data"),
+    ...timestamps,
+  },
+  (table) => [
+    index("payment_method_payment_method_id_idx").on(table.paymentMethodId),
+    index("payment_method_user_id_created_at_idx").on(
+      table.userId,
+      table.createdAt,
+    ),
+    index("payment_method_user_id_status_created_at_idx").on(
+      table.userId,
+      table.status,
+      table.createdAt,
+    ),
+  ],
+);
 
 export const paymentMethodRelations = relations(
   paymentMethod,

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -13,20 +13,27 @@ import { profileType } from "./profile-type";
 import { scenario } from "./scenario";
 import { user } from "./user";
 
-export const profile = pgTable("profile", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
-    .notNull(),
-  typeId: uuid("type_id").references(() => profileType.id, {
-    onUpdate: "cascade",
-    onDelete: "set null",
-  }),
-  name: text("name").notNull(),
-  description: text("description"),
-  targetAudience: text("target_audience"),
-  ...timestamps,
-});
+export const profile = pgTable(
+  "profile",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
+      .notNull(),
+    typeId: uuid("type_id").references(() => profileType.id, {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    }),
+    name: text("name").notNull(),
+    description: text("description"),
+    targetAudience: text("target_audience"),
+    ...timestamps,
+  },
+  (table) => [
+    index("profile_user_id_created_at_idx").on(table.userId, table.createdAt),
+    index("profile_type_id_idx").on(table.typeId),
+  ],
+);
 
 export const profileRelations = relations(profile, ({ one, many }) => ({
   user: one(user, {
