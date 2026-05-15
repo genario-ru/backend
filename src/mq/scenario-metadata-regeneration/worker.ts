@@ -15,6 +15,7 @@ import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
+import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
 import {
   SCENARIO_METADATA_REGENERATION_QUEUE_NAME,
@@ -33,172 +34,147 @@ export const scenarioMetadataRegenerationWorker =
         jobId: job.id,
       });
 
-      try {
-        const foundScenario = await db.query.scenario.findFirst({
-          where: (scenario, { eq }) => eq(scenario.id, scenarioId),
-          with: {
-            profile: true,
-            template: true,
-            videoType: true,
-            videoDuration: true,
-            scenarioToPlatform: {
-              with: { platform: true },
-            },
-            scenarioToTone: {
-              with: { tone: true },
-            },
+      const foundScenario = await db.query.scenario.findFirst({
+        where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+        with: {
+          profile: true,
+          template: true,
+          videoType: true,
+          videoDuration: true,
+          scenarioToPlatform: {
+            with: { platform: true },
           },
-        });
-
-        if (!foundScenario) {
-          console.warn(`Scenario with id ${scenarioId} not found`);
-
-          return;
-        }
-
-        const targetPlatform = foundScenario.scenarioToPlatform.find(
-          ({ platformId: itemPlatformId }) => itemPlatformId === platformId,
-        )?.platform;
-
-        if (!targetPlatform) {
-          throw new Error("Target platform is not linked to the scenario");
-        }
-
-        const foundMetadata = await db.query.scenarioMetadata.findFirst({
-          where: (scenarioMetadata, { and, eq }) =>
-            and(
-              eq(scenarioMetadata.scenarioId, scenarioId),
-              eq(scenarioMetadata.platformId, platformId),
-            ),
-        });
-
-        if (!foundMetadata) {
-          throw new Error(
-            "Scenario metadata for the target platform not found",
-          );
-        }
-
-        const creditsBalance = await getCreditsBalance({
-          userId: foundScenario.userId,
-        });
-
-        if (creditsBalance < creditsPricing["scenario-metadata-item"]) {
-          throw new Error("Insufficient credits to complete the operation");
-        }
-
-        await db
-          .update(scenarioMetadata)
-          .set({ status: "generation" })
-          .where(eq(scenarioMetadata.id, foundMetadata.id));
-
-        const prompt = generateScenarioMetadataPrompt({
-          userPrompt,
-          context: {
-            scenarioName: foundScenario.name,
-            scenarioDescription: foundScenario.description,
-            scenarioTargetAudience: foundScenario.targetAudience,
-            scenarioTemplateName: foundScenario.template?.name,
-            scenarioTemplateDescription: foundScenario.template?.description,
-            scenarioProfileName: foundScenario.profile?.name,
-            scenarioProfileDescription: foundScenario.profile?.description,
-            scenarioVideoTypeName: foundScenario.videoType?.name,
-            scenarioVideoDurationName: foundScenario.videoDuration?.name,
-            scenarioTones: foundScenario.scenarioToTone.map(
-              ({ tone }) => tone.name,
-            ),
+          scenarioToTone: {
+            with: { tone: true },
           },
-          platforms: [
+        },
+      });
+
+      if (!foundScenario) {
+        console.warn(`Scenario with id ${scenarioId} not found`);
+
+        return;
+      }
+
+      const targetPlatform = foundScenario.scenarioToPlatform.find(
+        ({ platformId: itemPlatformId }) => itemPlatformId === platformId,
+      )?.platform;
+
+      if (!targetPlatform) {
+        throw new Error("Target platform is not linked to the scenario");
+      }
+
+      const foundMetadata = await db.query.scenarioMetadata.findFirst({
+        where: (scenarioMetadata, { and, eq }) =>
+          and(
+            eq(scenarioMetadata.scenarioId, scenarioId),
+            eq(scenarioMetadata.platformId, platformId),
+          ),
+      });
+
+      if (!foundMetadata) {
+        throw new Error("Scenario metadata for the target platform not found");
+      }
+
+      const creditsBalance = await getCreditsBalance({
+        userId: foundScenario.userId,
+      });
+
+      if (creditsBalance < creditsPricing["scenario-metadata-item"]) {
+        throw new Error("Insufficient credits to complete the operation");
+      }
+
+      await db
+        .update(scenarioMetadata)
+        .set({ status: "generation" })
+        .where(eq(scenarioMetadata.id, foundMetadata.id));
+
+      const prompt = generateScenarioMetadataPrompt({
+        userPrompt,
+        context: {
+          scenarioName: foundScenario.name,
+          scenarioDescription: foundScenario.description,
+          scenarioTargetAudience: foundScenario.targetAudience,
+          scenarioTemplateName: foundScenario.template?.name,
+          scenarioTemplateDescription: foundScenario.template?.description,
+          scenarioProfileName: foundScenario.profile?.name,
+          scenarioProfileDescription: foundScenario.profile?.description,
+          scenarioVideoTypeName: foundScenario.videoType?.name,
+          scenarioVideoDurationName: foundScenario.videoDuration?.name,
+          scenarioTones: foundScenario.scenarioToTone.map(
+            ({ tone }) => tone.name,
+          ),
+        },
+        platforms: [
+          {
+            id: targetPlatform.id,
+            name: targetPlatform.name,
+            slug: targetPlatform.slug,
+            metadataDetails: targetPlatform.metadataDetails,
+          },
+        ],
+      });
+
+      const { output_parsed: generatedMetadataObject, usage } =
+        await polzaAI.responses.parse({
+          model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+          temperature: 0.6,
+          input: [
+            { role: "system", content: systemPrompt() },
             {
-              id: targetPlatform.id,
-              name: targetPlatform.name,
-              slug: targetPlatform.slug,
-              metadataDetails: targetPlatform.metadataDetails,
+              role: "user",
+              content: prompt,
             },
           ],
+          text: {
+            format: zodTextFormat(
+              z.object({
+                items: z.array(scenarioMetadataItemGeneratedSchema),
+              }),
+              "scenarioMetadata",
+            ),
+          },
         });
 
-        const { output_parsed: generatedMetadataObject, usage } =
-          await polzaAI.responses.parse({
-            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            temperature: 0.6,
-            input: [
-              { role: "system", content: systemPrompt() },
-              {
-                role: "user",
-                content: prompt,
-              },
-            ],
-            text: {
-              format: zodTextFormat(
-                z.object({
-                  items: z.array(scenarioMetadataItemGeneratedSchema),
-                }),
-                "scenarioMetadata",
-              ),
-            },
-          });
-
-        if (!generatedMetadataObject) {
-          throw new Error("Failed to regenerate scenario metadata");
-        }
-
-        const generatedItem = generatedMetadataObject.items.find(
-          (item) => item.platformId === platformId,
-        );
-
-        if (!generatedItem) {
-          throw new Error(
-            "Generated metadata does not contain target platform",
-          );
-        }
-
-        await db.transaction(async (tx) => {
-          await Promise.all([
-            tx.insert(generationLog).values({
-              entity: "scenario-metadata-item",
-              entityId: scenarioId,
-              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            }),
-            chargeCredits({
-              userId: foundScenario.userId,
-              entity: "scenario-metadata-item",
-              entityId: scenarioId,
-              totalTokens: usage?.total_tokens ?? 0,
-              transaction: tx,
-            }),
-          ]);
-
-          await tx
-            .update(scenarioMetadata)
-            .set({
-              status: "ready",
-              title: generatedItem.title,
-              body: generatedItem.body,
-              tags: generatedItem.tags,
-            })
-            .where(eq(scenarioMetadata.id, foundMetadata.id));
-        });
-      } catch (error) {
-        try {
-          await db
-            .update(scenarioMetadata)
-            .set({ status: "failed" })
-            .where(
-              and(
-                eq(scenarioMetadata.scenarioId, scenarioId),
-                eq(scenarioMetadata.platformId, platformId),
-              ),
-            );
-        } catch (updateError) {
-          console.error(
-            "Failed to update scenario metadata regeneration status",
-            updateError,
-          );
-        }
-
-        throw error;
+      if (!generatedMetadataObject) {
+        throw new Error("Failed to regenerate scenario metadata");
       }
+
+      const generatedItem = generatedMetadataObject.items.find(
+        (item) => item.platformId === platformId,
+      );
+
+      if (!generatedItem) {
+        throw new Error("Generated metadata does not contain target platform");
+      }
+
+      await db.transaction(async (tx) => {
+        await Promise.all([
+          tx.insert(generationLog).values({
+            entity: "scenario-metadata-item",
+            entityId: scenarioId,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            tokens: usage?.total_tokens ?? 0,
+          }),
+          chargeCredits({
+            userId: foundScenario.userId,
+            entity: "scenario-metadata-item",
+            entityId: scenarioId,
+            totalTokens: usage?.total_tokens ?? 0,
+            transaction: tx,
+          }),
+        ]);
+
+        await tx
+          .update(scenarioMetadata)
+          .set({
+            status: "ready",
+            title: generatedItem.title,
+            body: generatedItem.body,
+            tags: generatedItem.tags,
+          })
+          .where(eq(scenarioMetadata.id, foundMetadata.id));
+      });
     },
     {
       concurrency: 5,
@@ -210,12 +186,35 @@ scenarioMetadataRegenerationWorker.on("error", (error) => {
   console.error("Scenario metadata regeneration worker error", error);
 });
 
-scenarioMetadataRegenerationWorker.on("failed", (job, error) => {
+scenarioMetadataRegenerationWorker.on("failed", async (job, error) => {
   console.error(
     "Scenario metadata regeneration worker failed",
     getSafeJobLogContext(job),
     error,
   );
+
+  const isFinalFailure = await isFinalJobFailure(job);
+
+  if (!job || !isFinalFailure) {
+    return;
+  }
+
+  try {
+    await db
+      .update(scenarioMetadata)
+      .set({ status: "failed" })
+      .where(
+        and(
+          eq(scenarioMetadata.scenarioId, job.data.scenarioId),
+          eq(scenarioMetadata.platformId, job.data.platformId),
+        ),
+      );
+  } catch (updateError) {
+    console.error(
+      "Failed to update scenario metadata regeneration status",
+      updateError,
+    );
+  }
 });
 
 scenarioMetadataRegenerationWorker.on("completed", (job) => {

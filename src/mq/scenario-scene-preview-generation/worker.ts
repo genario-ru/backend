@@ -15,6 +15,7 @@ import { redis } from "@/lib/redis";
 import { createS3Key } from "@/lib/s3/utils/create-s3-key";
 import { uploadBufferToS3 } from "@/lib/s3/utils/upload-buffer-to-s3";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
+import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
 import {
   SCENARIO_SCENE_PREVIEW_GENERATION_QUEUE_NAME,
@@ -33,192 +34,170 @@ export const scenarioScenePreviewsGenerationWorker =
         jobId: job.id,
       });
 
-      try {
-        const foundPreview = await db.query.scenarioScenePreview.findFirst({
-          where: (preview, { eq }) => eq(preview.id, scenarioScenePreviewId),
-          with: {
-            scenarioScene: {
-              with: {
-                scenarioChapter: {
-                  with: {
-                    scenarioVersion: true,
-                  },
+      const foundPreview = await db.query.scenarioScenePreview.findFirst({
+        where: (preview, { eq }) => eq(preview.id, scenarioScenePreviewId),
+        with: {
+          scenarioScene: {
+            with: {
+              scenarioChapter: {
+                with: {
+                  scenarioVersion: true,
                 },
               },
             },
           },
-        });
+        },
+      });
 
-        if (!foundPreview) {
-          console.warn(`Сценарий с id ${scenarioScenePreviewId} не найден`);
+      if (!foundPreview) {
+        console.warn(`Сценарий с id ${scenarioScenePreviewId} не найден`);
 
-          return;
-        }
+        return;
+      }
 
-        const scene = foundPreview.scenarioScene;
-        const scenarioId = scene.scenarioChapter.scenarioVersion.scenarioId;
+      const scene = foundPreview.scenarioScene;
+      const scenarioId = scene.scenarioChapter.scenarioVersion.scenarioId;
 
-        const scenario = await db.query.scenario.findFirst({
-          where: (scenario, { eq }) => eq(scenario.id, scenarioId),
-          with: { videoType: true },
-        });
+      const scenario = await db.query.scenario.findFirst({
+        where: (scenario, { eq }) => eq(scenario.id, scenarioId),
+        with: { videoType: true },
+      });
 
-        if (!scenario) {
-          console.warn(`Сценарий с id ${scenarioId} не найден`);
+      if (!scenario) {
+        console.warn(`Сценарий с id ${scenarioId} не найден`);
 
-          return;
-        }
+        return;
+      }
 
-        const creditsBalance = await getCreditsBalance({
-          userId: scenario.userId,
-        });
+      const creditsBalance = await getCreditsBalance({
+        userId: scenario.userId,
+      });
 
-        if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
-          throw new Error("Недостаточно кредитов для выполнения операции");
-        }
+      if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
+        throw new Error("Недостаточно кредитов для выполнения операции");
+      }
 
-        await db
-          .update(scenarioScenePreview)
-          .set({ status: "generation" })
-          .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
+      await db
+        .update(scenarioScenePreview)
+        .set({ status: "generation" })
+        .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
 
-        const prompt = generateScenarioScenePreviewPrompt({
-          scenarioName: scenario.name,
-          scenarioDescription: scenario.description,
-          scenarioTargetAudience: scenario.targetAudience,
-          chapterName: scene.scenarioChapter.name,
-          chapterDescription: scene.scenarioChapter.description,
-          sceneName: scene.name,
-          sceneStartTime: scene.startTime,
-          sceneEndTime: scene.endTime,
-        });
+      const prompt = generateScenarioScenePreviewPrompt({
+        scenarioName: scenario.name,
+        scenarioDescription: scenario.description,
+        scenarioTargetAudience: scenario.targetAudience,
+        chapterName: scene.scenarioChapter.name,
+        chapterDescription: scene.scenarioChapter.description,
+        sceneName: scene.name,
+        sceneStartTime: scene.startTime,
+        sceneEndTime: scene.endTime,
+      });
 
-        const { data, usage } = await vsellm.images.generate({
-          model: env.VSELLM_IMAGE_MODEL,
-          prompt,
-          quality: "medium",
-          output_format: "jpeg",
-          size: resolveImageSize(scenario.videoType?.slug),
-        });
+      const { data, usage } = await vsellm.images.generate({
+        model: env.VSELLM_IMAGE_MODEL,
+        prompt,
+        quality: "medium",
+        output_format: "jpeg",
+        size: resolveImageSize(scenario.videoType?.slug),
+      });
 
-        const image = data?.[0]?.b64_json;
+      const image = data?.[0]?.b64_json;
 
-        if (!image) {
-          throw new Error("Не удалось сгенерировать превью сцены сценария");
-        }
+      if (!image) {
+        throw new Error("Не удалось сгенерировать превью сцены сценария");
+      }
 
-        const s3KeyOriginal = createS3Key({
-          userId: scenario.userId,
-          folderName: "scenario-scene-previews",
-          fileName: `${scenarioScenePreviewId}.webp`,
-        });
+      const s3KeyOriginal = createS3Key({
+        userId: scenario.userId,
+        folderName: "scenario-scene-previews",
+        fileName: `${scenarioScenePreviewId}.webp`,
+      });
 
-        const s3KeyCompressed = createS3Key({
-          userId: scenario.userId,
-          folderName: "scenario-scene-previews",
-          fileName: `${scenarioScenePreviewId}-compressed.webp`,
-        });
+      const s3KeyCompressed = createS3Key({
+        userId: scenario.userId,
+        folderName: "scenario-scene-previews",
+        fileName: `${scenarioScenePreviewId}-compressed.webp`,
+      });
 
-        const [
-          { buffer: originalBuffer, mimeType: originalMimeType },
-          { buffer: compressedBuffer, mimeType: compressedMimeType },
-        ] = await Promise.all([
-          optimizeBase64Image(image),
-          compressBase64Image(image),
-        ]);
+      const [
+        { buffer: originalBuffer, mimeType: originalMimeType },
+        { buffer: compressedBuffer, mimeType: compressedMimeType },
+      ] = await Promise.all([
+        optimizeBase64Image(image),
+        compressBase64Image(image),
+      ]);
 
-        await Promise.all([
-          uploadBufferToS3({
-            key: s3KeyOriginal,
-            mimeType: originalMimeType,
-            buffer: originalBuffer,
-          }),
-          uploadBufferToS3({
-            key: s3KeyCompressed,
-            mimeType: compressedMimeType,
-            buffer: compressedBuffer,
-          }),
-        ]);
+      await Promise.all([
+        uploadBufferToS3({
+          key: s3KeyOriginal,
+          mimeType: originalMimeType,
+          buffer: originalBuffer,
+        }),
+        uploadBufferToS3({
+          key: s3KeyCompressed,
+          mimeType: compressedMimeType,
+          buffer: compressedBuffer,
+        }),
+      ]);
 
-        const { createdAttachment, createdCompressedAttachment } =
-          await db.transaction(async (tx) => {
-            const [[createdAttachment], [createdCompressedAttachment]] =
-              await Promise.all([
-                tx
-                  .insert(attachment)
-                  .values({
-                    userId: scenario.userId,
-                    key: s3KeyOriginal,
-                    bucketName: env.S3_BUCKET_NAME,
-                    mimeType: originalMimeType,
-                  })
-                  .returning(),
-                tx
-                  .insert(attachment)
-                  .values({
-                    userId: scenario.userId,
-                    key: s3KeyCompressed,
-                    bucketName: env.S3_BUCKET_NAME,
-                    mimeType: compressedMimeType,
-                  })
-                  .returning(),
-              ]);
-
+      const { createdAttachment, createdCompressedAttachment } =
+        await db.transaction(async (tx) => {
+          const [[createdAttachment], [createdCompressedAttachment]] =
             await Promise.all([
               tx
-                .update(scenarioScenePreview)
-                .set({
-                  attachmentId: createdAttachment.id,
-                  compressedAttachmentId: createdCompressedAttachment.id,
-                  status: "ready",
+                .insert(attachment)
+                .values({
+                  userId: scenario.userId,
+                  key: s3KeyOriginal,
+                  bucketName: env.S3_BUCKET_NAME,
+                  mimeType: originalMimeType,
                 })
-                .where(eq(scenarioScenePreview.id, scenarioScenePreviewId)),
-              tx.insert(generationLog).values({
-                entity: "scenario-scene-preview" as const,
-                entityId: scenarioScenePreviewId,
-                model: env.VSELLM_IMAGE_MODEL,
-                tokens: usage?.total_tokens ?? 0,
-              }),
-              chargeCredits({
-                userId: scenario.userId,
-                entity: "scenario-scene-preview",
-                entityId: scenarioScenePreviewId,
-                totalTokens: usage?.total_tokens ?? 0,
-              }),
+                .returning(),
+              tx
+                .insert(attachment)
+                .values({
+                  userId: scenario.userId,
+                  key: s3KeyCompressed,
+                  bucketName: env.S3_BUCKET_NAME,
+                  mimeType: compressedMimeType,
+                })
+                .returning(),
             ]);
 
-            return {
-              createdAttachment,
-              createdCompressedAttachment,
-            };
-          });
+          await Promise.all([
+            tx
+              .update(scenarioScenePreview)
+              .set({
+                attachmentId: createdAttachment.id,
+                compressedAttachmentId: createdCompressedAttachment.id,
+                status: "ready",
+              })
+              .where(eq(scenarioScenePreview.id, scenarioScenePreviewId)),
+            tx.insert(generationLog).values({
+              entity: "scenario-scene-preview" as const,
+              entityId: scenarioScenePreviewId,
+              model: env.VSELLM_IMAGE_MODEL,
+              tokens: usage?.total_tokens ?? 0,
+            }),
+            chargeCredits({
+              userId: scenario.userId,
+              entity: "scenario-scene-preview",
+              entityId: scenarioScenePreviewId,
+              totalTokens: usage?.total_tokens ?? 0,
+            }),
+          ]);
 
-        console.log("Превью сцены сценария успешно сгенерировано:", {
-          scenarioScenePreviewId,
-          attachmentId: createdAttachment.id,
-          compressedAttachmentId: createdCompressedAttachment.id,
+          return {
+            createdAttachment,
+            createdCompressedAttachment,
+          };
         });
-      } catch (error) {
-        console.error(
-          "Worker генерации превью сцены сценария упал с ошибкой",
-          scenarioScenePreviewId,
-          error,
-        );
 
-        try {
-          await db
-            .update(scenarioScenePreview)
-            .set({ status: "failed" })
-            .where(eq(scenarioScenePreview.id, scenarioScenePreviewId));
-        } catch (updateError) {
-          console.error(
-            "Не удалось обновить статус превью сцены сценария",
-            updateError,
-          );
-        }
-
-        throw error;
-      }
+      console.log("Превью сцены сценария успешно сгенерировано:", {
+        scenarioScenePreviewId,
+        attachmentId: createdAttachment.id,
+        compressedAttachmentId: createdCompressedAttachment.id,
+      });
     },
     {
       concurrency: 5,
@@ -230,12 +209,30 @@ scenarioScenePreviewsGenerationWorker.on("error", (error) => {
   console.error("Worker генерации превью сцены сценария упал с ошибкой", error);
 });
 
-scenarioScenePreviewsGenerationWorker.on("failed", (job, error) => {
+scenarioScenePreviewsGenerationWorker.on("failed", async (job, error) => {
   console.error(
     "Worker генерации превью сцены сценария упал с ошибкой",
     getSafeJobLogContext(job),
     error,
   );
+
+  const isFinalFailure = await isFinalJobFailure(job);
+
+  if (!job || !isFinalFailure) {
+    return;
+  }
+
+  try {
+    await db
+      .update(scenarioScenePreview)
+      .set({ status: "failed" })
+      .where(eq(scenarioScenePreview.id, job.data.scenarioScenePreviewId));
+  } catch (updateError) {
+    console.error(
+      "Не удалось обновить статус превью сцены сценария",
+      updateError,
+    );
+  }
 });
 
 scenarioScenePreviewsGenerationWorker.on("completed", (job) => {

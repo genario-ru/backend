@@ -14,6 +14,7 @@ import { ideasListGeneratedSchema } from "@/domains/ideas-lists/schemas/entities
 import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
+import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
 import {
   IDEAS_LIST_GENERATION_QUEUE_NAME,
@@ -32,151 +33,138 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       jobId: job.id,
     });
 
-    try {
-      const foundIdeasList = await db.query.ideasList.findFirst({
-        where: (ideasList, { eq }) => eq(ideasList.id, ideasListId),
-        with: {
-          profile: true,
-          template: true,
-          ideas: {
-            with: { videoType: true },
+    const foundIdeasList = await db.query.ideasList.findFirst({
+      where: (ideasList, { eq }) => eq(ideasList.id, ideasListId),
+      with: {
+        profile: true,
+        template: true,
+        ideas: {
+          with: { videoType: true },
+        },
+        ideasListToTone: {
+          with: { tone: true },
+        },
+        ideasListToVideoType: {
+          with: { videoType: true },
+        },
+      },
+    });
+
+    if (!foundIdeasList) {
+      console.warn(`Список идей с id ${ideasListId} не найден`);
+
+      return;
+    }
+
+    const creditsBalance = await getCreditsBalance({
+      userId: foundIdeasList.userId,
+    });
+
+    if (creditsBalance < creditsPricing["ideas-list"]) {
+      throw new Error("Недостаточно кредитов для выполнения операции");
+    }
+
+    await db
+      .update(ideasList)
+      .set({ status: "generation" })
+      .where(eq(ideasList.id, ideasListId));
+
+    const prompt = generateIdeasListPrompt({
+      userPrompt,
+      ideasCount: IDEAS_PER_LIST_COUNT,
+      ideasListPrompt: foundIdeasList.prompt,
+      ideasListTargetAudience: foundIdeasList.targetAudience,
+      ideasListTemplateName: foundIdeasList.template?.name,
+      ideasListTemplateDescription: foundIdeasList.template?.description,
+      ideasListProfileName: foundIdeasList.profile?.name,
+      ideasListProfileDescription: foundIdeasList.profile?.description,
+      ideasListTones: foundIdeasList.ideasListToTone.map(
+        ({ tone }) => tone.name,
+      ),
+      ideasListVideoTypes: foundIdeasList.ideasListToVideoType.map(
+        ({ videoType }) => ({
+          id: videoType.id,
+          name: videoType.name,
+        }),
+      ),
+      previousGeneratedIdeas: foundIdeasList.ideas.map((idea) => ({
+        name: idea.name,
+        description: idea.description,
+        videoType: {
+          id: idea.videoTypeId,
+          name: idea.videoType?.name,
+        },
+      })),
+    });
+
+    const { output_parsed: generatedObject, usage } =
+      await polzaAI.responses.parse({
+        model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+        temperature: 0.7,
+        input: [
+          { role: "system", content: systemPrompt() },
+          {
+            role: "user",
+            content: prompt,
           },
-          ideasListToTone: {
-            with: { tone: true },
-          },
-          ideasListToVideoType: {
-            with: { videoType: true },
-          },
+        ],
+        text: {
+          format: zodTextFormat(ideasListGeneratedSchema, "ideasList"),
         },
       });
 
-      if (!foundIdeasList) {
-        console.warn(`Список идей с id ${ideasListId} не найден`);
-
-        return;
-      }
-
-      const creditsBalance = await getCreditsBalance({
-        userId: foundIdeasList.userId,
-      });
-
-      if (creditsBalance < creditsPricing["ideas-list"]) {
-        throw new Error("Недостаточно кредитов для выполнения операции");
-      }
-
-      await db
-        .update(ideasList)
-        .set({ status: "generation" })
-        .where(eq(ideasList.id, ideasListId));
-
-      const prompt = generateIdeasListPrompt({
-        userPrompt,
-        ideasCount: IDEAS_PER_LIST_COUNT,
-        ideasListPrompt: foundIdeasList.prompt,
-        ideasListTargetAudience: foundIdeasList.targetAudience,
-        ideasListTemplateName: foundIdeasList.template?.name,
-        ideasListTemplateDescription: foundIdeasList.template?.description,
-        ideasListProfileName: foundIdeasList.profile?.name,
-        ideasListProfileDescription: foundIdeasList.profile?.description,
-        ideasListTones: foundIdeasList.ideasListToTone.map(
-          ({ tone }) => tone.name,
-        ),
-        ideasListVideoTypes: foundIdeasList.ideasListToVideoType.map(
-          ({ videoType }) => ({
-            id: videoType.id,
-            name: videoType.name,
-          }),
-        ),
-        previousGeneratedIdeas: foundIdeasList.ideas.map((idea) => ({
-          name: idea.name,
-          description: idea.description,
-          videoType: {
-            id: idea.videoTypeId,
-            name: idea.videoType?.name,
-          },
-        })),
-      });
-
-      const { output_parsed: generatedObject, usage } =
-        await polzaAI.responses.parse({
-          model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-          temperature: 0.7,
-          input: [
-            { role: "system", content: systemPrompt() },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          text: {
-            format: zodTextFormat(ideasListGeneratedSchema, "ideasList"),
-          },
-        });
-
-      if (!generatedObject) {
-        throw new Error("Не удалось сгенерировать список идей");
-      }
-
-      console.log("Список идей успешно сгенерирован");
-
-      const generatedIdeas = generatedObject.ideas;
-
-      await db.transaction(async (tx) => {
-        const createdIdeas = await tx
-          .insert(idea)
-          .values(
-            generatedIdeas.map((generatedIdea) => ({
-              ideasListId,
-              videoTypeId: generatedIdea.videoTypeId,
-              name: generatedIdea.name,
-              description: generatedIdea.description,
-              reason: generatedIdea.reason,
-            })),
-          )
-          .returning();
-
-        if (createdIdeas.length > 0) {
-          await Promise.all([
-            tx.insert(generationLog).values({
-              entity: "ideas-list",
-              entityId: foundIdeasList.id,
-              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            }),
-
-            await chargeCredits({
-              userId: foundIdeasList.userId,
-              entity: "ideas-list",
-              entityId: foundIdeasList.id,
-              totalTokens: usage?.total_tokens ?? 0,
-              transaction: tx,
-            }),
-          ]);
-        } else {
-          console.warn("Сгенерированный список идей пуст");
-        }
-
-        await tx
-          .update(ideasList)
-          .set({
-            status: "ready",
-            name: generatedObject.name,
-            description: generatedObject.description,
-          })
-          .where(eq(ideasList.id, ideasListId));
-      });
-    } catch (error) {
-      try {
-        await db
-          .update(ideasList)
-          .set({ status: "failed" })
-          .where(eq(ideasList.id, ideasListId));
-      } catch (updateError) {
-        console.error("Не удалось обновить статус списка идей", updateError);
-      }
-
-      throw error;
+    if (!generatedObject) {
+      throw new Error("Не удалось сгенерировать список идей");
     }
+
+    console.log("Список идей успешно сгенерирован");
+
+    const generatedIdeas = generatedObject.ideas;
+
+    await db.transaction(async (tx) => {
+      const createdIdeas = await tx
+        .insert(idea)
+        .values(
+          generatedIdeas.map((generatedIdea) => ({
+            ideasListId,
+            videoTypeId: generatedIdea.videoTypeId,
+            name: generatedIdea.name,
+            description: generatedIdea.description,
+            reason: generatedIdea.reason,
+          })),
+        )
+        .returning();
+
+      if (createdIdeas.length > 0) {
+        await Promise.all([
+          tx.insert(generationLog).values({
+            entity: "ideas-list",
+            entityId: foundIdeasList.id,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            tokens: usage?.total_tokens ?? 0,
+          }),
+
+          await chargeCredits({
+            userId: foundIdeasList.userId,
+            entity: "ideas-list",
+            entityId: foundIdeasList.id,
+            totalTokens: usage?.total_tokens ?? 0,
+            transaction: tx,
+          }),
+        ]);
+      } else {
+        console.warn("Сгенерированный список идей пуст");
+      }
+
+      await tx
+        .update(ideasList)
+        .set({
+          status: "ready",
+          name: generatedObject.name,
+          description: generatedObject.description,
+        })
+        .where(eq(ideasList.id, ideasListId));
+    });
   },
   {
     concurrency: 5,
@@ -188,12 +176,27 @@ ideasListGenerationWorker.on("error", (error) => {
   console.error("Worker генерации списка идей отработал с ошибкой", error);
 });
 
-ideasListGenerationWorker.on("failed", (job, error) => {
+ideasListGenerationWorker.on("failed", async (job, error) => {
   console.error(
     "Worker генерации списка идей упал с ошибкой",
     getSafeJobLogContext(job),
     error,
   );
+
+  const isFinalFailure = await isFinalJobFailure(job);
+
+  if (!job || !isFinalFailure) {
+    return;
+  }
+
+  try {
+    await db
+      .update(ideasList)
+      .set({ status: "failed" })
+      .where(eq(ideasList.id, job.data.ideasListId));
+  } catch (updateError) {
+    console.error("Не удалось обновить статус списка идей", updateError);
+  }
 });
 
 ideasListGenerationWorker.on("completed", (job) => {

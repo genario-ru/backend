@@ -20,6 +20,7 @@ import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { z } from "@/lib/zod";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
+import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
 import {
   SCENARIO_SCENES_GENERATION_QUEUE_NAME,
@@ -37,170 +38,150 @@ export const scenarioScenesGenerationWorker =
         jobId: job.id,
       });
 
-      try {
-        const foundScenarioChapter = await db.query.scenarioChapter.findFirst({
-          where: (scenarioChapter, { eq }) =>
-            eq(scenarioChapter.id, scenarioChapterId),
-          with: {
-            scenarioVersion: {
-              with: {
-                scenario: true,
-                chapters: {
-                  with: { scenes: { with: { components: true } } },
-                },
+      const foundScenarioChapter = await db.query.scenarioChapter.findFirst({
+        where: (scenarioChapter, { eq }) =>
+          eq(scenarioChapter.id, scenarioChapterId),
+        with: {
+          scenarioVersion: {
+            with: {
+              scenario: true,
+              chapters: {
+                with: { scenes: { with: { components: true } } },
               },
             },
           },
-        });
+        },
+      });
 
-        if (!foundScenarioChapter) {
-          console.warn(`Раздел сценария с id ${scenarioChapterId} не найден`);
+      if (!foundScenarioChapter) {
+        console.warn(`Раздел сценария с id ${scenarioChapterId} не найден`);
 
-          return;
-        }
-
-        const scenarioSceneComponentTypes =
-          await db.query.scenarioSceneComponentType.findMany();
-
-        if (!scenarioSceneComponentTypes.length) {
-          console.warn(`Типы компонентов сцены сценария не найдены`);
-
-          return;
-        }
-
-        const creditsBalance = await getCreditsBalance({
-          userId: foundScenarioChapter.scenarioVersion.scenario.userId,
-        });
-
-        if (creditsBalance < creditsPricing["scenario-chapter-scenes"]) {
-          throw new Error("Недостаточно кредитов для выполнения операции");
-        }
-
-        await db
-          .update(scenarioChapter)
-          .set({ status: "generation" })
-          .where(eq(scenarioChapter.id, scenarioChapterId));
-
-        const prompt = generateScenarioScenesPrompt({
-          context: {
-            scenarioName: foundScenarioChapter.scenarioVersion.scenario.name,
-            scenarioDescription:
-              foundScenarioChapter.scenarioVersion.scenario.description,
-            scenarioTargetAudience:
-              foundScenarioChapter.scenarioVersion.scenario.targetAudience,
-            chapterName: foundScenarioChapter.name,
-            chapterDescription: foundScenarioChapter.description,
-            chapterStartTime: foundScenarioChapter.startTime ?? 0,
-            chapterEndTime: foundScenarioChapter.endTime ?? 0,
-            availableSceneComponentTypes: scenarioSceneComponentTypes,
-            previousGeneratedChapters:
-              foundScenarioChapter.scenarioVersion.chapters,
-          },
-        });
-
-        const { output_parsed: generatedScenesObject, usage } =
-          await polzaAI.responses.parse({
-            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            temperature: 0.7,
-            input: [
-              { role: "system", content: systemPrompt() },
-              {
-                role: "user",
-                content: prompt,
-              },
-            ],
-            text: {
-              format: zodTextFormat(
-                z.object({
-                  scenes: z.array(scenarioSceneWithComponentsGeneratedSchema),
-                }),
-                "scenarioScenes",
-              ),
-            },
-          });
-
-        if (!generatedScenesObject) {
-          throw new Error("Не удалось сгенерировать сцены сценария");
-        }
-
-        console.log("Сцены сценария успешно сгенерированы");
-
-        const generatedScenes = generatedScenesObject.scenes;
-
-        await db.transaction(async (tx) => {
-          const createdScenes = await tx
-            .insert(scenarioScene)
-            .values(
-              generatedScenes.map((scene) => ({
-                scenarioChapterId,
-                name: scene.name,
-                startTime: scene.startTime,
-                endTime: scene.endTime,
-              })),
-            )
-            .returning();
-
-          const componentsData = createdScenes.flatMap(
-            (createdScene, index) => {
-              const scene = generatedScenes[index];
-
-              if (!scene.components?.length) return [];
-
-              return scene.components.map((comp) => ({
-                scenarioSceneId: createdScene.id,
-                name: comp.name,
-                content: comp.content ?? null,
-                typeId: comp.typeId,
-              }));
-            },
-          );
-
-          if (componentsData.length > 0) {
-            await tx.insert(scenarioSceneComponent).values(componentsData);
-          }
-
-          if (generatedScenes.length > 0) {
-            await Promise.all([
-              tx.insert(generationLog).values({
-                entity: "scenario-chapter-scenes" as const,
-                entityId: scenarioChapterId,
-                model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-                tokens: usage?.total_tokens ?? 0,
-              }),
-              chargeCredits({
-                userId: foundScenarioChapter.scenarioVersion.scenario.userId,
-                entity: "scenario-chapter-scenes",
-                entityId: scenarioChapterId,
-                totalTokens: usage?.total_tokens ?? 0,
-                transaction: tx,
-              }),
-            ]);
-          } else {
-            console.warn("Сгенерированный список сцен сценария пуст");
-          }
-
-          await tx
-            .update(scenarioChapter)
-            .set({ status: "ready" })
-            .where(eq(scenarioChapter.id, scenarioChapterId));
-        });
-      } catch (error) {
-        console.error("Worker генерации сцен сценария упал с ошибкой", error);
-
-        try {
-          await db
-            .update(scenarioChapter)
-            .set({ status: "failed" })
-            .where(eq(scenarioChapter.id, scenarioChapterId));
-        } catch (updateError) {
-          console.error(
-            "Не удалось обновить статус сцен сценария",
-            updateError,
-          );
-        }
-
-        throw error;
+        return;
       }
+
+      const scenarioSceneComponentTypes =
+        await db.query.scenarioSceneComponentType.findMany();
+
+      if (!scenarioSceneComponentTypes.length) {
+        console.warn(`Типы компонентов сцены сценария не найдены`);
+
+        return;
+      }
+
+      const creditsBalance = await getCreditsBalance({
+        userId: foundScenarioChapter.scenarioVersion.scenario.userId,
+      });
+
+      if (creditsBalance < creditsPricing["scenario-chapter-scenes"]) {
+        throw new Error("Недостаточно кредитов для выполнения операции");
+      }
+
+      await db
+        .update(scenarioChapter)
+        .set({ status: "generation" })
+        .where(eq(scenarioChapter.id, scenarioChapterId));
+
+      const prompt = generateScenarioScenesPrompt({
+        context: {
+          scenarioName: foundScenarioChapter.scenarioVersion.scenario.name,
+          scenarioDescription:
+            foundScenarioChapter.scenarioVersion.scenario.description,
+          scenarioTargetAudience:
+            foundScenarioChapter.scenarioVersion.scenario.targetAudience,
+          chapterName: foundScenarioChapter.name,
+          chapterDescription: foundScenarioChapter.description,
+          chapterStartTime: foundScenarioChapter.startTime ?? 0,
+          chapterEndTime: foundScenarioChapter.endTime ?? 0,
+          availableSceneComponentTypes: scenarioSceneComponentTypes,
+          previousGeneratedChapters:
+            foundScenarioChapter.scenarioVersion.chapters,
+        },
+      });
+
+      const { output_parsed: generatedScenesObject, usage } =
+        await polzaAI.responses.parse({
+          model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+          temperature: 0.7,
+          input: [
+            { role: "system", content: systemPrompt() },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          text: {
+            format: zodTextFormat(
+              z.object({
+                scenes: z.array(scenarioSceneWithComponentsGeneratedSchema),
+              }),
+              "scenarioScenes",
+            ),
+          },
+        });
+
+      if (!generatedScenesObject) {
+        throw new Error("Не удалось сгенерировать сцены сценария");
+      }
+
+      console.log("Сцены сценария успешно сгенерированы");
+
+      const generatedScenes = generatedScenesObject.scenes;
+
+      await db.transaction(async (tx) => {
+        const createdScenes = await tx
+          .insert(scenarioScene)
+          .values(
+            generatedScenes.map((scene) => ({
+              scenarioChapterId,
+              name: scene.name,
+              startTime: scene.startTime,
+              endTime: scene.endTime,
+            })),
+          )
+          .returning();
+
+        const componentsData = createdScenes.flatMap((createdScene, index) => {
+          const scene = generatedScenes[index];
+
+          if (!scene.components?.length) return [];
+
+          return scene.components.map((comp) => ({
+            scenarioSceneId: createdScene.id,
+            name: comp.name,
+            content: comp.content ?? null,
+            typeId: comp.typeId,
+          }));
+        });
+
+        if (componentsData.length > 0) {
+          await tx.insert(scenarioSceneComponent).values(componentsData);
+        }
+
+        if (generatedScenes.length > 0) {
+          await Promise.all([
+            tx.insert(generationLog).values({
+              entity: "scenario-chapter-scenes" as const,
+              entityId: scenarioChapterId,
+              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+              tokens: usage?.total_tokens ?? 0,
+            }),
+            chargeCredits({
+              userId: foundScenarioChapter.scenarioVersion.scenario.userId,
+              entity: "scenario-chapter-scenes",
+              entityId: scenarioChapterId,
+              totalTokens: usage?.total_tokens ?? 0,
+              transaction: tx,
+            }),
+          ]);
+        } else {
+          console.warn("Сгенерированный список сцен сценария пуст");
+        }
+
+        await tx
+          .update(scenarioChapter)
+          .set({ status: "ready" })
+          .where(eq(scenarioChapter.id, scenarioChapterId));
+      });
     },
     {
       concurrency: 5,
@@ -212,12 +193,27 @@ scenarioScenesGenerationWorker.on("error", (error) => {
   console.error("Scenario scenes generation worker error", error);
 });
 
-scenarioScenesGenerationWorker.on("failed", (job, error) => {
+scenarioScenesGenerationWorker.on("failed", async (job, error) => {
   console.error(
     "Scenario scenes generation worker failed",
     getSafeJobLogContext(job),
     error,
   );
+
+  const isFinalFailure = await isFinalJobFailure(job);
+
+  if (!job || !isFinalFailure) {
+    return;
+  }
+
+  try {
+    await db
+      .update(scenarioChapter)
+      .set({ status: "failed" })
+      .where(eq(scenarioChapter.id, job.data.scenarioChapterId));
+  } catch (updateError) {
+    console.error("Не удалось обновить статус сцен сценария", updateError);
+  }
 });
 
 scenarioScenesGenerationWorker.on("completed", (job) => {
