@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
@@ -94,54 +95,89 @@ createScenarioScenePreviewRoute.post(
       });
     }
 
-    if (existingScene.preview) {
-      const { attachment, compressedAttachment, ...preparedPreview } =
-        existingScene.preview;
+    const creditsBalance = await getCreditsBalance({ userId: user.id });
 
-      const [url, urlCompressed] = await Promise.all([
-        attachment ? getSignedS3Url(attachment.key) : null,
-        compressedAttachment ? getSignedS3Url(compressedAttachment.key) : null,
-      ]);
+    if (!existingScene.preview) {
+      if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
+        return throwAPIError({
+          code: APIErrorCode.PaymentRequired,
+          message: "Недостаточно кредитов для генерации превью сцены сценария",
+        });
+      }
+
+      const [createdPreview] = await db
+        .insert(scenarioScenePreview)
+        .values({ scenarioSceneId: sceneId })
+        .returning();
+
+      await enqueueScenarioScenePreviewGeneration({
+        scenarioScenePreviewId: createdPreview.id,
+      });
 
       return c.json<CreateScenarioScenePreviewResponse>(
         createScenarioScenePreviewResponseSchema.parse({
           data: {
-            ...preparedPreview,
-            url,
-            urlCompressed,
+            ...createdPreview,
+            url: null,
+            urlCompressed: null,
           },
         }),
-        HTTPStatusCode.Ok,
+        HTTPStatusCode.Created,
       );
     }
 
-    const creditsBalance = await getCreditsBalance({ userId: user.id });
+    const isGenerationFinished =
+      existingScene.preview.status === "ready" ||
+      existingScene.preview.status === "failed";
 
-    if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
-      return throwAPIError({
-        code: APIErrorCode.PaymentRequired,
-        message: "Недостаточно кредитов для генерации превью сцены сценария",
+    if (isGenerationFinished) {
+      if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
+        return throwAPIError({
+          code: APIErrorCode.PaymentRequired,
+          message:
+            "Недостаточно кредитов для повторной генерации превью сцены сценария",
+        });
+      }
+
+      const [updatedPreview] = await db
+        .update(scenarioScenePreview)
+        .set({ status: "pending" })
+        .where(eq(scenarioScenePreview.id, existingScene.preview.id))
+        .returning();
+
+      await enqueueScenarioScenePreviewGeneration({
+        scenarioScenePreviewId: updatedPreview.id,
       });
+
+      return c.json<CreateScenarioScenePreviewResponse>(
+        createScenarioScenePreviewResponseSchema.parse({
+          data: {
+            ...updatedPreview,
+            url: null,
+            urlCompressed: null,
+          },
+        }),
+        HTTPStatusCode.Created,
+      );
     }
 
-    const [createdPreview] = await db
-      .insert(scenarioScenePreview)
-      .values({ scenarioSceneId: sceneId })
-      .returning();
+    const { attachment, compressedAttachment, ...preparedPreview } =
+      existingScene.preview;
 
-    await enqueueScenarioScenePreviewGeneration({
-      scenarioScenePreviewId: createdPreview.id,
-    });
+    const [url, urlCompressed] = await Promise.all([
+      attachment ? getSignedS3Url(attachment.key) : null,
+      compressedAttachment ? getSignedS3Url(compressedAttachment.key) : null,
+    ]);
 
     return c.json<CreateScenarioScenePreviewResponse>(
       createScenarioScenePreviewResponseSchema.parse({
         data: {
-          ...createdPreview,
-          url: null,
-          urlCompressed: null,
+          ...preparedPreview,
+          url,
+          urlCompressed,
         },
       }),
-      HTTPStatusCode.Created,
+      HTTPStatusCode.Ok,
     );
   },
 );
