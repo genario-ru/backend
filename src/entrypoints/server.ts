@@ -262,36 +262,34 @@ appAPIv1RoutesList.forEach((route) => {
   appAPIV1Routes.route("/", route);
 });
 
-if (isNotProduction) {
-  app.get(
-    "/api/open-api",
-    openAPIRouteHandler(appAPI, {
-      documentation: {
-        info: {
-          title: "Genario API",
-          version: "1.0.0",
-          description: "API for Genario application",
-        },
-        servers: [
-          {
-            url: env.BACKEND_BASE_URL,
-          },
-        ],
+app.get(
+  "/api/open-api",
+  openAPIRouteHandler(appAPI, {
+    documentation: {
+      info: {
+        title: "Genario API",
+        version: "1.0.0",
+        description: "API for Genario application",
       },
-    }),
-  );
-
-  app.get(
-    "/api/docs",
-    Scalar({
-      pageTitle: "API Documentation",
-      sources: [
-        { url: "/api/open-api", title: "Product API" },
-        { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
+      servers: [
+        {
+          url: env.BACKEND_BASE_URL,
+        },
       ],
-    }),
-  );
-}
+    },
+  }),
+);
+
+app.get(
+  "/api/docs",
+  Scalar({
+    pageTitle: "API Documentation",
+    sources: [
+      { url: "/api/open-api", title: "Product API" },
+      { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
+    ],
+  }),
+);
 
 if (isNotProduction) {
   showRoutes(app, { verbose: true });
