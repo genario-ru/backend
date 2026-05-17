@@ -1,7 +1,7 @@
 import { redisStorage } from "@better-auth/redis-storage";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, emailOTP, openAPI } from "better-auth/plugins";
+import { admin, emailOTP } from "better-auth/plugins";
 
 import { db, schema } from "@/db";
 import { sendEmail } from "@/domains/mail/services/send-email";
@@ -18,6 +18,7 @@ export type AuthType = {
 };
 
 export const auth = betterAuth({
+  basePath: "/api/v1/auth",
   appName: APP_NAME_CAPITALIZED,
   user: {
     deleteUser: {
@@ -82,7 +83,6 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    openAPI(),
     emailOTP({
       disableSignUp: true,
       async sendVerificationOTP({ email, otp, type }) {

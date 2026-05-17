@@ -1,7 +1,7 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { tariffDiscount } from "@/db/schema";
-import { userSchema } from "@/domains/users/schemas/entities/user";
+import { userSchema } from "@/domains/auth/schemas/entities/user";
 import { z } from "@/lib/zod";
 
 import { tariffSchema } from "./tariff";

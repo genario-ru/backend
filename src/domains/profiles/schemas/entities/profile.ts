@@ -1,9 +1,9 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { profile } from "@/db/schema";
+import { userSchema } from "@/domains/auth/schemas/entities/user";
 import { platformSchema } from "@/domains/platforms/schemas/entities/platform";
 import { toneSchema } from "@/domains/tones/schemas/entities/tone";
-import { userSchema } from "@/domains/users/schemas/entities/user";
 import { z } from "@/lib/zod";
 
 import { profileTypeSchema } from "./profile-type";

@@ -25,13 +25,22 @@ import { scenarioMetadataRegenerationQueue } from "@/mq/scenario-metadata-regene
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview-generation/queue";
 import { scenarioScenesGenerationQueue } from "@/mq/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario-version-export/queue";
-import { authRoute } from "@/routes/api/auth/route";
 import { getAlertsRoute } from "@/routes/api/v1/alerts";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
 } from "@/routes/api/v1/archive";
 import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
+import {
+  betterAuthRoute,
+  changeEmailRoute,
+  deleteUserRoute,
+  getSessionRoute,
+  sendVerificationOtpRoute,
+  signInEmailOtpRoute,
+  signOutRoute,
+  updateUserRoute,
+} from "@/routes/api/v1/auth";
 import {
   addPaymentMethodRoute,
   deletePaymentMethodRoute,
@@ -152,6 +161,13 @@ createBullBoard({
 bullBoardAdapter.setBasePath(bullBoardBasePath);
 
 const appAPIv1RoutesList = [
+  getSessionRoute,
+  sendVerificationOtpRoute,
+  signInEmailOtpRoute,
+  signOutRoute,
+  changeEmailRoute,
+  updateUserRoute,
+  deleteUserRoute,
   getAlertsRoute,
   deleteIdeaRoute,
   getIdeaRoute,
@@ -256,7 +272,7 @@ app.route("/", rootRoute);
 app.route("/", healthRoute);
 app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
-appAPI.route("/", authRoute);
+appAPIV1Routes.route("/", betterAuthRoute);
 
 appAPIv1RoutesList.forEach((route) => {
   appAPIV1Routes.route("/", route);
@@ -284,10 +300,7 @@ app.get(
   "/api/docs",
   Scalar({
     pageTitle: "API Documentation",
-    sources: [
-      { url: "/api/open-api", title: "Product API" },
-      { url: "/api/auth/open-api/generate-schema", title: "Auth API" },
-    ],
+    sources: [{ url: "/api/open-api", title: "Product API" }],
   }),
 );
 

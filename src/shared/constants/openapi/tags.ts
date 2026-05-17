@@ -1,4 +1,5 @@
 export enum OpenAPITags {
+  Auth = "Auth",
   Alerts = "Alerts",
   Attachments = "Attachments",
   Archive = "Archive",

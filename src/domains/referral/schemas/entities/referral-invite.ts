@@ -1,9 +1,9 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { referralInvite } from "@/db/schema";
+import { userSchema } from "@/domains/auth/schemas/entities/user";
 import { creditsBatchSchema } from "@/domains/credits/schemas/entities/credits-batch";
 import { tariffDiscountSchema } from "@/domains/tariffs/schemas/entities/tariff-discout";
-import { userSchema } from "@/domains/users/schemas/entities/user";
 import { z } from "@/lib/zod";
 
 import { referralCodeSchema } from "./referral-code";
