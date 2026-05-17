@@ -63,6 +63,10 @@ import {
   getMyIdeasListsRoute,
   updateIdeasListRoute,
 } from "@/routes/api/v1/ideas-lists";
+import {
+  getLegalDocumentRoute,
+  getLegalDocumentsRoute,
+} from "@/routes/api/v1/legal-documents";
 import { getPlatformsRoute } from "@/routes/api/v1/platforms";
 import { getProductionStatusesRoute } from "@/routes/api/v1/production-statuses";
 import {
@@ -176,6 +180,8 @@ const appAPIv1RoutesList = [
   getMyArchiveItemsRoute,
   getArchiveFiltersRoute,
   updateIdeasListRoute,
+  getLegalDocumentRoute,
+  getLegalDocumentsRoute,
   getPlatformsRoute,
   getMyProfilesFromChannelsJobs,
   getMyProfilesRoute,

@@ -47,6 +47,7 @@ export * from "./schemas/primary/export-document";
 export * from "./schemas/primary/export-document-format";
 export * from "./schemas/primary/idea";
 export * from "./schemas/primary/ideas-list";
+export * from "./schemas/primary/legal-document";
 export * from "./schemas/primary/platform";
 export * from "./schemas/primary/production-status";
 export * from "./schemas/primary/profile";
