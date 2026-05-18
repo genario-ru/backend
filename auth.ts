@@ -43,6 +43,10 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  session: {
+    storeSessionInDatabase: true,
+    preserveSessionInDatabase: true,
+  },
   secondaryStorage: redisStorage({
     client: redis,
     keyPrefix: "auth-api-rate-limit:", // optional, defaults to "better-auth:"
