@@ -106,7 +106,7 @@ export const auth = betterAuth({
   trustedOrigins: TRUSTED_ORIGINS,
   advanced: {
     database: {
-      generateId: false,
+      generateId: "uuid",
     },
     defaultCookieAttributes: {
       sameSite: "none",
