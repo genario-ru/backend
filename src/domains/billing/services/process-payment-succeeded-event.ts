@@ -1,6 +1,7 @@
-import { addMonths, addYears } from "date-fns";
+import { addDays, addMonths, addYears } from "date-fns";
 import { eq } from "drizzle-orm";
 
+import type { Payment } from "@/codegen/api/yookassa";
 import { db } from "@/db";
 import {
   creditsBatch,
@@ -11,6 +12,7 @@ import {
   subscriptionToCreditsBatch,
 } from "@/db/schema";
 import type { PaymentSucceededWebhookData } from "@/domains/billing/schemas/entities/payment-webhook-data";
+import type { SubscriptionWithTariff } from "@/domains/subscriptions/schemas/entities/subscription";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
@@ -27,6 +29,15 @@ export async function processPaymentSucceededEvent(
       subscriptionToPayment: {
         with: {
           subscription: {
+            with: {
+              tariff: {
+                with: {
+                  creditsPackage: true,
+                },
+              },
+            },
+          },
+          nextSubscription: {
             with: {
               tariff: {
                 with: {
@@ -56,6 +67,11 @@ export async function processPaymentSucceededEvent(
     });
   }
 
+  // Потенциально такого сценария не должно быть, но для безопасности все равно проверяем
+  if (foundPayment.status === "succeeded") {
+    return;
+  }
+
   if (receivedPayment.status !== "succeeded") {
     const statusDetails = "Статус платежа отличается от ожидаемого";
 
@@ -77,6 +93,9 @@ export async function processPaymentSucceededEvent(
 
   const foundPaymentSubscription =
     foundPayment.subscriptionToPayment?.subscription;
+
+  const foundPaymentNextSubscription =
+    foundPayment.subscriptionToPayment?.nextSubscription;
 
   const foundPaymentCreditsBatch =
     foundPayment.creditsBatchToPayment?.creditsBatch;
@@ -103,9 +122,9 @@ export async function processPaymentSucceededEvent(
     let paymentMethodId: string | undefined;
     const receivedPaymentMethod = receivedPayment.payment_method;
 
-    // Сохраняем метод оплаты, если пользователь дал на это согласие
-    // P.S. По умолчанию при создании платежа мы указываем, что привязка
-    // обязательная, но на всякий случай все равно делаем проверку
+    // Сохраняем метод оплаты, если пользователь дал на это согласие.
+    // По умолчанию при создании платежа мы указываем, что привязка
+    // обязательная, но на всякий случай все равно делаем проверку.
     if (receivedPaymentMethod && receivedPaymentMethod.saved) {
       const foundPaymentMethod = await tx.query.paymentMethod.findFirst({
         where: (paymentMethod, { and, eq }) =>
@@ -153,38 +172,45 @@ export async function processPaymentSucceededEvent(
       .where(eq(payment.id, foundPayment.id))
       .returning();
 
+    // Если это оплата подписки, то активируем и продляем ее
     if (foundPaymentSubscription) {
-      // Если это оплата подписки, то активируем и продляем ее
-
-      const tariffBillingPeriod = foundPaymentSubscription.tariff.billingPeriod;
-
-      const cycleStartsAt =
-        foundPaymentSubscription.cycleEndsAt ?? new Date().toISOString();
-
-      const cycleEndsAt =
-        tariffBillingPeriod === "year"
-          ? addYears(cycleStartsAt, 1).toISOString()
-          : addMonths(cycleStartsAt, 1).toISOString();
-
-      const lastBilledAt =
-        receivedPayment.captured_at ?? new Date().toISOString();
-
-      const nextBillingAt =
-        tariffBillingPeriod === "year"
-          ? addYears(lastBilledAt, 1).toISOString()
-          : addMonths(lastBilledAt, 1).toISOString();
+      const {
+        subscriptionCycleStartsAt,
+        subscriptionCycleEndsAt,
+        subscriptionNextBillingAt,
+        subscriptionLastBilledAt,
+        subscriptionStartsAt,
+        subscriptionEndsAt,
+        nextSubscriptionStartsAt,
+        nextSubscriptionNextBillingAt,
+      } = getSubscriptionsDates(
+        receivedPayment,
+        foundPaymentSubscription,
+        foundPaymentNextSubscription,
+      );
 
       await tx
         .update(subscription)
         .set({
-          cycleStartsAt,
-          cycleEndsAt,
-          lastBilledAt,
-          nextBillingAt,
+          startsAt: subscriptionStartsAt,
+          endsAt: subscriptionEndsAt,
+          cycleStartsAt: subscriptionCycleStartsAt,
+          cycleEndsAt: subscriptionCycleEndsAt,
+          lastBilledAt: subscriptionLastBilledAt,
+          nextBillingAt: subscriptionNextBillingAt,
           failedBillingAttempts: 0,
           status: "active",
         })
         .where(eq(subscription.id, foundPaymentSubscription.id));
+
+      if (foundPaymentNextSubscription) {
+        await tx.insert(subscription).values({
+          userId: foundPaymentUserId,
+          tariffId: foundPaymentNextSubscription.tariff.id,
+          startsAt: nextSubscriptionStartsAt,
+          nextBillingAt: nextSubscriptionNextBillingAt,
+        });
+      }
 
       // Если у тарифа подписки есть пакет кредитов, то добавляем его в баланс пользователя
       if (foundPaymentSubscription.tariff.creditsPackage) {
@@ -198,7 +224,7 @@ export async function processPaymentSucceededEvent(
               foundPaymentSubscription.tariff.creditsPackage.description,
             remainingAmount:
               foundPaymentSubscription.tariff.creditsPackage.amount,
-            expiresAt: cycleEndsAt,
+            expiresAt: subscriptionCycleEndsAt,
             status: "active",
           })
           .returning();
@@ -216,11 +242,96 @@ export async function processPaymentSucceededEvent(
       }
     } else if (foundPaymentCreditsBatch) {
       // Если это оплата пакета кредитов, то просто активируем его
-
       await tx
         .update(creditsBatch)
         .set({ status: "active" })
         .where(eq(creditsBatch.id, foundPaymentCreditsBatch.id));
     }
   });
+}
+
+function getSubscriptionsDates(
+  payment: Payment,
+  subscription: SubscriptionWithTariff,
+  nextSubscription?: SubscriptionWithTariff | null,
+) {
+  let subscriptionCycleEndsAt: string | undefined;
+  let subscriptionNextBillingAt: string | undefined;
+  let subscriptionEndsAt: string | undefined;
+
+  const subscriptionStartsAt =
+    subscription.startsAt ?? new Date().toISOString();
+
+  const subscriptionCycleStartsAt =
+    subscription.cycleEndsAt ??
+    subscription.startsAt ??
+    new Date().toISOString();
+
+  const subscriptionLastBilledAt =
+    payment.captured_at ?? new Date().toISOString();
+
+  // Если у тарифа подписки есть продолжительность в днях, то используем ее
+  if (subscription.tariff.durationDays) {
+    subscriptionCycleEndsAt = addDays(
+      subscriptionCycleStartsAt,
+      subscription.tariff.durationDays,
+    ).toISOString();
+
+    if (subscription.tariff.isRenewable) {
+      subscriptionNextBillingAt = addDays(
+        subscriptionLastBilledAt,
+        subscription.tariff.durationDays,
+      ).toISOString();
+    }
+  } else {
+    // В ином случае используем период биллинга тарифа
+    const subscriptionBillingPeriod = subscription.tariff.billingPeriod;
+
+    subscriptionCycleEndsAt =
+      subscriptionBillingPeriod === "year"
+        ? addYears(subscriptionCycleStartsAt, 1).toISOString()
+        : addMonths(subscriptionCycleStartsAt, 1).toISOString();
+
+    if (subscription.tariff.isRenewable) {
+      subscriptionNextBillingAt =
+        subscriptionBillingPeriod === "year"
+          ? addYears(subscriptionLastBilledAt, 1).toISOString()
+          : addMonths(subscriptionLastBilledAt, 1).toISOString();
+    }
+  }
+
+  // Если тариф не является возобновляемым, то дата окончания подписки совпадает с датой окончания ее текущего цикла
+  if (!subscription.tariff.isRenewable) {
+    subscriptionEndsAt = subscriptionCycleEndsAt;
+  }
+
+  // Если есть следующая подписка, то убираем даты следующего биллинга и ставим дату окончания подписки на дату окончания ее текущего цикла
+  if (nextSubscription) {
+    subscriptionEndsAt = subscriptionCycleEndsAt;
+    subscriptionNextBillingAt = undefined;
+  } else {
+    // Если нет следующей подписки, то сразу возвращаем даты текущей подписки
+    return {
+      subscriptionCycleStartsAt,
+      subscriptionCycleEndsAt,
+      subscriptionNextBillingAt,
+      subscriptionLastBilledAt,
+      subscriptionStartsAt,
+      subscriptionEndsAt,
+    };
+  }
+
+  const nextSubscriptionStartsAt = subscriptionEndsAt;
+  const nextSubscriptionNextBillingAt = nextSubscriptionStartsAt;
+
+  return {
+    subscriptionCycleStartsAt,
+    subscriptionCycleEndsAt,
+    subscriptionNextBillingAt,
+    subscriptionLastBilledAt,
+    subscriptionStartsAt,
+    subscriptionEndsAt,
+    nextSubscriptionStartsAt,
+    nextSubscriptionNextBillingAt,
+  };
 }

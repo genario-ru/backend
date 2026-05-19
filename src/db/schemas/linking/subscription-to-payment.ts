@@ -8,14 +8,25 @@ export const subscriptionToPayment = pgTable(
   "subscription_to_payment",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    subscriptionId: uuid("subscription_id").references(() => subscription.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
-    paymentId: uuid("payment_id").references(() => payment.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
+    subscriptionId: uuid("subscription_id")
+      .references(() => subscription.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+    nextSubscriptionId: uuid("next_subscription_id").references(
+      () => subscription.id,
+      {
+        onDelete: "set null",
+        onUpdate: "cascade",
+      },
+    ),
+    paymentId: uuid("payment_id")
+      .references(() => payment.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
   },
   (table) => [
     index("subscription_to_payment_subscription_id_idx").on(
@@ -31,6 +42,12 @@ export const subscriptionToPaymentRelations = relations(
     subscription: one(subscription, {
       fields: [subscriptionToPayment.subscriptionId],
       references: [subscription.id],
+      relationName: "subscription",
+    }),
+    nextSubscription: one(subscription, {
+      fields: [subscriptionToPayment.nextSubscriptionId],
+      references: [subscription.id],
+      relationName: "nextSubscription",
     }),
     payment: one(payment, {
       fields: [subscriptionToPayment.paymentId],

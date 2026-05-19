@@ -1,7 +1,10 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { subscription } from "@/db/schema";
-import { tariffExtendedSchema } from "@/domains/tariffs/schemas/entities/tariff";
+import {
+  tariffExtendedSchema,
+  tariffSchema,
+} from "@/domains/tariffs/schemas/entities/tariff";
 import { z } from "@/lib/zod";
 
 export const subscriptionSchema = createSelectSchema(subscription).meta({
@@ -23,3 +26,17 @@ export const subscriptionExtendedSchema = subscriptionSchema
   });
 
 export type SubscriptionExtended = z.infer<typeof subscriptionExtendedSchema>;
+
+export const subscriptionWithTariffSchema = subscriptionExtendedSchema
+  .extend({
+    tariff: tariffSchema,
+  })
+  .meta({
+    title: "Subscription with tariff",
+    description: "Subscription with tariff description",
+    ref: "SubscriptionWithTariffSchema",
+  });
+
+export type SubscriptionWithTariff = z.infer<
+  typeof subscriptionWithTariffSchema
+>;

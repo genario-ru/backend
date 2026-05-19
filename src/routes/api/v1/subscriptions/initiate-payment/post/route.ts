@@ -68,17 +68,38 @@ initiateSubscriptionPaymentRoute.post(
     let foundTrialTariff: Tariff | undefined;
 
     if (trialTariffSlug) {
-      foundTrialTariff = await db.query.tariff.findFirst({
+      const localFoundTrialTariff = await db.query.tariff.findFirst({
         where: (tariff, { and, eq }) =>
           and(eq(tariff.slug, trialTariffSlug), eq(tariff.isRenewable, false)),
       });
 
-      if (!foundTrialTariff) {
+      if (!localFoundTrialTariff) {
         return throwAPIError({
           code: APIErrorCode.NotFound,
           message: "Указанный тариф пробного периода не существует",
         });
       }
+
+      const usedTrialTariffSubscription = await db.query.subscription.findFirst(
+        {
+          orderBy: (subscription, { desc }) => desc(subscription.createdAt),
+          where: (subscription, { and, eq, ne }) =>
+            and(
+              eq(subscription.userId, user.id),
+              eq(subscription.tariffId, localFoundTrialTariff.id),
+              ne(subscription.status, "pending"),
+            ),
+        },
+      );
+
+      if (usedTrialTariffSubscription) {
+        return throwAPIError({
+          code: APIErrorCode.Forbidden,
+          message: "Пробный период уже использован",
+        });
+      }
+
+      foundTrialTariff = localFoundTrialTariff;
     }
 
     // Готовим данные для запроса к API ЮKassa
@@ -95,6 +116,7 @@ initiateSubscriptionPaymentRoute.post(
         subscriptionToPayment: {
           with: {
             subscription: true,
+            nextSubscription: true,
           },
         },
       },
@@ -104,9 +126,28 @@ initiateSubscriptionPaymentRoute.post(
       (payment) => {
         const linkedSubscription = payment.subscriptionToPayment?.subscription;
         const isSameTariff = linkedSubscription?.tariffId === computedTariffId;
-        const isPending = linkedSubscription?.status === "pending";
+        const isSubscriptionPending = linkedSubscription?.status === "pending";
 
-        return isSameTariff && isPending;
+        const linkedNextSubscription =
+          payment.subscriptionToPayment?.nextSubscription;
+
+        if (!linkedNextSubscription) {
+          return isSameTariff && isSubscriptionPending;
+        }
+
+        const isSameNextTariff =
+          !foundTrialTariff ||
+          linkedNextSubscription.tariffId === foundTariff.id;
+
+        const isNextSubscriptionPending =
+          linkedNextSubscription.status === "pending";
+
+        return (
+          isSameTariff &&
+          isSubscriptionPending &&
+          isSameNextTariff &&
+          isNextSubscriptionPending
+        );
       },
     );
 
@@ -202,31 +243,48 @@ initiateSubscriptionPaymentRoute.post(
     }
 
     await db.transaction(async (tx) => {
-      const [[createdPayment], [createdSubscription]] = await Promise.all([
-        tx
-          .insert(payment)
-          .values({
-            id: idempotenceKey,
-            userId: user.id,
-            amount: amountValue,
-            currency: "RUB",
-            paymentId: createdYooKassaPayment.id,
-            paymentLink: createdYooKassaPaymentConfirmationUrl,
-            status: "pending",
-          })
-          .returning(),
-        tx
+      const [createdPayment] = await tx
+        .insert(payment)
+        .values({
+          id: idempotenceKey,
+          userId: user.id,
+          amount: amountValue,
+          currency: "RUB",
+          paymentId: createdYooKassaPayment.id,
+          paymentLink: createdYooKassaPaymentConfirmationUrl,
+          status: "pending",
+        })
+        .returning();
+
+      let nextSubscriptionId: string | undefined;
+
+      const [createdSubscription] = await tx
+        .insert(subscription)
+        .values({
+          userId: user.id,
+          tariffId: computedTariffId,
+          status: "pending",
+        })
+        .returning();
+
+      const subscriptionId = createdSubscription.id;
+
+      if (foundTrialTariff) {
+        const [createdNextSubscription] = await tx
           .insert(subscription)
           .values({
             userId: user.id,
             tariffId: foundTariff.id,
             status: "pending",
           })
-          .returning(),
-      ]);
+          .returning();
+
+        nextSubscriptionId = createdNextSubscription.id;
+      }
 
       await tx.insert(subscriptionToPayment).values({
-        subscriptionId: createdSubscription.id,
+        subscriptionId,
+        nextSubscriptionId,
         paymentId: createdPayment.id,
       });
     });
