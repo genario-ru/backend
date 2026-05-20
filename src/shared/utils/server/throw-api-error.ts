@@ -18,6 +18,8 @@ export function throwAPIError({
   const status = APIErrorCodeToAPIErrorStatusCode[code];
   const message = passedMessage ?? httpStatusCodeMessages[status];
 
+  console.error(message, { code, details });
+
   throw new HTTPException(status, {
     message,
     cause: details,
