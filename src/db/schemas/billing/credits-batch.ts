@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
 import {
   index,
-  integer,
   pgEnum,
   pgTable,
+  real,
   text,
   timestamp,
   uuid,
@@ -38,7 +38,7 @@ export const creditsBatch = pgTable(
       .notNull(),
     name: text("name").notNull(),
     description: text("description"),
-    remainingAmount: integer("remaining_amount").notNull(),
+    remainingAmount: real("remaining_amount").notNull(),
     status: creditsBatchStatus("status").notNull().default("pending"),
     expiresAt: timestamp("expires_at", {
       withTimezone: true,

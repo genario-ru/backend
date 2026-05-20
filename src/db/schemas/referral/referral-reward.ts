@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -22,7 +22,7 @@ export const referralReward = pgTable("referral_reward", {
   description: text("description"),
   type: referralRewardType("type").notNull(),
   userType: referralRewardUserType("user_type").notNull(),
-  value: integer("value").notNull(),
+  value: real("value").notNull(),
   ...timestamps,
 });
 

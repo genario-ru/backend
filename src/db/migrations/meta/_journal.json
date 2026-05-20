@@ -204,6 +204,13 @@
       "when": 1779300083730,
       "tag": "0028_pretty_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1779307186348,
+      "tag": "0029_crazy_shotgun",
+      "breakpoints": true
     }
   ]
 }

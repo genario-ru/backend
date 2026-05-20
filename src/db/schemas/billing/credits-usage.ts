@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, integer, pgTable, real, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, real, uuid } from "drizzle-orm/pg-core";
 
 import { generationEntity } from "@/db/constants/generation-entity";
 import { timestamps } from "@/db/constants/timestamps";
@@ -23,7 +23,7 @@ export const creditsUsage = pgTable(
     entity: generationEntity("entity").notNull(),
     entityId: uuid("entity_id").notNull(),
     creditsAmount: real("credits_amount").notNull(),
-    tokensPerCredit: integer("tokens_per_credit").notNull(),
+    tokensPerCredit: real("tokens_per_credit").notNull(),
     ...timestamps,
   },
   (table) => [
