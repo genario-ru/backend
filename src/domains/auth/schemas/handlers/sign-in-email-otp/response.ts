@@ -1,6 +1,6 @@
-import { userSchema } from "better-auth";
-
 import { z } from "@/lib/zod";
+
+import { userSchema } from "../../entities/user";
 
 export const signInEmailOtpResponseSchema = z
   .object({

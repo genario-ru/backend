@@ -20,15 +20,6 @@ export type AuthType = {
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
   appName: APP_NAME_CAPITALIZED,
-  user: {
-    deleteUser: {
-      enabled: true,
-    },
-    changeEmail: {
-      enabled: true,
-      updateEmailWithoutVerification: true,
-    },
-  },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }) => {
       await sendEmail({
@@ -43,6 +34,23 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  user: {
+    additionalFields: {
+      marketingAccepted: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+        input: true,
+      },
+    },
+    deleteUser: {
+      enabled: true,
+    },
+    changeEmail: {
+      enabled: true,
+      updateEmailWithoutVerification: true,
+    },
+  },
   session: {
     storeSessionInDatabase: true,
     preserveSessionInDatabase: true,
@@ -89,6 +97,7 @@ export const auth = betterAuth({
   plugins: [
     emailOTP({
       disableSignUp: true,
+      storeOTP: "encrypted",
       async sendVerificationOTP({ email, otp, type }) {
         await sendEmail({
           to: email,
