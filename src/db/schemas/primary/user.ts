@@ -33,6 +33,7 @@ export const user = pgTable("user", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").unique().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
+  marketingAccepted: boolean("marketing_accepted").default(false).notNull(),
   phone: text("phone").unique(),
   phoneVerified: boolean("phone_verified").default(false).notNull(),
   name: text("name").notNull(),

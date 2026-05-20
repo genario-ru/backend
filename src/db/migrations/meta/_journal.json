@@ -197,6 +197,13 @@
       "when": 1779234434756,
       "tag": "0027_optimal_landau",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1779300083730,
+      "tag": "0028_pretty_blizzard",
+      "breakpoints": true
     }
   ]
 }

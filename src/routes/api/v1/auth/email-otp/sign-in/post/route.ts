@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { auth } from "@/auth";
+import { db, schema } from "@/db";
 import { signInEmailOtpBodySchema } from "@/domains/auth/schemas/handlers/sign-in-email-otp/body";
 import {
   type SignInEmailOtpResponse,
@@ -38,7 +40,7 @@ signInEmailOtpRoute.post(
   }),
   validator("json", signInEmailOtpBodySchema),
   async (c) => {
-    const body = c.req.valid("json");
+    const { isMarketingAccepted, ...body } = c.req.valid("json");
 
     try {
       const { headers, response } = await auth.api.signInEmailOTP({
@@ -46,6 +48,13 @@ signInEmailOtpRoute.post(
         headers: c.req.raw.headers,
         returnHeaders: true,
       });
+
+      if (isMarketingAccepted) {
+        await db
+          .update(schema.user)
+          .set({ marketingAccepted: isMarketingAccepted })
+          .where(eq(schema.user.id, response.user.id));
+      }
 
       applyAuthApiHeaders(c, headers);
 
