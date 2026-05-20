@@ -1,6 +1,9 @@
+import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { auth } from "@/auth";
+import { db } from "@/db";
+import { user } from "@/db/schema";
 import { signInEmailOtpBodySchema } from "@/domains/auth/schemas/handlers/sign-in-email-otp/body";
 import {
   type SignInEmailOtpResponse,
@@ -47,12 +50,10 @@ signInEmailOtpRoute.post(
         returnHeaders: true,
       });
 
-      await auth.api.updateUser({
-        body: {
-          marketingAccepted: isMarketingAccepted,
-        },
-        headers: c.req.raw.headers,
-      });
+      await db
+        .update(user)
+        .set({ marketingAccepted: isMarketingAccepted })
+        .where(eq(user.id, response.user.id));
 
       applyAuthApiHeaders(c, headers);
 
