@@ -101,7 +101,12 @@ export const subscriptionRelations = relations(
       fields: [subscription.tariffId],
       references: [tariff.id],
     }),
-    subscriptionToPayment: many(subscriptionToPayment),
+    subscriptionToPayment: many(subscriptionToPayment, {
+      relationName: "subscription",
+    }),
+    nextSubscriptionToPayment: many(subscriptionToPayment, {
+      relationName: "nextSubscription",
+    }),
     subscriptionToCreditsBatch: many(subscriptionToCreditsBatch),
   }),
 );
