@@ -53,6 +53,10 @@ getProductionStatusesRoute.get(
     }
 
     const foundProductionStatuses = await db.query.productionStatus.findMany({
+      orderBy: (productionStatus, { asc, desc }) => [
+        desc(productionStatus.priority),
+        asc(productionStatus.name),
+      ],
       where: and(...productionStatusQueryWhereConditions),
     });
 

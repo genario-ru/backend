@@ -31,7 +31,10 @@ getTemplatesRoute.get(
   }),
   async (c) => {
     const foundTemplates = await db.query.template.findMany({
-      orderBy: (template, { asc }) => asc(template.name),
+      orderBy: (template, { asc, desc }) => [
+        desc(template.priority),
+        asc(template.name),
+      ],
     });
 
     return c.json<GetTemplatesResponse>(

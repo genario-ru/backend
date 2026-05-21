@@ -35,7 +35,10 @@ getVideoTypesRoute.get(
   }),
   async (c) => {
     const foundVideoTypes = await db.query.videoType.findMany({
-      orderBy: (videoType, { asc }) => asc(videoType.name),
+      orderBy: (videoType, { asc, desc }) => [
+        desc(videoType.priority),
+        asc(videoType.name),
+      ],
     });
 
     return c.json<GetVideoTypesResponse>(

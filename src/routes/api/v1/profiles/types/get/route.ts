@@ -35,7 +35,10 @@ getProfileTypesRoute.get(
   }),
   async (c) => {
     const foundProfileTypes = await db.query.profileType.findMany({
-      orderBy: (profileType, { desc }) => desc(profileType.createdAt),
+      orderBy: (profileType, { asc, desc }) => [
+        desc(profileType.priority),
+        asc(profileType.name),
+      ],
     });
 
     return c.json<GetProfileTypesResponse>(

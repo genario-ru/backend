@@ -51,14 +51,34 @@ getArchiveFiltersRoute.get(
       foundPlatforms,
       foundVideoDurations,
     ] = await Promise.all([
-      db.query.template.findMany(),
+      db.query.template.findMany({
+        orderBy: (template, { asc, desc }) => [
+          desc(template.priority),
+          asc(template.name),
+        ],
+      }),
       db.query.profile.findMany({
         where: eq(profile.userId, user.id),
+        orderBy: (profile, { desc }) => [desc(profile.createdAt)],
       }),
-      db.query.tone.findMany(),
-      db.query.videoType.findMany(),
-      db.query.platform.findMany(),
-      db.query.videoDuration.findMany(),
+      db.query.tone.findMany({
+        orderBy: (tone, { asc, desc }) => [desc(tone.priority), asc(tone.name)],
+      }),
+      db.query.videoType.findMany({
+        orderBy: (videoType, { asc, desc }) => [
+          desc(videoType.priority),
+          asc(videoType.name),
+        ],
+      }),
+      db.query.platform.findMany({
+        orderBy: (platform, { asc, desc }) => [
+          desc(platform.priority),
+          asc(platform.name),
+        ],
+      }),
+      db.query.videoDuration.findMany({
+        orderBy: (videoDuration, { asc }) => [asc(videoDuration.minSeconds)],
+      }),
     ]);
 
     const archiveFilters = [
