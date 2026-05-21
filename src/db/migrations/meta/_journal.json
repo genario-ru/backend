@@ -211,6 +211,13 @@
       "when": 1779307186348,
       "tag": "0029_crazy_shotgun",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1779388411336,
+      "tag": "0030_naive_rafael_vega",
+      "breakpoints": true
     }
   ]
 }

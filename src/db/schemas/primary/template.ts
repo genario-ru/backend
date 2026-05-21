@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -14,6 +14,7 @@ export const template = pgTable("template", {
   details: text("details"),
   icon: text("icon"),
   color: text("color").notNull(),
+  priority: integer("priority").notNull().default(0),
   ...timestamps,
 });
 

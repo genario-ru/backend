@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -15,6 +15,7 @@ export const productionStatus = pgTable("production_status", {
   isDefault: boolean("is_default").notNull().default(false),
   forScenario: boolean("for_scenario").notNull().default(false),
   forScenarioChapter: boolean("for_scenario_chapter").notNull().default(false),
+  priority: integer("priority").notNull().default(0),
   ...timestamps,
 });
 

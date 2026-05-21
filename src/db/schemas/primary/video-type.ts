@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -14,6 +14,7 @@ export const videoType = pgTable("video_type", {
   name: text("name").notNull(),
   description: text("description"),
   icon: text("icon"),
+  priority: integer("priority").notNull().default(0),
   ...timestamps,
 });
 
