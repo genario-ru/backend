@@ -36,7 +36,7 @@ getVideoDurationsRoute.get(
   }),
   async (c) => {
     const foundVideoDurations = await db.query.videoDuration.findMany({
-      orderBy: (videoDuration, { asc }) => asc(videoDuration.name),
+      orderBy: (videoDuration, { asc }) => asc(videoDuration.minSeconds),
     });
 
     return c.json<GetVideoDurationsResponse>(
