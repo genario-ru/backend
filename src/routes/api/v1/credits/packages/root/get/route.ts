@@ -5,7 +5,6 @@ import {
 } from "@/domains/credits/schemas/handlers/get-credits-packages/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
@@ -18,7 +17,6 @@ export const getCreditsPackagesRoute =
 // GET /api/v1/credits/packages
 getCreditsPackagesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-credits-packages",
     windowMs: 60 * 1000,
