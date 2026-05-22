@@ -3,7 +3,7 @@ import { internalRedirectPathSchema } from "@/shared/schemas/common/internal-red
 
 export const initiateCreditsPackagePaymentBodySchema = z
   .object({
-    creditsPackageId: z.string(),
+    creditsPackageSlug: z.string(),
     redirect: internalRedirectPathSchema.optional(),
   })
   .meta({

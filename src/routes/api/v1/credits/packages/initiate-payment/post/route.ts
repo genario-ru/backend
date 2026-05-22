@@ -48,12 +48,12 @@ initiateCreditsPackagePaymentRoute.post(
   validator("json", initiateCreditsPackagePaymentBodySchema),
   async (c) => {
     const user = c.get("user");
-    const { creditsPackageId, redirect: redirectPath } = c.req.valid("json");
+    const { creditsPackageSlug, redirect: redirectPath } = c.req.valid("json");
 
     const foundCreditsPackage = await db.query.creditsPackage.findFirst({
       where: (creditsPackage, { eq, and }) =>
         and(
-          eq(creditsPackage.id, creditsPackageId),
+          eq(creditsPackage.slug, creditsPackageSlug),
           eq(creditsPackage.forPurchase, true),
         ),
     });

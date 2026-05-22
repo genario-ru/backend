@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
 
+import { uniqueSlug } from "@/db/constants/slug";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { creditsBatch } from "./credits-batch";
@@ -15,6 +16,7 @@ export const creditsPackage = pgTable("credits_package", {
   oldPrice: real("old_price"),
   forPurchase: boolean("for_purchase").notNull().default(false),
   isPreferred: boolean("is_preferred").default(false).notNull(),
+  ...uniqueSlug,
   ...timestamps,
 });
 

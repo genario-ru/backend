@@ -1,13 +1,13 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
+import { uniqueSlug } from "@/db/constants/slug";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { scenarioChapter } from "./scenario-chapter";
 
 export const productionStatus = pgTable("production_status", {
   id: uuid("id").defaultRandom().primaryKey(),
-  slug: text("slug").unique().notNull(),
   name: text("name").notNull(),
   description: text("description"),
   icon: text("icon"),
@@ -16,6 +16,7 @@ export const productionStatus = pgTable("production_status", {
   forScenario: boolean("for_scenario").notNull().default(false),
   forScenarioChapter: boolean("for_scenario_chapter").notNull().default(false),
   priority: integer("priority").notNull().default(0),
+  ...uniqueSlug,
   ...timestamps,
 });
 

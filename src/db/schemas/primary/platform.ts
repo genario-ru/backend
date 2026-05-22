@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
+import { uniqueSlug } from "@/db/constants/slug";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { platformToVideoType } from "../linking/platform-to-video-type";
@@ -11,7 +12,6 @@ import { scenarioVideoReference } from "./scenario-video-reference";
 
 export const platform = pgTable("platform", {
   id: uuid("id").defaultRandom().primaryKey(),
-  slug: text("slug").notNull(),
   name: text("name").notNull(),
   description: text("description"),
   details: text("details"),
@@ -22,6 +22,7 @@ export const platform = pgTable("platform", {
   channelUrlRegex: text("channel_url_regex"),
   hasAutoImport: boolean("has_auto_import").notNull().default(false),
   priority: integer("priority").notNull().default(0),
+  ...uniqueSlug,
   ...timestamps,
 });
 
