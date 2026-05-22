@@ -5,7 +5,6 @@ import {
 } from "@/domains/credits/schemas/handlers/get-credits-packages/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
-import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
@@ -22,7 +21,6 @@ getCreditsPackagesRoute.get(
     windowMs: 60 * 1000,
     limit: 10,
   }),
-  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],
     responses: {
