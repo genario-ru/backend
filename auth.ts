@@ -5,17 +5,24 @@ import { admin, emailOTP } from "better-auth/plugins";
 
 import { db, schema } from "@/db";
 import { sendEmail } from "@/domains/mail/services/send-email";
+import { env } from "@/env";
 import { redis } from "@/lib/redis";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import {
   APP_NAME,
   APP_NAME_CAPITALIZED,
 } from "@/shared/constants/common/app-info";
+import {
+  getFixedSignInOtp,
+  parseFixedSignInOtps,
+} from "@/shared/utils/auth/fixed-sign-in-otps";
 
 export type AuthType = {
   user: typeof auth.$Infer.Session.user;
   session: typeof auth.$Infer.Session.session;
 };
+
+const fixedSignInOtps = parseFixedSignInOtps(env.FIXED_SIGN_IN_OTPS);
 
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
@@ -98,6 +105,11 @@ export const auth = betterAuth({
     emailOTP({
       disableSignUp: true,
       storeOTP: "encrypted",
+      generateOTP({ email, type }) {
+        if (type === "sign-in") {
+          return getFixedSignInOtp(fixedSignInOtps, email);
+        }
+      },
       async sendVerificationOTP({ email, otp, type }) {
         await sendEmail({
           to: email,
