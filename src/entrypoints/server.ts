@@ -14,6 +14,10 @@ import { openAPIRouteHandler } from "hono-openapi";
 
 import { env } from "@/env";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
+import {
+  BULL_BOARD_METRICS_PATH,
+  httpMetricsMiddleware,
+} from "@/middleware/http-metrics-middleware";
 import { originValidationMiddleware } from "@/middleware/origin-validation-middleware";
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
@@ -130,6 +134,7 @@ import { getTonesRoute } from "@/routes/api/v1/tones";
 import { getVideoDurationsRoute } from "@/routes/api/v1/video-durations";
 import { getVideoTypesRoute } from "@/routes/api/v1/video-types";
 import { healthRoute } from "@/routes/health";
+import { metricsRoute } from "@/routes/metrics";
 import { rootRoute } from "@/routes/root";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
@@ -140,7 +145,7 @@ const appAPI = app.basePath("/api");
 const appAPIV1Routes = appAPI.basePath("/v1");
 const isNotProduction = env.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
-const bullBoardBasePath = "/admin/ewf89-23aE3_93/queues";
+const bullBoardBasePath = BULL_BOARD_METRICS_PATH;
 
 createBullBoard({
   queues: [
@@ -267,9 +272,11 @@ app.use(
   }),
 );
 
+app.use(httpMetricsMiddleware);
 app.use(errorHandlerMiddleware);
 app.route("/", rootRoute);
 app.route("/", healthRoute);
+app.route("/", metricsRoute);
 app.route(bullBoardBasePath, bullBoardAdapter.registerPlugin());
 
 appAPIV1Routes.route("/", betterAuthRoute);

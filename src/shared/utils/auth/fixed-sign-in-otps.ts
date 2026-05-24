@@ -15,13 +15,13 @@ export function parseFixedSignInOtps(rawValue: string | undefined) {
 
     if (!email || !otp || rest.length > 0) {
       throw new Error(
-        `FIXED_SIGN_IN_OTPS entry "${entry}" must match email:otp`,
+        `BETTER_AUTH_FIXED_SIGN_IN_OTPS entry "${entry}" must match email:otp`,
       );
     }
 
     if (!/^\d{6}$/.test(otp)) {
       throw new Error(
-        `FIXED_SIGN_IN_OTPS entry "${entry}" must use a 6-digit OTP`,
+        `BETTER_AUTH_FIXED_SIGN_IN_OTPS entry "${entry}" must use a 6-digit OTP`,
       );
     }
 

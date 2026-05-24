@@ -22,7 +22,9 @@ export type AuthType = {
   session: typeof auth.$Infer.Session.session;
 };
 
-const fixedSignInOtps = parseFixedSignInOtps(env.FIXED_SIGN_IN_OTPS);
+const fixedSignInOtps = parseFixedSignInOtps(
+  env.BETTER_AUTH_FIXED_SIGN_IN_OTPS,
+);
 
 export const auth = betterAuth({
   basePath: "/api/v1/auth",
