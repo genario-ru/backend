@@ -17,9 +17,6 @@ export function ipAllowlistMiddleware({
   return createMiddleware<AppEnv>(async (c, next) => {
     const clientIp = getClientIp(c);
 
-    console.debug("clientIp", clientIp);
-    console.debug("allowlist", allowlist);
-
     if (!allowlist.has(clientIp)) {
       return throwAPIError({
         code: APIErrorCode.Forbidden,

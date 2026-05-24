@@ -48,6 +48,7 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_FROM=${SMTP_FROM}
       - METRICS_ALLOWED_IPS=${METRICS_ALLOWED_IPS}
+      - TRUSTED_PROXY_COUNT=${TRUSTED_PROXY_COUNT}
 
   workers:
     image: ghcr.io/genario-ru/backend:latest

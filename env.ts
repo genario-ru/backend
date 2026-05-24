@@ -46,6 +46,7 @@ export const env = createEnv({
     SMTP_PASSWORD: z.string().min(1),
     SMTP_FROM: z.string().min(1),
     METRICS_ALLOWED_IPS: z.string().optional(),
+    TRUSTED_PROXY_COUNT: z.coerce.number().int().min(1).default(1),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
