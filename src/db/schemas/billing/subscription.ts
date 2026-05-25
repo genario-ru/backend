@@ -73,7 +73,13 @@ export const subscription = pgTable(
     failedBillingAttempts: integer("failed_billing_attempts")
       .default(0)
       .notNull(),
+    // Статус подписки, на который мы ссылаемся для проверки наличия доступа к сервису у пользователя
     status: subscriptionStatus("status").notNull().default("pending"),
+    // Дата последнего обновления статуса подписки
+    statusUpdatedAt: timestamp("status_updated_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
     ...timestamps,
   },
   (table) => [

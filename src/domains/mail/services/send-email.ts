@@ -24,7 +24,6 @@ export async function sendEmail<K extends EmailTemplateKey>({
 }: SendEmailParams<K>): Promise<{ emailLogId: string }> {
   const schema = emailPayloadSchemas[templateKey];
   const validPayload = schema.parse(payload) as EmailPayloadByKey[K];
-
   const subject = buildEmailSubject(templateKey, validPayload);
   const from = env.SMTP_FROM;
 

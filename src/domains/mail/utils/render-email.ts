@@ -17,19 +17,23 @@ function buildEmail<K extends EmailTemplateKey>(
     case EmailTemplateKey.OTP: {
       const otpPayload =
         payload as EmailPayloadByKey[typeof EmailTemplateKey.OTP];
+
       return {
         element: OtpEmail(otpPayload),
         subject: OTP_SUBJECT_BY_TYPE[otpPayload.type],
       };
     }
+
     case EmailTemplateKey.EmailVerification: {
       const verificationPayload =
         payload as EmailPayloadByKey[typeof EmailTemplateKey.EmailVerification];
+
       return {
         element: EmailVerificationEmail(verificationPayload),
         subject: "Подтверждение адреса электронной почты",
       };
     }
+
     default: {
       const exhaustive: never = templateKey;
       throw new Error(`Unknown email template key: ${String(exhaustive)}`);

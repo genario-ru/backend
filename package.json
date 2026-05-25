@@ -19,7 +19,9 @@
     "db:push": "drizzle-kit push",
     "api:download:tochka": "tsx scripts/download-tochka-openapi.ts",
     "api:download:yookassa": "tsx scripts/download-yookassa-openapi.ts",
-    "api:generate": "kubb generate"
+    "api:generate": "kubb generate",
+    "cron:update-and-charge-subscriptions": "tsx scripts/update-and-charge-subscriptions.ts",
+    "cron:initiate-upcoming-charges-newsletter": "tsx scripts/initiate-upcoming-charges-newsletter.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.37",

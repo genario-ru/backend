@@ -1,5 +1,13 @@
 import { relations } from "drizzle-orm";
-import { index, jsonb, pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -26,6 +34,7 @@ export const paymentMethod = pgTable(
     title: text("title"),
     confirmationUrl: text("confirmation_url"),
     data: jsonb("data"),
+    default: boolean("default").notNull().default(false),
     ...timestamps,
   },
   (table) => [

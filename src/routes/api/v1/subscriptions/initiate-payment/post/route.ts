@@ -2,16 +2,18 @@ import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { postPayments } from "@/codegen/api/yookassa";
 import { db } from "@/db";
 import { payment, subscription, subscriptionToPayment } from "@/db/schema";
+import { cleanPendingSubscriptions } from "@/domains/billing/services/clean-pending-subscriptions";
+import { createYooKassaPayment } from "@/domains/billing/services/create-yookassa-payment";
+import { getLastPendingPayments } from "@/domains/billing/services/get-last-pending-payments";
+import { prepareYooKassaPaymentParams } from "@/domains/billing/utils/prepare-yookassa-payment-params";
 import { initiateSubscriptionPaymentBodySchema } from "@/domains/subscriptions/schemas/handlers/initiate-subscriptions-payment/body";
 import {
   type InitiateSubscriptionPaymentResponse,
   initiateSubscriptionPaymentResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/initiate-subscriptions-payment/response";
 import type { Tariff } from "@/domains/tariffs/schemas/entities/tariff";
-import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -53,6 +55,22 @@ initiateSubscriptionPaymentRoute.post(
       trialTariffSlug,
       redirect: redirectPath,
     } = c.req.valid("json");
+
+    const foundUserSubscriptions = await db.query.subscription.findMany({
+      orderBy: (subscription, { desc }) => desc(subscription.createdAt),
+      where: (subscription, { and, eq, inArray }) =>
+        and(
+          eq(subscription.userId, user.id),
+          inArray(subscription.status, ["active", "overdue"]),
+        ),
+    });
+
+    if (foundUserSubscriptions.length > 0) {
+      return throwAPIError({
+        code: APIErrorCode.Forbidden,
+        message: "У вас уже есть активная подписка",
+      });
+    }
 
     const foundTariff = await db.query.tariff.findFirst({
       where: (tariff, { eq }) => eq(tariff.slug, tariffSlug),
@@ -108,18 +126,8 @@ initiateSubscriptionPaymentRoute.post(
       ? foundTrialTariff.id
       : foundTariff.id;
 
-    const lastPendingPayments = await db.query.payment.findMany({
-      where: (payment, { and, eq }) =>
-        and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
-      orderBy: (payment, { desc }) => desc(payment.createdAt),
-      with: {
-        subscriptionToPayment: {
-          with: {
-            subscription: true,
-            nextSubscription: true,
-          },
-        },
-      },
+    const lastPendingPayments = await getLastPendingPayments({
+      userId: user.id,
     });
 
     const lastPendingSubscriptionPayment = lastPendingPayments.find(
@@ -153,60 +161,23 @@ initiateSubscriptionPaymentRoute.post(
 
     const idempotenceKey = lastPendingSubscriptionPayment?.id ?? randomUUID();
 
-    const returnUrl = redirectPath
-      ? `${env.FRONTEND_BASE_URL}${redirectPath}`
-      : `${env.FRONTEND_BASE_URL}/home`;
-
-    const amountValue = foundTrialTariff
-      ? foundTrialTariff.price
-      : foundTariff.price;
-
-    const description = foundTrialTariff
-      ? `Оплата пробного периода "${foundTrialTariff.name}" для ${user.email}`
-      : `Оплата тарифа "${foundTariff.name}" для ${user.email}`;
-
-    const receiptItemDescription = foundTrialTariff
-      ? `Пробный период "${foundTrialTariff.name}" в сервисе ${env.FRONTEND_BASE_URL}`
-      : `Тариф "${foundTariff.name}" в сервисе ${env.FRONTEND_BASE_URL}`;
+    const { amountValue, description, returnUrl } =
+      prepareYooKassaPaymentParams({
+        tariff: foundTrialTariff,
+        fallbackTariff: foundTariff,
+        userEmail: user.email,
+        redirectPath,
+      });
 
     // Отправляем запрос к API ЮKassa
 
-    const createdYooKassaPayment = await postPayments({
-      data: {
-        amount: {
-          value: amountValue.toString(),
-          currency: "RUB",
-        },
-        description,
-        receipt: {
-          customer: {
-            email: user.email,
-          },
-          items: [
-            {
-              description: receiptItemDescription,
-              amount: {
-                value: amountValue.toString(),
-                currency: "RUB",
-              },
-              vat_code: 1,
-              quantity: 1,
-              measure: "piece",
-              payment_subject: "service",
-              payment_mode: "full_payment",
-            },
-          ],
-        },
-        confirmation: {
-          type: "redirect",
-          return_url: returnUrl,
-        },
-        save_payment_method: true,
-        capture: true,
-      },
-      headers: {
-        "Idempotence-Key": idempotenceKey,
-      },
+    const createdYooKassaPayment = await createYooKassaPayment({
+      amountValue,
+      description,
+      userEmail: user.email,
+      receiptItemDescription: description,
+      returnUrl,
+      idempotenceKey,
     });
 
     if (
@@ -230,6 +201,7 @@ initiateSubscriptionPaymentRoute.post(
           paymentLink: createdYooKassaPaymentConfirmationUrl,
           amount: amountValue,
           currency: "RUB",
+          status: "pending",
         })
         .where(eq(payment.id, lastPendingSubscriptionPayment.id));
 
@@ -257,6 +229,11 @@ initiateSubscriptionPaymentRoute.post(
         .returning();
 
       let nextSubscriptionId: string | undefined;
+
+      await cleanPendingSubscriptions({
+        userId: user.id,
+        tx,
+      });
 
       const [createdSubscription] = await tx
         .insert(subscription)
