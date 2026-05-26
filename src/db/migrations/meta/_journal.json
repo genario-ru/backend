@@ -225,6 +225,13 @@
       "when": 1779481184872,
       "tag": "0031_fuzzy_skreet",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1779820086872,
+      "tag": "0032_light_prodigy",
+      "breakpoints": true
     }
   ]
 }
