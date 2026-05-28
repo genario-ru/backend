@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import type { AppEnv } from "@/shared/types/server/app-env";
 
@@ -26,6 +27,20 @@ export function captureHonoError(error: unknown, c: Context<AppEnv>) {
       scope.setUser({ id: user.id });
     }
 
-    Sentry.captureException(error);
+    const eventId = Sentry.captureException(error);
+
+    console.log("Sentry HTTP error captured", {
+      eventId,
+      method: c.req.method,
+      path: c.req.path,
+      status: error instanceof HTTPException ? error.status : undefined,
+    });
+
+    void Sentry.flush(2_000).then((flushed) => {
+      console.log("Sentry HTTP error flush completed", {
+        eventId,
+        flushed,
+      });
+    });
   });
 }
