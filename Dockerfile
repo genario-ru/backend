@@ -17,18 +17,40 @@ RUN pnpm install --frozen-lockfile && \
     pnpm run build && \
     pnpm prune --production
 
-FROM base AS runner
+FROM scratch AS dist-assets
+
+COPY --from=builder /app/dist /app
+
+FROM builder AS clean-dist
+
+RUN find /app/dist -type f -name '*.map' -delete
+
+FROM base AS runtime-base
 WORKDIR /app
+
+ARG GLITCHTIP_RELEASE
+ENV GLITCHTIP_RELEASE=$GLITCHTIP_RELEASE
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 hono
 
 # Копируем собранные файлы и зависимости
 COPY --from=builder --chown=hono:nodejs /app/node_modules /app/node_modules
-COPY --from=builder --chown=hono:nodejs /app/dist /app/dist
 COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
 
 USER hono
 EXPOSE 3000
 
 CMD ["pnpm", "run", "start"]
+
+FROM runtime-base AS prebuilt-dist
+
+ARG PREBUILT_DIST_DIR=.tmp/glitchtip-dist/app
+
+COPY --chown=hono:nodejs ${PREBUILT_DIST_DIR}/ /app/dist
+
+RUN find /app/dist -type f -name '*.map' -delete
+
+FROM runtime-base AS runner
+
+COPY --from=clean-dist --chown=hono:nodejs /app/dist /app/dist

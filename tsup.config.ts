@@ -5,7 +5,7 @@ export default defineConfig({
   format: ["esm"],
   clean: true,
   minify: true,
-  sourcemap: false,
+  sourcemap: true,
   outDir: "dist",
   loader: { ".md": "text" },
 });

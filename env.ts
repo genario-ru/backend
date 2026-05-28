@@ -47,6 +47,8 @@ export const env = createEnv({
     SMTP_FROM: z.string().min(1),
     METRICS_ALLOWED_IPS: z.string().optional(),
     TRUSTED_PROXY_COUNT: z.coerce.number().int().min(1).default(1),
+    GLITCHTIP_DSN: z.url().optional(),
+    GLITCHTIP_RELEASE: z.string().min(1).optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

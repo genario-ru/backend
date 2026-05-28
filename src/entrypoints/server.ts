@@ -13,6 +13,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { openAPIRouteHandler } from "hono-openapi";
 
 import { env } from "@/env";
+import { initSentry } from "@/lib/sentry";
 import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import {
   BULL_BOARD_METRICS_PATH,
@@ -139,6 +140,8 @@ import { rootRoute } from "@/routes/root";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+
+initSentry({ runtime: "server" });
 
 const app = createHonoApp();
 const appAPI = app.basePath("/api");

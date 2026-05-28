@@ -49,6 +49,7 @@ services:
       - SMTP_FROM=${SMTP_FROM}
       - METRICS_ALLOWED_IPS=${METRICS_ALLOWED_IPS}
       - TRUSTED_PROXY_COUNT=${TRUSTED_PROXY_COUNT}
+      - GLITCHTIP_DSN=${GLITCHTIP_DSN}
 
   workers:
     image: ghcr.io/genario-ru/backend:latest
@@ -96,3 +97,4 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_FROM=${SMTP_FROM}
+      - GLITCHTIP_DSN=${GLITCHTIP_DSN}

@@ -1,5 +1,6 @@
 import "@/env";
 
+import { initSentry, registerWorkerErrorHandlers } from "@/lib/sentry";
 import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
 import { mailSendWorker } from "@/mq/mail-send/worker";
@@ -10,6 +11,21 @@ import { scenarioMetadataRegenerationWorker } from "@/mq/scenario-metadata-regen
 import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario-scene-preview-generation/worker";
 import { scenarioScenesGenerationWorker } from "@/mq/scenario-scenes-generation/worker";
 import { scenarioVersionExportWorker } from "@/mq/scenario-version-export/worker";
+
+initSentry({ runtime: "workers" });
+
+registerWorkerErrorHandlers([
+  ideasListGenerationWorker,
+  ideasListExportWorker,
+  profilesFromChannelsGenerationWorker,
+  scenarioChaptersGenerationWorker,
+  scenarioScenesGenerationWorker,
+  scenarioScenePreviewsGenerationWorker,
+  scenarioMetadataGenerationWorker,
+  scenarioMetadataRegenerationWorker,
+  scenarioVersionExportWorker,
+  mailSendWorker,
+]);
 
 const shutdown = async () => {
   await ideasListGenerationWorker.close();

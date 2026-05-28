@@ -8,10 +8,12 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  RELEASE: ${{ github.sha }}
+  GLITCHTIP_DIST_DIR: .tmp/glitchtip-dist
 
 jobs:
   build-and-push:
-    name: Build & Push image
+    name: Build, upload sourcemaps & push image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,16 +45,59 @@ jobs:
             type=sha,prefix=sha-,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push
+      - name: Validate GlitchTip sourcemap configuration
+        env:
+          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
+          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
+          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
+          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
+          GLITCHTIP_RELEASE: ${{ env.RELEASE }}
+        run: bash ./sh/glitchtip.sh validate-config
+
+      - name: Export production dist for GlitchTip sourcemaps
         uses: docker/build-push-action@v5
         with:
           context: .
+          target: dist-assets
+          outputs: type=local,dest=${{ env.GLITCHTIP_DIST_DIR }}
+          build-args: |
+            GLITCHTIP_RELEASE=${{ env.RELEASE }}
+
+      - name: Install Sentry CLI
+        shell: bash
+        run: npm install --global @sentry/cli
+
+      - name: Upload GlitchTip sourcemaps
+        env:
+          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
+          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
+          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
+          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
+          RELEASE: ${{ env.RELEASE }}
+        run: bash ./sh/glitchtip.sh upload-sourcemaps "${{ env.GLITCHTIP_DIST_DIR }}/app" "$RELEASE"
+
+      - name: Build and push injected GlitchTip dist
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: prebuilt-dist
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Кэшируем слои в GHCR — повторные билды будут значительно быстрее
+          build-args: |
+            PREBUILT_DIST_DIR=${{ env.GLITCHTIP_DIST_DIR }}/app
+            GLITCHTIP_RELEASE=${{ env.RELEASE }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache,mode=max
+
+      - name: Record GlitchTip deploy
+        env:
+          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
+          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
+          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
+          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
+          RELEASE: ${{ env.RELEASE }}
+        run: bash ./sh/glitchtip.sh record-deploy "$RELEASE" production "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
   deploy:
     name: Deploy via Dokploy
