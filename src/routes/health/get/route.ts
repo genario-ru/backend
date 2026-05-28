@@ -4,9 +4,7 @@ import {
 } from "@/domains/health/schemas/handlers/get-health/response";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
-import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
-import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 import { probePostgres, probeRedis } from "./utils";
 
@@ -31,19 +29,12 @@ healthRoute.get(
       ? HTTPStatusCode.Ok
       : HTTPStatusCode.ServiceUnavailable;
 
-    return throwAPIError({
-      code: APIErrorCode.InternalServerError,
-      details: {
-        allOk,
-      },
-    });
-
-    // return c.json<GetHealthResponse>(
-    //   getHealthResponseSchema.parse({
-    //     status: allOk ? "ok" : "unhealthy",
-    //     checks: { postgres, redis: redisCheck },
-    //   }),
-    //   status,
-    // );
+    return c.json<GetHealthResponse>(
+      getHealthResponseSchema.parse({
+        status: allOk ? "ok" : "unhealthy",
+        checks: { postgres, redis: redisCheck },
+      }),
+      status,
+    );
   },
 );

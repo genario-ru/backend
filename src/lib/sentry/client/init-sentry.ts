@@ -9,14 +9,6 @@ type InitSentryParams = {
 };
 
 export function initSentry({ runtime }: InitSentryParams) {
-  console.log("Sentry configuration", {
-    enabled: isSentryEnabled(),
-    hasDsn: Boolean(env.GLITCHTIP_DSN),
-    nodeEnv: env.NODE_ENV,
-    release: env.GLITCHTIP_RELEASE,
-    runtime,
-  });
-
   if (!isSentryEnabled()) {
     return;
   }
