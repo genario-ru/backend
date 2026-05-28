@@ -14,7 +14,6 @@ import { openAPIRouteHandler } from "hono-openapi";
 
 import { env } from "@/env";
 import { initSentry } from "@/lib/sentry";
-import { errorHandlerMiddleware } from "@/middleware/error-handler-middleware";
 import {
   BULL_BOARD_METRICS_PATH,
   httpMetricsMiddleware,
@@ -140,6 +139,7 @@ import { rootRoute } from "@/routes/root";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { errorHandler } from "@/shared/utils/server/error-handler";
 
 initSentry({ runtime: "server" });
 
@@ -253,6 +253,9 @@ const appAPIv1RoutesList = [
   getVideoTypesRoute,
 ];
 
+// Error handler
+app.onError(errorHandler);
+
 // Middleware
 app.use(prettyJSON());
 app.use(requestId());
@@ -276,7 +279,7 @@ app.use(
 );
 
 app.use(httpMetricsMiddleware);
-app.use(errorHandlerMiddleware);
+
 app.route("/", rootRoute);
 app.route("/", healthRoute);
 app.route("/", metricsRoute);
