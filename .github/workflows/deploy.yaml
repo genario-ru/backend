@@ -18,6 +18,11 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      SENTRY_URL: ${{ secrets.GLITCHTIP_URL }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.GLITCHTIP_ORG }}
+      SENTRY_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
 
     outputs:
       image_tag: ${{ steps.meta.outputs.version }}
@@ -45,14 +50,16 @@ jobs:
             type=sha,prefix=sha-,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Validate GlitchTip sourcemap configuration
-        env:
-          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
-          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
-          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
-          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
-          GLITCHTIP_RELEASE: ${{ env.RELEASE }}
-        run: bash ./sh/glitchtip.sh validate-config
+      - name: Validate GlitchTip configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          : "${SENTRY_URL:?Missing GLITCHTIP_URL secret}"
+          : "${SENTRY_AUTH_TOKEN:?Missing GLITCHTIP_AUTH_TOKEN secret}"
+          : "${SENTRY_ORG:?Missing GLITCHTIP_ORG secret}"
+          : "${SENTRY_PROJECT:?Missing GLITCHTIP_PROJECT secret}"
+          : "${RELEASE:?Missing release value}"
 
       - name: Export production dist for GlitchTip sourcemaps
         uses: docker/build-push-action@v5
@@ -68,13 +75,19 @@ jobs:
         run: npm install --global @sentry/cli
 
       - name: Upload GlitchTip sourcemaps
-        env:
-          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
-          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
-          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
-          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
-          RELEASE: ${{ env.RELEASE }}
-        run: bash ./sh/glitchtip.sh upload-sourcemaps "${{ env.GLITCHTIP_DIST_DIR }}/app" "$RELEASE"
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          dist_dir="${GLITCHTIP_DIST_DIR}/app"
+
+          echo "Found $(find "$dist_dir" -type f -name '*.map' | wc -l) sourcemap files before upload"
+          sentry-cli releases new "$RELEASE" || sentry-cli releases info "$RELEASE" > /dev/null
+          sentry-cli sourcemaps inject "$dist_dir"
+          echo "Injected debug IDs into $(grep -R --include='*.js' -l 'debugId' "$dist_dir" | wc -l) JavaScript files"
+          sentry-cli sourcemaps upload "$dist_dir" --release "$RELEASE"
+          find "$dist_dir" -type f -name '*.map' -delete
+          sentry-cli releases finalize "$RELEASE"
 
       - name: Build and push injected GlitchTip dist
         uses: docker/build-push-action@v5
@@ -91,13 +104,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache,mode=max
 
       - name: Record GlitchTip deploy
-        env:
-          GLITCHTIP_URL: ${{ secrets.GLITCHTIP_URL }}
-          GLITCHTIP_AUTH_TOKEN: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
-          GLITCHTIP_ORG: ${{ secrets.GLITCHTIP_ORG }}
-          GLITCHTIP_PROJECT: ${{ secrets.GLITCHTIP_PROJECT }}
-          RELEASE: ${{ env.RELEASE }}
-        run: bash ./sh/glitchtip.sh record-deploy "$RELEASE" production "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        run: sentry-cli releases deploys "$RELEASE" new --env production --url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
   deploy:
     name: Deploy via Dokploy
