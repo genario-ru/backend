@@ -1,73 +1,33 @@
-# Regenerate External API Clients (Kubb)
+# Regenerate External API Clients
 
-Update OpenAPI specs and regenerate `src/codegen/api/**` for Tochka and/or YooKassa.
+Update OpenAPI specs and regenerate Kubb clients.
 
 ## Arguments
 
-`$ARGUMENTS` — context for why regeneration is needed (e.g. "Tochka added a new payment endpoint" or "YooKassa webhook payload changed").
+`$ARGUMENTS` - provider and reason, for example `YooKassa webhook payload changed`.
 
-## Step 1 — Refresh specs
+## Workflow
 
-Run only the relevant provider (or both):
+1. Check `package.json`, `deps/api/*.json`, and `kubb.config.ts`.
+2. Refresh specs when scripts exist:
+   ```bash
+   pnpm api:download:tochka
+   pnpm api:download:yookassa
+   ```
+3. Treat `deps/api/rutube.json` as a pinned local spec unless explicitly changing Rutube automation.
+4. Regenerate all clients:
+   ```bash
+   pnpm api:generate
+   ```
+5. Review generated diff:
+   ```bash
+   git diff -- src/codegen/api deps/api kubb.config.ts
+   ```
+6. Adapt hand-written code that imports from `@/codegen/api/**`, especially in `src/lib/**` and `src/domains/**`.
+7. Run `pnpm lint:typescript`.
 
-```bash
-pnpm api:download:tochka      # → deps/api/tochka.json
-pnpm api:download:yookassa    # → deps/api/yookassa.json
-```
+## Rules
 
-Skip this step if the spec files in `deps/api/` are already up to date.
-
-## Step 2 — Generate clients
-
-```bash
-pnpm api:generate
-```
-
-Regenerates all of `src/codegen/api/**`:
-
-```
-src/codegen/api/<provider>/
-├── models/     # TypeScript interfaces
-├── zod/        # Zod validation schemas
-└── client/     # Fetch client functions
-```
-
-**Never edit files in `src/codegen/` manually.** If output is wrong, fix `kubb.config.ts` or the download scripts and regenerate.
-
-## Step 3 — Review what changed
-
-```bash
-git diff src/codegen/
-```
-
-Look for:
-
-- Renamed types or functions
-- Changed function signatures
-- Removed fields
-- New endpoints now available
-
-## Step 4 — Adapt handwritten code
-
-Find all files that import from codegen:
-
-```bash
-grep -r "from \"@/codegen/api" src/ --include="*.ts" -l
-```
-
-Update in dependency order:
-
-- `src/lib/` — integrations that use client functions
-- `src/domains/` — services that use codegen types
-
-## Step 5 — Verify
-
-```bash
-pnpm lint:fix && pnpm lint:typescript
-```
-
-Both must pass with zero errors.
-
-## If kubb.config.ts needs changes
-
-Adjust `importPath`, output paths, or transformers — then re-run step 2. Do not apply manual post-fixes to generated files.
+- Never edit `src/codegen/api/**` manually unless explicitly documenting an emergency exception.
+- Fix bad generated output in `kubb.config.ts` or download scripts, then regenerate.
+- Keep generated-code changes and wrapper/service changes clear in the final summary.

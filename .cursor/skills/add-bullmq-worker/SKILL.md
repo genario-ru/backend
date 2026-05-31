@@ -1,31 +1,34 @@
 ---
 name: add-bullmq-worker
-description: Adds a new BullMQ queue and worker in backend with mandatory registration in workers shutdown and Bull Board. Use when introducing new background jobs in src/mq.
+description: Adds a BullMQ queue and worker with mandatory registration in worker shutdown and Bull Board.
 ---
 
 # Add BullMQ Worker
 
 ## Goal
 
-Create a new background processing module without missing integration steps.
+Create a background processing module without missing runtime integration steps.
 
 ## Steps
 
-1. Create folder `src/mq/<domain>/<feature>/`.
-2. Add `queue.ts`:
+1. Inspect at least 3 existing queue/worker pairs in `src/mq/**`.
+2. Create folder `src/mq/<domain>/<feature>/`.
+3. Add `queue.ts`:
    - queue name constant;
-   - `Queue<JobData>` with shared Redis configuration;
+   - `Queue<JobData>` with shared Redis configuration from `@/lib/redis`;
    - `enqueue...(...)` helper.
-3. Add `worker.ts`:
+4. Add `worker.ts`:
    - `Worker<JobData>`;
-   - job handler with input validation;
-   - unified error handling.
-4. Update `src/entrypoints/workers.ts`:
+   - job handler with input validation when payload crosses a trust boundary;
+   - existing logging/Sentry/error handling pattern.
+5. Update `src/entrypoints/workers.ts`:
    - import worker;
-   - add `await worker.close()` in `shutdown`.
-5. Update `src/entrypoints/server.ts`:
+   - add `await worker.close()` in `shutdown()`.
+6. Update `src/entrypoints/server.ts`:
    - import queue;
    - add `new BullMQAdapter(queue)` to `createBullBoard`.
+7. If a route or service enqueues jobs, make sure it imports the enqueue helper rather than constructing queue jobs ad hoc.
+8. Run at least `pnpm lint:typescript`; run worker-related tests when available.
 
 ## Self-check
 
@@ -33,3 +36,4 @@ Create a new background processing module without missing integration steps.
 - Worker is correctly closed in shutdown.
 - Queue is visible in `/admin/queues`.
 - Payload does not use `any`; `JobData` is typed.
+- Shutdown still closes every existing worker.

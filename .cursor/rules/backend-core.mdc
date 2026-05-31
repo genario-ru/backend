@@ -5,16 +5,20 @@ alwaysApply: true
 
 # Backend Core Standards
 
+- Treat `AGENTS.md` as the canonical project contract. If this rule and code disagree, inspect code first and update this rule instead of following stale text.
 - Use `@/` alias imports for code from `src`; do not introduce new deep relative paths like `../../../`.
-- For runtime validation, use Zod from `@/lib/zod` and schemas from `src/schemas`.
-- For API errors, use `throwAPIError(...)` instead of ad-hoc local error formats.
-- Return route responses through `responseSchema.parse(...)` before `c.json(...)`.
-- For new public APIs, keep OpenAPI metadata meaningful (`title`, `description`, `ref`).
-- Avoid `any`; if strict typing is not possible yet, use `unknown` with narrowing.
+- For runtime validation, use Zod from `@/lib/zod` and colocate product schemas in `src/domains/<domain>/schemas/**`.
+- `env.ts` is the known exception: it imports direct `zod` because `@t3-oss/env-core` expects it.
+- For API errors, use `throwAPIError(...)` from `@/shared/utils/server/throw-api-error` instead of ad-hoc local response shapes.
+- Return JSON route responses through `responseSchema.parse(...)` before `c.json(...)`; this keeps runtime output, TypeScript types, and OpenAPI aligned.
+- For new public APIs, keep OpenAPI metadata meaningful (`title`, `description`, `ref`) and use existing `createOpenAPIResponse(...)` conventions.
+- Avoid `any`; if strict typing is not possible yet, use `unknown` with narrowing or add a named type that reflects the actual data boundary.
+- Do not edit generated code under `src/codegen/api/**` by hand. Change specs/config/scripts, regenerate, then inspect the diff.
 - Do not mix policy and workflow: coding standards belong to rules, step-by-step procedures belong to skills.
 
 ## Required Self-Check Before Finishing
 
 - Changes remain type-safe and do not introduce unjustified linter suppressions.
-- Added/updated API handlers follow existing schema/response patterns.
-- If environment integration was changed, all config propagation points are verified.
+- Added/updated API handlers follow existing schema/response/OpenAPI patterns.
+- Route, worker, DB, env, and codegen registration points were checked when the changed area touches them.
+- If environment integration was changed, `env.ts`, `.env.example`, and both `server` and `workers` in `docker-compose.yml` were verified.

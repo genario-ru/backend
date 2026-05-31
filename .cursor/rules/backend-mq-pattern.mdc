@@ -6,17 +6,19 @@ alwaysApply: false
 
 # Backend MQ Pattern
 
-- For each new queue, use a paired structure: `queue.ts` + `worker.ts`.
-- Type job payloads as `Queue<JobData>` and `Worker<JobData>`.
+- For each new queue, follow the paired structure already used in `src/mq/**`: `queue.ts` + `worker.ts`, with `types.ts` or `utils.ts` only when the local pattern needs it.
+- Type job payloads as `Queue<JobData>` and `Worker<JobData>`; avoid implicit object payloads and `any`.
 - Use Redis via the shared module `@/lib/redis`.
+- Keep queue name, job name, payload type, and worker `job.data` shape consistent.
 - For every new queue, update:
-  - `src/entrypoints/workers.ts` (import + `worker.close()` in shutdown),
-  - `src/entrypoints/server.ts` (queue registration in Bull Board).
-- Keep `QUEUE_NAME` consistent between queue and worker.
-- Use a unified worker error handling/logging pattern.
+  - `src/entrypoints/workers.ts` for worker import/startup and `await worker.close()` in `shutdown()`;
+  - `src/entrypoints/server.ts` for Bull Board registration with `new BullMQAdapter(queue)`.
+- Use the existing worker error handling/logging/Sentry pattern instead of inventing local logging.
+- If a queue is enqueued from an API route, validate route inputs before enqueueing and return the project response schema shape.
 
 ## What Not To Do
 
 - Do not leave a queue unregistered in Bull Board.
 - Do not duplicate queue keys/names in inconsistent formats.
 - Do not use implicitly typed payload structures.
+- Do not add a worker without shutdown handling; it can hang deploys and local dev processes.

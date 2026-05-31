@@ -6,17 +6,32 @@ alwaysApply: false
 
 # Backend Route Pattern
 
+Use this rule for route modules under `src/routes/api/v1/**`.
+
+## File Placement
+
+- Put route handlers under `src/routes/api/v1/<domain>/.../<method>/route.ts`.
+- Put request/response schemas under `src/domains/<domain>/schemas/handlers/<handler-name>/`.
+- Export the route from the nearest `index.ts`.
+- Register the route in `src/entrypoints/server.ts`, usually inside `appAPIv1RoutesList`.
+
+## Handler Shape
+
 - Build routes with `createHonoApp().basePath(...)`.
-- Use middleware in stable order:
+- Use protected-route middleware in this stable order:
   `sessionMiddleware -> rateLimitMiddleware -> subscriptionMiddleware -> openAPIResponseMiddleware -> validator`.
-- For params/body validation use `validator("param", ...)` and `validator("json", ...)`.
-- For OpenAPI responses use `createOpenAPIResponse` and the matching `responseSchema`.
-- In handlers, read validated data only through `c.req.valid(...)`.
+- Public/auth/webhook routes may omit auth or subscription middleware only when a nearby existing route does the same.
+- For params, query, and body validation use `validator("param" | "query" | "json", schema)`.
+- In handlers, read validated data only through `c.req.valid(...)`; do not re-parse request bodies manually.
+- For OpenAPI responses use `createOpenAPIResponse(...)` and the matching `responseSchema`.
 - Return domain errors through `throwAPIError(...)`.
 - Format success responses as `c.json<ResponseType>(responseSchema.parse({ data }))`.
+- Keep business workflows in domain services or lib modules when route logic grows beyond orchestration.
 
 ## What Not To Do
 
 - Do not skip `openAPIResponseMiddleware` for public API endpoints.
 - Do not return raw objects without `responseSchema.parse(...)`.
 - Do not bloat routes with heavy business logic without explicit justification.
+- Do not create schemas in `src/schemas`; this repository uses domain colocated schemas.
+- Do not add route files without registering them in `src/entrypoints/server.ts`.

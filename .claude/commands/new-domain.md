@@ -1,101 +1,45 @@
 # New Backend Domain
 
-Scaffold a complete new backend domain: route handlers, schemas, and domain folder.
+Scaffold a backend domain with routes, schemas, and optional DB/MQ pieces.
 
 ## Arguments
 
-`$ARGUMENTS` — domain name and what it covers (e.g. "notifications — CRUD for user notification settings" or "webhooks — inbound webhook processing").
+`$ARGUMENTS` - domain name and responsibility.
 
-## Pre-coding step (mandatory)
+## Mandatory Research
 
-Before writing any code, find a similar existing domain and read through its full structure:
+Find a comparable domain and inspect:
 
-```bash
-# Pick a comparable domain and read its structure
-ls src/routes/api/v1/<similar-domain>/
-ls src/domains/<similar-domain>/schemas/
-```
+- `src/routes/api/v1/<similar-domain>/**`
+- `src/domains/<similar-domain>/**`
+- relevant DB schemas in `src/db/schemas/**`
+- relevant workers in `src/mq/**` if background processing is needed
 
-List the reference domain before writing code.
+List the references before editing.
 
-## Files to create
+## Layout
 
-### 1. Domain schemas folder
+Domain code usually spans:
 
-```
-src/domains/<domain>/schemas/
-├── entities/
-│   └── <entity>.ts          # createSelectSchema(table) + extensions
-└── handlers/
-    └── <verb>-<entity>/
-        ├── params.ts         # path params (if any)
-        ├── query.ts          # query params (if any)
-        ├── body.ts           # request body (POST/PATCH)
-        └── response.ts       # response schema with .meta()
-```
+- `src/domains/<domain>/schemas/entities/**` for entity schemas;
+- `src/domains/<domain>/schemas/handlers/<handler-name>/**` for handler schemas;
+- `src/routes/api/v1/<domain>/**` for Hono routes;
+- `src/db/schemas/**` when new persistent tables are needed;
+- `src/mq/**` when async work is needed.
 
-### 2. Route handlers
+## Workflow
 
-```
-src/routes/api/v1/<domain>/
-├── index.ts                  # re-exports all route exports
-└── <resource>/
-    └── <method>/
-        └── route.ts          # createHonoApp().basePath(...) + handler
-```
+1. Start with schemas and route skeletons that match local precedent.
+2. Add DB schema and migrations only when persistence is required.
+3. Add MQ queue/worker only when work should be asynchronous.
+4. Register routes in `src/entrypoints/server.ts`.
+5. Register queues in Bull Board and workers in `src/entrypoints/workers.ts`.
+6. Run the validation matrix for all touched areas.
 
-### 3. DB schema (if new tables needed)
+## Finish Checklist
 
-See `/db-migration` command.
-
-### 4. MQ workers (if background processing needed)
-
-See `/add-worker` command.
-
-## Entity schema template
-
-```typescript
-// src/domains/<domain>/schemas/entities/<entity>.ts
-import { createSelectSchema } from "drizzle-zod";
-import { myEntity } from "@/db/schema";
-import { z } from "@/lib/zod";
-
-export const myEntitySchema = createSelectSchema(myEntity).meta({
-  title: "<Entity>",
-  description: "<Entity> description",
-  ref: "<Entity>Schema",
-});
-
-export type MyEntity = z.infer<typeof myEntitySchema>;
-```
-
-## Route index template
-
-```typescript
-// src/routes/api/v1/<domain>/index.ts
-export { getEntityRoute } from "./<resource>/get/route";
-export { createEntityRoute } from "./<resource>/post/route";
-// ...
-```
-
-## server.ts registration
-
-After creating all routes, import and register in `src/entrypoints/server.ts`:
-
-```typescript
-import { getEntityRoute, createEntityRoute } from "@/routes/api/v1/<domain>";
-
-app.route("/api/v1", getEntityRoute);
-app.route("/api/v1", createEntityRoute);
-```
-
-## Finish checklist
-
-- [ ] Domain folder created at `src/domains/<domain>/`
-- [ ] Entity schemas in `entities/` using `createSelectSchema`
-- [ ] Handler schemas in `handlers/<verb>-<entity>/`
-- [ ] Routes in `src/routes/api/v1/<domain>/`
-- [ ] All routes exported from domain's `index.ts`
-- [ ] All routes registered in `server.ts`
-- [ ] DB migration generated and applied (if new tables)
-- Run: `pnpm lint:fix && pnpm lint:typescript`
+- Domain files are in the real backend layout, not `src/schemas`.
+- Routes are exported and registered.
+- DB schema changes have generated migration SQL, but migrations were not applied by the agent.
+- Workers have queue registration and shutdown handling.
+- Validation commands and skipped checks are reported.

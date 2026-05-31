@@ -1,57 +1,57 @@
 #!/usr/bin/env bash
-# Post-edit hook: warns Claude when follow-up commands are required.
-# Receives tool use JSON on stdin; exits 0 always (non-blocking).
+# Post-edit hook: prints non-blocking reminders after file edits.
 
 INPUT=$(cat)
 
-FILE=$(echo "$INPUT" | python3 -c "
-import sys, json
+FILE=$(printf '%s' "$INPUT" | python3 -c '
+import json
+import sys
+
 try:
-    d = json.load(sys.stdin)
-    f = d.get('tool_input', {}).get('file_path', '') or ''
-    print(f)
+    data = json.load(sys.stdin)
 except Exception:
-    print('')
-" 2>/dev/null)
+    print("")
+    raise SystemExit
 
-# DB schema changed → migration required
-if [[ "$FILE" == */src/db/schemas/* ]] && [[ "$FILE" == *.ts ]]; then
-  echo "[hook] DB schema modified: $(basename "$FILE") → run: pnpm db:generate && pnpm db:migrate"
-fi
+tool_input = data.get("tool_input", {}) or {}
+file_path = tool_input.get("file_path") or ""
+print(file_path)
+' 2>/dev/null)
 
-# server.ts changed → check route registration and Bull Board
-if [[ "$FILE" == */entrypoints/server.ts ]]; then
-  echo "[hook] server.ts modified → verify: route registered with app.route(), queue added to Bull Board"
-fi
+case "$FILE" in
+  */src/db/schemas/*.ts|*/src/db/schemas/*/*.ts)
+    echo "[hook] DB schema changed: run pnpm db:generate only; do not apply migrations from AI workflow."
+    ;;
+esac
 
-# workers.ts changed → check worker shutdown
-if [[ "$FILE" == */entrypoints/workers.ts ]]; then
-  echo "[hook] workers.ts modified → verify: worker imported and closed in shutdown()"
-fi
-
-# MQ queue file changed → remind about Bull Board registration
-if [[ "$FILE" == */src/mq/*/queue.ts ]]; then
-  echo "[hook] Queue file modified: $(basename "$(dirname "$FILE")") → verify queue is registered in Bull Board (server.ts)"
-fi
-
-# MQ worker file changed → remind about workers.ts registration
-if [[ "$FILE" == */src/mq/*/worker.ts ]]; then
-  echo "[hook] Worker file modified: $(basename "$(dirname "$FILE")") → verify worker is closed in shutdown (workers.ts)"
-fi
-
-# Env schema or constants changed → remind about all 4 propagation points
-if [[ "$FILE" == */env.ts ]]; then
-  echo "[hook] Env config modified → check all 4 points: env.ts, docker-compose.yml, .env.example"
-fi
-
-# .env.example changed → remind about schema
-if [[ "$FILE" == */.env.example ]]; then
-  echo "[hook] .env.example modified → verify variable is also in env.ts"
-fi
-
-# docker-compose.yml changed → remind about env consistency
-if [[ "$FILE" == */docker-compose.yml ]]; then
-  echo "[hook] docker-compose.yml modified → verify both 'server' and 'workers' services have the same env variables"
-fi
+case "$FILE" in
+  */src/entrypoints/server.ts)
+    echo "[hook] server.ts changed: verify API route registration and Bull Board queue registration."
+    ;;
+  */src/entrypoints/workers.ts)
+    echo "[hook] workers.ts changed: verify every worker is imported and closed in shutdown()."
+    ;;
+  */src/mq/*/queue.ts)
+    echo "[hook] Queue changed: verify matching worker, enqueue helper, and Bull Board registration in server.ts."
+    ;;
+  */src/mq/*/worker.ts)
+    echo "[hook] Worker changed: verify worker startup and shutdown registration in workers.ts."
+    ;;
+  */env.ts)
+    echo "[hook] env.ts changed: verify .env.example and both server/workers env blocks in docker-compose.yml."
+    ;;
+  */.env.example)
+    echo "[hook] .env.example changed: verify env.ts validates the same variable names."
+    ;;
+  */docker-compose.yml)
+    echo "[hook] docker-compose.yml changed: verify server and workers receive the same runtime env variables."
+    ;;
+  */src/ai/prompts/templates/*.md|*/src/ai/prompts/types/*.ts|*/src/ai/prompts/builders/*.ts)
+    echo "[hook] AI prompt changed: verify template placeholders, props type, builder variables, and call sites stay synchronized."
+    ;;
+  */kubb.config.ts|*/deps/api/*.json|*/scripts/download-*-openapi.ts)
+    echo "[hook] Codegen input changed: run pnpm api:generate and inspect src/codegen/api diff."
+    ;;
+esac
 
 exit 0

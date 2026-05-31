@@ -1,45 +1,28 @@
-# Lint and Type-check
+# Lint And Type Check
 
-Run the full validation suite for the current state of the backend.
+Run backend validation appropriate to the changed areas.
 
-## Steps
-
-Run in order (each step must pass before the next):
+## Baseline
 
 ```bash
 pnpm lint:fix
-```
-
-Runs ESLint + Prettier auto-fix. Fixes auto-fixable issues in place.
-
-```bash
 pnpm lint:typescript
 ```
 
-Runs `tsc --noEmit`. Must complete with zero errors.
+## Additional Checks
 
-## If DB schemas were changed
+- Env changes: `pnpm validate:env` when a representative `.env` is available.
+- Build/runtime entrypoints: `pnpm build`.
+- DB schema changes: `pnpm db:generate` only. Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+- External API codegen: provider download script when relevant, then `pnpm api:generate`.
+- Tests changed or behavior covered by tests: `pnpm test:unit`, targeted Vitest, or `pnpm test`.
 
-```bash
-pnpm db:generate && pnpm db:migrate
-```
+## Common Fixes
 
-Required after any change in `src/db/schemas/**`. Always commit schema + migration together.
+- Direct `zod` import should become `@/lib/zod`, except in `env.ts`.
+- Route inputs should come from `c.req.valid(...)` after `validator(...)`.
+- Responses should pass through `responseSchema.parse({ data })`.
+- Generated code under `src/codegen/api/**` should not be hand-edited.
+- BullMQ jobs need typed payloads and shutdown registration.
 
-## If external API specs were updated
-
-```bash
-pnpm api:download:tochka   # or api:download:yookassa
-pnpm api:generate
-```
-
-Required when Tochka or YooKassa OpenAPI specs changed. Never edit `src/codegen/**` manually.
-
-## Common issues
-
-- **Zod imported from `"zod"`** → change to `import { z } from "@/lib/zod"`
-- **`any` type** → use `unknown` with narrowing, or the correct Drizzle/Zod inferred type
-- **Response not parsed** → wrap in `responseSchema.parse({ data })`
-- **`c.req.param()` instead of `c.req.valid()`** → add `validator(...)` middleware before the handler
-- **Worker not typed** → add explicit `JobData` type to `Queue<JobData>` and `Worker<JobData>`
-- **Codegen types changed** → run `/regenerate-api` and adapt handwritten code
+If a check cannot run because of credentials, services, or DB safety, report that explicitly.

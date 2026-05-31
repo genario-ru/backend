@@ -6,45 +6,43 @@ type: project
 
 ## Stack
 
-- **Runtime**: Node.js + TypeScript 5.7 (ESM, `"type": "module"`)
-- **HTTP framework**: Hono 4 with `hono-openapi` for OpenAPI metadata
-- **Database**: PostgreSQL via Drizzle ORM + drizzle-kit migrations
-- **Auth**: Better Auth — session read via `sessionMiddleware`, user at `c.get("user")`
-- **Background jobs**: BullMQ + Redis (shared `@/lib/redis`)
-- **Validation**: Zod 4, always imported from `@/lib/zod`
-- **External API clients**: Kubb 4 codegen from Tochka and YooKassa OpenAPI specs
-- **Build**: tsup (two outputs: `dist/server.js`, `dist/workers.js`)
+- Runtime: Node.js + TypeScript ESM.
+- HTTP framework: Hono with `hono-openapi`.
+- Database: PostgreSQL via Drizzle ORM and drizzle-kit migrations.
+- Auth: Better Auth, with project routes under `src/routes/api/v1/auth/**`.
+- Background jobs: BullMQ + Redis via `@/lib/redis`.
+- Validation: Zod through `@/lib/zod`; `env.ts` is the direct `zod` exception.
+- External API clients: Kubb-generated code for Tochka, YooKassa, and Rutube.
+- AI prompts: Markdown templates, typed props, and builders in `src/ai/prompts/**`.
 
-## Two entrypoints
+## Entrypoints
 
-- `src/entrypoints/server.ts` — HTTP server, route registration, Bull Board UI, OpenAPI/Scalar docs
-- `src/entrypoints/workers.ts` — BullMQ worker startup and graceful shutdown
+- `src/entrypoints/server.ts` - HTTP server, route registration, Bull Board UI, OpenAPI/Scalar docs.
+- `src/entrypoints/workers.ts` - BullMQ worker startup and graceful shutdown.
 
-## Source layout
+## Source Layout
 
-```
+```text
 src/
-├── entrypoints/    # server.ts + workers.ts
-├── routes/api/     # Hono handlers — auth/ and v1/<domain>/
-├── domains/        # Domain schemas: entities/ + handlers/<verb>-<entity>/
-├── db/             # Drizzle schema, migrations, types
-├── mq/             # BullMQ queues + workers (one folder per job type)
-├── ai/             # AI prompts and provider config
-├── lib/            # Infrastructure: redis, s3, zod, api-client, ...
-├── middleware/     # session, rate-limit, subscription, openapi-response
-├── shared/         # Cross-domain constants, schemas, utils
-└── codegen/        # GENERATED — never edit manually (Kubb output)
+  entrypoints/    server.ts and workers.ts
+  routes/         Hono handlers, including api/v1/<domain>
+  domains/        Domain schemas, services, constants, utilities
+  db/             Drizzle schema, migrations, DB client/utilities
+  mq/             BullMQ queues and workers
+  ai/             Providers, prompt templates, prompt types/builders
+  lib/            Infrastructure adapters and integrations
+  middleware/     Hono middleware
+  shared/         Cross-domain constants, schemas, types, utilities
+  codegen/        Generated external API clients; do not edit manually
+  globals/        Global declarations
 ```
 
-## Key patterns
+## Key Patterns
 
-**Route handler** — middleware order is strict:
-`sessionMiddleware → rateLimitMiddleware → subscriptionMiddleware → openAPIResponseMiddleware → validator`
-
-**Responses**: always `c.json<T>(responseSchema.parse({ data }))` — never raw objects.
-
-**Errors**: always `throwAPIError({ code: APIErrorCode.X, message: "..." })` — never ad-hoc error objects.
-
-**Entity schemas**: `createSelectSchema(table)` from `drizzle-zod`, with `.meta({ title, description, ref })`.
-
-**BullMQ**: paired `queue.ts` + `worker.ts`; queue registered in Bull Board (`server.ts`), worker closed in shutdown (`workers.ts`).
+- Route middleware order for protected routes:
+  `sessionMiddleware -> rateLimitMiddleware -> subscriptionMiddleware -> openAPIResponseMiddleware -> validator`.
+- Responses: `c.json<T>(responseSchema.parse({ data }))`.
+- Errors: `throwAPIError(...)`.
+- Entity schemas: `createSelectSchema(table)` from `drizzle-zod`.
+- BullMQ: paired `queue.ts` + `worker.ts`, queue in Bull Board, worker closed in shutdown.
+- Prompt work: keep template, type, builder, and call sites synchronized.

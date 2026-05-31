@@ -11,15 +11,18 @@ alwaysApply: true
   - `src/routes/**`
   - `src/db/**`
   - `src/mq/**`
-  - `src/schemas/**`
+  - `src/domains/**`
   - `src/lib/**`
   - `src/ai/**`
+  - `src/middleware/**`
 
 ## Required Action Before Coding
 
 - Before writing code, analyze at least 3 similar sections in the same domain.
   - Examples: for a new route, review at least 3 route modules; for a new worker, review at least 3 `queue/worker` pairs; for a new DB entity, review at least 3 similar schema/relation implementations.
 - Based on that analysis, record references and follow their structure/patterns.
+- For AI prompt changes, inspect matching template/type/builder triplets and verify placeholder names stay synchronized.
+- For generated API integration changes, inspect generated code and the hand-written wrapper/service that consumes it; do not copy generated style into product code.
 
 ## What Must Be Included In The Result
 

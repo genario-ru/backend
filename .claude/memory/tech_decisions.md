@@ -1,45 +1,57 @@
 ---
 name: Tech decisions
-description: Key technical decisions and their rationale for genario-backend
+description: Key technical decisions and rationale for genario-backend
 type: project
 ---
 
-## Zod always from `@/lib/zod`
+## Zod Comes From `@/lib/zod`
 
-Import as `import { z } from "@/lib/zod"` — never from `"zod"` directly.
+Use `import { z } from "@/lib/zod"` for project schemas.
 
-**Why:** The lib wrapper adds project-wide custom error messages in Russian, consistent across all validation errors shown to users.
+Exception: `env.ts` imports direct `zod` because `@t3-oss/env-core` expects it.
 
-## Responses always via `responseSchema.parse({ data })`
+Why: the project wrapper centralizes validation behavior and messages.
 
-Never return a raw object from a route handler.
+## Responses Pass Through `responseSchema.parse({ data })`
 
-**Why:** Strips unexpected fields, validates the response matches the OpenAPI contract, prevents accidental data leaks.
+Never return raw success objects from route handlers.
 
-## `throwAPIError` for all domain errors
+Why: response parsing strips unexpected fields, validates the OpenAPI contract, and reduces accidental data leaks.
 
-Never `c.json({ error: "..." }, 400)`. Always `throwAPIError({ code: APIErrorCode.X, message: "..." })`.
+## Domain Errors Use `throwAPIError`
 
-**Why:** All errors go through `errorHandlerMiddleware`, producing a consistent JSON error envelope the frontend expects.
+Do not return ad-hoc JSON error envelopes.
 
-## `drizzle-zod` for entity schemas
+Why: `throwAPIError(...)` keeps backend errors compatible with the shared frontend/API error contract.
 
-Use `createSelectSchema(table)` to derive Zod schemas from Drizzle table definitions.
+## Drizzle-Zod Derives Entity Schemas
 
-**Why:** Single source of truth — DB schema and validation schema stay in sync automatically. Avoids drift between columns and API types.
+Use `createSelectSchema(table)` for DB-backed entity schemas.
 
-## BullMQ paired queue + worker files
+Why: DB shape and runtime/API validation stay closer to a single source of truth.
 
-Each job type: `queue.ts` (Queue + enqueue helper) and `worker.ts` (Worker + handler) in the same folder.
+## BullMQ Uses Paired Queue And Worker Modules
 
-**Why:** Clear producer/consumer separation. Route handlers enqueue jobs without importing worker code.
+Each job type should have a queue producer module and a worker consumer module.
 
-## `pnpm db:generate + db:migrate`, never `db:push`
+Why: routes/services enqueue jobs without importing worker code, and entrypoints can register queues/workers explicitly.
 
-**Why:** `db:push` bypasses migration history and can silently break production. `db:generate` creates explicit, reviewable SQL.
+## Agents Generate Migrations But Do Not Apply Them
 
-## External API clients via Kubb codegen
+For repository schema changes, agents may run `pnpm db:generate` to create migration SQL. Agents must not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
 
-Tochka and YooKassa clients are generated — never hand-written.
+Why: generated SQL is reviewable, while applying it mutates a real database and should remain a human-controlled action.
 
-**Why:** Keeps client code in sync with provider APIs automatically. Manual clients drift and cause runtime bugs.
+## External API Clients Are Generated
+
+Tochka, YooKassa, and Rutube clients live under `src/codegen/api/**`.
+
+Why: generated clients track provider specs. Manual edits drift and are overwritten by Kubb.
+
+Note: Rutube currently uses a pinned local spec in `deps/api/rutube.json`.
+
+## AI Prompts Are Triplets
+
+Prompt behavior usually spans a Markdown template, typed props, and a builder.
+
+Why: keeping placeholders, types, and call sites synchronized prevents runtime prompt gaps and malformed context blocks.

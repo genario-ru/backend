@@ -1,71 +1,31 @@
 # Add Environment Variable
 
-Add a new environment variable across all required backend layers.
+Add, rename, or remove an environment variable across all backend layers.
 
 ## Arguments
 
-`$ARGUMENTS` — name and description of the variable (e.g. "STRIPE_SECRET_KEY for Stripe payment integration").
+`$ARGUMENTS` - variable name and purpose, for example `R2_ACCESS_KEY_ID for S3-compatible storage`.
 
-## All 4 update points are mandatory
+## Required Update Points
 
-### 1. `env.ts` — Zod validation schema
+1. `env.ts` - validation schema and `process.env` mapping. Direct `zod` import is allowed here because `@t3-oss/env-core` expects it.
+2. `.env.example` - documented example value.
+3. `docker-compose.yml` - both `server` and `workers` services for runtime variables.
+4. `Dockerfile` only for build-time variables, such as release metadata.
 
-```typescript
-export const envsSchema = z.object({
-  // ... existing vars ...
-  MY_VAR: z.string().min(1),
-});
-```
+## Workflow
 
-### 2. `env.ts` — runtime mapping
+1. Decide whether the variable is required, optional, runtime, or build-time.
+2. Add or update validation in `env.ts`.
+3. Propagate runtime variables to both `server` and `workers` in `docker-compose.yml`.
+4. Update `.env.example`.
+5. Search for old/new variable names to catch casing drift.
+6. Run `pnpm validate:env` when a representative `.env` is available; otherwise report why it was skipped.
+7. Run `pnpm lint:typescript` if TypeScript code changed.
 
-```typescript
-const parsed = envsSchema.parse(process.env);
+## Finish Checklist
 
-export const envs = {
-  // ... existing vars ...
-  myVar: parsed.MY_VAR,
-};
-```
-
-### 3. `docker-compose.yml` — both `server` AND `workers` services
-
-```yaml
-services:
-  server:
-    environment:
-      MY_VAR: ${MY_VAR}
-
-  workers:
-    environment:
-      MY_VAR: ${MY_VAR}
-```
-
-### 4. `.env.example` — documentation for other developers
-
-```bash
-# Description of what this variable is for
-MY_VAR=example_value
-```
-
-## Steps
-
-1. Add the variable to all 4 locations above.
-2. Add the actual value to your local `.env`.
-3. Restart the dev server to verify startup Zod validation passes:
-   ```bash
-   pnpm dev
-   ```
-4. Run type check:
-   ```bash
-   pnpm lint:typescript
-   ```
-
-## Finish checklist
-
-- [ ] Variable in `env.ts` (Zod schema)
-- [ ] Variable mapped in `env.ts`
-- [ ] Both `server` and `workers` in `docker-compose.yml` have the variable
-- [ ] `.env.example` updated with an example value and comment
-- [ ] Local `.env` has the real value
-- [ ] Server starts without Zod validation errors
+- Variable is validated at startup.
+- Names match across all files.
+- `server` and `workers` have consistent runtime env blocks.
+- Optional/default semantics are explicit.

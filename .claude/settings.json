@@ -3,11 +3,11 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash /c/Users/ilialksv/genario/genario-backend/.claude/hooks/post-edit.sh"
+            "command": "bash .claude/hooks/post-edit.sh"
           }
         ]
       }

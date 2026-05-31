@@ -6,15 +6,20 @@ alwaysApply: false
 
 # Backend DB And Migrations
 
-- For schema changes in `src/db/schemas/**`, prefer:
-  `pnpm db:generate -> pnpm db:migrate`.
-- Use `db:push` only for quick local experiments, not as the main repository workflow.
+- Schema source lives in `src/db/schemas/**`; exports are collected through `src/db/schema.ts`.
+- Migrations live in `src/db/migrations/**`.
+- For repository schema changes, agents may run `pnpm db:generate` to create migration SQL.
+- Agents must not run `pnpm db:migrate`, `pnpm db:push`, `pnpm db:drop`, or any command that applies schema changes to a database unless the user explicitly asks for that exact command in the current task.
 - Commit schema updates together with generated migrations.
-- Before migrations, verify `POSTGRES_URL` to avoid applying changes to the wrong database.
-- Keep Drizzle query and relations style consistent (`relations`, typed query helpers).
+- If migration application is needed, stop after generation and tell the user which generated file should be reviewed/applied manually.
+- Keep Drizzle query, relations, enum, and index style consistent with nearby schemas.
+- If a table shape is returned by an API, update the matching domain entity/handler schemas under `src/domains/<domain>/schemas/**`.
+- If a schema change affects workers, billing, auth, or AI workflows, inspect the corresponding service code before finalizing.
 
 ## What Not To Do
 
 - Do not open a PR with schema changes but no migrations.
+- Do not apply migrations to a database from an AI workflow.
 - Do not manually rewrite old migrations if it breaks migration history.
 - Do not mix business-rule and infra SQL changes in one large unstructured commit.
+- Do not add DB columns without checking API response schemas and serialization code that depend on that entity.

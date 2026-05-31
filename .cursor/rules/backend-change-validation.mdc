@@ -7,7 +7,15 @@ alwaysApply: true
 
 - Before finishing a task, select checks based on changed areas rather than skipping validation.
 - Minimum for TypeScript changes: `pnpm lint:typescript`.
-- For route, middleware, MQ, DB, env, or infra changes, run relevant checks from `docs/workflows/verification-matrix.md`.
+- For docs/rules-only changes, run formatting/checks that apply to changed Markdown/JSON/shell files.
+- For route, middleware, MQ, DB, env, or infra changes, choose from this matrix:
+  - TypeScript/backend code: `pnpm lint:fix`, `pnpm lint:typescript`.
+  - Env config: `pnpm validate:env` when a representative `.env` is available.
+  - Build/runtime entrypoints: `pnpm build`.
+  - Route/API contract: `pnpm lint:typescript`, targeted tests if available, and OpenAPI metadata inspection.
+  - DB schema: `pnpm db:generate` only. Agents must not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+  - External API codegen: relevant `api:download:*`, `pnpm api:generate`, then TypeScript check.
+  - Tests changed or behavior covered by tests: `pnpm test:unit` or targeted Vitest; `pnpm test` when broader validation is needed.
 - If full checks were not run, state it explicitly and list what remains unverified.
 - Do not claim full completion without actual validation or explicit constraints.
 
@@ -15,4 +23,4 @@ alwaysApply: true
 
 - Rules define policy and standards.
 - Skills define step-by-step workflows.
-- Documentation contains the matrix used as a planning and implementation reference.
+- `AGENTS.md` contains the shared validation contract; keep this rule aligned with it.

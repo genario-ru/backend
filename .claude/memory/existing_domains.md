@@ -1,45 +1,71 @@
 ---
 name: Existing domains
-description: All implemented API domains with route/schema locations, and all BullMQ workers
+description: Implemented route/domain folders and BullMQ workers
 type: project
 ---
 
-## API domains (`src/routes/api/v1/` + `src/domains/`)
+## API Route Domains
 
-| Domain            | Notes                                                  |
-| ----------------- | ------------------------------------------------------ |
-| `archive`         | Read-only archive of generated content                 |
-| `attachments`     | Pre-signed S3 download URLs                            |
-| `billing`         | Payments, payment-methods, webhook (Tochka + YooKassa) |
-| `credits`         | Packages, batches, usage, initiate payment             |
-| `ideas`           | Single idea CRUD + save                                |
-| `ideas-lists`     | Full CRUD + AI generation + export                     |
-| `platforms`       | Reference data                                         |
-| `profiles`        | YouTube/platform profiles — full CRUD                  |
-| `referral`        | Referral codes and rewards                             |
-| `scenarios`       | Main product — full CRUD + chapters + scenes + export  |
-| `subscriptions`   | Current user subscription status                       |
-| `tariffs`         | Available subscription plans                           |
-| `templates`       | Scenario templates                                     |
-| `tones`           | Writing tone options                                   |
-| `users`           | Current user profile management                        |
-| `video-durations` | Reference data                                         |
-| `video-types`     | Reference data                                         |
+Existing `src/routes/api/v1/**` route folders:
 
-## Auth routes (`src/routes/api/auth/`)
+- `alerts`
+- `archive`
+- `attachments`
+- `auth`
+- `billing`
+- `credits`
+- `frontend`
+- `ideas`
+- `ideas-lists`
+- `legal-documents`
+- `platforms`
+- `production-statuses`
+- `profiles`
+- `referral`
+- `scenarios`
+- `subscriptions`
+- `tariffs`
+- `templates`
+- `tones`
+- `video-durations`
+- `video-types`
 
-Better Auth — session, sign-in, sign-out, OTP verification.
+## Domain Folders
 
-## BullMQ workers (`src/mq/`)
+Existing `src/domains/**` folders include route-facing domains plus supporting domains:
 
-| Folder                              | Job                                  |
-| ----------------------------------- | ------------------------------------ |
-| `ideas-list-export`                 | Export ideas list to document        |
-| `ideas-list-generation`             | AI generation of ideas               |
-| `profiles-from-channels-generation` | Build profiles from YouTube channels |
-| `scenario-chapters-generation`      | AI generation of scenario chapters   |
-| `scenario-scene-preview-generation` | Generate scene preview images        |
-| `scenario-scenes-generation`        | AI generation of scenario scenes     |
-| `scenario-version-export`           | Export scenario version to document  |
+- `alerts`, `archive`, `attachments`, `auth`, `billing`, `credits`
+- `export-document`, `frontend`, `health`, `ideas`, `ideas-lists`
+- `legal-documents`, `mail`, `platforms`, `production-statuses`
+- `profiles`, `referral`, `scenarios`, `subscriptions`, `tariffs`
+- `templates`, `tones`, `video-durations`, `video-types`
 
-Before creating a new domain or worker, check this list and read the most similar existing implementation as reference.
+## DB Schema Groups
+
+`src/db/schemas/**` groups:
+
+- `auth`
+- `billing`
+- `jobs`
+- `linking`
+- `logs`
+- `primary`
+- `referral`
+- `secondary`
+
+## BullMQ Workers
+
+Existing `src/mq/**` folders:
+
+- `ideas-list-export`
+- `ideas-list-generation`
+- `mail-send`
+- `profiles-from-channels-generation`
+- `scenario-chapters-generation`
+- `scenario-metadata-generation`
+- `scenario-metadata-regeneration`
+- `scenario-scene-preview-generation`
+- `scenario-scenes-generation`
+- `scenario-version-export`
+
+Before creating a new domain or worker, inspect the closest existing implementation and list the references used.

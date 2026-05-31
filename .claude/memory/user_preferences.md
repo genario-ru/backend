@@ -4,24 +4,23 @@ description: Collaboration style and workflow expectations when working on genar
 type: user
 ---
 
-## Reference-first before new files
+## Reference-First Before New Files
 
-Before creating any new file in a domain area, read at least 3 similar existing implementations and list them explicitly before writing code.
+Before creating new route, schema, DB, MQ, lib, middleware, or AI prompt files, read at least 3 similar existing implementations and list them explicitly.
 
-**Why:** Prevents inconsistent patterns — naming, structure, and imports must match existing conventions.
-**How to apply:** For any new route, schema, worker, or lib file — find 3 references first, list them, then write.
+Why: naming, structure, imports, registration, and validation patterns must match the existing codebase.
 
-## Completion checklist is mandatory
+## Completion Checklist Is Mandatory
 
-Every task must end with the checklist from CLAUDE.md verified: lint, typecheck, and all registration steps (server.ts, workers.ts, Bull Board) confirmed.
+Every task should end with concrete validation: commands run, registration points checked, and skipped checks explained.
 
-**How to apply:** Never report a task as done without running `pnpm lint:fix && pnpm lint:typescript` and confirming all integration points are updated.
+Do not report a task as fully validated when services, credentials, or an unconfirmed database target prevented relevant checks.
 
-## Both projects in the same monorepo
+## Backend And Frontend Are Related
 
-The user works on two related projects:
+The user works on:
 
-- `genario-backend` — this project (Hono API)
-- `genario-frontend` — React 19 + TanStack Router SPA that consumes this API
+- `genario-backend` - this Hono API project.
+- `genario-frontend` - the React + TanStack Router app that consumes this API.
 
-**How to apply:** When adding or changing endpoints, note what the frontend will need (Kubb regeneration, action hook updates).
+When adding or changing endpoints, mention frontend implications such as API client regeneration, route action/query updates, or contract changes.
