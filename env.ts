@@ -5,7 +5,7 @@ import * as z from "zod";
 
 export const env = createEnv({
   server: {
-    NODE_ENV: z.enum(["development", "production"]),
+    NODE_ENV: z.enum(["development", "stage", "production"]),
     POSTGRES_URL: z.url(),
     REDIS_URL: z.url(),
     S3_BUCKET_BASE_URL: z.url(),
