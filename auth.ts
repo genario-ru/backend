@@ -105,7 +105,7 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
-      disableSignUp: true,
+      disableSignUp: env.DISABLE_SIGN_UP,
       storeOTP: "encrypted",
       generateOTP({ email, type }) {
         if (type === "sign-in") {
