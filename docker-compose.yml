@@ -1,10 +1,10 @@
 services:
   server:
-    image: ghcr.io/genario-ru/backend:latest
+    image: ghcr.io/genario-ru/backend-${DEPLOY_ENVIRONMENT:-production}:${IMAGE_TAG:-latest}
     pull_policy: always
     command: pnpm run start
     ports:
-      - "3000:3000"
+      - "${HTTP_PORT:-3000}:3000"
     restart: unless-stopped
     environment:
       - NODE_ENV=${NODE_ENV}
@@ -52,7 +52,7 @@ services:
       - GLITCHTIP_DSN=${GLITCHTIP_DSN}
 
   workers:
-    image: ghcr.io/genario-ru/backend:latest
+    image: ghcr.io/genario-ru/backend-${DEPLOY_ENVIRONMENT:-production}:${IMAGE_TAG:-latest}
     pull_policy: always
     command: pnpm run start:workers
     restart: unless-stopped
