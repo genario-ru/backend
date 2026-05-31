@@ -2,14 +2,14 @@ import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { payment, subscription, subscriptionToPayment } from "@/db/schema";
+import { payment, subscriptionToPayment } from "@/db/schema";
 import type { SubscriptionWithTariff } from "@/domains/subscriptions/schemas/entities/subscription";
 
 import { prepareYooKassaRecurringPaymentParams } from "../utils/prepare-yookassa-recurring-payment-params";
 import { createYooKassaRecurringPayment } from "./create-yookassa-recurring-payment";
 import { getActivePaymentMethods } from "./get-active-payment-methods";
 import { getLastPendingPayments } from "./get-last-pending-payments";
-import { terminateSubscription } from "./terminate-subscription";
+import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
 
 type InitiateSubscriptionRecurringPaymentParams = {
   userId: string;
@@ -32,30 +32,17 @@ export async function initiateSubscriptionRecurringPayment({
     // 2. Если количество failed попыток проведения платежа больше 3, то обновляем статус подписки на terminated и переходим к следующему пользователю.
     // 3. Если количество failed попыток проведения платежа меньше 3, то отправляем пользователю Email, чтобы он добавил способ оплаты, увеличиваем количество failed попыток проведения платежа на 1 и переходим к следующему пользователю.
 
-    const failedBillingAttempts = nextSubscription.failedBillingAttempts;
-
-    if (failedBillingAttempts >= 3) {
-      await terminateSubscription({
-        userId,
-        subscriptionId: nextSubscription.id,
-      });
-
-      return;
-    }
-
-    await db
-      .update(subscription)
-      .set({ failedBillingAttempts: failedBillingAttempts + 1 })
-      .where(eq(subscription.id, nextSubscription.id));
+    await registerSubscriptionBillingFailure({
+      userId,
+      subscriptionId: nextSubscription.id,
+      failedBillingAttempts: nextSubscription.failedBillingAttempts,
+    });
 
     // TODO: Отправляем пользователю Email, чтобы он добавил способ оплаты и переходим к следующему пользователю.
     return;
   } else {
     const [foundPaymentMethod] = foundPaymentMethods;
-
-    const lastPendingPayments = await getLastPendingPayments({
-      userId,
-    });
+    const lastPendingPayments = await getLastPendingPayments({ userId });
 
     // Пробуем найти ожидающий платеж для текущей подписки
     const lastPendingSubscriptionPayment = lastPendingPayments.find(
@@ -78,7 +65,7 @@ export async function initiateSubscriptionRecurringPayment({
         description,
         userEmail,
         receiptItemDescription: description,
-        paymentMethodId: foundPaymentMethod.id,
+        paymentMethodId: foundPaymentMethod.paymentMethodId,
         idempotenceKey,
       });
 

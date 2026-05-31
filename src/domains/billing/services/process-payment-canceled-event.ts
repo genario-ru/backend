@@ -7,6 +7,9 @@ import { processPaymentCancellationDetails } from "@/lib/yookassa/utils/process-
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
+import { cleanPendingSubscriptions } from "./clean-pending-subscriptions";
+import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
+
 export async function processPaymentCanceledEvent(
   data: PaymentCanceledWebhookData,
 ) {
@@ -16,6 +19,13 @@ export async function processPaymentCanceledEvent(
 
   const foundPayment = await db.query.payment.findFirst({
     where: (payment, { eq }) => eq(payment.paymentId, receivedPayment.id),
+    with: {
+      subscriptionToPayment: {
+        with: {
+          subscription: true,
+        },
+      },
+    },
   });
 
   if (!foundPayment) {
@@ -23,6 +33,12 @@ export async function processPaymentCanceledEvent(
       code: APIErrorCode.NotFound,
       message: "Платеж не найден",
     });
+  }
+
+  // Обрабатываем только ожидающие оплаты платежи: это защищает от повторной
+  // обработки вебхука и от отмены уже успешного / проваленного платежа.
+  if (foundPayment.status !== "pending") {
+    return;
   }
 
   if (receivedPayment.status !== "canceled") {
@@ -42,17 +58,44 @@ export async function processPaymentCanceledEvent(
     });
   }
 
-  // Проставляем статус платежа в "отменен" с указанием причины отмены
-
+  // Проставляем статус платежа в "отменен" с указанием причины отмены и
+  // обновляем связанную подписку в зависимости от типа платежа.
   const statusDetails = processPaymentCancellationDetails(
     receivedPayment.cancellation_details,
   );
 
-  await db
-    .update(payment)
-    .set({
-      status: "canceled",
-      statusDetails,
-    })
-    .where(eq(payment.id, foundPayment.id));
+  await db.transaction(async (tx) => {
+    await tx
+      .update(payment)
+      .set({
+        status: "canceled",
+        statusDetails,
+      })
+      .where(eq(payment.id, foundPayment.id));
+
+    // Платеж с paymentLink создается пользователем через первичный checkout,
+    // платеж без paymentLink — сервером для рекуррентного списания.
+    const isCheckoutPayment = Boolean(foundPayment.paymentLink);
+
+    if (isCheckoutPayment) {
+      // Пользователь не завершил первичную оплату — удаляем его неактивированные
+      // pending-подписки (текущую и отложенную следующую), как при новом checkout.
+      await cleanPendingSubscriptions({ userId: foundPayment.userId, tx });
+      return;
+    }
+
+    // Рекуррентное списание не прошло — регистрируем неудачную попытку оплаты.
+    const linkedSubscription = foundPayment.subscriptionToPayment?.subscription;
+
+    if (!linkedSubscription) {
+      return;
+    }
+
+    await registerSubscriptionBillingFailure({
+      userId: foundPayment.userId,
+      subscriptionId: linkedSubscription.id,
+      failedBillingAttempts: linkedSubscription.failedBillingAttempts,
+      tx,
+    });
+  });
 }

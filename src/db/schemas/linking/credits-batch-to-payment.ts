@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 import { creditsBatch } from "../billing/credits-batch";
 import { payment } from "../billing/payment";
@@ -20,6 +20,9 @@ export const creditsBatchToPayment = pgTable(
   (table) => [
     index("credits_batch_to_payment_credits_batch_id_idx").on(
       table.creditsBatchId,
+    ),
+    uniqueIndex("credits_batch_to_payment_payment_id_unique_idx").on(
+      table.paymentId,
     ),
     index("credits_batch_to_payment_payment_id_idx").on(table.paymentId),
   ],

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { index, pgTable, uuid } from "drizzle-orm/pg-core";
+import { index, pgTable, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 import { payment } from "../billing/payment";
 import { subscription } from "../billing/subscription";
@@ -31,6 +31,9 @@ export const subscriptionToPayment = pgTable(
   (table) => [
     index("subscription_to_payment_subscription_id_idx").on(
       table.subscriptionId,
+    ),
+    uniqueIndex("subscription_to_payment_payment_id_unique_idx").on(
+      table.paymentId,
     ),
     index("subscription_to_payment_payment_id_idx").on(table.paymentId),
   ],

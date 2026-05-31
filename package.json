@@ -8,6 +8,9 @@
     "build": "tsup",
     "start": "node dist/server.js",
     "start:workers": "node dist/workers.js",
+    "test": "pnpm run test:unit && pnpm run test:integration",
+    "test:unit": "vitest run tests/unit/src tests/unit/scripts",
+    "test:integration": "vitest run tests/integration --passWithNoTests",
     "lint:typescript": "tsc --noEmit",
     "lint:eslint": "eslint",
     "lint:prettier": "prettier",
@@ -95,6 +98,7 @@
     "tsx": "^4.7.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.46.1",
+    "vitest": "^4.1.7",
     "yaml": "^2.8.2"
   }
 }

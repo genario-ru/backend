@@ -67,8 +67,9 @@ export async function processPaymentSucceededEvent(
     });
   }
 
-  // Потенциально такого сценария не должно быть, но для безопасности все равно проверяем
-  if (foundPayment.status === "succeeded") {
+  // Обрабатываем только ожидающие оплаты платежи: это защищает от повторной
+  // обработки вебхука и от активации уже отмененного / проваленного платежа.
+  if (foundPayment.status !== "pending") {
     return;
   }
 
@@ -204,12 +205,15 @@ export async function processPaymentSucceededEvent(
         .where(eq(subscription.id, foundPaymentSubscription.id));
 
       if (foundPaymentNextSubscription) {
-        await tx.insert(subscription).values({
-          userId: foundPaymentUserId,
-          tariffId: foundPaymentNextSubscription.tariff.id,
-          startsAt: nextSubscriptionStartsAt,
-          nextBillingAt: nextSubscriptionNextBillingAt,
-        });
+        await tx
+          .update(subscription)
+          .set({
+            startsAt: nextSubscriptionStartsAt,
+            nextBillingAt: nextSubscriptionNextBillingAt,
+            failedBillingAttempts: 0,
+            status: "pending",
+          })
+          .where(eq(subscription.id, foundPaymentNextSubscription.id));
       }
 
       // Если у тарифа подписки есть пакет кредитов, то добавляем его в баланс пользователя

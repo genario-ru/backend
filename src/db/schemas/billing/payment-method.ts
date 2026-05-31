@@ -6,6 +6,7 @@ import {
   pgEnum,
   pgTable,
   text,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -38,6 +39,9 @@ export const paymentMethod = pgTable(
     ...timestamps,
   },
   (table) => [
+    uniqueIndex("payment_method_payment_method_id_unique_idx").on(
+      table.paymentMethodId,
+    ),
     index("payment_method_payment_method_id_idx").on(table.paymentMethodId),
     index("payment_method_user_id_created_at_idx").on(
       table.userId,

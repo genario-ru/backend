@@ -1,5 +1,13 @@
 import { relations } from "drizzle-orm";
-import { index, pgEnum, pgTable, real, text, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgEnum,
+  pgTable,
+  real,
+  text,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -44,6 +52,7 @@ export const payment = pgTable(
     ...timestamps,
   },
   (table) => [
+    uniqueIndex("payment_payment_id_unique_idx").on(table.paymentId),
     index("payment_payment_id_idx").on(table.paymentId),
     index("payment_user_id_created_at_idx").on(table.userId, table.createdAt),
     index("payment_user_id_status_created_at_idx").on(
