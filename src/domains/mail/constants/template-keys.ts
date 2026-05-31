@@ -1,6 +1,7 @@
 export const EmailTemplateKey = {
   OTP: "otp",
   EmailVerification: "email_verification",
+  UpcomingSubscriptionCharge: "upcoming_subscription_charge",
 } as const;
 
 export type EmailTemplateKey =
@@ -14,4 +15,12 @@ export const OTP_SUBJECT_BY_TYPE: Record<
   "email-verification": "Код подтверждения почты",
   "forget-password": "Код для восстановления пароля",
   "change-email": "Код для смены почты",
+};
+
+export const UPCOMING_SUBSCRIPTION_CHARGE_SUBJECT_BY_DAYS: Record<
+  1 | 3,
+  string
+> = {
+  1: "Оплата тарифа завтра",
+  3: "Оплата тарифа через 3 дня",
 };

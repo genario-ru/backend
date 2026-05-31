@@ -13,7 +13,7 @@ import type { PaymentSucceededWebhookData } from "@/domains/billing/schemas/enti
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
-import { getSubscriptionsDates } from "./get-subscriptions-dates";
+import { getSubscriptionsDates } from "../utils/get-subscriptions-dates";
 
 export async function processPaymentSucceededEvent(
   data: PaymentSucceededWebhookData,

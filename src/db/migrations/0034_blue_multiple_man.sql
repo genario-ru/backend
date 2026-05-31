@@ -1,0 +1,1 @@
+ALTER TYPE "public"."email_template_key" ADD VALUE 'upcoming_subscription_charge';

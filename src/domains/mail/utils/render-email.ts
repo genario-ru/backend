@@ -4,10 +4,12 @@ import type { ReactElement } from "react";
 import {
   EmailTemplateKey,
   OTP_SUBJECT_BY_TYPE,
+  UPCOMING_SUBSCRIPTION_CHARGE_SUBJECT_BY_DAYS,
 } from "@/domains/mail/constants/template-keys";
 import type { EmailPayloadByKey } from "@/domains/mail/schemas/payloads";
 import { EmailVerificationEmail } from "@/domains/mail/templates/auth/email-verification-email";
 import { OtpEmail } from "@/domains/mail/templates/auth/otp-email";
+import { UpcomingSubscriptionChargeEmail } from "@/domains/mail/templates/billing/upcoming-subscription-charge-email";
 
 function buildEmail<K extends EmailTemplateKey>(
   templateKey: K,
@@ -31,6 +33,21 @@ function buildEmail<K extends EmailTemplateKey>(
       return {
         element: EmailVerificationEmail(verificationPayload),
         subject: "Подтверждение адреса электронной почты",
+      };
+    }
+
+    case EmailTemplateKey.UpcomingSubscriptionCharge: {
+      const upcomingSubscriptionChargePayload =
+        payload as EmailPayloadByKey[typeof EmailTemplateKey.UpcomingSubscriptionCharge];
+
+      return {
+        element: UpcomingSubscriptionChargeEmail(
+          upcomingSubscriptionChargePayload,
+        ),
+        subject:
+          UPCOMING_SUBSCRIPTION_CHARGE_SUBJECT_BY_DAYS[
+            upcomingSubscriptionChargePayload.daysBeforeCharge
+          ],
       };
     }
 
