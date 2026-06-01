@@ -6,11 +6,10 @@ alwaysApply: false
 
 # Backend OpenAPI Codegen
 
-- Generated clients live under `src/codegen/api/{tochka,yookassa,rutube}/**`.
+- Generated clients live under `src/codegen/api/{yookassa,rutube}/**`.
 - Spec sources are stored in `deps/api/*.json`.
 - Do not manually edit generated files unless the task explicitly asks for an emergency patch and the final answer calls that out.
-- For Tochka/YooKassa updates, refresh specs first:
-  - `pnpm api:download:tochka`
+- For YooKassa updates, refresh specs first:
   - `pnpm api:download:yookassa`
   - `pnpm api:generate`
 - Rutube has `deps/api/rutube.json` and generated output but no download script in `package.json`; treat it as a pinned local spec unless the task explicitly changes that workflow.

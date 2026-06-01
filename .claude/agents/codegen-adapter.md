@@ -9,16 +9,15 @@ You are an API codegen adaptation specialist for `genario-backend`.
 ## Codegen Setup
 
 - Tool: Kubb (`kubb.config.ts`).
-- Specs: `deps/api/tochka.json`, `deps/api/yookassa.json`, `deps/api/rutube.json`.
-- Generated output: `src/codegen/api/{tochka,yookassa,rutube}/**`.
-- Tochka/YooKassa have download scripts. Rutube is currently a pinned local spec unless the task explicitly changes that workflow.
+- Specs: `deps/api/yookassa.json`, `deps/api/rutube.json`.
+- Generated output: `src/codegen/api/{yookassa,rutube}/**`.
+- YooKassa has a download script. Rutube is currently a pinned local spec unless the task explicitly changes that workflow.
 - Generated provider folders are read-only by default.
 
 ## Workflow
 
 1. Check provider scripts in `package.json`.
 2. Refresh specs when required and supported:
-   - `pnpm api:download:tochka`
    - `pnpm api:download:yookassa`
 3. Run `pnpm api:generate`.
 4. Inspect diffs in `deps/api/**`, `src/codegen/api/**`, and `kubb.config.ts`.

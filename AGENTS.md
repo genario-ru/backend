@@ -15,7 +15,7 @@ file.
   `src/db/migrations/**`.
 - Validation/OpenAPI: Zod 4, `hono-openapi`, response schemas, and OpenAPI
   metadata.
-- External API clients: Kubb-generated code for Tochka, YooKassa, and Rutube in
+- External API clients: Kubb-generated code for YooKassa and Rutube in
   `src/codegen/api/**`.
 - AI prompts: Markdown templates, typed props, and builders under
   `src/ai/prompts/**`.
@@ -139,7 +139,6 @@ After adding a queue/worker:
 Generated folders:
 
 ```text
-src/codegen/api/tochka/**
 src/codegen/api/yookassa/**
 src/codegen/api/rutube/**
 ```
@@ -150,7 +149,6 @@ run generators.
 Use:
 
 ```bash
-pnpm api:download:tochka
 pnpm api:download:yookassa
 pnpm api:generate
 ```
@@ -206,7 +204,6 @@ pnpm lint:typescript
 pnpm db:generate
 pnpm db:push # human-only; AI agents must not run this by default
 pnpm db:studio # human-only/local inspection
-pnpm api:download:tochka
 pnpm api:download:yookassa
 pnpm api:generate
 ```

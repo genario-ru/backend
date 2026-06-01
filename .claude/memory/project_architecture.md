@@ -12,7 +12,7 @@ type: project
 - Auth: Better Auth, with project routes under `src/routes/api/v1/auth/**`.
 - Background jobs: BullMQ + Redis via `@/lib/redis`.
 - Validation: Zod through `@/lib/zod`; `env.ts` is the direct `zod` exception.
-- External API clients: Kubb-generated code for Tochka, YooKassa, and Rutube.
+- External API clients: Kubb-generated code for YooKassa and Rutube.
 - AI prompts: Markdown templates, typed props, and builders in `src/ai/prompts/**`.
 
 ## Entrypoints

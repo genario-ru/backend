@@ -11,7 +11,6 @@ Update OpenAPI specs and regenerate Kubb clients.
 1. Check `package.json`, `deps/api/*.json`, and `kubb.config.ts`.
 2. Refresh specs when scripts exist:
    ```bash
-   pnpm api:download:tochka
    pnpm api:download:yookassa
    ```
 3. Treat `deps/api/rutube.json` as a pinned local spec unless explicitly changing Rutube automation.

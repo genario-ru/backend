@@ -44,7 +44,7 @@ Why: generated SQL is reviewable, while applying it mutates a real database and 
 
 ## External API Clients Are Generated
 
-Tochka, YooKassa, and Rutube clients live under `src/codegen/api/**`.
+YooKassa and Rutube clients live under `src/codegen/api/**`.
 
 Why: generated clients track provider specs. Manual edits drift and are overwritten by Kubb.
 

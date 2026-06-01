@@ -40,7 +40,6 @@ pnpm db:migrate # human-only; AI agents must not apply migrations
 pnpm db:push    # human-only; AI agents must not run this by default
 pnpm db:studio
 
-pnpm api:download:tochka
 pnpm api:download:yookassa
 pnpm api:generate
 ```
@@ -69,7 +68,6 @@ tests/          Vitest unit and integration tests
 
 Currently generated clients:
 
-- Tochka
 - YooKassa
 - Rutube
 

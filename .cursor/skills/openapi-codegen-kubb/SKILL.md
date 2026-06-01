@@ -1,6 +1,6 @@
 ---
 name: openapi-codegen-kubb
-description: Updates OpenAPI specifications and regenerates API clients via Kubb for Tochka, YooKassa, Rutube, or codegen configuration changes.
+description: Updates OpenAPI specifications and regenerates API clients via Kubb for YooKassa, Rutube, or codegen configuration changes.
 ---
 
 # OpenAPI Codegen Kubb
@@ -15,7 +15,6 @@ description: Updates OpenAPI specifications and regenerates API clients via Kubb
 
 1. Check `package.json` scripts and `deps/api/*.json` to confirm which provider workflow exists.
 2. Refresh specifications when a download script exists:
-   - `pnpm api:download:tochka`
    - `pnpm api:download:yookassa`
 3. Treat `deps/api/rutube.json` as a pinned local spec unless the task explicitly adds or changes Rutube download automation.
 4. Run generation: `pnpm api:generate`.

@@ -19,18 +19,6 @@ type CreateConfigParams = {
 export default defineConfig(() => {
   return [
     createConfig({
-      input: `${API_DIR}/tochka.json`,
-      output: `${API_OUTPUT_DIR}/tochka`,
-      clientConfig: {
-        pathParamsType: "object",
-        paramsType: "object",
-        importPath: "@/lib/tochka/client",
-        transformers: {
-          name: kebabCaseTransformer,
-        },
-      },
-    }),
-    createConfig({
       input: `${API_DIR}/yookassa.json`,
       output: `${API_OUTPUT_DIR}/yookassa`,
       clientConfig: {
