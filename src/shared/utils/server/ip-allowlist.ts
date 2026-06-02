@@ -1,79 +1,108 @@
-import * as ipaddr from "ipaddr.js";
+import { inRange, isIP, isRange } from "range_check";
 
-type ParsedIpAllowlistCidrEntry = {
-  type: "cidr";
-  range: ReturnType<typeof ipaddr.parseCIDR>;
-};
-
-type ParsedIpAllowlistIpEntry = {
-  type: "ip";
-  ip: ipaddr.IPv4 | ipaddr.IPv6;
-};
-
-type ParsedIpAllowlistEntry =
-  | ParsedIpAllowlistCidrEntry
-  | ParsedIpAllowlistIpEntry;
+const IPV4_MAPPED_IPV6_PREFIX = "::ffff:";
 
 export function parseIpAllowlist(value: string | undefined) {
-  if (!value) {
+  const rawValue = value?.trim();
+
+  if (!rawValue) {
     return [];
   }
 
-  return value
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter(Boolean);
+  const unquotedValue = stripWrappingQuotes(rawValue, {
+    preserveQuotedEntries: true,
+  });
+
+  if (!unquotedValue) {
+    return [];
+  }
+
+  return unquotedValue.split(",").map(normalizeAllowlistEntry).filter(Boolean);
 }
 
 export function isValidIpAllowlist(value: string | undefined) {
-  try {
-    parseIpAllowlist(value).forEach(parseIpAllowlistEntry);
-    return true;
-  } catch {
-    return false;
-  }
+  const entries = parseIpAllowlist(value);
+
+  return entries.every(isValidIpAllowlistEntry);
 }
 
 export function createIpAllowlistMatcher(entries: string[]) {
-  const parsedEntries = entries.map(parseIpAllowlistEntry);
+  const normalizedAllowlist = normalizeAllowlistEntries(entries);
 
   return (ip: string) => {
-    let parsedIp: ipaddr.IPv4 | ipaddr.IPv6;
+    const normalizedIp = normalizeIpAddress(ip);
+    const isValidClientIp = isIP(normalizedIp);
 
-    try {
-      parsedIp = ipaddr.process(ip);
-    } catch {
+    if (!isValidClientIp) {
       return false;
     }
 
-    return parsedEntries.some((entry) => {
-      if (entry.type === "ip") {
-        return (
-          parsedIp.kind() === entry.ip.kind() &&
-          parsedIp.toString() === entry.ip.toString()
-        );
-      }
-
-      const [rangeIp, prefixLength] = entry.range;
-
-      return (
-        parsedIp.kind() === rangeIp.kind() &&
-        parsedIp.match(rangeIp, prefixLength)
-      );
-    });
+    return normalizedAllowlist.some((entry) => inRange(normalizedIp, entry));
   };
 }
 
-function parseIpAllowlistEntry(entry: string): ParsedIpAllowlistEntry {
+function normalizeAllowlistEntries(entries: string[]) {
+  return entries.map((entry) => {
+    const normalizedEntry = normalizeAllowlistEntry(entry);
+
+    if (!isValidIpAllowlistEntry(normalizedEntry)) {
+      throw new Error(`Invalid IP allowlist entry: ${entry}`);
+    }
+
+    return normalizedEntry;
+  });
+}
+
+function normalizeAllowlistEntry(entry: string) {
+  const unquotedEntry = stripWrappingQuotes(entry.trim());
+
+  return normalizeIpAddress(unquotedEntry);
+}
+
+function isValidIpAllowlistEntry(entry: string) {
   if (entry.includes("/")) {
-    return {
-      type: "cidr",
-      range: ipaddr.parseCIDR(entry),
-    };
+    return isRange(entry);
   }
 
-  return {
-    type: "ip",
-    ip: ipaddr.process(entry),
-  };
+  return isIP(entry);
+}
+
+function normalizeIpAddress(ip: string) {
+  const normalizedIp = ip.trim();
+
+  // Node/proxy окружение может отдавать IPv4 как IPv4-mapped IPv6.
+  // range_check такой формат не принимает, поэтому приводим его к обычному IPv4.
+  if (normalizedIp.toLowerCase().startsWith(IPV4_MAPPED_IPV6_PREFIX)) {
+    return normalizedIp.slice(IPV4_MAPPED_IPV6_PREFIX.length);
+  }
+
+  return normalizedIp;
+}
+
+function stripWrappingQuotes(
+  value: string,
+  { preserveQuotedEntries = false }: { preserveQuotedEntries?: boolean } = {},
+) {
+  const firstCharacter = value[0];
+  const lastCharacter = value.at(-1);
+  const isWrappedInMatchingQuotes =
+    value.length >= 2 &&
+    (firstCharacter === '"' || firstCharacter === "'") &&
+    firstCharacter === lastCharacter;
+
+  if (!isWrappedInMatchingQuotes) {
+    return value;
+  }
+
+  // В Dokploy кавычки могут сохраниться как часть значения env-переменной.
+  // Для формата `"ip1","ip2"` нельзя снимать внешние кавычки со всей строки.
+  const looksLikeQuotedEntries =
+    preserveQuotedEntries &&
+    value.includes(`${firstCharacter},${firstCharacter}`);
+
+  if (looksLikeQuotedEntries) {
+    return value;
+  }
+
+  return value.slice(1, -1).trim();
 }

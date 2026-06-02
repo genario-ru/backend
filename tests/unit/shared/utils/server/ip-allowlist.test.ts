@@ -45,4 +45,17 @@ describe("ip allowlist", () => {
     expect(isValidIpAllowlist("77.75.156.11/33")).toBe(false);
     expect(isValidIpAllowlist("not-an-ip")).toBe(false);
   });
+
+  it("accepts quote-wrapped environment values from deployment UIs", () => {
+    expect(parseIpAllowlist('"72.56.11.219"')).toEqual(["72.56.11.219"]);
+    expect(parseIpAllowlist('"188.116.21.130,77.236.68.153"')).toEqual([
+      "188.116.21.130",
+      "77.236.68.153",
+    ]);
+    expect(parseIpAllowlist('"188.116.21.130","77.236.68.153"')).toEqual([
+      "188.116.21.130",
+      "77.236.68.153",
+    ]);
+    expect(isValidIpAllowlist('"188.116.21.130,77.236.68.153"')).toBe(true);
+  });
 });

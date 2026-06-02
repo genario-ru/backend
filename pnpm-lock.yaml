@@ -95,9 +95,6 @@ importers:
       ioredis:
         specifier: ^5.9.2
         version: 5.10.1
-      ipaddr.js:
-        specifier: ^2.4.0
-        version: 2.4.0
       nanoid:
         specifier: ^5.1.6
         version: 5.1.7
@@ -119,6 +116,9 @@ importers:
       qs:
         specifier: ^6.15.0
         version: 6.15.1
+      range_check:
+        specifier: ^4.1.0
+        version: 4.1.0
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -3378,6 +3378,10 @@ packages:
     resolution: {integrity: sha512-HuEDBTI70aYdx1v6U97SbNx9F1+svQKBDo30o0b9fw055LMepzpOOd0Ccg9Q6tbqmBSJaMuY0fB7yw9/vjBYCA==}
     engines: {node: '>=12.22.0'}
 
+  ip6@0.2.13:
+    resolution: {integrity: sha512-Q0LtzYkknxpieAmlrKgB/R4uTpa9Ej3tpdzPSRydcMaonN96g97b+WsM2LMvUqXwoFUnpzawsQppdcR0LbPujQ==}
+    hasBin: true
+
   ipaddr.js@2.4.0:
     resolution: {integrity: sha512-9VGk3HGanVE6JoZXHiCpnGy5X0jYDnN4EA4lntFPj+1vIWlFhIylq2CrrCOJH9EAhc5CYhq18F2Av2tgoAPsYQ==}
     engines: {node: '>= 10'}
@@ -4146,6 +4150,9 @@ packages:
 
   quansync@0.2.11:
     resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==}
+
+  range_check@4.1.0:
+    resolution: {integrity: sha512-qyWcVNa9GVtyK0lKcQ49lFuV2QTRL5XlagrdH2U5UWDhTUnCnrPrjqph0stBdAE3h4hs1gZSxtpJEksn1rSeNA==}
 
   react-devtools-core@6.1.5:
     resolution: {integrity: sha512-ePrwPfxAnB+7hgnEr8vpKxL9cmnp7F322t8oqcPshbIQQhDKgFDW4tjhF2wjVbdXF9O/nyuy3sQWd9JGpiLPvA==}
@@ -8199,6 +8206,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  ip6@0.2.13: {}
+
   ipaddr.js@2.4.0: {}
 
   is-array-buffer@3.0.5:
@@ -8923,6 +8932,11 @@ snapshots:
       side-channel: 1.1.0
 
   quansync@0.2.11: {}
+
+  range_check@4.1.0:
+    dependencies:
+      ip6: 0.2.13
+      ipaddr.js: 2.4.0
 
   react-devtools-core@6.1.5:
     dependencies:
