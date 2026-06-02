@@ -39,11 +39,15 @@ getMyCreditsBatchesRoute.get(
     const user = c.get("user");
 
     const foundCreditsBatches = await db.query.creditsBatch.findMany({
-      orderBy: (creditsBatch, { desc }) => desc(creditsBatch.createdAt),
+      orderBy: (creditsBatch, { desc }) => [
+        desc(creditsBatch.expiresAt),
+        desc(creditsBatch.createdAt),
+      ],
       where: (creditsBatch, { eq, and, gt }) =>
         and(
           eq(creditsBatch.userId, user.id),
           gt(creditsBatch.remainingAmount, 0),
+          eq(creditsBatch.status, "active"),
         ),
       with: {
         subscriptionToCreditsBatch: {

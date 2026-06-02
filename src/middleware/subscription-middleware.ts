@@ -25,7 +25,7 @@ export const subscriptionMiddleware = createMiddleware<{
 }>(async (c, next) => {
   const user = c.get("user");
 
-  const foundNotTerminatedSubscriptions = await db.query.subscription.findMany({
+  const foundActiveSubscriptions = await db.query.subscription.findMany({
     orderBy: (subscription, { asc }) => [asc(subscription.startsAt)],
     where: (subscription, { and, eq, notInArray }) =>
       and(
@@ -37,7 +37,7 @@ export const subscriptionMiddleware = createMiddleware<{
     },
   });
 
-  const foundActiveSubscription = foundNotTerminatedSubscriptions.find(
+  const foundActiveSubscription = foundActiveSubscriptions.find(
     (subscription) => {
       const isStarted =
         isNull(subscription.startsAt) || isPast(subscription.startsAt);
