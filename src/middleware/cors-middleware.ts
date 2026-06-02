@@ -3,10 +3,13 @@ import { cors } from "hono/cors";
 import { env } from "@/env";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { getClientIp } from "@/shared/utils/server/get-client-ip";
-import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
+import {
+  createIpAllowlistMatcher,
+  parseIpAllowlist,
+} from "@/shared/utils/server/ip-allowlist";
 
-const localDevelopmentIpAllowlist = new Set(
-  parseAllowedIps(env.LOCAL_DEVELOPMENT_IPS),
+const isLocalDevelopmentIp = createIpAllowlistMatcher(
+  parseIpAllowlist(env.LOCAL_DEVELOPMENT_IPS),
 );
 
 export const corsMiddleware = cors({
@@ -15,7 +18,7 @@ export const corsMiddleware = cors({
       return origin;
     }
 
-    if (localDevelopmentIpAllowlist.has(getClientIp(c))) {
+    if (isLocalDevelopmentIp(getClientIp(c))) {
       return origin;
     }
 

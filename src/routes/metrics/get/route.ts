@@ -4,10 +4,10 @@ import { env } from "@/env";
 import { metricsRegistry } from "@/middleware/http-metrics-middleware";
 import { ipAllowlistMiddleware } from "@/middleware/ip-allowlist-middleware";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
-import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
+import { parseIpAllowlist } from "@/shared/utils/server/ip-allowlist";
 
 const registry: Registry = metricsRegistry;
-const allowedIps = parseAllowedIps(env.METRICS_ALLOWED_IPS);
+const allowedIps = parseIpAllowlist(env.METRICS_ALLOWED_IPS);
 
 export const metricsRoute = createHonoApp().basePath("/metrics");
 

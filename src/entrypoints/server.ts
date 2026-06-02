@@ -141,7 +141,7 @@ import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { errorHandler } from "@/shared/utils/server/error-handler";
-import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
+import { parseIpAllowlist } from "@/shared/utils/server/ip-allowlist";
 
 initSentry({ runtime: "server" });
 
@@ -151,7 +151,7 @@ const appAPIV1Routes = appAPI.basePath("/v1");
 const isNotProduction = env.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
 const bullBoardBasePath = BULL_BOARD_METRICS_PATH;
-const localDevelopmentIps = parseAllowedIps(env.LOCAL_DEVELOPMENT_IPS);
+const localDevelopmentIps = parseIpAllowlist(env.LOCAL_DEVELOPMENT_IPS);
 
 createBullBoard({
   queues: [

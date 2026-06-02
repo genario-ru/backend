@@ -1,7 +1,9 @@
 import "dotenv/config";
 
 import { createEnv } from "@t3-oss/env-core";
-import * as z from "zod";
+
+import { z } from "@/lib/zod";
+import { ipAllowlistSchema } from "@/shared/schemas/common/ip-allowlist";
 
 export const env = createEnv({
   server: {
@@ -29,7 +31,7 @@ export const env = createEnv({
     YOOKASSA_BASE_URL: z.url(),
     YOOKASSA_SECRET_KEY: z.string().min(1),
     YOOKASSA_SHOP_ID: z.string().min(1),
-    YOOKASSA_IPS: z.string().optional(),
+    YOOKASSA_IPS: ipAllowlistSchema.optional(),
     YOUTUBE_API_KEY: z.string().min(1),
     RUTUBE_BASE_API_URL: z.url(),
     FRONTEND_BASE_URL: z.url(),
@@ -40,8 +42,8 @@ export const env = createEnv({
     SMTP_USER: z.string().min(1),
     SMTP_PASSWORD: z.string().min(1),
     SMTP_FROM: z.string().min(1),
-    METRICS_ALLOWED_IPS: z.string().optional(),
-    LOCAL_DEVELOPMENT_IPS: z.string().optional(),
+    METRICS_ALLOWED_IPS: ipAllowlistSchema.optional(),
+    LOCAL_DEVELOPMENT_IPS: ipAllowlistSchema.optional(),
     TRUSTED_PROXY_COUNT: z.coerce.number().int().min(1).default(1),
     GLITCHTIP_DSN: z.url().optional(),
     GLITCHTIP_RELEASE: z.string().min(1).optional(),

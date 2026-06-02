@@ -12,7 +12,7 @@ async function createTestClient() {
     .use(
       originValidationMiddleware({
         trustedOrigins: ["https://trusted.example"],
-        trustedIps: ["203.0.113.10"],
+        trustedIps: ["203.0.113.0/24"],
       }),
     )
     .post("/protected", (c) => c.text("ok"));
@@ -28,7 +28,7 @@ async function createIpOnlyTestClient() {
   const routes = app
     .use(
       originValidationMiddleware({
-        trustedIps: ["203.0.113.10"],
+        trustedIps: ["203.0.113.0/24"],
       }),
     )
     .post("/webhook", (c) => c.text("ok"));

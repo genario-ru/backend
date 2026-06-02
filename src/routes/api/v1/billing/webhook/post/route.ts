@@ -14,14 +14,14 @@ import { env } from "@/env";
 import { originValidationMiddleware } from "@/middleware/origin-validation-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
-import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
+import { parseIpAllowlist } from "@/shared/utils/server/ip-allowlist";
 
 export const processWebhookRoute = createHonoApp().basePath("/billing/webhook");
 
 processWebhookRoute.post(
   "/",
   originValidationMiddleware({
-    trustedIps: parseAllowedIps(env.YOOKASSA_IPS),
+    trustedIps: parseIpAllowlist(env.YOOKASSA_IPS),
   }),
   rateLimitMiddleware({
     keyPrefix: "process-webhook",
