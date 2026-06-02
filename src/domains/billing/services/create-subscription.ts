@@ -6,7 +6,6 @@ import { db } from "@/db";
 import { payment, subscription, subscriptionToPayment } from "@/db/schema";
 import type { Transaction } from "@/db/types";
 import type { Subscription } from "@/domains/subscriptions/schemas/entities/subscription";
-import type { Tariff } from "@/domains/tariffs/schemas/entities/tariff";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
@@ -73,21 +72,17 @@ export async function createSubscription({
   // Если указан следующий тариф, то проверяем, существует ли он. Если нет,
   // то выбрасываем ошибку. В противном случае сохраняем найденный тариф.
 
-  let foundNextTariff: Tariff | undefined;
-
   if (nextTariffId) {
     const localFoundNextTariff = await db.query.tariff.findFirst({
       where: (tariff, { eq }) => eq(tariff.id, nextTariffId),
     });
 
-    if (!foundNextTariff) {
+    if (!localFoundNextTariff) {
       throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Указанный тариф для следующей подписки не существует",
       });
     }
-
-    foundNextTariff = localFoundNextTariff;
   }
 
   // Разом получаем все подписки для этого пользователя, чтобы по 10 раз не
