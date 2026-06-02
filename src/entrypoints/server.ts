@@ -127,6 +127,7 @@ import {
   cancelSubscriptionRoute,
   getMySubscriptionsRoute,
   initiateSubscriptionPaymentRoute,
+  upgradeSubscriptionRoute,
 } from "@/routes/api/v1/subscriptions";
 import { getTariffsRoute, getTrialTariffRoute } from "@/routes/api/v1/tariffs";
 import { getTemplatesRoute } from "@/routes/api/v1/templates";
@@ -245,6 +246,7 @@ const appAPIv1RoutesList = [
   getMySubscriptionsRoute,
   cancelSubscriptionRoute,
   initiateSubscriptionPaymentRoute,
+  upgradeSubscriptionRoute,
   getTariffsRoute,
   getTrialTariffRoute,
   getTemplatesRoute,
