@@ -3,10 +3,12 @@ import { createMiddleware } from "hono/factory";
 
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import type { AppEnv } from "@/shared/types/server/app-env";
+import { getClientIp } from "@/shared/utils/server/get-client-ip";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 type OriginValidationMiddlewareParams = {
-  trustedOrigins: string[];
+  trustedOrigins?: string[];
+  trustedIps?: string[];
   skipPaths?: string[];
 };
 
@@ -37,10 +39,12 @@ function getRequestOrigin(c: Context<AppEnv>) {
 }
 
 export function originValidationMiddleware({
-  trustedOrigins,
+  trustedOrigins = [],
+  trustedIps = [],
   skipPaths = [],
 }: OriginValidationMiddlewareParams) {
   const normalizedTrustedOrigins = trustedOrigins.map(normalizeOrigin);
+  const trustedIpAllowlist = new Set(trustedIps);
 
   return createMiddleware<AppEnv>(async (c, next) => {
     if (SAFE_METHODS.has(c.req.method)) {
@@ -48,6 +52,10 @@ export function originValidationMiddleware({
     }
 
     if (skipPaths.some((path) => c.req.path.startsWith(path))) {
+      return next();
+    }
+
+    if (trustedIpAllowlist.has(getClientIp(c))) {
       return next();
     }
 

@@ -4,7 +4,6 @@ import { HonoAdapter } from "@bull-board/hono";
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Scalar } from "@scalar/hono-api-reference";
-import { cors } from "hono/cors";
 import { showRoutes } from "hono/dev";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
@@ -14,6 +13,7 @@ import { openAPIRouteHandler } from "hono-openapi";
 
 import { env } from "@/env";
 import { initSentry } from "@/lib/sentry";
+import { corsMiddleware } from "@/middleware/cors-middleware";
 import {
   BULL_BOARD_METRICS_PATH,
   httpMetricsMiddleware,
@@ -141,6 +141,7 @@ import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import { addGracefulShutdown } from "@/shared/utils/server/add-graceful-shutdown";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { errorHandler } from "@/shared/utils/server/error-handler";
+import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
 
 initSentry({ runtime: "server" });
 
@@ -150,6 +151,7 @@ const appAPIV1Routes = appAPI.basePath("/v1");
 const isNotProduction = env.NODE_ENV !== "production";
 const bullBoardAdapter = new HonoAdapter(serveStatic);
 const bullBoardBasePath = BULL_BOARD_METRICS_PATH;
+const localDevelopmentIps = parseAllowedIps(env.LOCAL_DEVELOPMENT_IPS);
 
 createBullBoard({
   queues: [
@@ -263,19 +265,13 @@ app.use(prettyJSON());
 app.use(requestId());
 app.use(logger());
 app.use(secureHeaders());
-
-app.use(
-  cors({
-    origin: TRUSTED_ORIGINS,
-    maxAge: 600,
-    credentials: true,
-  }),
-);
+app.use(corsMiddleware);
 
 app.use(
   "/api/*",
   originValidationMiddleware({
     trustedOrigins: TRUSTED_ORIGINS,
+    trustedIps: localDevelopmentIps,
     skipPaths: ["/api/v1/billing/webhook"],
   }),
 );

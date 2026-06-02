@@ -5,9 +5,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@/auth": fileURLToPath(new URL("./auth.ts", import.meta.url)),
       "@/env": fileURLToPath(new URL("./env.ts", import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   test: {

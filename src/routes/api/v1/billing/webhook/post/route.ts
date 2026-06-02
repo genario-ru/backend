@@ -10,13 +10,19 @@ import { processPaymentMethodActiveEvent } from "@/domains/billing/services/proc
 import { processPaymentSucceededEvent } from "@/domains/billing/services/process-payment-succeeded-event";
 import { processRefundSucceededEvent } from "@/domains/billing/services/process-refund-succeeded-event";
 import { verifyWebhook } from "@/domains/billing/services/verify-webhook";
+import { env } from "@/env";
+import { originValidationMiddleware } from "@/middleware/origin-validation-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { parseAllowedIps } from "@/shared/utils/server/parse-allowed-ips";
 
 export const processWebhookRoute = createHonoApp().basePath("/billing/webhook");
 
 processWebhookRoute.post(
   "/",
+  originValidationMiddleware({
+    trustedIps: parseAllowedIps(env.YOOKASSA_IPS),
+  }),
   rateLimitMiddleware({
     keyPrefix: "process-webhook",
     windowMs: 60 * 1000,
