@@ -30,7 +30,6 @@ function normalizeIp(ip: string) {
  */
 export function getClientIp(c: Context<AppEnv>) {
   const trustedProxyCount = env.TRUSTED_PROXY_COUNT;
-
   const xForwardedFor = c.req.header("x-forwarded-for");
 
   if (xForwardedFor) {

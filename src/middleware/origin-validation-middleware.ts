@@ -56,7 +56,9 @@ export function originValidationMiddleware({
       return next();
     }
 
-    if (isTrustedIp(getClientIp(c))) {
+    const clientIp = getClientIp(c);
+
+    if (isTrustedIp(clientIp)) {
       return next();
     }
 
@@ -65,7 +67,11 @@ export function originValidationMiddleware({
     if (!requestOrigin || !normalizedTrustedOrigins.includes(requestOrigin)) {
       return throwAPIError({
         code: APIErrorCode.Forbidden,
-        message: "Origin запроса не разрешен",
+        message: "Origin или IP запроса не разрешен",
+        details: {
+          clientIp,
+          requestOrigin,
+        },
       });
     }
 
