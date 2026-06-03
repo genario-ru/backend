@@ -133,7 +133,7 @@ export async function createSubscription({
 
   const [activeSubscription] = activeSubscriptions;
 
-  if (activeSubscription.tariffId === tariffId) {
+  if (activeSubscription && activeSubscription.tariffId === tariffId) {
     throw throwAPIError({
       code: APIErrorCode.Forbidden,
       message: "Вы не можете оформить подписку по тарифу активной подписки",
