@@ -67,6 +67,32 @@ cancelSubscriptionRoute.post(
       });
     }
 
+    if (["cancelled", "terminated"].includes(foundSubscription.status)) {
+      return throwAPIError({
+        code: APIErrorCode.BusinessRuleViolation,
+        message: "Вы не можете отменить уже отмененную подписку",
+      });
+    }
+
+    if (foundSubscription.status === "pending") {
+      const [deletedSubscription] = await db
+        .delete(subscription)
+        .where(
+          and(
+            eq(subscription.id, subscriptionId),
+            eq(subscription.userId, user.id),
+          ),
+        )
+        .returning();
+
+      return c.json<CancelSubscriptionResponse>(
+        cancelSubscriptionResponseSchema.parse({
+          data: deletedSubscription,
+        }),
+        HTTPStatusCode.Ok,
+      );
+    }
+
     let endsAt: string | undefined;
     const billingPeriod = foundSubscription.tariff.billingPeriod;
     const durationDays = foundSubscription.tariff.durationDays;
