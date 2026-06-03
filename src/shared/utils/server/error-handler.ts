@@ -10,10 +10,7 @@ export function errorHandler(error: Error, c: Context<AppEnv>) {
   console.error(error);
 
   if (error instanceof HTTPException) {
-    if (error.status >= 500) {
-      captureHonoError(error, c);
-    }
-
+    captureHonoError(error, c);
     return error.getResponse();
   }
 
