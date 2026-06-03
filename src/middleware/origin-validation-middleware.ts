@@ -1,10 +1,14 @@
 import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
 
+import { env } from "@/env";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import type { AppEnv } from "@/shared/types/server/app-env";
 import { getClientIp } from "@/shared/utils/server/get-client-ip";
-import { createIpAllowlistMatcher } from "@/shared/utils/server/ip-allowlist";
+import {
+  createIpAllowlistMatcher,
+  parseIpAllowlist,
+} from "@/shared/utils/server/ip-allowlist";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 type OriginValidationMiddlewareParams = {
@@ -63,6 +67,12 @@ export function originValidationMiddleware({
     }
 
     const requestOrigin = getRequestOrigin(c);
+
+    console.warn("yookassa-ips-debug", {
+      raw: env.YOOKASSA_IPS,
+      parsed: parseIpAllowlist(env.YOOKASSA_IPS),
+      count: parseIpAllowlist(env.YOOKASSA_IPS).length,
+    });
 
     if (!requestOrigin || !normalizedTrustedOrigins.includes(requestOrigin)) {
       return throwAPIError({
