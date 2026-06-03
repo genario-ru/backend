@@ -18,12 +18,12 @@ export const signOutRoute = createHonoApp().basePath("/auth/sign-out");
 // POST /api/v1/auth/sign-out
 signOutRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "sign-out",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],
     responses: {

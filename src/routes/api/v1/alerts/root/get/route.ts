@@ -18,7 +18,7 @@ getAlertsRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-alerts",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Alerts],

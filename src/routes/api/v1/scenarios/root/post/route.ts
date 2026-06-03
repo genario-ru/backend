@@ -31,12 +31,12 @@ export const createScenarioRoute = createHonoApp().basePath("/scenarios");
 // POST /api/v1/scenarios
 createScenarioRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "create-scenario",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

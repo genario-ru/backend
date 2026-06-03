@@ -18,12 +18,12 @@ export const getMySubscriptionsRoute =
 // GET /api/v1/subscriptons/my
 getMySubscriptionsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-subscriptions",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],
     responses: {

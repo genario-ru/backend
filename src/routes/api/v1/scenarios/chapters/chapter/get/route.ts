@@ -25,12 +25,12 @@ export const getScenarioChapterRoute = createHonoApp().basePath(
 // GET /api/v1/scenarios/chapters/{chapterId}
 getScenarioChapterRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-scenario-chapter",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

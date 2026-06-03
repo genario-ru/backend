@@ -9,7 +9,7 @@ rootRoute.get(
   rateLimitMiddleware({
     keyPrefix: "root",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
   async (c) => {
     return c.json({ message: "Hello, world!" });

@@ -19,7 +19,7 @@ getTariffsRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-tariffs",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Tariffs],

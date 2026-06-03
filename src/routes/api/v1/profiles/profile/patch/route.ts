@@ -28,12 +28,12 @@ export const updateProfileRoute = createHonoApp().basePath(
 // PATCH /api/v1/profiles/{profileId}
 updateProfileRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-profile",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

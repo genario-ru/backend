@@ -24,12 +24,12 @@ export const getArchiveFiltersRoute =
 // GET /api/v1/archive/filters
 getArchiveFiltersRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-archive-filters",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Archive],

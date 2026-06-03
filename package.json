@@ -21,9 +21,7 @@
     "db:drop": "drizzle-kit drop",
     "db:push": "drizzle-kit push",
     "api:download:yookassa": "tsx src/scripts/download-yookassa-openapi.ts",
-    "api:generate": "kubb generate",
-    "cron:update-and-charge-subscriptions": "tsx src/scripts/update-and-charge-subscriptions.ts",
-    "cron:initiate-upcoming-charges-newsletter": "tsx src/scripts/initiate-upcoming-charges-newsletter.ts"
+    "api:generate": "kubb generate"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^2.0.37",

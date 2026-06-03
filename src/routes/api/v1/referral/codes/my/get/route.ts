@@ -19,12 +19,12 @@ export const getMyReferralCodesRoute =
 // GET /api/v1/referral/codes/my
 getMyReferralCodesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-referral-codes",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Referral],

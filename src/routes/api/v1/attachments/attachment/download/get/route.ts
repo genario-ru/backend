@@ -26,12 +26,12 @@ export const getAttachmentDownloadRoute = createHonoApp().basePath(
 // GET /api/v1/attachments/{attachmentId}/download
 getAttachmentDownloadRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-attachment-download",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Attachments],
     responses: {

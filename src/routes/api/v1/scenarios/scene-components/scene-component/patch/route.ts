@@ -27,12 +27,12 @@ export const updateScenarioSceneComponentRoute = createHonoApp().basePath(
 // PATCH /api/v1/scenarios/scene-components/{sceneComponentId}
 updateScenarioSceneComponentRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-scenario-scene-component",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

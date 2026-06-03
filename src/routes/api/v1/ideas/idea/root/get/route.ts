@@ -22,12 +22,12 @@ export const getIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 // GET /api/v1/ideas/{ideaId}
 getIdeaRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-idea",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],

@@ -21,12 +21,12 @@ export const deleteUserRoute = createHonoApp().basePath("/auth/user/delete");
 // POST /api/v1/auth/user/delete
 deleteUserRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-user",
     windowMs: 60 * 1000,
-    limit: 1,
+    limit: 3,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],
     responses: {

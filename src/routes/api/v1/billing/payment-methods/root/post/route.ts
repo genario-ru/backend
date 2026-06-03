@@ -31,12 +31,12 @@ export const addPaymentMethodRoute = createHonoApp().basePath(
 // POST /api/v1/billing/payment-methods
 addPaymentMethodRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "add-payment-method",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

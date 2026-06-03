@@ -25,7 +25,7 @@ getLegalDocumentRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-legal-document",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.LegalDocuments],

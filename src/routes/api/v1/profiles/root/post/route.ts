@@ -25,12 +25,12 @@ export const createProfileRoute = createHonoApp().basePath("/profiles");
 // POST /api/v1/profiles
 createProfileRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "create-profile",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

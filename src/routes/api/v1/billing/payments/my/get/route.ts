@@ -19,12 +19,12 @@ export const getMyPaymentsRoute = createHonoApp().basePath(
 // GET /api/v1/billing/payments/my
 getMyPaymentsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-payments",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

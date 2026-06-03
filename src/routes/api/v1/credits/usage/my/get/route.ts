@@ -32,12 +32,12 @@ export const getMyCreditsUsageRoute =
 // GET /api/v1/credits/usage/my
 getMyCreditsUsageRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-credits-usage",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],

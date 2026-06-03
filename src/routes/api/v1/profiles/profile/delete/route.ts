@@ -24,12 +24,12 @@ export const deleteProfileRoute = createHonoApp().basePath(
 // DELETE /api/v1/profiles/{profileId}
 deleteProfileRoute.delete(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-profile",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

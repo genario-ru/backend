@@ -17,12 +17,12 @@ export const getMyProfilesRoute = createHonoApp().basePath("/profiles/my");
 // GET /api/v1/profiles/my
 getMyProfilesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-profiles",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

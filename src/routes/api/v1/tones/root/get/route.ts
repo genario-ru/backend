@@ -17,12 +17,12 @@ export const getTonesRoute = createHonoApp().basePath("/tones");
 // GET /api/v1/tones
 getTonesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-tones",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Tones],

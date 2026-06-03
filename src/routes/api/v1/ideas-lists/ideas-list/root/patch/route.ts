@@ -29,12 +29,12 @@ export const updateIdeasListRoute = createHonoApp().basePath(
 // PATCH /api/v1/ideas-lists/{ideasListId}
 updateIdeasListRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-ideas-list",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],

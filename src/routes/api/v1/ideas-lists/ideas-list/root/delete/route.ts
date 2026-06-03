@@ -24,12 +24,12 @@ export const deleteIdeasListRoute = createHonoApp().basePath(
 // DELETE /api/v1/ideas-lists/{ideasListId}
 deleteIdeasListRoute.delete(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-ideas-list",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],

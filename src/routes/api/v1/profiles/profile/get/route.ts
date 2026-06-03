@@ -22,12 +22,12 @@ export const getProfileRoute = createHonoApp().basePath("/profiles/:profileId");
 // GET /api/v1/profiles/{profileId}
 getProfileRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-profile",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

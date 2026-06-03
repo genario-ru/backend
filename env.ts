@@ -32,6 +32,10 @@ export const env = createEnv({
     YOOKASSA_SECRET_KEY: z.string().min(1),
     YOOKASSA_SHOP_ID: z.string().min(1),
     YOOKASSA_IPS: ipAllowlistSchema.optional(),
+    SUBSCRIPTIONS_CHARGE_SCHEDULER_ENABLED: z.stringbool().default(false),
+    UPCOMING_CHARGES_NEWSLETTER_SCHEDULER_ENABLED: z
+      .stringbool()
+      .default(false),
     YOUTUBE_API_KEY: z.string().min(1),
     RUTUBE_BASE_API_URL: z.url(),
     FRONTEND_BASE_URL: z.url(),

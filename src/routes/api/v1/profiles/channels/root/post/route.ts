@@ -33,12 +33,12 @@ export const createProfilesFromChannelsRoute =
 // POST /api/v1/profiles/channels
 createProfilesFromChannelsRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "create-profiles-from-channels",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

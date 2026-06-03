@@ -20,12 +20,12 @@ export const updateUserRoute = createHonoApp().basePath("/auth/user");
 // PATCH /api/v1/auth/user
 updateUserRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-user",
     windowMs: 60 * 1000,
-    limit: 5,
+    limit: 10,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],
     responses: {

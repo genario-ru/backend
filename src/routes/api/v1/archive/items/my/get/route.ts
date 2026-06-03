@@ -44,12 +44,12 @@ export const getMyArchiveItemsRoute =
 // GET /api/v1/archive/items/my
 getMyArchiveItemsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-archive-items",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Archive],

@@ -24,12 +24,12 @@ export const getScenariosFiltersRoute =
 // GET /api/v1/scenarios/filters
 getScenariosFiltersRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-scenarios-filters",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

@@ -25,12 +25,12 @@ export const updateIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 // PATCH /api/v1/ideas/{ideaId}
 updateIdeaRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-idea",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],

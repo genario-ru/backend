@@ -20,7 +20,7 @@ getReferralInfoRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-referral-info",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Referral],

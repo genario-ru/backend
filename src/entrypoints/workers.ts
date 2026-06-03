@@ -1,5 +1,4 @@
-import "@/env";
-
+import { env } from "@/env";
 import { initSentry, registerWorkerErrorHandlers } from "@/lib/sentry";
 import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
@@ -11,6 +10,16 @@ import { scenarioMetadataRegenerationWorker } from "@/mq/scenario-metadata-regen
 import { scenarioScenePreviewsGenerationWorker } from "@/mq/scenario-scene-preview-generation/worker";
 import { scenarioScenesGenerationWorker } from "@/mq/scenario-scenes-generation/worker";
 import { scenarioVersionExportWorker } from "@/mq/scenario-version-export/worker";
+import {
+  removeSubscriptionsChargeScheduler,
+  upsertSubscriptionsChargeScheduler,
+} from "@/mq/subscriptions-charge/queue";
+import { subscriptionsChargeWorker } from "@/mq/subscriptions-charge/worker";
+import {
+  removeUpcomingChargesNewsletterScheduler,
+  upsertUpcomingChargesNewsletterScheduler,
+} from "@/mq/upcoming-charges-newsletter/queue";
+import { upcomingChargesNewsletterWorker } from "@/mq/upcoming-charges-newsletter/worker";
 
 initSentry({ runtime: "workers" });
 
@@ -25,7 +34,25 @@ registerWorkerErrorHandlers([
   scenarioMetadataRegenerationWorker,
   scenarioVersionExportWorker,
   mailSendWorker,
+  subscriptionsChargeWorker,
+  upcomingChargesNewsletterWorker,
 ]);
+
+// Планируем автоматические джобы только если они включены через env.
+// Если выключены — снимаем ранее созданные шедулеры из Redis, чтобы тоггл
+// действительно останавливал ежечасный запуск.
+
+if (env.SUBSCRIPTIONS_CHARGE_SCHEDULER_ENABLED) {
+  await upsertSubscriptionsChargeScheduler();
+} else {
+  await removeSubscriptionsChargeScheduler();
+}
+
+if (env.UPCOMING_CHARGES_NEWSLETTER_SCHEDULER_ENABLED) {
+  await upsertUpcomingChargesNewsletterScheduler();
+} else {
+  await removeUpcomingChargesNewsletterScheduler();
+}
 
 const shutdown = async () => {
   await ideasListGenerationWorker.close();
@@ -38,6 +65,8 @@ const shutdown = async () => {
   await scenarioMetadataRegenerationWorker.close();
   await scenarioVersionExportWorker.close();
   await mailSendWorker.close();
+  await subscriptionsChargeWorker.close();
+  await upcomingChargesNewsletterWorker.close();
   process.exit(0);
 };
 

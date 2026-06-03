@@ -29,6 +29,8 @@ import { scenarioMetadataRegenerationQueue } from "@/mq/scenario-metadata-regene
 import { scenarioScenePreviewGenerationQueue } from "@/mq/scenario-scene-preview-generation/queue";
 import { scenarioScenesGenerationQueue } from "@/mq/scenario-scenes-generation/queue";
 import { scenarioVersionExportQueue } from "@/mq/scenario-version-export/queue";
+import { subscriptionsChargeQueue } from "@/mq/subscriptions-charge/queue";
+import { upcomingChargesNewsletterQueue } from "@/mq/upcoming-charges-newsletter/queue";
 import { getAlertsRoute } from "@/routes/api/v1/alerts";
 import {
   getArchiveFiltersRoute,
@@ -51,6 +53,8 @@ import {
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,
+  triggerSubscriptionsChargeRoute,
+  triggerUpcomingChargesNewsletterRoute,
 } from "@/routes/api/v1/billing";
 import {
   getCreditsPackagesRoute,
@@ -165,6 +169,8 @@ createBullBoard({
     new BullMQAdapter(scenarioMetadataRegenerationQueue),
     new BullMQAdapter(scenarioVersionExportQueue),
     new BullMQAdapter(mailSendQueue),
+    new BullMQAdapter(subscriptionsChargeQueue),
+    new BullMQAdapter(upcomingChargesNewsletterQueue),
   ],
   serverAdapter: bullBoardAdapter,
 });
@@ -191,6 +197,8 @@ const appAPIv1RoutesList = [
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,
+  triggerSubscriptionsChargeRoute,
+  triggerUpcomingChargesNewsletterRoute,
   getCreditsPackagesRoute,
   getMyCreditsBatchesRoute,
   getMyCreditsUsageRoute,

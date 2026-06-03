@@ -27,12 +27,12 @@ export const updateScenarioChapterRoute = createHonoApp().basePath(
 // PATCH /api/v1/scenarios/chapters/{chapterId}
 updateScenarioChapterRoute.patch(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "update-scenario-chapter",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

@@ -24,12 +24,12 @@ export const initiateSubscriptionPaymentRoute = createHonoApp().basePath(
 // POST /api/v1/subscriptions/initiate-payment
 initiateSubscriptionPaymentRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "initiate-subscription-payment",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],
     responses: {

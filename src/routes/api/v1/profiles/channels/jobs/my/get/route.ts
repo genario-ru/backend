@@ -19,12 +19,12 @@ export const getMyProfilesFromChannelsJobs = createHonoApp().basePath(
 // GET /api/v1/profiles/channels/jobs/my
 getMyProfilesFromChannelsJobs.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-profiles-from-channels-jobs",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

@@ -30,12 +30,12 @@ export const generateMoreIdeasRoute = createHonoApp().basePath(
 // POST /api/v1/ideas-lists/{ideasListId}/more-ideas
 generateMoreIdeasRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "generate-more-ideas",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],

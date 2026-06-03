@@ -17,12 +17,12 @@ export const getVideoTypesRoute = createHonoApp().basePath("/video-types");
 // GET /api/v1/video-types
 getVideoTypesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-video-types",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.VideoTypes],

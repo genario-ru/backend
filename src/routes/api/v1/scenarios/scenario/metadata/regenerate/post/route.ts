@@ -28,12 +28,12 @@ export const regenerateScenarioMetadataRoute = createHonoApp().basePath(
 // POST /api/v1/scenarios/{scenarioId}/metadata/regenerate
 regenerateScenarioMetadataRoute.post(
   "/regenerate",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "regenerate-scenario-metadata",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

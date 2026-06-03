@@ -20,7 +20,7 @@ getPlatformsForChannelsRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-platforms-for-channels",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

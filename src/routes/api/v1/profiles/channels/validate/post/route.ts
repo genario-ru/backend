@@ -23,12 +23,12 @@ export const validateProfileChannelRoute = createHonoApp().basePath(
 // POST /api/v1/profiles/channels/validate
 validateProfileChannelRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "validate-profile-channel",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

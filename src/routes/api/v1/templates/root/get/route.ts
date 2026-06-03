@@ -18,7 +18,7 @@ getTemplatesRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-templates",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Templates],

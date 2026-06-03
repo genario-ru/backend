@@ -34,12 +34,12 @@ export const getMyReferralInvitesRoute = createHonoApp().basePath(
 // GET /api/v1/referral/invites/my
 getMyReferralInvitesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-referral-invites",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Referral],

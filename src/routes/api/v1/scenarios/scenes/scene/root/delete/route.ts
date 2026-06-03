@@ -26,12 +26,12 @@ export const deleteScenarioSceneRoute = createHonoApp().basePath(
 // DELETE /api/v1/scenarios/scenes/{sceneId}
 deleteScenarioSceneRoute.delete(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-scenario-scene",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

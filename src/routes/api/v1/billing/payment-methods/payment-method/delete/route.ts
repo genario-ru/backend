@@ -26,12 +26,12 @@ export const deletePaymentMethodRoute = createHonoApp().basePath(
 // DELETE /api/v1/billing/payment-methods/{paymentMethodId}
 deletePaymentMethodRoute.delete(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-payment-method",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

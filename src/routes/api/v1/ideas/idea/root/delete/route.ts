@@ -24,12 +24,12 @@ export const deleteIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 // DELETE /api/v1/ideas/{ideaId}
 deleteIdeaRoute.delete(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "delete-idea",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],

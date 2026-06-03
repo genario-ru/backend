@@ -19,12 +19,12 @@ export const getMyCreditsBatchesRoute = createHonoApp().basePath(
 // GET /api/v1/credits/batches/my
 getMyCreditsBatchesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-credits-batches",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],

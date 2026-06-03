@@ -24,12 +24,12 @@ export const getScenarioVersionsRoute = createHonoApp().basePath(
 // GET /api/v1/scenarios/{scenarioId}/versions
 getScenarioVersionsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-scenario-versions",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

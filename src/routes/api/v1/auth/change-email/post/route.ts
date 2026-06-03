@@ -20,12 +20,12 @@ export const changeEmailRoute = createHonoApp().basePath("/auth/change-email");
 // POST /api/v1/auth/change-email
 changeEmailRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "change-email",
     windowMs: 60 * 1000,
-    limit: 1,
+    limit: 3,
   }),
+  sessionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],
     responses: {

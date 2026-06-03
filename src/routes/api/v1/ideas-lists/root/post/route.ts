@@ -26,12 +26,12 @@ export const createIdeasListRoute = createHonoApp().basePath("/ideas-lists");
 // POST /api/v1/ideas-lists
 createIdeasListRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "create-ideas-list",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],

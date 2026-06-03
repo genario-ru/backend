@@ -16,7 +16,7 @@ healthRoute.get(
   rateLimitMiddleware({
     keyPrefix: "health",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
   async (c) => {
     const [postgres, redisCheck] = await Promise.all([

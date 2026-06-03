@@ -22,12 +22,12 @@ export const upgradeSubscriptionRoute = createHonoApp().basePath(
 // POST /api/v1/subscriptions/upgrade
 upgradeSubscriptionRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "upgrade-subscription",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],

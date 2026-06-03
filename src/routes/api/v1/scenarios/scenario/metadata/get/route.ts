@@ -24,12 +24,12 @@ export const getScenarioMetadataRoute = createHonoApp().basePath(
 // GET /api/v1/scenarios/{scenarioId}/metadata
 getScenarioMetadataRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-scenario-metadata",
     windowMs: 60 * 1000,
     limit: 60,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

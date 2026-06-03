@@ -18,12 +18,12 @@ export const getVideoDurationsRoute =
 // GET /api/v1/video-durations
 getVideoDurationsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-video-durations",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.VideoDurations],

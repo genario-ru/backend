@@ -30,12 +30,12 @@ export const createScenarioScenePreviewRoute = createHonoApp().basePath(
 // POST /api/v1/scenarios/scenes/{sceneId}/preview
 createScenarioScenePreviewRoute.post(
   "/preview",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "create-scenario-scene-preview",
     windowMs: 60 * 1000,
-    limit: 3,
+    limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

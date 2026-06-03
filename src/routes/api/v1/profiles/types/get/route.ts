@@ -17,12 +17,12 @@ export const getProfileTypesRoute = createHonoApp().basePath("/profiles/types");
 // GET /api/v1/profiles/types
 getProfileTypesRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-profile-types",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Profiles],

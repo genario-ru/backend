@@ -51,12 +51,12 @@ export const getMyScenariosRoute = createHonoApp().basePath("/scenarios");
 // GET /api/v1/scenarios
 getMyScenariosRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-my-scenarios",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

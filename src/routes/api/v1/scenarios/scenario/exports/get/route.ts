@@ -29,12 +29,12 @@ export const getScenarioExportsRoute = createHonoApp().basePath(
 // GET /api/v1/scenarios/{scenarioId}/exports
 getScenarioExportsRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-scenario-exports",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Scenarios],

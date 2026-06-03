@@ -27,12 +27,12 @@ export const cancelSubscriptionRoute = createHonoApp().basePath(
 // POST /api/v1/subscriptions/{subscriptionId}/cancel
 cancelSubscriptionRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "cancel-subscription",
     windowMs: 60 * 1000,
     limit: 3,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],

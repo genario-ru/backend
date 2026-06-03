@@ -25,12 +25,12 @@ export const getIdeasListRoute = createHonoApp().basePath(
 // GET /api/v1/ideas-lists/{ideasListId}
 getIdeasListRoute.get(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "get-ideas-list",
     windowMs: 60 * 1000,
-    limit: 20,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.IdeasLists],

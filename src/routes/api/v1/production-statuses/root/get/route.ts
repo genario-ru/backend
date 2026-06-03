@@ -25,7 +25,7 @@ getProductionStatusesRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-production-statuses",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Platforms],

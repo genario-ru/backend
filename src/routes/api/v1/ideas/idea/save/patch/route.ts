@@ -25,12 +25,12 @@ export const saveIdeaRoute = createHonoApp().basePath("/ideas/:ideaId");
 // PATCH /api/v1/ideas/{ideaId}/save
 saveIdeaRoute.patch(
   "/save",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "save-idea",
     windowMs: 60 * 1000,
-    limit: 10,
+    limit: 30,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Ideas],

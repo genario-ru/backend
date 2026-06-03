@@ -29,12 +29,12 @@ export const initiateCreditsPackagePaymentRoute = createHonoApp().basePath(
 // POST /api/v1/credits/packages/initiate-payment
 initiateCreditsPackagePaymentRoute.post(
   "/",
-  sessionMiddleware,
   rateLimitMiddleware({
     keyPrefix: "initiate-credits-package-payment",
     windowMs: 60 * 1000,
     limit: 10,
   }),
+  sessionMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],
