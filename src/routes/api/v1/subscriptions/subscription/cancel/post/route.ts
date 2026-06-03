@@ -75,8 +75,15 @@ cancelSubscriptionRoute.post(
     }
 
     if (foundSubscription.status === "pending") {
-      const [deletedSubscription] = await db
-        .delete(subscription)
+      const currentDate = new Date().toISOString();
+
+      const [terminatedSubscription] = await db
+        .update(subscription)
+        .set({
+          status: "terminated",
+          statusUpdatedAt: currentDate,
+          endsAt: currentDate,
+        })
         .where(
           and(
             eq(subscription.id, subscriptionId),
@@ -87,7 +94,7 @@ cancelSubscriptionRoute.post(
 
       return c.json<CancelSubscriptionResponse>(
         cancelSubscriptionResponseSchema.parse({
-          data: deletedSubscription,
+          data: terminatedSubscription,
         }),
         HTTPStatusCode.Ok,
       );
