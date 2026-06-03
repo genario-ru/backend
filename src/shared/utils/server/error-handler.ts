@@ -7,6 +7,8 @@ import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import type { AppEnv } from "@/shared/types/server/app-env";
 
 export function errorHandler(error: Error, c: Context<AppEnv>) {
+  console.error(error);
+
   if (error instanceof HTTPException) {
     if (error.status >= 500) {
       captureHonoError(error, c);
