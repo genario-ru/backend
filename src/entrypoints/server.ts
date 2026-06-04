@@ -306,11 +306,6 @@ app.get(
         version: "1.0.0",
         description: "API for Genario application",
       },
-      servers: [
-        {
-          url: env.BACKEND_BASE_URL,
-        },
-      ],
     },
   }),
 );
@@ -319,7 +314,7 @@ app.get(
   "/api/docs",
   Scalar({
     pageTitle: "API Documentation",
-    sources: [{ url: "/api/open-api", title: "Product API" }],
+    sources: [{ url: "/api/open-api", title: "v1 API" }],
   }),
 );
 
