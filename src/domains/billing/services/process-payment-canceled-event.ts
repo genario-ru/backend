@@ -7,7 +7,6 @@ import { processPaymentCancellationDetails } from "@/lib/yookassa/utils/process-
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
-import { cleanPendingSubscriptions } from "./clean-pending-subscriptions";
 import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
 
 export async function processPaymentCanceledEvent(
@@ -73,14 +72,10 @@ export async function processPaymentCanceledEvent(
       })
       .where(eq(payment.id, foundPayment.id));
 
-    // Платеж с paymentLink создается пользователем через первичный checkout,
-    // платеж без paymentLink — сервером для рекуррентного списания.
-    const isCheckoutPayment = Boolean(foundPayment.paymentLink);
+    const isRecurringPayment = !foundPayment.paymentLink;
 
-    if (isCheckoutPayment) {
-      // Пользователь не завершил первичную оплату — удаляем его неактивированные
-      // pending-подписки (текущую и отложенную следующую), как при новом checkout.
-      await cleanPendingSubscriptions({ userId: foundPayment.userId, tx });
+    // Если платеж не рекуррентный, то ничего больше не делаем.
+    if (!isRecurringPayment) {
       return;
     }
 

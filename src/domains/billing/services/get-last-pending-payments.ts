@@ -2,12 +2,16 @@ import { db } from "@/db";
 
 type GetLastPendingPaymentsParams = {
   userId: string;
+  subscriptionIds?: string[];
+  nextSubscriptionIds?: string[];
 };
 
 export async function getLastPendingPayments({
   userId,
+  subscriptionIds,
+  nextSubscriptionIds,
 }: GetLastPendingPaymentsParams) {
-  const lastPendingPayments = await db.query.payment.findMany({
+  const allLastPendingPayments = await db.query.payment.findMany({
     orderBy: (payment, { desc }) => desc(payment.createdAt),
     where: (payment, { and, eq }) =>
       and(eq(payment.status, "pending"), eq(payment.userId, userId)),
@@ -21,5 +25,25 @@ export async function getLastPendingPayments({
     },
   });
 
-  return lastPendingPayments;
+  if (subscriptionIds) {
+    return allLastPendingPayments.filter(
+      (payment) =>
+        payment.subscriptionToPayment?.subscription?.id &&
+        subscriptionIds.includes(
+          payment.subscriptionToPayment?.subscription?.id,
+        ),
+    );
+  }
+
+  if (nextSubscriptionIds) {
+    return allLastPendingPayments.filter(
+      (payment) =>
+        payment.subscriptionToPayment?.nextSubscription?.id &&
+        nextSubscriptionIds.includes(
+          payment.subscriptionToPayment?.nextSubscription?.id,
+        ),
+    );
+  }
+
+  return allLastPendingPayments;
 }

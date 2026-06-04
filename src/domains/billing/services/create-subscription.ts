@@ -12,6 +12,7 @@ import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 import type { Payment } from "../schemas/entities/payment";
 import { prepareYooKassaPaymentParams } from "../utils/prepare-yookassa-payment-params";
 import { createYooKassaPayment } from "./create-yookassa-payment";
+import { getLastPendingPayments } from "./get-last-pending-payments";
 
 type CreateSubscriptionParams = {
   userId: string;
@@ -187,13 +188,12 @@ export async function createSubscription({
       // Ожидающие платежи по этим подпискам отменяем, но не удаляем, чтобы состав
       // платежей полностью соответствовал платежам в платежном провайдере.
 
-      const pendingSubscriptionPayments = pendingSubscriptions
-        .map((subscription) =>
-          subscription.subscriptionToPayment
-            .map((subscriptionToPayment) => subscriptionToPayment.payment)
-            .filter((payment) => payment.status === "pending"),
-        )
-        .flat();
+      const pendingSubscriptionPayments = await getLastPendingPayments({
+        userId,
+        subscriptionIds: pendingSubscriptions.map(
+          (subscription) => subscription.id,
+        ),
+      });
 
       if (pendingSubscriptionPayments.length) {
         await tx

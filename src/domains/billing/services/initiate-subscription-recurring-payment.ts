@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 
 import { db } from "@/db";
 import { payment, subscriptionToPayment } from "@/db/schema";
@@ -20,11 +20,9 @@ type InitiateSubscriptionRecurringPaymentParams = {
 export async function initiateSubscriptionRecurringPayment({
   userId,
   userEmail,
-  subscription: nextSubscription,
+  subscription: subscriptionToCharge,
 }: InitiateSubscriptionRecurringPaymentParams) {
-  const foundPaymentMethods = await getActivePaymentMethods({
-    userId,
-  });
+  const foundPaymentMethods = await getActivePaymentMethods({ userId });
 
   if (!foundPaymentMethods.length) {
     // Если у пользователя нет активных способов оплаты, то:
@@ -34,27 +32,43 @@ export async function initiateSubscriptionRecurringPayment({
 
     await registerSubscriptionBillingFailure({
       userId,
-      subscriptionId: nextSubscription.id,
-      failedBillingAttempts: nextSubscription.failedBillingAttempts,
+      subscriptionId: subscriptionToCharge.id,
+      failedBillingAttempts: subscriptionToCharge.failedBillingAttempts,
     });
 
     // TODO: Отправляем пользователю Email, чтобы он добавил способ оплаты и переходим к следующему пользователю.
     return;
   } else {
     const [foundPaymentMethod] = foundPaymentMethods;
-    const lastPendingPayments = await getLastPendingPayments({ userId });
 
-    // Пробуем найти ожидающий платеж для текущей подписки
-    const lastPendingSubscriptionPayment = lastPendingPayments.find(
-      (payment) =>
-        payment.subscriptionToPayment?.subscription?.id === nextSubscription.id,
-    );
+    // Ожидающие платежи отменяем, но не удаляем, чтобы состав платежей
+    // полностью соответствовал платежам в платежном провайдере.
 
-    // Если нет ожидающих платежей по текущей подписке, то генерируем новый idempotenceKey
-    const idempotenceKey = lastPendingSubscriptionPayment?.id ?? randomUUID();
+    const lastPendingPayments = await getLastPendingPayments({
+      userId,
+      subscriptionIds: [subscriptionToCharge.id],
+    });
+
+    if (lastPendingPayments.length) {
+      await db
+        .update(payment)
+        .set({
+          status: "canceled",
+          statusDetails:
+            "Платеж отменен в связи с проведением рекуррентного платежа",
+        })
+        .where(
+          inArray(
+            payment.id,
+            lastPendingPayments.map((payment) => payment.id),
+          ),
+        );
+    }
+
+    const idempotenceKey = randomUUID();
 
     const { amountValue, description } = prepareYooKassaRecurringPaymentParams({
-      tariff: nextSubscription.tariff,
+      tariff: subscriptionToCharge.tariff,
       userEmail,
     });
 
@@ -69,25 +83,6 @@ export async function initiateSubscriptionRecurringPayment({
         idempotenceKey,
       });
 
-    // Если есть уже ожидающий оплату платеж, то:
-    // 1. Обновляем платеж в БД.
-    // 2. Переходим к следующему пользователю.
-    if (lastPendingSubscriptionPayment) {
-      await db
-        .update(payment)
-        .set({
-          paymentId: createdYooKassaRecurringPayment.id,
-          paymentMethodId: foundPaymentMethod.id,
-          amount: amountValue,
-          currency: "RUB",
-          status: "pending",
-        })
-        .where(eq(payment.id, lastPendingSubscriptionPayment.id));
-
-      return;
-    }
-
-    // Если нет ожидающих платежей, то:
     // 1. Создаем новый платеж и связываем его с текущей подпиской
     // 2. Не обновляем подписку, так как она уже существует и будет обновлена после успешного платежа через webhook.
     // 3. переходим к следующему пользователю.
@@ -106,7 +101,7 @@ export async function initiateSubscriptionRecurringPayment({
         .returning();
 
       await tx.insert(subscriptionToPayment).values({
-        subscriptionId: nextSubscription.id,
+        subscriptionId: subscriptionToCharge.id,
         paymentId: createdPayment.id,
       });
     });
