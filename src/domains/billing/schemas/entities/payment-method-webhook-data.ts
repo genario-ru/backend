@@ -1,11 +1,11 @@
-import { paymentMethodSchema } from "@/codegen/api/yookassa";
+import { paymentSchema } from "@/codegen/api/yookassa";
 import { z } from "@/lib/zod";
 
 export const paymentMethodActiveWebhookDataSchema = z
   .object({
     type: z.literal("notification"),
     event: z.literal("payment_method.active"),
-    object: paymentMethodSchema,
+    object: paymentSchema.shape.payment_method,
   })
   .meta({
     title: "Payment method active webhook data",
