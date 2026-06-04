@@ -5,7 +5,7 @@ import { paymentMethod } from "@/db/schemas/billing/payment-method";
 import { z } from "@/lib/zod";
 
 export const paymentMethodSchema = createSelectSchema(paymentMethod, {
-  data: paymentSchema.shape.payment_method,
+  data: paymentSchema.shape.payment_method.unwrap(),
 }).meta({
   title: "Payment method",
   description: "Payment method description",

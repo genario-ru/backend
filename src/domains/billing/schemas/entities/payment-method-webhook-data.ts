@@ -5,7 +5,7 @@ export const paymentMethodActiveWebhookDataSchema = z
   .object({
     type: z.literal("notification"),
     event: z.literal("payment_method.active"),
-    object: paymentSchema.shape.payment_method,
+    object: paymentSchema.shape.payment_method.unwrap(),
   })
   .meta({
     title: "Payment method active webhook data",
