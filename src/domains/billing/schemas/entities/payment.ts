@@ -15,7 +15,10 @@ export const paymentSchema = createSelectSchema(payment).meta({
 
 export type Payment = z.infer<typeof paymentSchema>;
 
-export const paymentExtendedSchema = paymentSchema
+export const paymentPublicSchema = paymentSchema
+  .omit({
+    paymentLink: true,
+  })
   .extend({
     paymentMethod: paymentMethodSchema.nullish(),
     tariff: tariffSchema.nullish(),
@@ -27,4 +30,4 @@ export const paymentExtendedSchema = paymentSchema
     ref: "PaymentExtendedSchema",
   });
 
-export type PaymentExtended = z.infer<typeof paymentExtendedSchema>;
+export type PaymentPublic = z.infer<typeof paymentPublicSchema>;

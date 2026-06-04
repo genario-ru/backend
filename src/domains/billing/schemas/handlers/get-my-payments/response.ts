@@ -1,10 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { paymentExtendedSchema } from "../../entities/payment";
+import { paymentPublicSchema } from "../../entities/payment";
 
 export const getMyPaymentsResponseSchema = z
   .object({
-    data: z.array(paymentExtendedSchema),
+    data: z.array(paymentPublicSchema),
   })
   .meta({
     title: "Get my payments response",

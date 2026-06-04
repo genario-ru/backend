@@ -1,11 +1,11 @@
 import { createSelectSchema } from "drizzle-zod";
 
+import { paymentSchema } from "@/codegen/api/yookassa";
 import { paymentMethod } from "@/db/schemas/billing/payment-method";
 import { z } from "@/lib/zod";
 
-// Override jsonb: drizzle-zod's default record breaks Zod 4 toJSONSchema (OpenAPI).
 export const paymentMethodSchema = createSelectSchema(paymentMethod, {
-  data: z.unknown().nullable(),
+  data: paymentSchema.shape.payment_method,
 }).meta({
   title: "Payment method",
   description: "Payment method description",

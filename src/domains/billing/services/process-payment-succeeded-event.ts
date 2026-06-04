@@ -143,7 +143,6 @@ export async function processPaymentSucceededEvent(
           title: receivedPaymentMethodTitle,
           saved: _receivedPaymentMethodSaved,
           status: _receivedPaymentMethodStatus,
-          ...receivedPaymentMethodData
         } = receivedPaymentMethod;
 
         const [createdPaymentMethod] = await tx
@@ -154,7 +153,7 @@ export async function processPaymentSucceededEvent(
             paymentMethodId: receivedPaymentMethodId,
             type: receivedPaymentMethodType,
             title: receivedPaymentMethodTitle,
-            data: receivedPaymentMethodData,
+            data: receivedPaymentMethod,
           })
           .returning();
 

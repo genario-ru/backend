@@ -65,7 +65,12 @@ getMyPaymentsRoute.get(
     });
 
     const preparedFoundPayments = foundPayments.map(
-      ({ subscriptionToPayment, creditsBatchToPayment, ...payment }) => ({
+      ({
+        paymentLink: _paymentLink,
+        subscriptionToPayment,
+        creditsBatchToPayment,
+        ...payment
+      }) => ({
         ...payment,
         subscription: subscriptionToPayment?.subscription,
         creditsBatch: creditsBatchToPayment?.creditsBatch,
