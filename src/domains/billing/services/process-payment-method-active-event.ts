@@ -46,6 +46,11 @@ export async function processPaymentMethodActiveEvent(
 
   await db
     .update(paymentMethod)
-    .set({ status: "active" })
+    .set({
+      status: "active",
+      type: receivedPaymentMethodActive.type,
+      title: receivedPaymentMethodActive.title,
+      data: receivedPaymentMethodActive,
+    })
     .where(eq(paymentMethod.id, foundPaymentMethod.id));
 }
