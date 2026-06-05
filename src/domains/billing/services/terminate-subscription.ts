@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { subscription } from "@/db/schema";
 import type { Transaction } from "@/db/types";
 
+import { terminateExpiredCreditsBatches } from "./terminate-expired-credits-batches";
+
 type TerminateSubscriptionParams = {
   userId: string;
   subscriptionId: string;
@@ -27,4 +29,9 @@ export async function terminateSubscription({
     .where(
       and(eq(subscription.id, subscriptionId), eq(subscription.userId, userId)),
     );
+
+  await terminateExpiredCreditsBatches({
+    subscriptionId,
+    tx: txParam,
+  });
 }

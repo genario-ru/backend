@@ -14,13 +14,12 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 import { getSubscriptionsDates } from "../utils/get-subscriptions-dates";
+import { terminateExpiredCreditsBatches } from "./terminate-expired-credits-batches";
 
 export async function processPaymentSucceededEvent(
   data: PaymentSucceededWebhookData,
 ) {
   const receivedPayment = data.object;
-
-  // Выполняем все нужные проверки
 
   const foundPayment = await db.query.payment.findFirst({
     where: (payment, { eq }) => eq(payment.paymentId, receivedPayment.id),
@@ -201,6 +200,11 @@ export async function processPaymentSucceededEvent(
           status: "active",
         })
         .where(eq(subscription.id, foundPaymentSubscription.id));
+
+      await terminateExpiredCreditsBatches({
+        subscriptionId: foundPaymentSubscription.id,
+        tx,
+      });
 
       if (foundPaymentNextSubscription) {
         await tx
