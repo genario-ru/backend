@@ -199,7 +199,7 @@ describe("processPaymentSucceededEvent", () => {
 });
 
 describe("processPaymentCanceledEvent", () => {
-  it("deletes abandoned pending subscriptions on checkout cancel", async () => {
+  it("only cancels checkout payments without changing pending subscriptions", async () => {
     const operations: Operation[] = [];
     wireTransaction(operations);
 
@@ -226,11 +226,24 @@ describe("processPaymentCanceledEvent", () => {
     } as never);
 
     expect(
+      operations.find(
+        (operation) =>
+          operation.type === "update" &&
+          operation.table === payment &&
+          operation.values.status === "canceled",
+      ),
+    ).toMatchObject({
+      values: {
+        status: "canceled",
+      },
+    });
+
+    expect(
       operations.some(
         (operation) =>
           operation.type === "delete" && operation.table === subscription,
       ),
-    ).toBe(true);
+    ).toBe(false);
 
     expect(
       operations.some(

@@ -53,6 +53,7 @@ import {
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,
+  selectDefaultPaymentMethodRoute,
   triggerSubscriptionsChargeRoute,
   triggerUpcomingChargesNewsletterRoute,
 } from "@/routes/api/v1/billing";
@@ -194,6 +195,7 @@ const appAPIv1RoutesList = [
   getAttachmentDownloadRoute,
   addPaymentMethodRoute,
   deletePaymentMethodRoute,
+  selectDefaultPaymentMethodRoute,
   getMyPaymentMethodsRoute,
   getMyPaymentsRoute,
   processWebhookRoute,

@@ -39,7 +39,10 @@ getMyPaymentMethodsRoute.get(
     const user = c.get("user");
 
     const foundPaymentMethods = await db.query.paymentMethod.findMany({
-      orderBy: (paymentMethod, { desc }) => [desc(paymentMethod.createdAt)],
+      orderBy: (paymentMethod, { desc }) => [
+        desc(paymentMethod.default),
+        desc(paymentMethod.createdAt),
+      ],
       where: (paymentMethod, { and, eq }) =>
         and(
           eq(paymentMethod.userId, user.id),
