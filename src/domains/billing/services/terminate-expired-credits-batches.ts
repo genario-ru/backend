@@ -12,7 +12,7 @@ type TerminateExpiredCreditsBatchesParams = {
 export async function terminateExpiredCreditsBatches({
   subscriptionId,
   tx: txParam,
-}: TerminateExpiredCreditsBatchesParams) {
+}: TerminateExpiredCreditsBatchesParams = {}) {
   const tx = txParam ?? db;
   const whereConditions = [];
 

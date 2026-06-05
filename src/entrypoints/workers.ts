@@ -16,6 +16,11 @@ import {
 } from "@/mq/subscriptions-charge/queue";
 import { subscriptionsChargeWorker } from "@/mq/subscriptions-charge/worker";
 import {
+  removeTerminateExpiredCreditsBatchesScheduler,
+  upsertTerminateExpiredCreditsBatchesScheduler,
+} from "@/mq/terminate-expired-credits-batches/queue";
+import { terminateExpiredCreditsBatchesWorker } from "@/mq/terminate-expired-credits-batches/worker";
+import {
   removeUpcomingChargesNewsletterScheduler,
   upsertUpcomingChargesNewsletterScheduler,
 } from "@/mq/upcoming-charges-newsletter/queue";
@@ -35,6 +40,7 @@ registerWorkerErrorHandlers([
   scenarioVersionExportWorker,
   mailSendWorker,
   subscriptionsChargeWorker,
+  terminateExpiredCreditsBatchesWorker,
   upcomingChargesNewsletterWorker,
 ]);
 
@@ -54,6 +60,12 @@ if (env.UPCOMING_CHARGES_NEWSLETTER_SCHEDULER_ENABLED) {
   await removeUpcomingChargesNewsletterScheduler();
 }
 
+if (env.TERMINATE_EXPIRED_CREDITS_BATCHES_SCHEDULER_ENABLED) {
+  await upsertTerminateExpiredCreditsBatchesScheduler();
+} else {
+  await removeTerminateExpiredCreditsBatchesScheduler();
+}
+
 const shutdown = async () => {
   await ideasListGenerationWorker.close();
   await ideasListExportWorker.close();
@@ -66,6 +78,7 @@ const shutdown = async () => {
   await scenarioVersionExportWorker.close();
   await mailSendWorker.close();
   await subscriptionsChargeWorker.close();
+  await terminateExpiredCreditsBatchesWorker.close();
   await upcomingChargesNewsletterWorker.close();
   process.exit(0);
 };
