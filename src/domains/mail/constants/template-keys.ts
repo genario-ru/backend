@@ -2,6 +2,7 @@ export const EmailTemplateKey = {
   OTP: "otp",
   EmailVerification: "email_verification",
   UpcomingSubscriptionCharge: "upcoming_subscription_charge",
+  SubscriptionPaymentFailed: "subscription_payment_failed",
 } as const;
 
 export type EmailTemplateKey =

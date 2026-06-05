@@ -30,7 +30,11 @@ export async function registerSubscriptionBillingFailure({
 
   if (failedBillingAttempts >= MAX_FAILED_BILLING_ATTEMPTS) {
     await terminateSubscription({ userId, subscriptionId, tx: txParam });
-    return;
+
+    return {
+      failedBillingAttempts,
+      subscriptionTerminated: true,
+    };
   }
 
   const tx = txParam ?? db;
@@ -43,4 +47,9 @@ export async function registerSubscriptionBillingFailure({
       statusUpdatedAt: new Date().toISOString(),
     })
     .where(eq(subscription.id, subscriptionId));
+
+  return {
+    failedBillingAttempts,
+    subscriptionTerminated: false,
+  };
 }

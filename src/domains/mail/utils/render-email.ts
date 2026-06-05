@@ -9,6 +9,7 @@ import {
 import type { EmailPayloadByKey } from "@/domains/mail/schemas/payloads";
 import { EmailVerificationEmail } from "@/domains/mail/templates/auth/email-verification-email";
 import { OtpEmail } from "@/domains/mail/templates/auth/otp-email";
+import { SubscriptionPaymentFailedEmail } from "@/domains/mail/templates/billing/subscription-payment-failed-email";
 import { UpcomingSubscriptionChargeEmail } from "@/domains/mail/templates/billing/upcoming-subscription-charge-email";
 
 function buildEmail<K extends EmailTemplateKey>(
@@ -48,6 +49,18 @@ function buildEmail<K extends EmailTemplateKey>(
           UPCOMING_SUBSCRIPTION_CHARGE_SUBJECT_BY_DAYS[
             upcomingSubscriptionChargePayload.daysBeforeCharge
           ],
+      };
+    }
+
+    case EmailTemplateKey.SubscriptionPaymentFailed: {
+      const subscriptionPaymentFailedPayload =
+        payload as EmailPayloadByKey[typeof EmailTemplateKey.SubscriptionPaymentFailed];
+
+      return {
+        element: SubscriptionPaymentFailedEmail(
+          subscriptionPaymentFailedPayload,
+        ),
+        subject: "Не удалось провести оплату",
       };
     }
 

@@ -10,6 +10,7 @@ import { createYooKassaRecurringPayment } from "./create-yookassa-recurring-paym
 import { getActivePaymentMethods } from "./get-active-payment-methods";
 import { getLastPendingPayments } from "./get-last-pending-payments";
 import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
+import { sendSubscriptionPaymentFailedEmail } from "./send-subscription-payment-failed-email";
 
 type InitiateSubscriptionRecurringPaymentParams = {
   userId: string;
@@ -30,14 +31,22 @@ export async function initiateSubscriptionRecurringPayment({
     // 2. Если количество failed попыток проведения платежа больше 3, то обновляем статус подписки на terminated и переходим к следующему пользователю.
     // 3. Если количество failed попыток проведения платежа меньше 3, то отправляем пользователю Email, чтобы он добавил способ оплаты, увеличиваем количество failed попыток проведения платежа на 1 и переходим к следующему пользователю.
 
-    await registerSubscriptionBillingFailure({
-      userId,
-      subscriptionId: subscriptionToCharge.id,
-      failedBillingAttempts: subscriptionToCharge.failedBillingAttempts,
-    });
+    const { subscriptionTerminated } = await registerSubscriptionBillingFailure(
+      {
+        userId,
+        subscriptionId: subscriptionToCharge.id,
+        failedBillingAttempts: subscriptionToCharge.failedBillingAttempts,
+      },
+    );
 
-    // TODO: Отправляем пользователю Email, чтобы он добавил способ оплаты и переходим к следующему пользователю.
-    return;
+    if (!subscriptionTerminated) {
+      await sendSubscriptionPaymentFailedEmail({
+        userEmail,
+        userId,
+        tariffName: subscriptionToCharge.tariff.name,
+        tariffPrice: subscriptionToCharge.tariff.price,
+      });
+    }
   } else {
     const [foundPaymentMethod] = foundPaymentMethods;
 

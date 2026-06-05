@@ -8,6 +8,7 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
+import { sendSubscriptionPaymentFailedEmail } from "./send-subscription-payment-failed-email";
 
 export async function processPaymentCanceledEvent(
   data: PaymentCanceledWebhookData,
@@ -21,9 +22,14 @@ export async function processPaymentCanceledEvent(
     with: {
       subscriptionToPayment: {
         with: {
-          subscription: true,
+          subscription: {
+            with: {
+              tariff: true,
+            },
+          },
         },
       },
+      user: true,
     },
   });
 
@@ -63,7 +69,7 @@ export async function processPaymentCanceledEvent(
     receivedPayment.cancellation_details,
   );
 
-  await db.transaction(async (tx) => {
+  const paymentFailedEmailData = await db.transaction(async (tx) => {
     await tx
       .update(payment)
       .set({
@@ -76,21 +82,39 @@ export async function processPaymentCanceledEvent(
 
     // Если платеж не рекуррентный, то ничего больше не делаем.
     if (!isRecurringPayment) {
-      return;
+      return null;
     }
 
     // Рекуррентное списание не прошло — регистрируем неудачную попытку оплаты.
     const linkedSubscription = foundPayment.subscriptionToPayment?.subscription;
 
     if (!linkedSubscription) {
-      return;
+      return null;
     }
 
-    await registerSubscriptionBillingFailure({
+    const billingFailure = await registerSubscriptionBillingFailure({
       userId: foundPayment.userId,
       subscriptionId: linkedSubscription.id,
       failedBillingAttempts: linkedSubscription.failedBillingAttempts,
       tx,
     });
+
+    if (billingFailure.subscriptionTerminated) {
+      return null;
+    }
+
+    return {
+      tariffName: linkedSubscription.tariff.name,
+      tariffPrice: linkedSubscription.tariff.price,
+    };
   });
+
+  if (paymentFailedEmailData) {
+    await sendSubscriptionPaymentFailedEmail({
+      userEmail: foundPayment.user.email,
+      userId: foundPayment.userId,
+      tariffName: paymentFailedEmailData.tariffName,
+      tariffPrice: paymentFailedEmailData.tariffPrice,
+    });
+  }
 }

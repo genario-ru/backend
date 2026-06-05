@@ -4,6 +4,7 @@ import { creditsBatch, payment, subscription } from "@/db/schema";
 
 const mocks = vi.hoisted(() => {
   const postPayments = vi.fn();
+  const sendSubscriptionPaymentFailedEmail = vi.fn();
   const db = {
     query: {
       payment: {
@@ -13,12 +14,15 @@ const mocks = vi.hoisted(() => {
       paymentMethod: {
         findMany: vi.fn(),
       },
+      subscriptionToCreditsBatch: {
+        findMany: vi.fn(),
+      },
     },
     transaction: vi.fn(),
     update: vi.fn(),
   };
 
-  return { db, postPayments };
+  return { db, postPayments, sendSubscriptionPaymentFailedEmail };
 });
 
 vi.mock("@/db", () => ({
@@ -28,6 +32,14 @@ vi.mock("@/db", () => ({
 vi.mock("@/codegen/api/yookassa/clients/post-payments", () => ({
   postPayments: mocks.postPayments,
 }));
+
+vi.mock(
+  "@/domains/billing/services/send-subscription-payment-failed-email",
+  () => ({
+    sendSubscriptionPaymentFailedEmail:
+      mocks.sendSubscriptionPaymentFailedEmail,
+  }),
+);
 
 const { processPaymentSucceededEvent } =
   await import("@/domains/billing/services/process-payment-succeeded-event");
@@ -51,6 +63,9 @@ function createTx(operations: Operation[]) {
         findMany: vi
           .fn()
           .mockResolvedValue([{ id: "pending-subscription-id" }]),
+      },
+      subscriptionToCreditsBatch: {
+        findMany: vi.fn().mockResolvedValue([]),
       },
     },
     update: (table: unknown) => ({
@@ -90,6 +105,7 @@ function wireTransaction(operations: Operation[]) {
 beforeEach(() => {
   vi.useRealTimers();
   vi.clearAllMocks();
+  mocks.db.query.subscriptionToCreditsBatch.findMany.mockResolvedValue([]);
 });
 
 describe("processPaymentSucceededEvent", () => {
@@ -260,6 +276,9 @@ describe("processPaymentCanceledEvent", () => {
     mocks.db.query.payment.findFirst.mockResolvedValue({
       id: "local-payment-id",
       userId: "user-id",
+      user: {
+        email: "user@example.test",
+      },
       status: "pending",
       paymentLink: null,
       subscriptionToPayment: {
@@ -267,6 +286,10 @@ describe("processPaymentCanceledEvent", () => {
           id: "subscription-id",
           status: "active",
           failedBillingAttempts: 0,
+          tariff: {
+            name: "Basic",
+            price: 790,
+          },
         },
       },
     });
@@ -291,6 +314,13 @@ describe("processPaymentCanceledEvent", () => {
         failedBillingAttempts: 1,
         status: "overdue",
       },
+    });
+
+    expect(mocks.sendSubscriptionPaymentFailedEmail).toHaveBeenCalledWith({
+      userEmail: "user@example.test",
+      userId: "user-id",
+      tariffName: "Basic",
+      tariffPrice: 790,
     });
   });
 });

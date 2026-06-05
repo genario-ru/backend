@@ -22,6 +22,7 @@ export const emailTemplateKey = pgEnum("email_template_key", [
   "otp",
   "email_verification",
   "upcoming_subscription_charge",
+  "subscription_payment_failed",
 ]);
 
 export const emailLog = pgTable("email_log", {

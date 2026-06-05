@@ -1,0 +1,1 @@
+ALTER TYPE "public"."email_template_key" ADD VALUE 'subscription_payment_failed';
