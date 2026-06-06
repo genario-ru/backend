@@ -43,7 +43,7 @@ export const payment = pgTable(
         onDelete: "set null",
       },
     ),
-    paymentId: text("payment_id").notNull(),
+    externalId: text("external_id").notNull(),
     paymentLink: text("payment_link"),
     amount: real("amount").notNull(),
     currency: text("currency").notNull(),
@@ -52,8 +52,8 @@ export const payment = pgTable(
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("payment_payment_id_unique_idx").on(table.paymentId),
-    index("payment_payment_id_idx").on(table.paymentId),
+    uniqueIndex("payment_external_id_unique_idx").on(table.externalId),
+    index("payment_external_id_idx").on(table.externalId),
     index("payment_user_id_created_at_idx").on(table.userId, table.createdAt),
     index("payment_user_id_status_created_at_idx").on(
       table.userId,

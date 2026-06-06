@@ -28,7 +28,7 @@ export async function processRefundSucceededEvent(
   // (подписку и/или пакет кредитов).
   const foundPayment = await db.query.payment.findFirst({
     where: (payment, { eq }) =>
-      eq(payment.paymentId, receivedRefund.payment_id),
+      eq(payment.externalId, receivedRefund.payment_id),
     with: {
       subscriptionToPayment: {
         with: {

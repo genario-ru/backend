@@ -28,7 +28,7 @@ export const paymentMethod = pgTable(
     userId: uuid("user_id")
       .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
       .notNull(),
-    paymentMethodId: text("payment_method_id").notNull(),
+    externalId: text("external_id").notNull(),
     status: paymentMethodStatus("status").notNull(),
     statusDetails: text("status_details"),
     type: text("type").notNull(),
@@ -39,10 +39,8 @@ export const paymentMethod = pgTable(
     ...timestamps,
   },
   (table) => [
-    uniqueIndex("payment_method_payment_method_id_unique_idx").on(
-      table.paymentMethodId,
-    ),
-    index("payment_method_payment_method_id_idx").on(table.paymentMethodId),
+    uniqueIndex("payment_method_external_id_unique_idx").on(table.externalId),
+    index("payment_method_external_id_idx").on(table.externalId),
     index("payment_method_user_id_created_at_idx").on(
       table.userId,
       table.createdAt,

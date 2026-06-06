@@ -22,7 +22,7 @@ export async function processPaymentSucceededEvent(
   const receivedPayment = data.object;
 
   const foundPayment = await db.query.payment.findFirst({
-    where: (payment, { eq }) => eq(payment.paymentId, receivedPayment.id),
+    where: (payment, { eq }) => eq(payment.externalId, receivedPayment.id),
     with: {
       subscriptionToPayment: {
         with: {
@@ -112,7 +112,7 @@ export async function processPaymentSucceededEvent(
         where: (paymentMethod, { and, eq }) =>
           and(
             eq(paymentMethod.userId, foundPaymentUserId),
-            eq(paymentMethod.paymentMethodId, receivedPaymentMethod.id),
+            eq(paymentMethod.externalId, receivedPaymentMethod.id),
           ),
       });
 
@@ -132,7 +132,7 @@ export async function processPaymentSucceededEvent(
           .values({
             status: "active",
             userId: foundPaymentUserId,
-            paymentMethodId: receivedPaymentMethodId,
+            externalId: receivedPaymentMethodId,
             type: receivedPaymentMethodType,
             title: receivedPaymentMethodTitle,
             data: receivedPaymentMethod,

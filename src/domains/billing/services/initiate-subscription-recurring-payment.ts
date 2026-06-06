@@ -75,7 +75,7 @@ export async function initiateSubscriptionRecurringPayment({
         description,
         userEmail,
         receiptItemDescription: description,
-        paymentMethodId: foundPaymentMethod.paymentMethodId,
+        paymentMethodId: foundPaymentMethod.externalId,
         idempotenceKey,
       });
 
@@ -86,7 +86,7 @@ export async function initiateSubscriptionRecurringPayment({
       await db
         .update(payment)
         .set({
-          paymentId: createdYooKassaRecurringPayment.id,
+          externalId: createdYooKassaRecurringPayment.id,
           paymentMethodId: foundPaymentMethod.id,
           amount: amountValue,
           currency: "RUB",
@@ -104,7 +104,7 @@ export async function initiateSubscriptionRecurringPayment({
           id: idempotenceKey,
           userId,
           amount: amountValue,
-          paymentId: createdYooKassaRecurringPayment.id,
+          externalId: createdYooKassaRecurringPayment.id,
           paymentMethodId: foundPaymentMethod.id,
           currency: "RUB",
           status: "pending",

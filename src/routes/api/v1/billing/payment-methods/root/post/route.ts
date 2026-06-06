@@ -98,7 +98,7 @@ addPaymentMethodRoute.post(
       await db
         .update(paymentMethod)
         .set({
-          paymentMethodId: createdYooKassaPaymentMethod.id,
+          externalId: createdYooKassaPaymentMethod.id,
           type: createdYooKassaPaymentMethod.type,
           title: createdYooKassaPaymentMethod.title,
           confirmationUrl,
@@ -120,7 +120,7 @@ addPaymentMethodRoute.post(
       .values({
         id: idempotenceKey,
         userId: user.id,
-        paymentMethodId: createdYooKassaPaymentMethod.id,
+        externalId: createdYooKassaPaymentMethod.id,
         status: "pending",
         type: createdYooKassaPaymentMethod.type,
         title: createdYooKassaPaymentMethod.title,

@@ -304,7 +304,7 @@ export async function createSubscription({
           id: idempotenceKey,
           userId: foundUser.id,
           amount: amountValue,
-          paymentId: createdYooKassaPayment.id,
+          externalId: createdYooKassaPayment.id,
           paymentLink: createdYooKassaPaymentConfirmationUrl,
           currency: "RUB",
           status: "pending",

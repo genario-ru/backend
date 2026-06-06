@@ -260,6 +260,13 @@
       "when": 1780702831536,
       "tag": "0036_lazy_nightshade",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1780740280506,
+      "tag": "0037_soft_the_renegades",
+      "breakpoints": true
     }
   ]
 }

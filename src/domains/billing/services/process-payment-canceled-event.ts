@@ -18,7 +18,7 @@ export async function processPaymentCanceledEvent(
   // Выполняем все нужные проверки
 
   const foundPayment = await db.query.payment.findFirst({
-    where: (payment, { eq }) => eq(payment.paymentId, receivedPayment.id),
+    where: (payment, { eq }) => eq(payment.externalId, receivedPayment.id),
     with: {
       subscriptionToPayment: {
         with: {

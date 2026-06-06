@@ -333,7 +333,7 @@ describe("initiateSubscriptionRecurringPayment", () => {
     mocks.db.query.paymentMethod.findMany.mockResolvedValue([
       {
         id: "local-payment-method-id",
-        paymentMethodId: "yk-payment-method-id",
+        externalId: "yk-payment-method-id",
       },
     ]);
     mocks.db.query.payment.findMany.mockResolvedValue([]);
@@ -367,7 +367,7 @@ describe("initiateSubscriptionRecurringPayment", () => {
         (operation) =>
           operation.type === "insert" &&
           operation.table === payment &&
-          operation.values.paymentId === "yk-recurring-payment-id",
+          operation.values.externalId === "yk-recurring-payment-id",
       ),
     ).toMatchObject({
       values: {

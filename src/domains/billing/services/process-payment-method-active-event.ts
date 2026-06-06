@@ -15,7 +15,7 @@ export async function processPaymentMethodActiveEvent(
 
   const foundPaymentMethod = await db.query.paymentMethod.findFirst({
     where: (paymentMethod, { eq }) =>
-      eq(paymentMethod.paymentMethodId, receivedPaymentMethodActive.id),
+      eq(paymentMethod.externalId, receivedPaymentMethodActive.id),
   });
 
   if (!foundPaymentMethod) {

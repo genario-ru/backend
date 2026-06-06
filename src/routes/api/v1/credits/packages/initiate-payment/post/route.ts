@@ -166,7 +166,7 @@ initiateCreditsPackagePaymentRoute.post(
       await db
         .update(payment)
         .set({
-          paymentId: createdYooKassaPayment.id,
+          externalId: createdYooKassaPayment.id,
           paymentLink: createdYooKassaPaymentConfirmationUrl,
           amount: amountValue,
           currency: "RUB",
@@ -191,7 +191,7 @@ initiateCreditsPackagePaymentRoute.post(
             userId: user.id,
             amount: amountValue,
             currency: "RUB",
-            paymentId: createdYooKassaPayment.id,
+            externalId: createdYooKassaPayment.id,
             paymentLink: createdYooKassaPaymentConfirmationUrl,
             status: "pending",
           })
