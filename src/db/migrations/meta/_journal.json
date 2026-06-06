@@ -253,6 +253,13 @@
       "when": 1780699491637,
       "tag": "0035_slippery_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1780702831536,
+      "tag": "0036_lazy_nightshade",
+      "breakpoints": true
     }
   ]
 }

@@ -104,7 +104,9 @@ cancelSubscriptionRoute.post(
     const billingPeriod = foundSubscription.tariff.billingPeriod;
     const durationDays = foundSubscription.tariff.durationDays;
 
-    if (!foundSubscription.startsAt) {
+    if (foundSubscription.cycleEndsAt) {
+      endsAt = foundSubscription.cycleEndsAt;
+    } else if (!foundSubscription.startsAt) {
       endsAt = new Date().toISOString();
     } else if (billingPeriod === "month") {
       endsAt = addMonths(foundSubscription.startsAt, 1).toISOString();
@@ -117,8 +119,10 @@ cancelSubscriptionRoute.post(
     const [cancelledSubscription] = await db
       .update(subscription)
       .set({
-        status: "cancelled",
         endsAt,
+        nextBillingAt: null,
+        status: "cancelled",
+        statusUpdatedAt: new Date().toISOString(),
       })
       .where(
         and(

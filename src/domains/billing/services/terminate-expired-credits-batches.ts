@@ -23,7 +23,7 @@ export async function terminateExpiredCreditsBatches({
   }
 
   const foundSubscriptionActiveCreditsBatches =
-    await db.query.subscriptionToCreditsBatch.findMany({
+    await tx.query.subscriptionToCreditsBatch.findMany({
       where: and(...whereConditions),
       with: {
         creditsBatch: true,

@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -52,6 +52,9 @@ export const paymentMethod = pgTable(
       table.status,
       table.createdAt,
     ),
+    uniqueIndex("payment_method_user_default_unique_idx")
+      .on(table.userId)
+      .where(sql`${table.default} = true`),
   ],
 );
 

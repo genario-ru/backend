@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "payment_method_user_default_unique_idx" ON "payment_method" USING btree ("user_id") WHERE "payment_method"."default" = true;--> statement-breakpoint
+CREATE UNIQUE INDEX "subscription_user_current_unique_idx" ON "subscription" USING btree ("user_id") WHERE "subscription"."status" in ('active', 'overdue', 'cancelled');

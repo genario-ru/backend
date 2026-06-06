@@ -1,10 +1,11 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
   pgEnum,
   pgTable,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -93,6 +94,9 @@ export const subscription = pgTable(
       table.createdAt,
     ),
     index("subscription_tariff_id_idx").on(table.tariffId),
+    uniqueIndex("subscription_user_current_unique_idx")
+      .on(table.userId)
+      .where(sql`${table.status} in ('active', 'overdue', 'cancelled')`),
   ],
 );
 

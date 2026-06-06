@@ -13,9 +13,9 @@ import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-res
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 export const getMySubscriptionsRoute =
-  createHonoApp().basePath("/subscriptons/my");
+  createHonoApp().basePath("/subscriptions/my");
 
-// GET /api/v1/subscriptons/my
+// GET /api/v1/subscriptions/my
 getMySubscriptionsRoute.get(
   "/",
   rateLimitMiddleware({

@@ -65,7 +65,7 @@ addPaymentMethodRoute.post(
 
     const returnUrl = redirectPath
       ? `${env.FRONTEND_BASE_URL}${redirectPath}`
-      : `${env.FRONTEND_BASE_URL}/blling`;
+      : `${env.FRONTEND_BASE_URL}/billing`;
 
     const createdYooKassaPaymentMethod = await postPaymentMethods({
       headers: {
