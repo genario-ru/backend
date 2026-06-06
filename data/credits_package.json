@@ -1,1 +1,93 @@
-[{"id":"0e9626c6-a751-4d42-aead-49fe18fa5237","name":"Пакет 300 кредитов","description":"Описание пакета 300 кредитов","amount":300,"created_at":"2026-05-22 20:35:31.075+00","updated_at":"2026-05-22 20:35:30.623915+00","price":990,"old_price":1290,"for_purchase":true,"is_preferred":true,"slug":"ncnvlghtxqxz"},{"id":"2587606b-c999-48f2-8c68-9f9b89e56f74","name":"Пакет 100 кредитов","description":"Пакет 100 кредитов для пробной подписки","amount":100,"created_at":"2026-05-22 20:35:31.082+00","updated_at":"2026-05-22 20:35:30.993847+00","price":0,"old_price":null,"for_purchase":false,"is_preferred":false,"slug":"k74fhg8rb9i5"},{"id":"772a4335-c0bb-4c6b-886f-db917996f59f","name":"Пакет 100 кредитов","description":"Описание пакета 100 кредитов","amount":100,"created_at":"2026-05-22 20:35:31.072+00","updated_at":"2026-05-22 20:35:30.247532+00","price":490,"old_price":null,"for_purchase":true,"is_preferred":false,"slug":"bvnuraipha42"},{"id":"78029f95-40e0-462a-9d9a-9f227251f0d9","name":"Пакет 500 кредитов","description":"Описание пакета 500 кредитов","amount":500,"created_at":"2026-05-22 20:35:31.078+00","updated_at":"2026-05-22 20:35:30.868505+00","price":1490,"old_price":null,"for_purchase":true,"is_preferred":false,"slug":"b8qzxrxn3p7i"},{"id":"a26ec642-8dc3-476d-b824-81167b5721d8","name":"Пакет 1200 кредитов","description":"Пакет 1200 кредитов для подписки","amount":1200,"created_at":"2026-05-22 20:35:31.076+00","updated_at":"2026-05-22 20:35:30.747139+00","price":0,"old_price":null,"for_purchase":false,"is_preferred":false,"slug":"v4ufcvyd82ou"},{"id":"aac19e00-798c-4340-b187-86b60ecad8b1","name":"Пакет 300 кредитов","description":"Пакет 300 кредитов для подписки","amount":300,"created_at":"2026-05-22 20:35:31.074+00","updated_at":"2026-05-22 20:35:30.501469+00","price":0,"old_price":null,"for_purchase":false,"is_preferred":false,"slug":"14v0mz30cpx4"},{"id":"dcbb0e8e-4a77-4347-9506-2da429e63cc5","name":"Пакет 700 кредитов","description":"Пакет 700 кредитов для подписки","amount":700,"created_at":"2026-05-22 20:35:31.071+00","updated_at":"2026-05-22 20:35:30.379296+00","price":0,"old_price":null,"for_purchase":false,"is_preferred":false,"slug":"fusrrg9yhqll"}]
+[
+  {
+    "id": "0e9626c6-a751-4d42-aead-49fe18fa5237",
+    "name": "Пакет 300 кредитов",
+    "description": "Описание пакета 300 кредитов",
+    "amount": 300,
+    "created_at": "2026-05-22 20:35:31.075+00",
+    "updated_at": "2026-05-22 20:35:30.623915+00",
+    "price": 990,
+    "old_price": 1290,
+    "for_purchase": true,
+    "is_preferred": true,
+    "slug": "ncnvlghtxqxz"
+  },
+  {
+    "id": "2587606b-c999-48f2-8c68-9f9b89e56f74",
+    "name": "Пакет 100 кредитов",
+    "description": "Пакет 100 кредитов для пробной подписки",
+    "amount": 100,
+    "created_at": "2026-05-22 20:35:31.082+00",
+    "updated_at": "2026-05-22 20:35:30.993847+00",
+    "price": 0,
+    "old_price": null,
+    "for_purchase": false,
+    "is_preferred": false,
+    "slug": "k74fhg8rb9i5"
+  },
+  {
+    "id": "772a4335-c0bb-4c6b-886f-db917996f59f",
+    "name": "Пакет 100 кредитов",
+    "description": "Описание пакета 100 кредитов",
+    "amount": 100,
+    "created_at": "2026-05-22 20:35:31.072+00",
+    "updated_at": "2026-05-22 20:35:30.247532+00",
+    "price": 490,
+    "old_price": null,
+    "for_purchase": true,
+    "is_preferred": false,
+    "slug": "bvnuraipha42"
+  },
+  {
+    "id": "78029f95-40e0-462a-9d9a-9f227251f0d9",
+    "name": "Пакет 500 кредитов",
+    "description": "Описание пакета 500 кредитов",
+    "amount": 500,
+    "created_at": "2026-05-22 20:35:31.078+00",
+    "updated_at": "2026-05-22 20:35:30.868505+00",
+    "price": 1490,
+    "old_price": null,
+    "for_purchase": true,
+    "is_preferred": false,
+    "slug": "b8qzxrxn3p7i"
+  },
+  {
+    "id": "a26ec642-8dc3-476d-b824-81167b5721d8",
+    "name": "Пакет 1200 кредитов",
+    "description": "Пакет 1200 кредитов для подписки",
+    "amount": 1200,
+    "created_at": "2026-05-22 20:35:31.076+00",
+    "updated_at": "2026-05-22 20:35:30.747139+00",
+    "price": 0,
+    "old_price": null,
+    "for_purchase": false,
+    "is_preferred": false,
+    "slug": "v4ufcvyd82ou"
+  },
+  {
+    "id": "aac19e00-798c-4340-b187-86b60ecad8b1",
+    "name": "Пакет 300 кредитов",
+    "description": "Пакет 300 кредитов для подписки",
+    "amount": 300,
+    "created_at": "2026-05-22 20:35:31.074+00",
+    "updated_at": "2026-05-22 20:35:30.501469+00",
+    "price": 0,
+    "old_price": null,
+    "for_purchase": false,
+    "is_preferred": false,
+    "slug": "14v0mz30cpx4"
+  },
+  {
+    "id": "dcbb0e8e-4a77-4347-9506-2da429e63cc5",
+    "name": "Пакет 700 кредитов",
+    "description": "Пакет 700 кредитов для подписки",
+    "amount": 700,
+    "created_at": "2026-05-22 20:35:31.071+00",
+    "updated_at": "2026-05-22 20:35:30.379296+00",
+    "price": 0,
+    "old_price": null,
+    "for_purchase": false,
+    "is_preferred": false,
+    "slug": "fusrrg9yhqll"
+  }
+]
