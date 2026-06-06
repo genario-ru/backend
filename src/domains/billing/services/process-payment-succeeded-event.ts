@@ -71,23 +71,6 @@ export async function processPaymentSucceededEvent(
     return;
   }
 
-  if (receivedPayment.status !== "succeeded") {
-    const statusDetails = "Статус платежа отличается от ожидаемого";
-
-    await db
-      .update(payment)
-      .set({
-        status: "failed",
-        statusDetails,
-      })
-      .where(eq(payment.id, foundPayment.id));
-
-    return throwAPIError({
-      code: APIErrorCode.ValidationError,
-      message: statusDetails,
-    });
-  }
-
   const foundPaymentUserId = foundPayment.userId;
 
   const foundPaymentSubscription =

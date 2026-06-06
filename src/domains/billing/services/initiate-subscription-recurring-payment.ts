@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { payment, subscriptionToPayment } from "@/db/schema";
@@ -8,7 +8,7 @@ import type { SubscriptionWithTariff } from "@/domains/subscriptions/schemas/ent
 import { prepareYooKassaRecurringPaymentParams } from "../utils/prepare-yookassa-recurring-payment-params";
 import { createYooKassaRecurringPayment } from "./create-yookassa-recurring-payment";
 import { getActivePaymentMethods } from "./get-active-payment-methods";
-import { getLastPendingPayments } from "./get-last-pending-payments";
+import { getReusableSubscriptionPendingPayment } from "./get-reusable-subscription-pending-payment";
 import { registerSubscriptionBillingFailure } from "./register-subscription-billing-failure";
 import { sendSubscriptionPaymentFailedEmail } from "./send-subscription-payment-failed-email";
 
@@ -50,38 +50,25 @@ export async function initiateSubscriptionRecurringPayment({
   } else {
     const [foundPaymentMethod] = foundPaymentMethods;
 
-    // Ожидающие платежи отменяем, но не удаляем, чтобы состав платежей
-    // полностью соответствовал платежам в платежном провайдере.
-
-    const lastPendingPayments = await getLastPendingPayments({
+    // Ищем существующий рекуррентный pending-платеж по этой подписке. Если он
+    // есть, переиспользуем его id как ключ идемпотентности: ЮKassa по тому же
+    // ключу вернет тот же платеж, а не спишет деньги повторно. Так мы избегаем
+    // двойного списания, когда крон запускается снова до прихода вебхука по
+    // предыдущей попытке.
+    const reusablePendingPayment = await getReusableSubscriptionPendingPayment({
       userId,
-      subscriptionIds: [subscriptionToCharge.id],
+      subscriptionId: subscriptionToCharge.id,
     });
 
-    if (lastPendingPayments.length) {
-      await db
-        .update(payment)
-        .set({
-          status: "canceled",
-          statusDetails:
-            "Платеж отменен в связи с проведением рекуррентного платежа",
-        })
-        .where(
-          inArray(
-            payment.id,
-            lastPendingPayments.map((payment) => payment.id),
-          ),
-        );
-    }
-
-    const idempotenceKey = randomUUID();
+    const idempotenceKey = reusablePendingPayment?.id ?? randomUUID();
 
     const { amountValue, description } = prepareYooKassaRecurringPaymentParams({
       tariff: subscriptionToCharge.tariff,
       userEmail,
     });
 
-    // Создаем / обновляем платеж в ЮKassa
+    // Создаем / получаем платеж в ЮKassa (по тому же ключу идемпотентности
+    // вернется ранее созданный платеж).
     const createdYooKassaRecurringPayment =
       await createYooKassaRecurringPayment({
         amountValue,
@@ -92,9 +79,24 @@ export async function initiateSubscriptionRecurringPayment({
         idempotenceKey,
       });
 
-    // 1. Создаем новый платеж и связываем его с текущей подпиской
-    // 2. Не обновляем подписку, так как она уже существует и будет обновлена после успешного платежа через webhook.
-    // 3. переходим к следующему пользователю.
+    // Не обновляем подписку: она уже существует и будет обновлена после
+    // успешного платежа через webhook.
+    if (reusablePendingPayment) {
+      // Обновляем существующий платеж актуальными данными от ЮKassa.
+      await db
+        .update(payment)
+        .set({
+          paymentId: createdYooKassaRecurringPayment.id,
+          paymentMethodId: foundPaymentMethod.id,
+          amount: amountValue,
+          currency: "RUB",
+        })
+        .where(eq(payment.id, reusablePendingPayment.id));
+
+      return;
+    }
+
+    // Создаем новый платеж и связываем его с текущей подпиской.
     await db.transaction(async (tx) => {
       const [createdPayment] = await tx
         .insert(payment)

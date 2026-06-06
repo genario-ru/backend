@@ -25,23 +25,6 @@ export async function processPaymentMethodActiveEvent(
     });
   }
 
-  if (receivedPaymentMethodActive.status !== "active") {
-    const statusDetails = "Статус метода оплаты отличается от ожидаемого";
-
-    await db
-      .update(paymentMethod)
-      .set({
-        status: "inactive",
-        statusDetails,
-      })
-      .where(eq(paymentMethod.id, foundPaymentMethod.id));
-
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message: statusDetails,
-    });
-  }
-
   // Проставляем статус метода оплаты в "активный"
 
   await db

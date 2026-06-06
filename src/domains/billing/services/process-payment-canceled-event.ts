@@ -46,23 +46,6 @@ export async function processPaymentCanceledEvent(
     return;
   }
 
-  if (receivedPayment.status !== "canceled") {
-    const statusDetails = "Статус платежа отличается от ожидаемого";
-
-    await db
-      .update(payment)
-      .set({
-        status: "failed",
-        statusDetails,
-      })
-      .where(eq(payment.id, foundPayment.id));
-
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message: statusDetails,
-    });
-  }
-
   // Проставляем статус платежа в "отменен" с указанием причины отмены и
   // обновляем связанную подписку в зависимости от типа платежа.
   const statusDetails = processPaymentCancellationDetails(

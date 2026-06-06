@@ -49,6 +49,11 @@ export async function terminateExpiredCreditsBatches({
         subscriptionToCreditsBatch.creditsBatch.id,
     );
 
+  // Нечего терминировать — выходим, не дергая БД пустым inArray.
+  if (!creditsBatchesIdsToTerminate.length) {
+    return [];
+  }
+
   const terminatedCreditsBatches = await tx
     .update(creditsBatch)
     .set({ status: "terminated" })

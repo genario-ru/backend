@@ -11,90 +11,85 @@ export async function processRefundSucceededEvent(
 ) {
   const receivedRefund = data.object;
 
-  // Выполняем все нужные проверки
+  // Возвраты создаются вручную в личном кабинете ЮKassa, поэтому записи о них в
+  // нашей БД может еще не быть — она создается прямо здесь, по факту вебхука.
 
-  const foundRefund = await db.query.refund.findFirst({
+  // Проверяем, не обработали ли мы уже этот возврат (защита от повторного
+  // вебхука): если запись есть и она успешна, ничего не делаем.
+  const existingRefund = await db.query.refund.findFirst({
     where: (refund, { eq }) => eq(refund.externalId, receivedRefund.id),
+  });
+
+  if (existingRefund && existingRefund.status === "succeeded") {
+    return;
+  }
+
+  // Находим платеж, к которому относится возврат, и связанные с ним субъекты
+  // (подписку и/или пакет кредитов).
+  const foundPayment = await db.query.payment.findFirst({
+    where: (payment, { eq }) =>
+      eq(payment.paymentId, receivedRefund.payment_id),
     with: {
-      payment: {
+      subscriptionToPayment: {
         with: {
-          subscriptionToPayment: {
-            with: {
-              subscription: true,
-            },
-          },
-          creditsBatchToPayment: {
-            with: {
-              creditsBatch: true,
-            },
-          },
+          subscription: true,
+        },
+      },
+      creditsBatchToPayment: {
+        with: {
+          creditsBatch: true,
         },
       },
     },
   });
 
-  if (!foundRefund) {
+  if (!foundPayment) {
     return throwAPIError({
       code: APIErrorCode.NotFound,
-      message: "Возврат не найден",
-    });
-  }
-
-  if (receivedRefund.status !== "succeeded") {
-    const statusDetails = "Статус возврата отличается от ожидаемого";
-
-    await db
-      .update(refund)
-      .set({
-        status: "failed",
-        statusDetails,
-      })
-      .where(eq(refund.id, foundRefund.id));
-
-    return throwAPIError({
-      code: APIErrorCode.NotFound,
-      message: statusDetails,
+      message: "Платеж для возврата не найден",
     });
   }
 
   const foundLinkedSubscription =
-    foundRefund.payment.subscriptionToPayment?.subscription;
+    foundPayment.subscriptionToPayment?.subscription;
 
   const foundLinkedCreditsBatch =
-    foundRefund.payment.creditsBatchToPayment?.creditsBatch;
+    foundPayment.creditsBatchToPayment?.creditsBatch;
 
   if (!foundLinkedSubscription && !foundLinkedCreditsBatch) {
-    const statusDetails = "Связанный субъект возврата не найден";
-
-    await db
-      .update(refund)
-      .set({ status: "failed", statusDetails })
-      .where(eq(refund.id, foundRefund.id));
-
     return throwAPIError({
       code: APIErrorCode.NotFound,
-      message: statusDetails,
+      message: "Связанный субъект возврата не найден",
     });
   }
 
-  // Проставляем статус возврата в "успешно" и отменяем подписку и/или удаляем кредиты из баланса пользователя
-
+  // Сохраняем возврат и отзываем доступ: терминируем подписку и/или пакет
+  // кредитов. Не делаем else if, потому что платеж может быть связан и с
+  // подпиской, и с пакетом кредитов одновременно.
   await db.transaction(async (tx) => {
-    await tx
-      .update(refund)
-      .set({ status: "succeeded" })
-      .where(eq(refund.id, foundRefund.id));
+    if (existingRefund) {
+      await tx
+        .update(refund)
+        .set({ status: "succeeded", statusDetails: null })
+        .where(eq(refund.id, existingRefund.id));
+    } else {
+      await tx.insert(refund).values({
+        externalId: receivedRefund.id,
+        paymentId: foundPayment.id,
+        status: "succeeded",
+      });
+    }
 
-    // Если возврат связан с подпиской, то отменяем ее
     if (foundLinkedSubscription) {
       await tx
         .update(subscription)
-        .set({ status: "terminated" })
+        .set({
+          status: "terminated",
+          statusUpdatedAt: new Date().toISOString(),
+        })
         .where(eq(subscription.id, foundLinkedSubscription.id));
     }
 
-    // Если возврат связан с пакетом кредитов, то отменяем его
-    // Не делаем else if, потому что платеж может быть связан с подпиской и пакетом кредитов одновременно
     if (foundLinkedCreditsBatch) {
       await tx
         .update(creditsBatch)

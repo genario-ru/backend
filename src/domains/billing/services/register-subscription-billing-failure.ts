@@ -1,3 +1,4 @@
+import { addDays } from "date-fns";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -38,13 +39,18 @@ export async function registerSubscriptionBillingFailure({
   }
 
   const tx = txParam ?? db;
+  const currentDate = new Date();
 
+  // Сдвигаем дату следующего списания на сутки вперед, чтобы крон (он работает
+  // ежечасно) не пытался списать снова в течение того же часа и не исчерпал
+  // лимит попыток за несколько часов. Так между ретраями проходит ~1 день.
   await tx
     .update(subscription)
     .set({
       failedBillingAttempts,
       status: "overdue",
-      statusUpdatedAt: new Date().toISOString(),
+      statusUpdatedAt: currentDate.toISOString(),
+      nextBillingAt: addDays(currentDate, 1).toISOString(),
     })
     .where(eq(subscription.id, subscriptionId));
 
