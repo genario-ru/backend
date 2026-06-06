@@ -161,7 +161,7 @@ export const scenarioMetadataRegenerationWorker =
             entity: "scenario-metadata-item",
             entityId: scenarioId,
             totalTokens: usage?.total_tokens ?? 0,
-            transaction: tx,
+            tx,
           }),
         ]);
 

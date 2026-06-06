@@ -170,7 +170,7 @@ export const scenarioScenesGenerationWorker =
               entity: "scenario-chapter-scenes",
               entityId: scenarioChapterId,
               totalTokens: usage?.total_tokens ?? 0,
-              transaction: tx,
+              tx,
             }),
           ]);
         } else {

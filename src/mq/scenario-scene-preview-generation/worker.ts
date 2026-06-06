@@ -184,6 +184,7 @@ export const scenarioScenePreviewsGenerationWorker =
               entity: "scenario-scene-preview",
               entityId: scenarioScenePreviewId,
               totalTokens: usage?.total_tokens ?? 0,
+              tx,
             }),
           ]);
 

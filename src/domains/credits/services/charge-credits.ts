@@ -18,7 +18,7 @@ type ChargeCreditsParams = {
   entity: CreditsPricingEntity;
   entityId: string;
   totalTokens: number;
-  transaction?: Transaction;
+  tx?: Transaction;
 };
 
 export async function chargeCredits({
@@ -26,8 +26,9 @@ export async function chargeCredits({
   entity,
   entityId,
   totalTokens,
-  transaction,
+  tx: txParam,
 }: ChargeCreditsParams) {
+  const tx = txParam ?? db;
   const creditsBalance = await getCreditsBalance({ userId });
   const entityPrice = creditsPricing[entity];
 
@@ -35,13 +36,17 @@ export async function chargeCredits({
     throw new Error(NOT_ENOUGH_CREDITS_ERROR);
   }
 
-  const foundCreditsBatches = await db.query.creditsBatch.findMany({
-    orderBy: (creditsBatch, { desc }) => desc(creditsBatch.createdAt),
-    where: (creditsBatch, { and, or, eq, gt, gte, isNull }) =>
+  // Сортируем по дате создания по возрастанию, чтобы первыми списывать самые
+  // старые батчи. Для подписочных батчей это совпадает с ближайшим сроком
+  // истечения (каждый новый цикл создает батч с более поздним expiresAt), что
+  // предотвращает сгорание истекающих раньше кредитов.
+  const foundCreditsBatches = await tx.query.creditsBatch.findMany({
+    orderBy: (creditsBatch, { asc }) => asc(creditsBatch.createdAt),
+    where: (creditsBatch, { and, or, eq, gte, isNull }) =>
       and(
         eq(creditsBatch.userId, userId),
         eq(creditsBatch.status, "active"),
-        gt(creditsBatch.remainingAmount, entityPrice),
+        gte(creditsBatch.remainingAmount, entityPrice),
         or(
           isNull(creditsBatch.expiresAt),
           gte(creditsBatch.expiresAt, new Date().toISOString()),
@@ -77,19 +82,38 @@ export async function chargeCredits({
     throw new Error(NOT_ENOUGH_CREDITS_ERROR);
   }
 
-  const newRemainingAmount = creditsBatchToCharge.remainingAmount - entityPrice;
   const tokensPerCredit = totalTokens / entityPrice;
   const tokensPerCreditRounded = Number(tokensPerCredit.toFixed(2));
 
-  await (transaction ?? db).transaction(async (tx) => {
+  await tx.transaction(async (tx) => {
+    // Блокируем строку выбранного батча, чтобы исключить гонку при параллельном
+    // списании кредитов одного пользователя (иначе остаток может уйти в минус).
+    const [lockedCreditsBatch] = await tx
+      .select()
+      .from(creditsBatch)
+      .where(eq(creditsBatch.id, creditsBatchToCharge.id))
+      .for("update");
+
+    // Перепроверяем актуальный остаток уже под блокировкой: параллельное
+    // списание могло уменьшить его, пока мы выбирали батч.
+    if (
+      !lockedCreditsBatch ||
+      lockedCreditsBatch.status !== "active" ||
+      lockedCreditsBatch.remainingAmount < entityPrice
+    ) {
+      throw new Error(NOT_ENOUGH_CREDITS_ERROR);
+    }
+
+    const newRemainingAmount = lockedCreditsBatch.remainingAmount - entityPrice;
+
     await tx
       .update(creditsBatch)
       .set({ remainingAmount: newRemainingAmount })
-      .where(eq(creditsBatch.id, creditsBatchToCharge.id));
+      .where(eq(creditsBatch.id, lockedCreditsBatch.id));
 
     await tx.insert(creditsUsage).values({
       userId,
-      batchId: creditsBatchToCharge.id,
+      batchId: lockedCreditsBatch.id,
       entity,
       entityId,
       creditsAmount: entityPrice,

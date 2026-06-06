@@ -149,7 +149,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             entity: "ideas-list",
             entityId: foundIdeasList.id,
             totalTokens: usage?.total_tokens ?? 0,
-            transaction: tx,
+            tx,
           }),
         ]);
       } else {
