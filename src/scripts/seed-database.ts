@@ -1,12 +1,14 @@
+#!/usr/bin/env tsx
+
 import { seedDefaultData } from "@/db/seed";
 import { createStandaloneClient } from "@/db/utils/standalone-client";
 
 /**
- * Заливает дефолтные (reference) данные из `data/*.json` в базу.
+ * Локальный скрипт: заливает дефолтные (reference) данные из `data/*.json` в БД.
  *
  * Идемпотентно: upsert по первичному ключу `id` (см. `src/db/seed/index.ts`).
- * Запускается отдельной командой (`pnpm db:seed` локально), не привязан к шагу
- * миграций.
+ * Запускается отдельной командой (`pnpm db:seed`) и не входит в продакшен-сборку
+ * — на сервере сид не выполняется.
  */
 const { db, pool } = createStandaloneClient();
 

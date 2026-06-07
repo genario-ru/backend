@@ -25,6 +25,6 @@ Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks f
 
 ## Default data (seed)
 
-- Reference data lives in `data/*.json`; the seed runner is in `src/db/seed/**` and is invoked via `src/entrypoints/seed.ts` (`pnpm db:seed`, local).
+- Reference data lives in `data/*.json`; the seed runner is in `src/db/seed/**` and is invoked via `src/scripts/seed-database.ts` (`pnpm db:seed`, local only — not built into the image, never runs on the server).
 - Idempotent upsert by primary key `id` (`onConflictDoUpdate`, repo is source of truth). Separate manual step, not part of the deploy migration.
 - New default-data table: add `data/<table>.json` and an entry in `src/db/seed/config.ts` (referenced tables before dependents for FK order).

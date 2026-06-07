@@ -137,7 +137,8 @@ do the same.
 
 - Reference/default data lives in `data/*.json` and is loaded by the seed runner
   in `src/db/seed/**` (config + runner), invoked through
-  `src/entrypoints/seed.ts` (`pnpm db:seed`, local).
+  `src/scripts/seed-database.ts` (`pnpm db:seed`, local). The seed is not part of
+  the production build and never runs on the server.
 - Seeding is idempotent: upsert by primary key `id` with `onConflictDoUpdate`
   (repo is the source of truth). It is a separate manual step, not part of the
   automatic deploy migration.

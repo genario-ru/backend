@@ -28,7 +28,7 @@ Use this when tables, fields, indexes, relations, or enums are changed in `src/d
 ## Production migrations & seed
 
 - The runtime image has no `drizzle-kit`, so migrations run programmatically via `src/entrypoints/migrate.ts` (`dist/migrate.js`, drizzle's `migrate()`), exposed as `pnpm db:migrate` and executed at the deploy stage. SQL files are copied into the image at `src/db/migrations` (`Dockerfile`); a one-shot `migrate` service in `docker-compose.yml` runs them before `server`/`workers`.
-- Default/reference data lives in `data/*.json`; seed runner in `src/db/seed/**`, invoked via `src/entrypoints/seed.ts` (`pnpm db:seed`, local). Idempotent upsert by `id` (`onConflictDoUpdate`). New default-data table: add `data/<table>.json` + an entry in `src/db/seed/config.ts` (referenced tables before dependents).
+- Default/reference data lives in `data/*.json`; seed runner in `src/db/seed/**`, invoked via `src/scripts/seed-database.ts` (`pnpm db:seed`, local only — not built into the image, never runs on the server). Idempotent upsert by `id` (`onConflictDoUpdate`). New default-data table: add `data/<table>.json` + an entry in `src/db/seed/config.ts` (referenced tables before dependents).
 
 ## Self-check
 
