@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "marketing_accepted" boolean DEFAULT false NOT NULL;

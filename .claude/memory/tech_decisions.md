@@ -38,7 +38,7 @@ Why: routes/services enqueue jobs without importing worker code, and entrypoints
 
 ## Agents Generate Migrations But Do Not Apply Them
 
-For repository schema changes, agents may run `pnpm db:generate` to create migration SQL. Agents must not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+For repository schema changes, agents may run `pnpm db:generate` to create migration SQL. Agents must not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task.
 
 Why: generated SQL is reviewable, while applying it mutates a real database and should remain a human-controlled action.
 

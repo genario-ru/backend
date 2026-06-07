@@ -105,18 +105,44 @@ do the same.
 ## Database And Migrations
 
 - Schema source lives in `src/db/schemas/**`, re-exported through
-  `src/db/schema.ts`.
+  `src/db/schema.ts`. It is the single source of truth.
 - Migrations are generated into `src/db/migrations/**`.
+- Canonical dev flow: edit schema -> `pnpm db:generate` -> review SQL ->
+  commit schema + SQL + snapshot together. There is no `db:push`; all schema
+  changes go through reviewable migrations.
 - For schema changes, agents may run `pnpm db:generate` to create a migration
   file.
-- Do not run `pnpm db:migrate`, `pnpm db:push`, `pnpm db:drop`, or any command
-  that applies schema changes to a database unless the user explicitly asks for
-  that exact command in the current task.
+- Do not run `pnpm db:migrate` or `pnpm db:seed` (or any command that applies
+  schema/data changes to a database) unless the user explicitly asks for that
+  exact command in the current task.
 - Commit schema and migration files together.
 - If a migration should be applied, stop after generation and tell the user what
   was generated and what command a human can run.
 - If tables are exposed through API responses, update domain entity schemas in
   `src/domains/<domain>/schemas/entities/**`.
+
+### Production migrations
+
+- The runtime image has no `drizzle-kit` (`pnpm prune --production` removes it),
+  so migrations run programmatically via `dist/migrate.js`
+  (`src/entrypoints/migrate.ts`, drizzle's `migrate()`), exposed as
+  `pnpm db:migrate` and executed at the deploy stage.
+- SQL files are copied into the image at `src/db/migrations` (see `Dockerfile`).
+  If you change the migrations output path, update the Dockerfile `COPY` and the
+  `migrationsFolder` in `src/entrypoints/migrate.ts`.
+- A one-shot `migrate` service in `docker-compose.yml` runs migrations on deploy;
+  `server`/`workers` depend on its successful completion.
+
+### Default data (seed)
+
+- Reference/default data lives in `data/*.json` and is loaded by the seed runner
+  in `src/db/seed/**` (config + runner), invoked through
+  `src/entrypoints/seed.ts` (`pnpm db:seed`, local).
+- Seeding is idempotent: upsert by primary key `id` with `onConflictDoUpdate`
+  (repo is the source of truth). It is a separate manual step, not part of the
+  automatic deploy migration.
+- When adding a new default-data table, add a `data/<table>.json` file and a new
+  entry in `src/db/seed/config.ts` (respect FK order: referenced tables first).
 
 ## BullMQ Workers
 
@@ -202,7 +228,8 @@ pnpm test:integration
 pnpm lint:fix
 pnpm lint:typescript
 pnpm db:generate
-pnpm db:push # human-only; AI agents must not run this by default
+pnpm db:migrate # programmatic migrate (dist/migrate.js); runs at the deploy stage
+pnpm db:seed # human-only/local; upsert default data from data/*.json
 pnpm db:studio # human-only/local inspection
 pnpm api:download:yookassa
 pnpm api:generate

@@ -35,14 +35,41 @@ pnpm test
 pnpm test:unit
 pnpm test:integration
 
-pnpm db:generate
-pnpm db:migrate # human-only; AI agents must not apply migrations
-pnpm db:push    # human-only; AI agents must not run this by default
+pnpm db:generate          # generate SQL migration from schema changes
+pnpm db:migrate           # apply migrations (programmatic, dist/migrate.js); runs at the deploy stage
+pnpm db:seed              # human-only/local; upsert default data from data/*.json
 pnpm db:studio
 
 pnpm api:download:yookassa
 pnpm api:generate
 ```
+
+## Database Migrations & Seeding
+
+The source of truth is the Drizzle TypeScript schema in `src/db/schemas/**`.
+Schema changes go through reviewable SQL migrations — there is no `db:push`.
+
+### Changing the schema (dev)
+
+1. Edit schema files in `src/db/schemas/**` (re-export via `src/db/schema.ts`).
+2. `pnpm db:generate` — creates `src/db/migrations/NNNN_*.sql` + snapshot + a
+   `_journal.json` entry.
+3. Review the generated SQL (especially renames: rename vs drop+create).
+4. Commit schema + migration SQL + snapshot together.
+
+### Production
+
+`pnpm db:migrate` runs the programmatic migrator (`dist/migrate.js`, drizzle's
+`migrate()` — `drizzle-kit` is not present in the runtime image) and is executed
+at the deploy stage by a one-shot `migrate` compose service. `server` and
+`workers` wait for it via `depends_on: service_completed_successfully`. The SQL
+files are copied into the image at `src/db/migrations` (see `Dockerfile`).
+
+### Default data (seed)
+
+Reference data lives in `data/*.json` and is upserted by `id`
+(`onConflictDoUpdate`, repo is the source of truth) via `pnpm db:seed`. It is a
+**separate, local** step — not part of the automatic deploy migration.
 
 ## Structure
 

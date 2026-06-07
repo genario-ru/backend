@@ -1,1 +1,0 @@
-ALTER TABLE "scenario_metadata" ADD COLUMN "status" "generation_status" DEFAULT 'idle' NOT NULL;

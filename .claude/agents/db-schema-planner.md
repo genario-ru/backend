@@ -39,7 +39,7 @@ Then list:
 
 ## Constraints
 
-- Do not recommend `db:push` for repository changes.
+- All schema changes go through reviewable migrations (`pnpm db:generate`); there is no `db:push`.
 - Do not rewrite old migrations.
-- Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` from the default AI workflow.
+- Do not run `pnpm db:migrate` or `pnpm db:seed` from the default AI workflow.
 - Commit schema and generated migrations together.

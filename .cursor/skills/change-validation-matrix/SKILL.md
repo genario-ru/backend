@@ -30,7 +30,7 @@ Do not finalize tasks without actual checks for the areas that changed.
 - Env config: `pnpm validate:env` when a representative `.env` is available.
 - Build/runtime entrypoints: `pnpm build`.
 - Route/API contract: `pnpm lint:typescript`, targeted tests if available, OpenAPI metadata inspection.
-- DB schema: `pnpm db:generate` only. Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+- DB schema: `pnpm db:generate` only. Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task.
 - External API codegen: relevant `api:download:*`, `pnpm api:generate`, TypeScript check.
 - Tests changed or behavior covered by tests: `pnpm test:unit` or targeted Vitest; `pnpm test` for broader validation.
 

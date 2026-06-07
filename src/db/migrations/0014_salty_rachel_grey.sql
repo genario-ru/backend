@@ -1,1 +1,0 @@
-ALTER TABLE "production_status" ADD COLUMN "is_default" boolean DEFAULT false NOT NULL;

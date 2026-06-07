@@ -13,7 +13,7 @@ pnpm lint:typescript
 
 - Env changes: `pnpm validate:env` when a representative `.env` is available.
 - Build/runtime entrypoints: `pnpm build`.
-- DB schema changes: `pnpm db:generate` only. Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+- DB schema changes: `pnpm db:generate` only. Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task.
 - External API codegen: provider download script when relevant, then `pnpm api:generate`.
 - Tests changed or behavior covered by tests: `pnpm test:unit`, targeted Vitest, or `pnpm test`.
 

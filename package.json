@@ -17,9 +17,8 @@
     "lint:fix": "eslint --fix && prettier --write .",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:drop": "drizzle-kit drop",
-    "db:push": "drizzle-kit push",
+    "db:migrate": "node dist/migrate.js",
+    "db:seed": "tsx src/entrypoints/seed.ts",
     "api:download:yookassa": "tsx src/scripts/download-yookassa-openapi.ts",
     "api:generate": "kubb generate"
   },

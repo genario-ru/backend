@@ -38,6 +38,11 @@ RUN adduser --system --uid 1001 hono
 COPY --from=builder --chown=hono:nodejs /app/node_modules /app/node_modules
 COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
 
+# SQL-миграции нужны программному мигратору (dist/migrate.js) в рантайме:
+# drizzle-kit вырезан pnpm prune, поэтому migrate() читает файлы из этой папки.
+# Путь сохраняем (src/db/migrations), чтобы он совпадал с локальным окружением.
+COPY --from=builder --chown=hono:nodejs /app/src/db/migrations /app/src/db/migrations
+
 USER hono
 EXPOSE 3000
 

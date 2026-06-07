@@ -1,1 +1,0 @@
-ALTER TABLE "credits_package" ADD COLUMN "for_purchase" boolean DEFAULT false NOT NULL;

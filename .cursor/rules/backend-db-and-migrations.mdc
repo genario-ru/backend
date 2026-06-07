@@ -9,7 +9,7 @@ alwaysApply: false
 - Schema source lives in `src/db/schemas/**`; exports are collected through `src/db/schema.ts`.
 - Migrations live in `src/db/migrations/**`.
 - For repository schema changes, agents may run `pnpm db:generate` to create migration SQL.
-- Agents must not run `pnpm db:migrate`, `pnpm db:push`, `pnpm db:drop`, or any command that applies schema changes to a database unless the user explicitly asks for that exact command in the current task.
+- Agents must not run `pnpm db:migrate`, `pnpm db:seed`, or any command that applies schema/data changes to a database unless the user explicitly asks for that exact command in the current task.
 - Commit schema updates together with generated migrations.
 - If migration application is needed, stop after generation and tell the user which generated file should be reviewed/applied manually.
 - Keep Drizzle query, relations, enum, and index style consistent with nearby schemas.

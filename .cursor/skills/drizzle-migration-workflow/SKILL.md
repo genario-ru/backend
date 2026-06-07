@@ -22,8 +22,13 @@ Use this when tables, fields, indexes, relations, or enums are changed in `src/d
 
 ## Constraints
 
-- Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+- Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task. There is no `db:push` — all schema changes go through reviewable migrations.
 - Do not rewrite older migrations if it breaks migration history order.
+
+## Production migrations & seed
+
+- The runtime image has no `drizzle-kit`, so migrations run programmatically via `src/entrypoints/migrate.ts` (`dist/migrate.js`, drizzle's `migrate()`), exposed as `pnpm db:migrate` and executed at the deploy stage. SQL files are copied into the image at `src/db/migrations` (`Dockerfile`); a one-shot `migrate` service in `docker-compose.yml` runs them before `server`/`workers`.
+- Default/reference data lives in `data/*.json`; seed runner in `src/db/seed/**`, invoked via `src/entrypoints/seed.ts` (`pnpm db:seed`, local). Idempotent upsert by `id` (`onConflictDoUpdate`). New default-data table: add `data/<table>.json` + an entry in `src/db/seed/config.ts` (referenced tables before dependents).
 
 ## Self-check
 

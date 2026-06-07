@@ -1,1 +1,0 @@
-ALTER TABLE "payment" RENAME COLUMN "new_status" TO "status";

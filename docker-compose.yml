@@ -5,6 +5,18 @@
 # DEPLOY_ENVIRONMENT и IMAGE_TAG указаны через ${VAR:?...}, поэтому при их
 # отсутствии compose упадет с явной ошибкой, а не подтянет чужой образ по дефолту.
 services:
+  # One-shot сервис: один раз применяет миграции и завершается.
+  # server и workers ждут его успешного завершения через depends_on, поэтому
+  # схема БД всегда приведена в актуальное состояние до старта приложения.
+  migrate:
+    image: ghcr.io/genario-ru/backend-${DEPLOY_ENVIRONMENT:?DEPLOY_ENVIRONMENT is required (set it in the Dokploy app environment)}:${IMAGE_TAG:?IMAGE_TAG is required (set it in the Dokploy app environment)}
+    pull_policy: always
+    command: pnpm run db:migrate
+    restart: "no"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_URL=${POSTGRES_URL}
+
   server:
     image: ghcr.io/genario-ru/backend-${DEPLOY_ENVIRONMENT:?DEPLOY_ENVIRONMENT is required (set it in the Dokploy app environment)}:${IMAGE_TAG:?IMAGE_TAG is required (set it in the Dokploy app environment)}
     pull_policy: always
@@ -12,6 +24,9 @@ services:
     ports:
       - "${HTTP_PORT:-3000}:3000"
     restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_URL=${POSTGRES_URL}
@@ -61,6 +76,9 @@ services:
     pull_policy: always
     command: pnpm run start:workers
     restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_URL=${POSTGRES_URL}

@@ -16,4 +16,15 @@ Use when changing tables, columns, indexes, enums, relations, or migration behav
 7. Run `pnpm lint:typescript` and relevant tests.
 8. Tell the user which migration file was generated and that a human should apply it if appropriate.
 
-Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task. Commit schema and generated migrations together.
+Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task. Commit schema and generated migrations together. There is no `db:push` — all schema changes go through reviewable migrations.
+
+## Production migrations
+
+- The runtime image has no `drizzle-kit`, so migrations run programmatically via `src/entrypoints/migrate.ts` (`dist/migrate.js`, drizzle's `migrate()`), exposed as `pnpm db:migrate` and executed at the deploy stage.
+- SQL files are copied into the image at `src/db/migrations` (`Dockerfile`); a one-shot `migrate` service in `docker-compose.yml` runs them on deploy before `server`/`workers`.
+
+## Default data (seed)
+
+- Reference data lives in `data/*.json`; the seed runner is in `src/db/seed/**` and is invoked via `src/entrypoints/seed.ts` (`pnpm db:seed`, local).
+- Idempotent upsert by primary key `id` (`onConflictDoUpdate`, repo is source of truth). Separate manual step, not part of the deploy migration.
+- New default-data table: add `data/<table>.json` and an entry in `src/db/seed/config.ts` (referenced tables before dependents for FK order).

@@ -26,6 +26,6 @@ Before coding, read at least 3 similar table/relation files in `src/db/schemas/*
 
 ## Rules
 
-- Do not run `pnpm db:migrate`, `pnpm db:push`, or `pnpm db:drop` unless the user explicitly asks for that exact command in the current task.
+- Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task. There is no `db:push` — all schema changes go through reviewable migrations.
 - Do not rewrite old migrations.
 - Commit schema and migration files together.
