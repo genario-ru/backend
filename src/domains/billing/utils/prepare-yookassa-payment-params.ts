@@ -16,11 +16,13 @@ type PrepareYooKassaPaymentTariffParams =
   | PrepareYooKassaPaymentWithoutFallbackTariffParams;
 
 type PrepareYooKassaPaymentParams = PrepareYooKassaPaymentTariffParams & {
+  paymentId: string;
   userEmail: string;
   redirectPath?: string;
 };
 
 export function prepareYooKassaPaymentParams({
+  paymentId,
   userEmail,
   redirectPath,
   ...params
@@ -32,7 +34,7 @@ export function prepareYooKassaPaymentParams({
 
   const returnUrl = redirectPath
     ? `${env.FRONTEND_BASE_URL}${redirectPath}`
-    : `${env.FRONTEND_BASE_URL}/home`;
+    : `${env.FRONTEND_BASE_URL}/payment-redirect?paymentId=${paymentId}`;
 
   const amountValue = effectiveTariff.price;
   const description = `Оплата тарифа "${effectiveTariff.name}" для ${userEmail} | ${APP_NAME_CAPITALIZED}`;

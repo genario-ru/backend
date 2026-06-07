@@ -258,6 +258,7 @@ export async function createSubscription({
   const idempotenceKey = randomUUID();
 
   const { amountValue, description, returnUrl } = prepareYooKassaPaymentParams({
+    paymentId: idempotenceKey,
     tariff: foundTariff,
     userEmail: foundUser.email,
     redirectPath,

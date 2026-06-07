@@ -102,7 +102,7 @@ initiateCreditsPackagePaymentRoute.post(
 
     const returnUrl = redirectPath
       ? `${env.FRONTEND_BASE_URL}${redirectPath}`
-      : `${env.FRONTEND_BASE_URL}/billing`;
+      : `${env.FRONTEND_BASE_URL}/payment-redirect?paymentId=${idempotenceKey}`;
 
     const amountValue = foundCreditsPackage.price;
     const description = `Оплата пакета кредитов "${foundCreditsPackage.name}" для ${user.email}`;
