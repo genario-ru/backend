@@ -2,15 +2,15 @@ import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { postPayments } from "@/codegen/api/yookassa";
 import { db } from "@/db";
 import { creditsBatch, creditsBatchToPayment, payment } from "@/db/schema";
+import { createYooKassaPayment } from "@/domains/billing/services/create-yookassa-payment";
+import { prepareYooKassaCreditsPackagePaymentParams } from "@/domains/billing/utils/prepare-yookassa-credits-package-payment-params";
 import { initiateCreditsPackagePaymentBodySchema } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/body";
 import {
   type InitiateCreditsPackagePaymentResponse,
   initiateCreditsPackagePaymentResponseSchema,
 } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/response";
-import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -100,52 +100,23 @@ initiateCreditsPackagePaymentRoute.post(
       lastPendingCreditsBatchPayment?.creditsBatchToPayment?.paymentId ??
       randomUUID();
 
-    const returnUrl = redirectPath
-      ? `${env.FRONTEND_BASE_URL}${redirectPath}`
-      : `${env.FRONTEND_BASE_URL}/payment-redirect?paymentId=${idempotenceKey}`;
-
-    const amountValue = foundCreditsPackage.price;
-    const description = `Оплата пакета кредитов "${foundCreditsPackage.name}" для ${user.email}`;
-    const receiptItemDescription = `Пакет кредитов "${foundCreditsPackage.name}" в сервисе ${env.FRONTEND_BASE_URL}`;
+    const { amountValue, description, receiptItemDescription, returnUrl } =
+      prepareYooKassaCreditsPackagePaymentParams({
+        creditsPackage: foundCreditsPackage,
+        userEmail: user.email,
+        paymentId: idempotenceKey,
+        redirectPath,
+      });
 
     // Отправляем запрос к API ЮKassa
 
-    const createdYooKassaPayment = await postPayments({
-      data: {
-        amount: {
-          value: amountValue.toString(),
-          currency: "RUB",
-        },
-        description,
-        receipt: {
-          customer: {
-            email: user.email,
-          },
-          items: [
-            {
-              description: receiptItemDescription,
-              amount: {
-                value: amountValue.toString(),
-                currency: "RUB",
-              },
-              vat_code: 1,
-              quantity: 1,
-              measure: "piece",
-              payment_subject: "service",
-              payment_mode: "full_payment",
-            },
-          ],
-        },
-        confirmation: {
-          type: "redirect",
-          return_url: returnUrl,
-        },
-        save_payment_method: true,
-        capture: true,
-      },
-      headers: {
-        "Idempotence-Key": idempotenceKey,
-      },
+    const createdYooKassaPayment = await createYooKassaPayment({
+      amountValue,
+      description,
+      userEmail: user.email,
+      receiptItemDescription,
+      returnUrl,
+      idempotenceKey,
     });
 
     if (

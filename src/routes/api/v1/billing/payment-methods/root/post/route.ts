@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { postPaymentMethods } from "@/codegen/api/yookassa";
 import { db } from "@/db";
 import { paymentMethod } from "@/db/schema";
 import { addPaymentMethodBodySchema } from "@/domains/billing/schemas/handlers/add-payment-method/body";
@@ -10,6 +9,7 @@ import {
   type AddPaymentMethodResponse,
   addPaymentMethodResponseSchema,
 } from "@/domains/billing/schemas/handlers/add-payment-method/response";
+import { createYooKassaPaymentMethod } from "@/domains/billing/services/create-yookassa-payment-method";
 import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
@@ -67,17 +67,9 @@ addPaymentMethodRoute.post(
       ? `${env.FRONTEND_BASE_URL}${redirectPath}`
       : `${env.FRONTEND_BASE_URL}/billing`;
 
-    const createdYooKassaPaymentMethod = await postPaymentMethods({
-      headers: {
-        "Idempotence-Key": idempotenceKey,
-      },
-      data: {
-        type: "bank_card",
-        confirmation: {
-          type: "redirect",
-          return_url: returnUrl,
-        },
-      },
+    const createdYooKassaPaymentMethod = await createYooKassaPaymentMethod({
+      returnUrl,
+      idempotenceKey,
     });
 
     if (!createdYooKassaPaymentMethod.confirmation?.confirmation_url) {

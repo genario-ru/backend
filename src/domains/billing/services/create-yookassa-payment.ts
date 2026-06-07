@@ -1,5 +1,7 @@
 import { postPayments } from "@/codegen/api/yookassa/clients/post-payments";
 
+import { buildYooKassaReceipt } from "../utils/build-yookassa-receipt";
+
 type CreateYooKassaPaymentParams = {
   amountValue: number;
   description: string;
@@ -24,25 +26,11 @@ export function createYooKassaPayment({
         currency: "RUB",
       },
       description,
-      receipt: {
-        customer: {
-          email: userEmail,
-        },
-        items: [
-          {
-            description: receiptItemDescription,
-            amount: {
-              value: amountValue.toString(),
-              currency: "RUB",
-            },
-            vat_code: 1,
-            quantity: 1,
-            measure: "piece",
-            payment_subject: "service",
-            payment_mode: "full_payment",
-          },
-        ],
-      },
+      receipt: buildYooKassaReceipt({
+        userEmail,
+        receiptItemDescription,
+        amountValue,
+      }),
       confirmation: {
         type: "redirect",
         return_url: returnUrl,
