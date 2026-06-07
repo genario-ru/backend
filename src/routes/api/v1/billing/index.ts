@@ -3,6 +3,7 @@ export { selectDefaultPaymentMethodRoute } from "./payment-methods/payment-metho
 export { deletePaymentMethodRoute } from "./payment-methods/payment-method/delete/route";
 export { addPaymentMethodRoute } from "./payment-methods/root/post/route";
 export { getMyPaymentsRoute } from "./payments/my/get/route";
+export { getPaymentRoute } from "./payments/payment/get/route";
 export { triggerSubscriptionsChargeRoute } from "./subscriptions-charge/post/route";
 export { triggerTerminateExpiredCreditsBatchesRoute } from "./terminate-expired-credits-batches/post/route";
 export { triggerUpcomingChargesNewsletterRoute } from "./upcoming-charges-newsletter/post/route";
