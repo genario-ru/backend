@@ -182,7 +182,7 @@ initiateCreditsPackagePaymentRoute.post(
       );
     }
 
-    await db.transaction(async (tx) => {
+    const createdPayment = await db.transaction(async (tx) => {
       const [[createdPayment], [createdCreditsBatch]] = await Promise.all([
         tx
           .insert(payment)
@@ -213,13 +213,13 @@ initiateCreditsPackagePaymentRoute.post(
         creditsBatchId: createdCreditsBatch.id,
         paymentId: createdPayment.id,
       });
+
+      return createdPayment;
     });
 
     return c.json<InitiateCreditsPackagePaymentResponse>(
       initiateCreditsPackagePaymentResponseSchema.parse({
-        data: {
-          paymentLink: createdYooKassaPaymentConfirmationUrl,
-        },
+        data: createdPayment,
       }),
     );
   },

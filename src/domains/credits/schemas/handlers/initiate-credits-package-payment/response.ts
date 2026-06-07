@@ -1,10 +1,9 @@
+import { paymentSchema } from "@/domains/billing/schemas/entities/payment";
 import { z } from "@/lib/zod";
-
-import { creditsPackagePaymentInfoSchema } from "../../entities/credits-package-payment-info";
 
 export const initiateCreditsPackagePaymentResponseSchema = z
   .object({
-    data: creditsPackagePaymentInfoSchema,
+    data: paymentSchema,
   })
   .meta({
     title: "Initiate credits package payment response",

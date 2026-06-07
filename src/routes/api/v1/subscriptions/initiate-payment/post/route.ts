@@ -96,9 +96,7 @@ initiateSubscriptionPaymentRoute.post(
 
     return c.json<InitiateSubscriptionPaymentResponse>(
       initiateSubscriptionPaymentResponseSchema.parse({
-        data: {
-          paymentLink: createdPayment.paymentLink,
-        },
+        data: createdPayment,
       }),
     );
   },
