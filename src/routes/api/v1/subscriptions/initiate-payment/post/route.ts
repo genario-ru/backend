@@ -84,6 +84,8 @@ initiateSubscriptionPaymentRoute.post(
       userId: user.id,
       tariffId,
       nextTariffId,
+      tariffSlug,
+      trialTariffSlug,
       redirectPath,
     });
 

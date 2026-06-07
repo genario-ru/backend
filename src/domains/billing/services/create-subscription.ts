@@ -19,6 +19,8 @@ type CreateSubscriptionParams = {
   tariffId: string;
   nextTariffId?: string;
   redirectPath?: string;
+  tariffSlug: string;
+  trialTariffSlug?: string;
   tx?: Transaction;
 };
 
@@ -31,6 +33,8 @@ export async function createSubscription({
   userId,
   tariffId,
   nextTariffId,
+  tariffSlug,
+  trialTariffSlug,
   redirectPath,
   tx: txParam,
 }: CreateSubscriptionParams): Promise<CreateSubscriptionResult> {
@@ -261,6 +265,8 @@ export async function createSubscription({
     paymentId: idempotenceKey,
     tariff: foundTariff,
     userEmail: foundUser.email,
+    tariffSlug,
+    trialTariffSlug,
     redirectPath,
   });
 

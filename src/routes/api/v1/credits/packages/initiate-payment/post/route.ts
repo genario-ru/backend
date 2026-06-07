@@ -105,6 +105,7 @@ initiateCreditsPackagePaymentRoute.post(
         creditsPackage: foundCreditsPackage,
         userEmail: user.email,
         paymentId: idempotenceKey,
+        creditsPackageSlug,
         redirectPath,
       });
 
