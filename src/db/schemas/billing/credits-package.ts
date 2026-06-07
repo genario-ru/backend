@@ -16,7 +16,7 @@ export const creditsPackage = pgTable("credits_package", {
   oldPrice: real("old_price"),
   forPurchase: boolean("for_purchase").notNull().default(false),
   isPreferred: boolean("is_preferred").default(false).notNull(),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

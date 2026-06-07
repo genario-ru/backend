@@ -363,7 +363,7 @@ CREATE TABLE "export_document_format" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "export_document_format_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "idea" (
@@ -400,7 +400,7 @@ CREATE TABLE "legal_document" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "legal_document_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "platform" (
@@ -418,7 +418,7 @@ CREATE TABLE "platform" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "platform_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "production_status" (
@@ -434,7 +434,7 @@ CREATE TABLE "production_status" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "production_status_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "profile" (
@@ -493,7 +493,7 @@ CREATE TABLE "profile_type" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "profile_type_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "scenario" (
@@ -571,7 +571,7 @@ CREATE TABLE "scenario_scene_component_type" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "scenario_scene_component_type_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "scenario_scene_preview" (
@@ -615,7 +615,7 @@ CREATE TABLE "template" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "template_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "tone" (
@@ -627,7 +627,7 @@ CREATE TABLE "tone" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "tone_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -658,7 +658,7 @@ CREATE TABLE "video_duration" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "video_duration_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "video_type" (
@@ -670,7 +670,7 @@ CREATE TABLE "video_type" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "video_type_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "referral_code" (
@@ -705,7 +705,7 @@ CREATE TABLE "referral_reward" (
 	"slug" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "credits_package_slug_unique" UNIQUE("slug")
+	CONSTRAINT "referral_reward_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "alert" (

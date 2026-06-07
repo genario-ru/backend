@@ -23,7 +23,7 @@ export const referralReward = pgTable("referral_reward", {
   type: referralRewardType("type").notNull(),
   userType: referralRewardUserType("user_type").notNull(),
   value: real("value").notNull(),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

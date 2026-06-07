@@ -12,7 +12,7 @@ export const videoDuration = pgTable("video_duration", {
   description: text("description"),
   minSeconds: integer("min_seconds").notNull(),
   maxSeconds: integer("max_seconds"),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

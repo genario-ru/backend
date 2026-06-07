@@ -7,6 +7,6 @@ export const legalDocument = pgTable("legal_document", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
   url: text("url").notNull(),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });

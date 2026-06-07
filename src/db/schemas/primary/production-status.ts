@@ -16,7 +16,7 @@ export const productionStatus = pgTable("production_status", {
   forScenario: boolean("for_scenario").notNull().default(false),
   forScenarioChapter: boolean("for_scenario_chapter").notNull().default(false),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

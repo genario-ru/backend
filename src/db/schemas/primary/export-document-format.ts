@@ -12,7 +12,7 @@ export const exportDocumentFormat = pgTable("export_document_format", {
   description: text("description"),
   color: text("color"),
   icon: text("icon"),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

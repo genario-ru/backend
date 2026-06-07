@@ -12,7 +12,7 @@ export const profileType = pgTable("profile_type", {
   description: text("description"),
   icon: text("icon"),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

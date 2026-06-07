@@ -15,7 +15,7 @@ export const videoType = pgTable("video_type", {
   description: text("description"),
   icon: text("icon"),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

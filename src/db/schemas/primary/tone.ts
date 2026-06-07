@@ -14,7 +14,7 @@ export const tone = pgTable("tone", {
   description: text("description"),
   icon: text("icon"),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

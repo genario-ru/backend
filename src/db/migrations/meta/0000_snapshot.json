@@ -1,5 +1,5 @@
 {
-  "id": "08c0f29b-a13c-4f41-b482-3524a3a9082f",
+  "id": "c2073afa-849e-49b7-aed9-4088fe316035",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -3591,8 +3591,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "export_document_format_slug_unique": {
+          "name": "export_document_format_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -3971,8 +3971,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "legal_document_slug_unique": {
+          "name": "legal_document_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -4080,8 +4080,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "platform_slug_unique": {
+          "name": "platform_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -4179,8 +4179,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "production_status_slug_unique": {
+          "name": "production_status_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -4653,8 +4653,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "profile_type_slug_unique": {
+          "name": "profile_type_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -5544,8 +5544,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "scenario_scene_component_type_slug_unique": {
+          "name": "scenario_scene_component_type_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -5922,8 +5922,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "template_slug_unique": {
+          "name": "template_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -5994,8 +5994,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "tone_slug_unique": {
+          "name": "tone_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -6185,8 +6185,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "video_duration_slug_unique": {
+          "name": "video_duration_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -6257,8 +6257,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "video_type_slug_unique": {
+          "name": "video_type_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
@@ -6668,8 +6668,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "credits_package_slug_unique": {
-          "name": "credits_package_slug_unique",
+        "referral_reward_slug_unique": {
+          "name": "referral_reward_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"

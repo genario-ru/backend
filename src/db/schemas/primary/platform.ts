@@ -22,7 +22,7 @@ export const platform = pgTable("platform", {
   channelUrlRegex: text("channel_url_regex"),
   hasAutoImport: boolean("has_auto_import").notNull().default(false),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 

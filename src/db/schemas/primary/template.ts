@@ -15,7 +15,7 @@ export const template = pgTable("template", {
   icon: text("icon"),
   color: text("color").notNull(),
   priority: integer("priority").notNull().default(0),
-  ...uniqueSlug,
+  ...uniqueSlug(),
   ...timestamps,
 });
 
