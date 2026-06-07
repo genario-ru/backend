@@ -50,11 +50,6 @@ getMyCreditsBatchesRoute.get(
           eq(creditsBatch.status, "active"),
         ),
       with: {
-        subscriptionToCreditsBatch: {
-          with: {
-            subscription: true,
-          },
-        },
         creditsPackage: true,
       },
     });
@@ -72,16 +67,9 @@ getMyCreditsBatchesRoute.get(
       },
     );
 
-    const preparedFoundCreditsBatches = filteredFoundCreditsBatches.map(
-      ({ subscriptionToCreditsBatch, ...creditsBatch }) => ({
-        ...creditsBatch,
-        subscription: subscriptionToCreditsBatch?.subscription,
-      }),
-    );
-
     return c.json<GetMyCreditsBatchesResponse>(
       getMyCreditsBatchesResponseSchema.parse({
-        data: preparedFoundCreditsBatches,
+        data: filteredFoundCreditsBatches,
       }),
     );
   },

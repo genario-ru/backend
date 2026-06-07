@@ -1,8 +1,8 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { payment } from "@/db/schemas/billing/payment";
-import { creditsPackageSchema } from "@/domains/credits/schemas/entities/credits-package";
-import { tariffSchema } from "@/domains/tariffs/schemas/entities/tariff";
+import { creditsBatchExtendedSchema } from "@/domains/credits/schemas/entities/credits-batch";
+import { subscriptionExtendedSchema } from "@/domains/subscriptions/schemas/entities/subscription";
 import { z } from "@/lib/zod";
 
 import { paymentMethodSchema } from "./payment-method";
@@ -18,8 +18,8 @@ export type Payment = z.infer<typeof paymentSchema>;
 export const paymentExtendedSchema = paymentSchema
   .extend({
     paymentMethod: paymentMethodSchema.nullish(),
-    tariff: tariffSchema.nullish(),
-    creditsPackage: creditsPackageSchema.nullish(),
+    subscription: subscriptionExtendedSchema.nullish(),
+    creditsBatch: creditsBatchExtendedSchema.nullish(),
   })
   .meta({
     title: "Payment extended",

@@ -1,7 +1,6 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { creditsBatch } from "@/db/schema";
-import { subscriptionSchema } from "@/domains/subscriptions/schemas/entities/subscription";
 import { z } from "@/lib/zod";
 
 import { creditsPackageSchema } from "./credits-package";
@@ -16,7 +15,6 @@ export type CreditsBatch = z.infer<typeof creditsBatchSchema>;
 
 export const creditsBatchExtendedSchema = creditsBatchSchema
   .extend({
-    subscription: subscriptionSchema.nullish(),
     creditsPackage: creditsPackageSchema.nullish(),
   })
   .meta({

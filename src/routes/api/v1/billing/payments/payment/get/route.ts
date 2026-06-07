@@ -86,8 +86,8 @@ getPaymentRoute.get(
       getPaymentResponseSchema.parse({
         data: {
           ...payment,
-          tariff: subscriptionToPayment?.subscription?.tariff,
-          creditsPackage: creditsBatchToPayment?.creditsBatch?.creditsPackage,
+          subscription: subscriptionToPayment?.subscription,
+          creditsBatch: creditsBatchToPayment?.creditsBatch,
         },
       }),
     );
