@@ -19,7 +19,7 @@ type PrepareYooKassaPaymentTariffParams =
 type PrepareYooKassaPaymentParams = PrepareYooKassaPaymentTariffParams & {
   paymentId: string;
   userEmail: string;
-  tariffSlug: string;
+  tariffSlug?: string;
   trialTariffSlug?: string;
   redirectPath?: string;
 };

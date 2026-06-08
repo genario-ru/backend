@@ -19,7 +19,7 @@ type CreateSubscriptionParams = {
   tariffId: string;
   nextTariffId?: string;
   redirectPath?: string;
-  tariffSlug: string;
+  tariffSlug?: string;
   trialTariffSlug?: string;
   tx?: Transaction;
 };
