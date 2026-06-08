@@ -11,6 +11,7 @@ export type GenerateScenarioMetadataPromptContext = {
   scenarioTargetAudience?: string | null;
   scenarioTemplateName?: string | null;
   scenarioTemplateDescription?: string | null;
+  scenarioTemplateDetails?: string | null;
   scenarioProfileName?: string | null;
   scenarioProfileDescription?: string | null;
   scenarioVideoTypeName?: string | null;

@@ -16,6 +16,7 @@ export type GenerateIdeasListPromptProps = {
   ideasListTargetAudience?: string | null;
   ideasListTemplateName?: string | null;
   ideasListTemplateDescription?: string | null;
+  ideasListTemplateDetails?: string | null;
   ideasListProfileName?: string | null;
   ideasListProfileDescription?: string | null;
   ideasListTones?: string[] | null;

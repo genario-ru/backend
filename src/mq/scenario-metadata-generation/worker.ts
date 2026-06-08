@@ -85,6 +85,7 @@ export const scenarioMetadataGenerationWorker =
           scenarioTargetAudience: foundScenario.targetAudience,
           scenarioTemplateName: foundScenario.template?.name,
           scenarioTemplateDescription: foundScenario.template?.description,
+          scenarioTemplateDetails: foundScenario.template?.details,
           scenarioProfileName: foundScenario.profile?.name,
           scenarioProfileDescription: foundScenario.profile?.description,
           scenarioVideoTypeName: foundScenario.videoType?.name,

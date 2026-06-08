@@ -4,6 +4,7 @@ export type GenerateScenarioChaptersPromptContext = {
   scenarioTargetAudience?: string | null;
   scenarioTemplateName?: string | null;
   scenarioTemplateDescription?: string | null;
+  scenarioTemplateDetails?: string | null;
   scenarioProfileName?: string | null;
   scenarioProfileDescription?: string | null;
   scenarioPlatformNames?: string[];
