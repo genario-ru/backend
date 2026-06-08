@@ -4,6 +4,8 @@
 
 Structure the video as a series of narrative chapters. Each chapter is one self-contained story beat — hook, problem setup, insight, resolution, call-to-action, etc. Together they must create a smooth arc that keeps the viewer engaged from start to finish.
 
+Adapt pacing to the target platforms in Context: for short-form / vertical platforms (Shorts, Reels, Клипы, TikTok) front-load a strong hook in the first 1–3 seconds and keep relentless momentum; for long-form platforms you can develop the setup more gradually.
+
 ## Field requirements
 
 name (max 100 characters):

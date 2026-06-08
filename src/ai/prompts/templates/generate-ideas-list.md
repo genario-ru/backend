@@ -3,6 +3,8 @@ Generate exactly {{IDEAS_COUNT}} video ideas. Each idea must be unique in topic,
 ## Task
 
 You are writing video ideas for a content creator. Each idea should feel like a pitch from an experienced producer: a sharp hook that stops the scroll, a clear structure the creator can follow, and a reason why it will perform well.
+
+Ground every idea in the provided Context. Do not fabricate specific facts, statistics, or events and present them as true — frame them as creative angles the creator can develop, not as invented facts.
 {{TEMPLATE_ANCHOR}}
 
 ## Field requirements

@@ -34,6 +34,29 @@ tags:
 
 {{PLATFORMS}}
 
+## Example
+
+Illustrative only — adapt to the actual scenario and use each platform's real `id` as `platformId`. Two platforms with different voices (long-form descriptive vs short-form punchy):
+
+```json
+{
+  "items": [
+    {
+      "platformId": "<platform-id-1>",
+      "title": "Почему 90% новичков бросают спортзал — и как не бросить",
+      "body": "Разбираю настоящие причины, по которым тренировки забрасывают в первый месяц, и простую систему, которая помогает не сорваться. В видео: три ошибки новичков, одна привычка вместо изнурительных тренировок и план на первую неделю.",
+      "tags": "#фитнес, #спортзал, #мотивация, #тренировки, #зож"
+    },
+    {
+      "platformId": "<platform-id-2>",
+      "title": "90% бросают зал за месяц 😅 а ты?",
+      "body": "Лови систему, чтобы не слиться 💪 Сохрани, чтобы не потерять!",
+      "tags": "#фитнес, #зож, #мотивация, #спортзал, #тренировки"
+    }
+  ]
+}
+```
+
 ## Output
 
 Return a JSON object `{ "items": [...] }` with one entry per platform listed above. Do not invent platforms. Do not omit platforms.

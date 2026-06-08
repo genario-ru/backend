@@ -1,7 +1,7 @@
 import { zodTextFormat } from "openai/helpers/zod";
 
 import { groupChannelsByCreatorPrompt } from "@/ai/prompts/builders/group-channels-by-creator";
-import { systemPrompt } from "@/ai/prompts/builders/system-prompt";
+import { analyticalSystemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
 import {
   getUserProfile as getRuTubeUserProfile,
@@ -172,7 +172,7 @@ export async function groupChannelsByCreator(
       model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
       temperature: 0.1,
       input: [
-        { role: "system", content: systemPrompt() },
+        { role: "system", content: analyticalSystemPrompt() },
         { role: "user", content: prompt },
       ],
       text: {
