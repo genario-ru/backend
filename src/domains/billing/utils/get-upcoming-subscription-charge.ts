@@ -1,6 +1,5 @@
 import type { SubscriptionWithTariff } from "@/domains/subscriptions/schemas/entities/subscription";
 
-import { getNextPlannedPendingSubscription } from "./get-next-planned-pending-subscription";
 import { getSubscriptionChargeDate } from "./get-subscription-charge-date";
 
 type GetUpcomingSubscriptionChargeParams = {
@@ -14,6 +13,11 @@ export type UpcomingSubscriptionCharge = {
   tariffPrice: number;
 };
 
+type SubscriptionWithChargeDate = {
+  chargeAt: string;
+  subscription: SubscriptionWithTariff;
+};
+
 export function getUpcomingSubscriptionCharge({
   subscriptions,
 }: GetUpcomingSubscriptionChargeParams):
@@ -23,10 +27,6 @@ export function getUpcomingSubscriptionCharge({
     (subscription) => subscription.status === "active",
   );
 
-  const pendingSubscriptions = subscriptions.filter(
-    (subscription) => subscription.status === "pending",
-  );
-
   const hasSingleActiveSubscription = activeSubscriptions.length === 1;
 
   if (!hasSingleActiveSubscription) {
@@ -34,42 +34,47 @@ export function getUpcomingSubscriptionCharge({
     return undefined;
   }
 
-  const [activeSubscription] = activeSubscriptions;
-  const activeTariffIsRenewable = activeSubscription.tariff.isRenewable;
+  // Для каждой подписки вычисляем дату ее ближайшего списания: у возобновляемой
+  // активной подписки это nextBillingAt, у запланированной pending-подписки —
+  // ее startsAt. Подписки без даты списания (например, невозобновляемая активная
+  // или незавершенная первичная оплата) пропускаем.
 
-  if (activeTariffIsRenewable) {
-    const chargeAt = getSubscriptionChargeDate(activeSubscription);
+  const subscriptionsWithChargeDate = subscriptions
+    .map((subscription): SubscriptionWithChargeDate | null => {
+      const chargeAt = getSubscriptionChargeDate(subscription);
 
-    if (!chargeAt) {
-      return undefined;
-    }
+      if (!chargeAt) {
+        return null;
+      }
 
-    return {
-      chargeAt,
-      subscriptionId: activeSubscription.id,
-      tariffName: activeSubscription.tariff.name,
-      tariffPrice: activeSubscription.tariff.price,
-    };
-  }
+      return {
+        chargeAt,
+        subscription,
+      };
+    })
+    .filter((subscription): subscription is SubscriptionWithChargeDate =>
+      Boolean(subscription),
+    );
 
-  const nextPlannedPendingSubscription = getNextPlannedPendingSubscription({
-    pendingSubscriptions,
-  });
+  // Берем самое раннее предстоящее списание среди всех подписок пользователя.
 
-  if (!nextPlannedPendingSubscription) {
+  const nearestUpcomingCharge = subscriptionsWithChargeDate.sort((a, b) => {
+    const aChargeAt = new Date(a.chargeAt).getTime();
+    const bChargeAt = new Date(b.chargeAt).getTime();
+
+    return aChargeAt - bChargeAt;
+  })[0];
+
+  if (!nearestUpcomingCharge) {
     return undefined;
   }
 
-  const chargeAt = getSubscriptionChargeDate(nextPlannedPendingSubscription);
-
-  if (!chargeAt) {
-    return undefined;
-  }
+  const { chargeAt, subscription } = nearestUpcomingCharge;
 
   return {
     chargeAt,
-    subscriptionId: nextPlannedPendingSubscription.id,
-    tariffName: nextPlannedPendingSubscription.tariff.name,
-    tariffPrice: nextPlannedPendingSubscription.tariff.price,
+    subscriptionId: subscription.id,
+    tariffName: subscription.tariff.name,
+    tariffPrice: subscription.tariff.price,
   };
 }

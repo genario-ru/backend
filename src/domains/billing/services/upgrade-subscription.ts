@@ -149,6 +149,7 @@ export async function upgradeSubscription({
       .values({
         userId,
         tariffId,
+        nextBillingAt: activeSubscriptionCycleEndsAt,
         startsAt: activeSubscriptionCycleEndsAt,
         status: "pending",
       })
