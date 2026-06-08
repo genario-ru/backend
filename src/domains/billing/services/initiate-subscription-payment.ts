@@ -1,6 +1,4 @@
 import { randomUUID } from "crypto";
-import { and, eq, inArray } from "drizzle-orm";
-import { partition } from "es-toolkit";
 
 import { db } from "@/db";
 import { payment, subscription, subscriptionToPayment } from "@/db/schema";
@@ -11,25 +9,29 @@ import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
 import type { Payment } from "../schemas/entities/payment";
 import { prepareYooKassaPaymentParams } from "../utils/prepare-yookassa-payment-params";
+import { cancelPendingSubscriptions } from "./cancel-pending-subscriptions";
 import { createYooKassaPayment } from "./create-yookassa-payment";
-import { getLastPendingPayments } from "./get-last-pending-payments";
 
-type CreateSubscriptionParams = {
+type InitiateSubscriptionPaymentParams = {
   userId: string;
   tariffId: string;
   nextTariffId?: string;
-  redirectPath?: string;
   tariffSlug?: string;
   trialTariffSlug?: string;
+  redirectPath?: string;
   tx?: Transaction;
 };
 
-type CreateSubscriptionResult = {
+type InitiateSubscriptionPaymentResult = {
   createdSubscription: Subscription;
-  createdPayment?: Payment;
+  createdPayment: Payment;
 };
 
-export async function createSubscription({
+// Инициирует оплату новой подписки: создает платеж в ЮКассе и связанные с ним
+// ожидающие подписки. Используется в ручке инициации оплаты подписки, где у
+// пользователя не должно быть активной подписки.
+
+export async function initiateSubscriptionPayment({
   userId,
   tariffId,
   nextTariffId,
@@ -37,7 +39,7 @@ export async function createSubscription({
   trialTariffSlug,
   redirectPath,
   tx: txParam,
-}: CreateSubscriptionParams): Promise<CreateSubscriptionResult> {
+}: InitiateSubscriptionPaymentParams): Promise<InitiateSubscriptionPaymentResult> {
   const tx = txParam ?? db;
 
   const foundUser = await db.query.user.findFirst({
@@ -75,14 +77,14 @@ export async function createSubscription({
   }
 
   // Если указан следующий тариф, то проверяем, существует ли он. Если нет,
-  // то выбрасываем ошибку. В противном случае сохраняем найденный тариф.
+  // то выбрасываем ошибку.
 
   if (nextTariffId) {
-    const localFoundNextTariff = await db.query.tariff.findFirst({
+    const foundNextTariff = await db.query.tariff.findFirst({
       where: (tariff, { eq }) => eq(tariff.id, nextTariffId),
     });
 
-    if (!localFoundNextTariff) {
+    if (!foundNextTariff) {
       throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Указанный тариф для следующей подписки не существует",
@@ -97,11 +99,6 @@ export async function createSubscription({
     where: (subscription, { eq }) => eq(subscription.userId, userId),
     with: {
       tariff: true,
-      subscriptionToPayment: {
-        with: {
-          payment: true,
-        },
-      },
     },
   });
 
@@ -113,46 +110,24 @@ export async function createSubscription({
     ["active", "overdue", "cancelled"].includes(subscription.status),
   );
 
-  if (activeSubscriptions.length > 1) {
+  // При инициации оплаты у пользователя не должно быть активных подписок.
+  // Если активная подписка есть, то изменение тарифа должно проходить через
+  // ручку апгрейда подписки.
+
+  if (activeSubscriptions.length) {
     throw throwAPIError({
       code: APIErrorCode.BusinessRuleViolation,
-      message: "Вы не можете иметь более одной активной подписки",
+      message: "Вы не можете оформить новую подписку, пока у вас есть активная",
     });
   }
-
-  // Если указан следующий тариф, то при наличии активных подписок выбрасываем
-  // ошибку, потому что при наличии активной подписки "tariffId" априори создает
-  // следующую подписку, которая начнет действовать сразу после окончания текущей.
-
-  if (nextTariffId && activeSubscriptions.length) {
-    throw throwAPIError({
-      code: APIErrorCode.Forbidden,
-      message:
-        "Вы не можете иметь указать следующий тариф, пока у вас есть активные подписки",
-    });
-  }
-
-  // Если у пользователя есть активная подписка, то проверяем, не совпадает ли
-  // тариф активной подписки с указанным тарифом. Если совпадает, то выбрасываем
-  // ошибку, потому что нельзя оформить подписку по тарифу активной подписки.
-
-  const [activeSubscription] = activeSubscriptions;
-
-  if (activeSubscription && activeSubscription.tariffId === tariffId) {
-    throw throwAPIError({
-      code: APIErrorCode.Forbidden,
-      message: "Вы не можете оформить подписку по тарифу активной подписки",
-    });
-  }
-
-  const [pendingSubscriptions, notPendingSubscriptions] = partition(
-    foundSubscriptions,
-    (subscription) => subscription.status === "pending",
-  );
 
   // Находим все подписки пользователя, которые не являются возобновляемыми,
   // и статус которых отличается от "pending". Т.е. подписки, которые уже были
   // использованы.
+
+  const notPendingSubscriptions = foundSubscriptions.filter(
+    (subscription) => subscription.status !== "pending",
+  );
 
   const foundNonRenewableSubscriptions = notPendingSubscriptions.filter(
     (subscription) => !subscription.tariff.isRenewable,
@@ -173,91 +148,11 @@ export async function createSubscription({
     });
   }
 
-  if (pendingSubscriptions.length) {
-    // Удаляем все ожидающие подписки для этого пользователя. Это могут быть
-    // подписки по тарифу, который он выбрал следующими или просто ожидающие
-    // оплаты подписки, по которым не был проведен платеж.
+  // Удаляем все ожидающие подписки пользователя и отменяем их ожидающие платежи.
 
-    await tx.transaction(async (tx) => {
-      await tx.delete(subscription).where(
-        and(
-          inArray(
-            subscription.id,
-            pendingSubscriptions.map((subscription) => subscription.id),
-          ),
-          eq(subscription.userId, userId),
-        ),
-      );
+  await cancelPendingSubscriptions({ userId, tx: txParam });
 
-      // Ожидающие платежи по этим подпискам отменяем, но не удаляем, чтобы состав
-      // платежей полностью соответствовал платежам в платежном провайдере.
-
-      const pendingSubscriptionPayments = await getLastPendingPayments({
-        userId,
-        subscriptionIds: pendingSubscriptions.map(
-          (subscription) => subscription.id,
-        ),
-      });
-
-      if (pendingSubscriptionPayments.length) {
-        await tx
-          .update(payment)
-          .set({
-            status: "canceled",
-            statusDetails: "Платеж отменен в связи с созданием новой подписки",
-          })
-          .where(
-            inArray(
-              payment.id,
-              pendingSubscriptionPayments.map((payment) => payment.id),
-            ),
-          );
-      }
-    });
-  }
-
-  // Если у пользователя уже есть активная подписка, то убираем дату следующей
-  // оплаты у текущей подписки и проставляем ей дату окончания на дату окончания
-  // ее цикла. После этого создаем новую подписку, которая начнется сразу после
-  // окончания цикла активной подписки.
-
-  if (activeSubscription) {
-    const activeSubscriptionCycleEndsAt = activeSubscription.cycleEndsAt;
-
-    if (!activeSubscriptionCycleEndsAt) {
-      throw throwAPIError({
-        code: APIErrorCode.BusinessRuleViolation,
-        message: "Активная подписка не имеет даты окончания цикла",
-      });
-    }
-
-    const createdSubscription = await tx.transaction(async (tx) => {
-      await tx
-        .update(subscription)
-        .set({
-          nextBillingAt: null,
-          endsAt: activeSubscriptionCycleEndsAt,
-        })
-        .where(eq(subscription.id, activeSubscription.id));
-
-      const [createdSubscription] = await tx
-        .insert(subscription)
-        .values({
-          userId,
-          tariffId,
-          startsAt: activeSubscriptionCycleEndsAt,
-          status: "pending",
-        })
-        .returning();
-
-      return createdSubscription;
-    });
-
-    return { createdSubscription };
-  }
-
-  // Если у пользователя нет активных подписок, то готовим данные для запроса
-  // на создание платежа в ЮКассу.
+  // Готовим данные для запроса на создание платежа в ЮКассу.
 
   const idempotenceKey = randomUUID();
 

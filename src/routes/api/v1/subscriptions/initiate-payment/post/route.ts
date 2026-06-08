@@ -1,7 +1,7 @@
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import { createSubscription } from "@/domains/billing/services/create-subscription";
+import { initiateSubscriptionPayment } from "@/domains/billing/services/initiate-subscription-payment";
 import { initiateSubscriptionPaymentBodySchema } from "@/domains/subscriptions/schemas/handlers/initiate-subscriptions-payment/body";
 import {
   type InitiateSubscriptionPaymentResponse,
@@ -80,7 +80,7 @@ initiateSubscriptionPaymentRoute.post(
       nextTariffId = foundTariff.id;
     }
 
-    const { createdPayment } = await createSubscription({
+    const { createdPayment } = await initiateSubscriptionPayment({
       userId: user.id,
       tariffId,
       nextTariffId,

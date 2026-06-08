@@ -1,6 +1,6 @@
 import { validator } from "hono-openapi";
 
-import { createSubscription } from "@/domains/billing/services/create-subscription";
+import { upgradeSubscription } from "@/domains/billing/services/upgrade-subscription";
 import { upgradeSubscriptionBodySchema } from "@/domains/subscriptions/schemas/handlers/upgrade-subscription/body";
 import {
   type UpgradeSubscriptionResponse,
@@ -43,7 +43,7 @@ upgradeSubscriptionRoute.post(
     const user = c.get("user");
     const { newTariffId } = c.req.valid("json");
 
-    const { createdSubscription } = await createSubscription({
+    const { createdSubscription } = await upgradeSubscription({
       userId: user.id,
       tariffId: newTariffId,
     });
