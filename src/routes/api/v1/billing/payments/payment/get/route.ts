@@ -9,7 +9,6 @@ import {
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
-import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
 import { OpenAPITags } from "@/shared/constants/openapi/tags";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
@@ -30,7 +29,6 @@ getPaymentRoute.get(
     limit: 30,
   }),
   sessionMiddleware,
-  subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],
     responses: {
