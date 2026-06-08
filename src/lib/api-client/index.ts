@@ -1,3 +1,4 @@
+export { ApiClientError } from "./errors/api-client-error";
 export type {
   Client,
   Method,

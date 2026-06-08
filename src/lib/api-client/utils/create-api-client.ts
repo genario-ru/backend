@@ -1,11 +1,11 @@
 import { prepareQueryString } from "@/shared/utils/api/prepare-query-string";
 
+import { ApiClientError } from "../errors/api-client-error";
 import type {
   Client,
   CreateApiClientOptions,
   RequestConfig,
   ResponseConfig,
-  ResponseErrorConfig,
 } from "../types";
 import { parseErrorResponseData } from "./parse-error-response-data";
 import { parseResponseData } from "./parse-response-data";
@@ -44,37 +44,31 @@ export function createApiClient(options: CreateApiClientOptions): Client {
 
     const fullUrl = `${baseUrl}${url}${queryString}`;
 
-    try {
-      const response = await fetch(fullUrl, {
-        method,
-        headers,
-        body: requestBody,
-        signal,
-        credentials: "include",
-      });
+    const response = await fetch(fullUrl, {
+      method,
+      headers,
+      body: requestBody,
+      signal,
+      credentials: "include",
+    });
 
-      if (!response.ok) {
-        const errorData = await parseErrorResponseData(response);
+    if (!response.ok) {
+      const errorData = await parseErrorResponseData(response);
 
-        const error: ResponseErrorConfig = {
-          status: response.status,
-          statusText: response.statusText,
-          url: fullUrl,
-          data: errorData,
-        };
-
-        throw error;
-      }
-
-      const data = await parseResponseData<TData>(response, responseType);
-
-      return {
-        data,
+      throw new ApiClientError({
         status: response.status,
         statusText: response.statusText,
-      };
-    } catch (error) {
-      throw error;
+        url: fullUrl,
+        data: errorData,
+      });
     }
+
+    const responseData = await parseResponseData<TData>(response, responseType);
+
+    return {
+      data: responseData,
+      status: response.status,
+      statusText: response.statusText,
+    };
   };
 }
