@@ -1,7 +1,7 @@
 import { z } from "@/lib/zod";
 
 export const upcomingSubscriptionChargePayloadSchema = z.object({
-  chargeAt: z.string().datetime(),
+  chargeAt: z.string(),
   daysBeforeCharge: z.union([z.literal(3), z.literal(1)]),
   tariffName: z.string().min(1),
   tariffPrice: z.number().nonnegative(),
