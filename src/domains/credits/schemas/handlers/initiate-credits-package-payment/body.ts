@@ -5,6 +5,7 @@ export const initiateCreditsPackagePaymentBodySchema = z
   .object({
     creditsPackageSlug: z.string(),
     redirect: internalRedirectPathSchema.optional(),
+    paymentMethodId: z.uuid().optional(),
   })
   .meta({
     title: "Initiate credits package payment body",

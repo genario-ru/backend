@@ -1,16 +1,14 @@
-import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
-import { db } from "@/db";
-import { creditsBatch, creditsBatchToPayment, payment } from "@/db/schema";
-import { createYooKassaPayment } from "@/domains/billing/services/create-yookassa-payment";
-import { prepareYooKassaCreditsPackagePaymentParams } from "@/domains/billing/utils/prepare-yookassa-credits-package-payment-params";
+import { getActivePaymentMethod } from "@/domains/billing/services/get-active-payment-method";
+import { initiateCreditsPackageRecurringPayment } from "@/domains/billing/services/initiate-credits-package-recurring-payment";
+import { initiateCreditsPackageRedirectPayment } from "@/domains/billing/services/initiate-credits-package-redirect-payment";
 import { initiateCreditsPackagePaymentBodySchema } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/body";
 import {
   type InitiateCreditsPackagePaymentResponse,
   initiateCreditsPackagePaymentResponseSchema,
 } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/response";
+import { getCreditsPackageForPurchase } from "@/domains/credits/services/get-credits-package-for-purchase";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -48,14 +46,14 @@ initiateCreditsPackagePaymentRoute.post(
   validator("json", initiateCreditsPackagePaymentBodySchema),
   async (c) => {
     const user = c.get("user");
-    const { creditsPackageSlug, redirect: redirectPath } = c.req.valid("json");
+    const {
+      creditsPackageSlug,
+      redirect: redirectPath,
+      paymentMethodId,
+    } = c.req.valid("json");
 
-    const foundCreditsPackage = await db.query.creditsPackage.findFirst({
-      where: (creditsPackage, { eq, and }) =>
-        and(
-          eq(creditsPackage.slug, creditsPackageSlug),
-          eq(creditsPackage.forPurchase, true),
-        ),
+    const foundCreditsPackage = await getCreditsPackageForPurchase({
+      creditsPackageSlug,
     });
 
     if (!foundCreditsPackage) {
@@ -66,127 +64,41 @@ initiateCreditsPackagePaymentRoute.post(
       });
     }
 
-    const lastPendingPayments = await db.query.payment.findMany({
-      orderBy: (payment, { desc }) => desc(payment.createdAt),
-      where: (payment, { and, eq }) =>
-        and(eq(payment.status, "pending"), eq(payment.userId, user.id)),
-      with: {
-        creditsBatchToPayment: {
-          with: {
-            creditsBatch: {
-              with: {
-                creditsPackage: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    if (paymentMethodId) {
+      // Оплата сохраненным способом: списываем деньги рекуррентным платежом
+      // без редиректа в ЮKassa.
+      const foundPaymentMethod = await getActivePaymentMethod({
+        userId: user.id,
+        paymentMethodId,
+      });
 
-    const lastPendingCreditsBatchPayment = lastPendingPayments.find(
-      (payment) => {
-        const linkedCreditsBatch = payment.creditsBatchToPayment?.creditsBatch;
+      if (!foundPaymentMethod) {
+        return throwAPIError({
+          code: APIErrorCode.NotFound,
+          message: "Указанный способ оплаты не найден или недоступен",
+        });
+      }
 
-        const isSameCreditsPackage =
-          linkedCreditsBatch?.creditsPackageId === foundCreditsPackage.id;
-
-        const isPending = linkedCreditsBatch?.status === "pending";
-
-        return isSameCreditsPackage && isPending;
-      },
-    );
-
-    const idempotenceKey =
-      lastPendingCreditsBatchPayment?.creditsBatchToPayment?.paymentId ??
-      randomUUID();
-
-    const { amountValue, description, receiptItemDescription, returnUrl } =
-      prepareYooKassaCreditsPackagePaymentParams({
-        creditsPackage: foundCreditsPackage,
+      const createdPayment = await initiateCreditsPackageRecurringPayment({
+        userId: user.id,
         userEmail: user.email,
-        paymentId: idempotenceKey,
-        creditsPackageSlug,
-        redirectPath,
+        creditsPackage: foundCreditsPackage,
+        paymentMethod: foundPaymentMethod,
       });
-
-    // Отправляем запрос к API ЮKassa
-
-    const createdYooKassaPayment = await createYooKassaPayment({
-      amountValue,
-      description,
-      userEmail: user.email,
-      receiptItemDescription,
-      returnUrl,
-      idempotenceKey,
-    });
-
-    if (
-      !createdYooKassaPayment.confirmation ||
-      !("confirmation_url" in createdYooKassaPayment.confirmation)
-    ) {
-      return throwAPIError({
-        code: APIErrorCode.InternalServerError,
-        message:
-          "Произошла ошибка при инициализации платежа для пакета кредитов",
-      });
-    }
-
-    const createdYooKassaPaymentConfirmationUrl =
-      createdYooKassaPayment.confirmation.confirmation_url;
-
-    if (lastPendingCreditsBatchPayment) {
-      await db
-        .update(payment)
-        .set({
-          externalId: createdYooKassaPayment.id,
-          paymentLink: createdYooKassaPaymentConfirmationUrl,
-          amount: amountValue,
-          currency: "RUB",
-        })
-        .where(eq(payment.id, lastPendingCreditsBatchPayment.id));
 
       return c.json<InitiateCreditsPackagePaymentResponse>(
         initiateCreditsPackagePaymentResponseSchema.parse({
-          data: {
-            paymentLink: createdYooKassaPaymentConfirmationUrl,
-          },
+          data: createdPayment,
         }),
       );
     }
 
-    const createdPayment = await db.transaction(async (tx) => {
-      const [[createdPayment], [createdCreditsBatch]] = await Promise.all([
-        tx
-          .insert(payment)
-          .values({
-            id: idempotenceKey,
-            userId: user.id,
-            amount: amountValue,
-            currency: "RUB",
-            externalId: createdYooKassaPayment.id,
-            paymentLink: createdYooKassaPaymentConfirmationUrl,
-            status: "pending",
-          })
-          .returning(),
-        tx
-          .insert(creditsBatch)
-          .values({
-            userId: user.id,
-            creditsPackageId: foundCreditsPackage.id,
-            name: foundCreditsPackage.name,
-            description: foundCreditsPackage.description,
-            remainingAmount: foundCreditsPackage.amount,
-            status: "pending",
-          })
-          .returning(),
-      ]);
-
-      await tx.insert(creditsBatchToPayment).values({
-        creditsBatchId: createdCreditsBatch.id,
-        paymentId: createdPayment.id,
-      });
-
-      return createdPayment;
+    const createdPayment = await initiateCreditsPackageRedirectPayment({
+      userId: user.id,
+      userEmail: user.email,
+      creditsPackage: foundCreditsPackage,
+      creditsPackageSlug,
+      redirectPath,
     });
 
     return c.json<InitiateCreditsPackagePaymentResponse>(
