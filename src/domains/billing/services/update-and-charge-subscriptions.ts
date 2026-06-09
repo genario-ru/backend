@@ -73,22 +73,16 @@ export async function updateAndChargeSubscriptions() {
 
     const foundSubscriptionEndsAt = foundSubscription.endsAt;
 
-    const shouldTerminateAtEndsAt =
-      !foundSubscription.tariff.isRenewable ||
-      foundSubscription.status === "cancelled";
-
-    if (shouldTerminateAtEndsAt) {
-      // Для пользователей с невозобновляемыми или отмененными подписками:
-      // 1. Проверяем дату окончания.
-      // 2. Если подписка еще не закончилась, ничего не делаем.
-      // 3. Если подписка закончилась, обновляем статус на terminated.
-      // 4. Проверяем наличие следующей pending-подписки и проводим оплату,
-      //    если дата ее старта уже наступила.
-      if (!foundSubscriptionEndsAt) {
-        // TODO: Логируем в сервис отслеживания ошибок, потому что такого сценария быть не должно
-        continue;
-      }
-
+    // Дата окончания проставляется только подпискам, которые не будут
+    // продлеваться: невозобновляемый тариф, отмена или апгрейд (выбрана
+    // следующая подписка). Поэтому подписку с датой окончания завершаем по ее
+    // наступлении независимо от статуса и тарифа:
+    // 1. Проверяем дату окончания.
+    // 2. Если подписка еще не закончилась, ничего не делаем.
+    // 3. Если подписка закончилась, обновляем статус на terminated.
+    // 4. Проверяем наличие следующей pending-подписки и проводим оплату,
+    //    если дата ее старта уже наступила.
+    if (foundSubscriptionEndsAt) {
       // Если дата окончания подписки еще не наступила, переходим к следующему пользователю
       const foundSubscriptionEndsAtDate = new Date(foundSubscriptionEndsAt);
       const subscriptionIsStillActive =
@@ -120,7 +114,7 @@ export async function updateAndChargeSubscriptions() {
 
     const foundSubscriptionNextBillingAt = foundSubscription.nextBillingAt;
 
-    // Для пользователей с возобновляемыми подписками:
+    // Для подписок без даты окончания, то есть продлеваемых:
     // 1. Проверяем дату следующего биллинга.
     // 2. Если дата еще не наступила, ничего не делаем.
     // 3. Если дата наступила, инициируем рекуррентную оплату подписки.

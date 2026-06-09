@@ -101,4 +101,74 @@ describe("updateAndChargeSubscriptions", () => {
       }),
     });
   });
+
+  it("terminates expired upgraded subscription and charges the ready next subscription", async () => {
+    // После апгрейда активная подписка остается в статусе "active" с
+    // возобновляемым тарифом, но с датой окончания и без даты следующего
+    // биллинга. По наступлении даты окончания она должна завершаться.
+    mocks.db.query.user.findMany.mockResolvedValue([
+      {
+        id: "user-id",
+        email: "user@example.test",
+        subscriptions: [
+          {
+            id: "upgraded-subscription-id",
+            status: "active",
+            endsAt: "2026-01-01T00:00:00.000Z",
+            nextBillingAt: null,
+            tariff: {
+              isRenewable: true,
+            },
+          },
+          {
+            id: "next-subscription-id",
+            status: "pending",
+            startsAt: "2026-01-01T00:00:00.000Z",
+            tariff: {
+              isRenewable: true,
+            },
+          },
+        ],
+      },
+    ]);
+
+    await updateAndChargeSubscriptions();
+
+    expect(mocks.terminateSubscription).toHaveBeenCalledWith({
+      userId: "user-id",
+      subscriptionId: "upgraded-subscription-id",
+    });
+    expect(mocks.initiateSubscriptionRecurringPayment).toHaveBeenCalledWith({
+      userId: "user-id",
+      userEmail: "user@example.test",
+      subscription: expect.objectContaining({
+        id: "next-subscription-id",
+      }),
+    });
+  });
+
+  it("does not terminate an active subscription before its endsAt", async () => {
+    mocks.db.query.user.findMany.mockResolvedValue([
+      {
+        id: "user-id",
+        email: "user@example.test",
+        subscriptions: [
+          {
+            id: "upgraded-subscription-id",
+            status: "active",
+            endsAt: "2999-01-01T00:00:00.000Z",
+            nextBillingAt: null,
+            tariff: {
+              isRenewable: true,
+            },
+          },
+        ],
+      },
+    ]);
+
+    await updateAndChargeSubscriptions();
+
+    expect(mocks.terminateSubscription).not.toHaveBeenCalled();
+    expect(mocks.initiateSubscriptionRecurringPayment).not.toHaveBeenCalled();
+  });
 });
