@@ -29,8 +29,8 @@ getIdeasListExportsRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-ideas-list-exports",
-    windowMs: 60 * 1000,
-    limit: 20,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

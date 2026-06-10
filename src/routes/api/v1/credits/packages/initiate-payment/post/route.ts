@@ -28,6 +28,11 @@ export const initiateCreditsPackagePaymentRoute = createHonoApp().basePath(
 initiateCreditsPackagePaymentRoute.post(
   "/",
   rateLimitMiddleware({
+    keyPrefix: "initiate-credits-package-payment-burst",
+    windowMs: 3 * 1000,
+    limit: 1,
+  }),
+  rateLimitMiddleware({
     keyPrefix: "initiate-credits-package-payment",
     windowMs: 60 * 1000,
     limit: 10,

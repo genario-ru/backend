@@ -24,8 +24,8 @@ selectDefaultPaymentMethodRoute.patch(
   "/default",
   rateLimitMiddleware({
     keyPrefix: "select-default-payment-method",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

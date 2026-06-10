@@ -20,8 +20,8 @@ getMySubscriptionsRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-my-subscriptions",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   openAPIResponseMiddleware({

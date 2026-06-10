@@ -24,8 +24,8 @@ getProfileRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-profile",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

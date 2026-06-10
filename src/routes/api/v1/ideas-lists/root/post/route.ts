@@ -28,8 +28,8 @@ createIdeasListRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "create-ideas-list",
-    windowMs: 60 * 1000,
-    limit: 3,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

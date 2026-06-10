@@ -21,8 +21,8 @@ triggerSubscriptionsChargeRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "trigger-subscriptions-charge",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   adminMiddleware,

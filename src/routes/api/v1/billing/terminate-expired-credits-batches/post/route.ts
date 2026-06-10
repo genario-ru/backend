@@ -20,8 +20,8 @@ triggerTerminateExpiredCreditsBatchesRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "trigger-terminate-expired-credits-batches",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   adminMiddleware,

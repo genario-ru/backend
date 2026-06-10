@@ -18,8 +18,8 @@ getCreditsPackagesRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-credits-packages",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],

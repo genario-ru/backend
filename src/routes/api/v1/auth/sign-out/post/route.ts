@@ -20,8 +20,8 @@ signOutRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "sign-out",
-    windowMs: 60 * 1000,
-    limit: 3,
+    windowMs: 3 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   openAPIResponseMiddleware({

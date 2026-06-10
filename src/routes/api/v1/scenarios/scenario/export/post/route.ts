@@ -35,8 +35,8 @@ createScenarioExportRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "create-scenario-export",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

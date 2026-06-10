@@ -22,8 +22,8 @@ updateUserRoute.patch(
   "/",
   rateLimitMiddleware({
     keyPrefix: "update-user",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 3 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   openAPIResponseMiddleware({

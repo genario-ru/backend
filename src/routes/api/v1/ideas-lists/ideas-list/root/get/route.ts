@@ -27,8 +27,8 @@ getIdeasListRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-ideas-list",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

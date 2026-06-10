@@ -25,6 +25,11 @@ export const initiateSubscriptionPaymentRoute = createHonoApp().basePath(
 initiateSubscriptionPaymentRoute.post(
   "/",
   rateLimitMiddleware({
+    keyPrefix: "initiate-subscription-payment-burst",
+    windowMs: 3 * 1000,
+    limit: 1,
+  }),
+  rateLimitMiddleware({
     keyPrefix: "initiate-subscription-payment",
     windowMs: 60 * 1000,
     limit: 10,

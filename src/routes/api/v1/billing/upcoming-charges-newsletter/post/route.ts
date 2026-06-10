@@ -21,8 +21,8 @@ triggerUpcomingChargesNewsletterRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "trigger-upcoming-charges-newsletter",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   adminMiddleware,

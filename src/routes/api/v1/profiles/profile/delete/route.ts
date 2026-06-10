@@ -26,8 +26,8 @@ deleteProfileRoute.delete(
   "/",
   rateLimitMiddleware({
     keyPrefix: "delete-profile",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 2 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

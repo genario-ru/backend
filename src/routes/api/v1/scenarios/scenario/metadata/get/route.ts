@@ -26,8 +26,8 @@ getScenarioMetadataRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-scenario-metadata",
-    windowMs: 60 * 1000,
-    limit: 60,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

@@ -33,8 +33,8 @@ createScenarioRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "create-scenario",
-    windowMs: 60 * 1000,
-    limit: 3,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

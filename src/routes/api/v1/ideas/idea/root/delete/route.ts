@@ -26,8 +26,8 @@ deleteIdeaRoute.delete(
   "/",
   rateLimitMiddleware({
     keyPrefix: "delete-idea",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 3 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

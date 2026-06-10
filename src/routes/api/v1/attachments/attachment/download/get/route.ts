@@ -28,8 +28,8 @@ getAttachmentDownloadRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-attachment-download",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   sessionMiddleware,
   openAPIResponseMiddleware({

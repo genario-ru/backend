@@ -27,8 +27,8 @@ saveIdeaRoute.patch(
   "/save",
   rateLimitMiddleware({
     keyPrefix: "save-idea",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

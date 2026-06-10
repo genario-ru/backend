@@ -29,8 +29,8 @@ saveScenarioRoute.patch(
   "/save",
   rateLimitMiddleware({
     keyPrefix: "save-scenario",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

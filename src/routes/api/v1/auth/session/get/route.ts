@@ -18,8 +18,8 @@ getSessionRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-session",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],

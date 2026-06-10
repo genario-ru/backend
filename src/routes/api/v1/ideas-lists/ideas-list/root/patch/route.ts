@@ -31,8 +31,8 @@ updateIdeasListRoute.patch(
   "/",
   rateLimitMiddleware({
     keyPrefix: "update-ideas-list",
-    windowMs: 60 * 1000,
-    limit: 3,
+    windowMs: 3 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

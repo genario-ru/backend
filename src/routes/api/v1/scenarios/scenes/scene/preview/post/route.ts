@@ -32,8 +32,8 @@ createScenarioScenePreviewRoute.post(
   "/preview",
   rateLimitMiddleware({
     keyPrefix: "create-scenario-scene-preview",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

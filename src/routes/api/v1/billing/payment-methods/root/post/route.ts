@@ -32,6 +32,11 @@ export const addPaymentMethodRoute = createHonoApp().basePath(
 addPaymentMethodRoute.post(
   "/",
   rateLimitMiddleware({
+    keyPrefix: "add-payment-method-burst",
+    windowMs: 5 * 1000,
+    limit: 1,
+  }),
+  rateLimitMiddleware({
     keyPrefix: "add-payment-method",
     windowMs: 60 * 1000,
     limit: 10,

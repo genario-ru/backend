@@ -20,8 +20,8 @@ getTrialTariffRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-trial-tariff",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 2,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Tariffs],

@@ -25,8 +25,8 @@ processWebhookRoute.post(
   }),
   rateLimitMiddleware({
     keyPrefix: "process-webhook",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 3,
   }),
   zValidator("json", processWebhookBodySchema),
   async (c) => {

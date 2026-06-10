@@ -29,8 +29,8 @@ generateScenarioMetadataRoute.post(
   "/generate",
   rateLimitMiddleware({
     keyPrefix: "generate-scenario-metadata",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 5 * 1000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

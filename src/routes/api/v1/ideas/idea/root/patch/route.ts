@@ -27,8 +27,8 @@ updateIdeaRoute.patch(
   "/",
   rateLimitMiddleware({
     keyPrefix: "update-idea",
-    windowMs: 60 * 1000,
-    limit: 10,
+    windowMs: 3000,
+    limit: 1,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

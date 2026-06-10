@@ -23,6 +23,11 @@ export const upgradeSubscriptionRoute = createHonoApp().basePath(
 upgradeSubscriptionRoute.post(
   "/",
   rateLimitMiddleware({
+    keyPrefix: "upgrade-subscription-burst",
+    windowMs: 3 * 1000,
+    limit: 1,
+  }),
+  rateLimitMiddleware({
     keyPrefix: "upgrade-subscription",
     windowMs: 60 * 1000,
     limit: 10,

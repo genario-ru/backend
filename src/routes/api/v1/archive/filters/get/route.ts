@@ -26,8 +26,8 @@ getArchiveFiltersRoute.get(
   "/",
   rateLimitMiddleware({
     keyPrefix: "get-archive-filters",
-    windowMs: 60 * 1000,
-    limit: 30,
+    windowMs: 1000,
+    limit: 3,
   }),
   sessionMiddleware,
   subscriptionMiddleware,
