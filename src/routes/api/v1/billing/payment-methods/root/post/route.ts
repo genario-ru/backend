@@ -78,11 +78,6 @@ addPaymentMethodRoute.post(
     });
 
     if (!createdYooKassaPaymentMethod.confirmation?.confirmation_url) {
-      console.error(
-        "Created YooKassa Payment method",
-        createdYooKassaPaymentMethod,
-      );
-
       return throwAPIError({
         code: APIErrorCode.InternalServerError,
         message: "Произошла ошибка при создании платежного метода",
