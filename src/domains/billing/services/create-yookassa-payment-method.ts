@@ -19,6 +19,7 @@ export function createYooKassaPaymentMethod({
     data: {
       type: "bank_card",
       confirmation: {
+        enforce: true,
         type: "redirect",
         return_url: returnUrl,
       },
