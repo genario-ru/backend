@@ -110,6 +110,7 @@ export const scenarioChaptersGenerationWorker =
               "scenarioChapters",
             ),
           },
+          tools: [{ type: "web_search" }],
         });
 
       if (!generatedChaptersObject) {
