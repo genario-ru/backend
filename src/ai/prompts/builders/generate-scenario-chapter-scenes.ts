@@ -28,6 +28,8 @@ export function generateScenarioChapterScenesPrompt({
   ]);
 
   return interpolate(template, {
+    CHAPTER_COUNT: String(chapters.length),
+    CHAPTER_INDEXES: chapters.map((chapter) => chapter.index).join(", "),
     WORD_BUDGET_HINTS: `${buildWordBudgetHint(5)} for 5s, ${buildWordBudgetHint(15)} for 15s, ${buildWordBudgetHint(30)} for 30s.`,
     COMPONENT_TYPES: buildComponentTypesBlock(availableSceneComponentTypes),
     CONTEXT: contextLines,
@@ -63,7 +65,7 @@ function buildComponentTypesBlock(types: SceneComponentType[]): string {
       const badge = ct.optional ? "[optional]" : "[required]";
       const desc = ct.description ? `: ${ct.description}` : "";
 
-      return `- "${ct.name}" (id: ${ct.id}) ${badge}${desc}`;
+      return `- name: "${ct.name}" ${badge}${desc}\n  typeId: "${ct.id}"`;
     })
     .join("\n");
 }

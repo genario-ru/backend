@@ -2,8 +2,8 @@ Break EVERY chapter listed in the "Chapters" section into scenes and generate ea
 
 ## Coverage rules (critical)
 
-- Return exactly one entry per listed chapter — no skipped, merged, split, or invented chapters.
-- chapterIndex must be the exact index from the "Chapters" section; each index appears exactly once.
+- The output must contain exactly {{CHAPTER_COUNT}} chapter entries, with chapterIndex values exactly: {{CHAPTER_INDEXES}}.
+- One entry per listed chapter — no skipped, merged, split, or invented chapters; each index appears exactly once.
 - Order chapter entries by chapterIndex ascending.
 
 ## Part 1 — Scenes
@@ -21,8 +21,8 @@ Each scene: name, startTime, endTime.
 For each scene, generate components from the "Component types" section.
 
 - **Required components**: include every [required] type in every scene. Include [optional] types only when they genuinely enrich the scene; omit a component entirely if you cannot produce meaningful content for it.
-- **name**: the component type's name copied exactly (e.g. "Голосовое сопровождение").
-- **typeId**: the exact id of that type from the list — never invent or alter ids.
+- **name**: the component type's name copied exactly as listed (e.g. "Голосовое сопровождение") — never paraphrase or translate it.
+- **typeId**: copied character-for-character from the same entry of the "Component types" section as the name. The values listed there are the ONLY valid typeId values in your entire output. NEVER write a typeId from memory, never compose, alter, shorten, or "fix" one — always re-read it from the list, even though the same ids repeat in every scene.
 - **content**: 1–4096 characters. Natural speech for spoken components; Markdown is allowed for utility/technical components.
 - **Timing**: spoken/on-screen text must fit the scene duration. {{WORD_BUDGET_HINTS}}
 
@@ -34,6 +34,8 @@ For each scene, generate components from the "Component types" section.
 - **Specificity**: concrete details, numbers, and imagery over generic filler; every scene must add new information or emotion, never restate a previous scene.
 
 ## Component types
+
+The pairs below are the single source of truth for component name and typeId. A component's typeId must always be the one printed directly under its name.
 
 {{COMPONENT_TYPES}}
 
@@ -57,9 +59,9 @@ chapterIndex: 2, scenes:
 
 Scene 1: name "Иллюзия прогресса", startTime 7, endTime 15
 components: [
-{ name: "Цель и задачи сцены", content: "Создать момент узнавания...", typeId: "..." },
-{ name: "Голосовое сопровождение", content: "Первые две недели — кайф. Мышцы болят, весы падают. Только этот минус два — не жир. Это вода.", typeId: "..." },
-{ name: "Визуальное сопровождение", content: "Крупный план автора, затем врезка весов.", typeId: "..." }
+{ name: "Цель и задачи сцены", content: "Создать момент узнавания...", typeId: "<copied character-for-character from the Component types list>" },
+{ name: "Голосовое сопровождение", content: "Первые две недели — кайф. Мышцы болят, весы падают. Только этот минус два — не жир. Это вода.", typeId: "<copied from the list>" },
+{ name: "Визуальное сопровождение", content: "Крупный план автора, затем врезка весов.", typeId: "<copied from the list>" }
 ]
 
 Scene 2: name "Момент X: весы останавливаются", startTime 15, endTime 21
@@ -70,7 +72,8 @@ components: [ ... ]
 
 ## Final self-check before answering
 
-1. Every listed chapter is present exactly once with its exact index.
+1. The output has exactly {{CHAPTER_COUNT}} chapter entries with chapterIndex values {{CHAPTER_INDEXES}} — count them.
 2. Each chapter's scenes exactly tile its time range (first = chapter start, last = chapter end, contiguous in between).
-3. Every scene contains all [required] components with exact names and typeIds.
-4. Each voice-over fits its scene's word budget and opens differently from all others.
+3. Every scene contains all [required] components, each name copied exactly from the "Component types" list.
+4. Every typeId in the output is found verbatim in the "Component types" section and is paired with its own name — re-check each one character-for-character; a single wrong typeId invalidates the whole answer.
+5. Each voice-over fits its scene's word budget and opens differently from all others.

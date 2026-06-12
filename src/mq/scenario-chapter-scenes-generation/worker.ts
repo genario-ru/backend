@@ -154,8 +154,14 @@ export const scenarioChapterScenesGenerationWorker =
         );
 
       if (!isEveryChapterGenerated) {
+        const expectedIndexes = indexedChapters
+          .map(({ index }) => index)
+          .join(", ");
+
+        const receivedIndexes = [...generatedIndexes].join(", ");
+
         throw new Error(
-          "Сгенерированные сцены не покрывают все разделы сценария",
+          `Сгенерированные сцены не покрывают все разделы сценария (ожидались индексы: ${expectedIndexes}; получены: ${receivedIndexes})`,
         );
       }
 
