@@ -17,7 +17,7 @@ import { z } from "@/lib/zod";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
-import { enqueueScenarioChapterScenesGeneration } from "../scenario-chapter-scenes-generation/queue";
+import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
 import {
   SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME,
   type ScenarioChaptersGenerationJobData,
@@ -125,7 +125,7 @@ export const scenarioChaptersGenerationWorker =
         throw new Error("Сгенерированный список разделов сценария пуст");
       }
 
-      await db.transaction(async (tx) => {
+      const scenarioChapters = await db.transaction(async (tx) => {
         const createdScenarioChapters = await tx
           .insert(scenarioChapter)
           .values(
@@ -163,9 +163,15 @@ export const scenarioChaptersGenerationWorker =
           .update(scenarioVersion)
           .set({ status: "ready" })
           .where(eq(scenarioVersion.id, scenarioVersionId));
+
+        return createdScenarioChapters;
       });
 
-      await enqueueScenarioChapterScenesGeneration({ scenarioVersionId });
+      scenarioChapters.forEach((chapter) =>
+        enqueueScenarioScenesGeneration({
+          scenarioChapterId: chapter.id,
+        }),
+      );
     },
     {
       concurrency: 5,
