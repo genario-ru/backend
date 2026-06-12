@@ -132,6 +132,7 @@ export const scenarioMetadataRegenerationWorker =
               "scenarioMetadata",
             ),
           },
+          tools: [{ type: "web_search" }],
         });
 
       if (!generatedMetadataObject) {

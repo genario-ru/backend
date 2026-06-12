@@ -110,6 +110,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         text: {
           format: zodTextFormat(ideasListGeneratedSchema, "ideasList"),
         },
+        tools: [{ type: "web_search" }],
       });
 
     if (!generatedObject) {

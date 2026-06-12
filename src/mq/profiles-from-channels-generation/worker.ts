@@ -92,6 +92,7 @@ export const profilesFromChannelsGenerationWorker =
             text: {
               format: zodTextFormat(profileGeneratedSchema, "profile"),
             },
+            tools: [{ type: "web_search" }],
           });
 
         if (!generatedProfile) {

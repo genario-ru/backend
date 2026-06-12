@@ -113,6 +113,7 @@ export const scenarioScenesGenerationWorker =
               "scenarioScenes",
             ),
           },
+          tools: [{ type: "web_search" }],
         });
 
       if (!generatedScenesObject) {
