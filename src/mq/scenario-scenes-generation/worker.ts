@@ -54,18 +54,14 @@ export const scenarioScenesGenerationWorker =
       });
 
       if (!foundScenarioChapter) {
-        console.warn(`Раздел сценария с id ${scenarioChapterId} не найден`);
-
-        return;
+        throw new Error(`Раздел сценария с id ${scenarioChapterId} не найден`);
       }
 
       const scenarioSceneComponentTypes =
         await db.query.scenarioSceneComponentType.findMany();
 
       if (!scenarioSceneComponentTypes.length) {
-        console.warn(`Типы компонентов сцены сценария не найдены`);
-
-        return;
+        throw new Error("Типы компонентов сцены сценария не найдены");
       }
 
       const creditsBalance = await getCreditsBalance({
@@ -127,6 +123,10 @@ export const scenarioScenesGenerationWorker =
 
       const generatedScenes = generatedScenesObject.scenes;
 
+      if (!generatedScenes.length) {
+        throw new Error("Сгенерированный список сцен сценария пуст");
+      }
+
       await db.transaction(async (tx) => {
         const createdScenes = await tx
           .insert(scenarioScene)
@@ -157,25 +157,21 @@ export const scenarioScenesGenerationWorker =
           await tx.insert(scenarioSceneComponent).values(componentsData);
         }
 
-        if (generatedScenes.length > 0) {
-          await Promise.all([
-            tx.insert(generationLog).values({
-              entity: "scenario-chapter-scenes" as const,
-              entityId: scenarioChapterId,
-              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            }),
-            chargeCredits({
-              userId: foundScenarioChapter.scenarioVersion.scenario.userId,
-              entity: "scenario-chapter-scenes",
-              entityId: scenarioChapterId,
-              totalTokens: usage?.total_tokens ?? 0,
-              tx,
-            }),
-          ]);
-        } else {
-          console.warn("Сгенерированный список сцен сценария пуст");
-        }
+        await Promise.all([
+          tx.insert(generationLog).values({
+            entity: "scenario-chapter-scenes" as const,
+            entityId: scenarioChapterId,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            tokens: usage?.total_tokens ?? 0,
+          }),
+          chargeCredits({
+            userId: foundScenarioChapter.scenarioVersion.scenario.userId,
+            entity: "scenario-chapter-scenes",
+            entityId: scenarioChapterId,
+            totalTokens: usage?.total_tokens ?? 0,
+            tx,
+          }),
+        ]);
 
         await tx
           .update(scenarioChapter)

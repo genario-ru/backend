@@ -50,9 +50,7 @@ export const scenarioMetadataGenerationWorker =
       });
 
       if (!foundScenario) {
-        console.warn(`Сценарий с id ${scenarioId} не найден`);
-
-        return;
+        throw new Error(`Сценарий с id ${scenarioId} не найден`);
       }
 
       const platforms = foundScenario.scenarioToPlatform.map(

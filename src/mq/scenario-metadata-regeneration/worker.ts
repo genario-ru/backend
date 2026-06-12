@@ -51,9 +51,7 @@ export const scenarioMetadataRegenerationWorker =
       });
 
       if (!foundScenario) {
-        console.warn(`Scenario with id ${scenarioId} not found`);
-
-        return;
+        throw new Error(`Scenario with id ${scenarioId} not found`);
       }
 
       const targetPlatform = foundScenario.scenarioToPlatform.find(

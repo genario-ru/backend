@@ -50,9 +50,9 @@ export const scenarioScenePreviewsGenerationWorker =
       });
 
       if (!foundPreview) {
-        console.warn(`Сценарий с id ${scenarioScenePreviewId} не найден`);
-
-        return;
+        throw new Error(
+          `Превью сцены сценария с id ${scenarioScenePreviewId} не найдено`,
+        );
       }
 
       const scene = foundPreview.scenarioScene;
@@ -64,9 +64,7 @@ export const scenarioScenePreviewsGenerationWorker =
       });
 
       if (!scenario) {
-        console.warn(`Сценарий с id ${scenarioId} не найден`);
-
-        return;
+        throw new Error(`Сценарий с id ${scenarioId} не найден`);
       }
 
       const creditsBalance = await getCreditsBalance({

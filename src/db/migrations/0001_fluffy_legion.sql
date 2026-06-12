@@ -1,0 +1,1 @@
+ALTER TYPE "public"."generation_entity" ADD VALUE 'scenario-chapter-scene' BEFORE 'scenario-scene-preview';

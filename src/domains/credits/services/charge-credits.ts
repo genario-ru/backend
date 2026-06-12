@@ -18,6 +18,7 @@ type ChargeCreditsParams = {
   entity: CreditsPricingEntity;
   entityId: string;
   totalTokens: number;
+  quantity?: number;
   tx?: Transaction;
 };
 
@@ -26,13 +27,14 @@ export async function chargeCredits({
   entity,
   entityId,
   totalTokens,
+  quantity = 1,
   tx: txParam,
 }: ChargeCreditsParams) {
   const tx = txParam ?? db;
   const creditsBalance = await getCreditsBalance({ userId });
-  const entityPrice = creditsPricing[entity];
+  const chargeAmount = creditsPricing[entity] * quantity;
 
-  if (creditsBalance < entityPrice) {
+  if (creditsBalance < chargeAmount) {
     throw new Error(NOT_ENOUGH_CREDITS_ERROR);
   }
 
@@ -46,7 +48,7 @@ export async function chargeCredits({
       and(
         eq(creditsBatch.userId, userId),
         eq(creditsBatch.status, "active"),
-        gte(creditsBatch.remainingAmount, entityPrice),
+        gte(creditsBatch.remainingAmount, chargeAmount),
         or(
           isNull(creditsBatch.expiresAt),
           gte(creditsBatch.expiresAt, new Date().toISOString()),
@@ -82,7 +84,7 @@ export async function chargeCredits({
     throw new Error(NOT_ENOUGH_CREDITS_ERROR);
   }
 
-  const tokensPerCredit = totalTokens / entityPrice;
+  const tokensPerCredit = totalTokens / chargeAmount;
   const tokensPerCreditRounded = Number(tokensPerCredit.toFixed(2));
 
   await tx.transaction(async (tx) => {
@@ -99,12 +101,13 @@ export async function chargeCredits({
     if (
       !lockedCreditsBatch ||
       lockedCreditsBatch.status !== "active" ||
-      lockedCreditsBatch.remainingAmount < entityPrice
+      lockedCreditsBatch.remainingAmount < chargeAmount
     ) {
       throw new Error(NOT_ENOUGH_CREDITS_ERROR);
     }
 
-    const newRemainingAmount = lockedCreditsBatch.remainingAmount - entityPrice;
+    const newRemainingAmount =
+      lockedCreditsBatch.remainingAmount - chargeAmount;
 
     await tx
       .update(creditsBatch)
@@ -116,7 +119,7 @@ export async function chargeCredits({
       batchId: lockedCreditsBatch.id,
       entity,
       entityId,
-      creditsAmount: entityPrice,
+      creditsAmount: chargeAmount,
       tokensPerCredit: tokensPerCreditRounded,
     });
   });

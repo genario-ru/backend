@@ -17,7 +17,7 @@ import { z } from "@/lib/zod";
 import { getSafeJobLogContext } from "@/shared/utils/mq/get-safe-job-log-context";
 import { isFinalJobFailure } from "@/shared/utils/mq/is-final-job-failure";
 
-import { enqueueScenarioScenesGeneration } from "../scenario-scenes-generation/queue";
+import { enqueueScenarioChapterScenesGeneration } from "../scenario-chapter-scenes-generation/queue";
 import {
   SCENARIO_CHAPTERS_GENERATION_QUEUE_NAME,
   type ScenarioChaptersGenerationJobData,
@@ -52,9 +52,7 @@ export const scenarioChaptersGenerationWorker =
       });
 
       if (!foundScenario) {
-        console.warn(`Сценарий с id ${scenarioId} не найден`);
-
-        return;
+        throw new Error(`Сценарий с id ${scenarioId} не найден`);
       }
 
       const creditsBalance = await getCreditsBalance({
@@ -122,7 +120,11 @@ export const scenarioChaptersGenerationWorker =
 
       const generatedChapters = generatedChaptersObject.chapters;
 
-      const scenarioChapters = await db.transaction(async (tx) => {
+      if (!generatedChapters.length) {
+        throw new Error("Сгенерированный список разделов сценария пуст");
+      }
+
+      await db.transaction(async (tx) => {
         const createdScenarioChapters = await tx
           .insert(scenarioChapter)
           .values(
@@ -136,39 +138,33 @@ export const scenarioChaptersGenerationWorker =
           )
           .returning();
 
-        if (createdScenarioChapters.length > 0) {
-          await Promise.all([
-            await tx.insert(generationLog).values({
-              entity: "scenario-chapters" as const,
-              entityId: scenarioVersionId,
-              model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-              tokens: usage?.total_tokens ?? 0,
-            }),
-            await chargeCredits({
-              userId: foundScenario.userId,
-              entity: "scenario-chapters",
-              entityId: scenarioVersionId,
-              totalTokens: usage?.total_tokens ?? 0,
-              tx,
-            }),
-          ]);
-        } else {
-          console.warn("Сгенерированный список разделов сценария пуст");
+        if (!createdScenarioChapters.length) {
+          throw new Error("Не удалось сохранить разделы сценария");
         }
+
+        await Promise.all([
+          tx.insert(generationLog).values({
+            entity: "scenario-chapters" as const,
+            entityId: scenarioVersionId,
+            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+            tokens: usage?.total_tokens ?? 0,
+          }),
+          chargeCredits({
+            userId: foundScenario.userId,
+            entity: "scenario-chapters",
+            entityId: scenarioVersionId,
+            totalTokens: usage?.total_tokens ?? 0,
+            tx,
+          }),
+        ]);
 
         await tx
           .update(scenarioVersion)
           .set({ status: "ready" })
           .where(eq(scenarioVersion.id, scenarioVersionId));
-
-        return createdScenarioChapters;
       });
 
-      scenarioChapters.forEach((chapter) =>
-        enqueueScenarioScenesGeneration({
-          scenarioChapterId: chapter.id,
-        }),
-      );
+      await enqueueScenarioChapterScenesGeneration({ scenarioVersionId });
     },
     {
       concurrency: 5,

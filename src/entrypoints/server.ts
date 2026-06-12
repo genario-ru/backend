@@ -23,6 +23,7 @@ import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
 import { mailSendQueue } from "@/mq/mail-send/queue";
 import { profilesFromChannelsGenerationQueue } from "@/mq/profiles-from-channels-generation/queue";
+import { scenarioChapterScenesGenerationQueue } from "@/mq/scenario-chapter-scenes-generation/queue";
 import { scenarioChaptersGenerationQueue } from "@/mq/scenario-chapters-generation/queue";
 import { scenarioMetadataGenerationQueue } from "@/mq/scenario-metadata-generation/queue";
 import { scenarioMetadataRegenerationQueue } from "@/mq/scenario-metadata-regeneration/queue";
@@ -168,6 +169,7 @@ createBullBoard({
     new BullMQAdapter(profilesFromChannelsGenerationQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
+    new BullMQAdapter(scenarioChapterScenesGenerationQueue),
     new BullMQAdapter(scenarioScenePreviewGenerationQueue),
     new BullMQAdapter(scenarioMetadataGenerationQueue),
     new BullMQAdapter(scenarioMetadataRegenerationQueue),

@@ -51,9 +51,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
     });
 
     if (!foundIdeasList) {
-      console.warn(`Список идей с id ${ideasListId} не найден`);
-
-      return;
+      throw new Error(`Список идей с id ${ideasListId} не найден`);
     }
 
     const creditsBalance = await getCreditsBalance({
@@ -122,6 +120,10 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
 
     const generatedIdeas = generatedObject.ideas;
 
+    if (!generatedIdeas.length) {
+      throw new Error("Сгенерированный список идей пуст");
+    }
+
     await db.transaction(async (tx) => {
       const createdIdeas = await tx
         .insert(idea)
@@ -136,26 +138,25 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
         )
         .returning();
 
-      if (createdIdeas.length > 0) {
-        await Promise.all([
-          tx.insert(generationLog).values({
-            entity: "ideas-list",
-            entityId: foundIdeasList.id,
-            model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
-            tokens: usage?.total_tokens ?? 0,
-          }),
-
-          await chargeCredits({
-            userId: foundIdeasList.userId,
-            entity: "ideas-list",
-            entityId: foundIdeasList.id,
-            totalTokens: usage?.total_tokens ?? 0,
-            tx,
-          }),
-        ]);
-      } else {
-        console.warn("Сгенерированный список идей пуст");
+      if (!createdIdeas.length) {
+        throw new Error("Не удалось сохранить список идей");
       }
+
+      await Promise.all([
+        tx.insert(generationLog).values({
+          entity: "ideas-list",
+          entityId: foundIdeasList.id,
+          model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
+          tokens: usage?.total_tokens ?? 0,
+        }),
+        chargeCredits({
+          userId: foundIdeasList.userId,
+          entity: "ideas-list",
+          entityId: foundIdeasList.id,
+          totalTokens: usage?.total_tokens ?? 0,
+          tx,
+        }),
+      ]);
 
       await tx
         .update(ideasList)
