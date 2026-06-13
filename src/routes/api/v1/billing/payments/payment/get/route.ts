@@ -26,7 +26,7 @@ getPaymentRoute.get(
   rateLimitMiddleware({
     keyPrefix: "get-payment",
     windowMs: 1000,
-    limit: 2,
+    limit: 5,
   }),
   sessionMiddleware,
   openAPIResponseMiddleware({
