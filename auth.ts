@@ -1,4 +1,3 @@
-import { redisStorage } from "@better-auth/redis-storage";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, emailOTP } from "better-auth/plugins";
@@ -6,7 +5,6 @@ import { admin, emailOTP } from "better-auth/plugins";
 import { db, schema } from "@/db";
 import { sendEmail } from "@/domains/mail/services/send-email";
 import { env } from "@/env";
-import { redis } from "@/lib/redis";
 import { TRUSTED_ORIGINS } from "@/shared/constants/api/trusted-origins";
 import {
   APP_NAME,
@@ -64,10 +62,6 @@ export const auth = betterAuth({
     storeSessionInDatabase: true,
     preserveSessionInDatabase: true,
   },
-  secondaryStorage: redisStorage({
-    client: redis,
-    keyPrefix: "auth-api-rate-limit:",
-  }),
   plugins: [
     emailOTP({
       disableSignUp: env.DISABLE_SIGN_UP,

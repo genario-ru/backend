@@ -24,7 +24,7 @@ sendVerificationOtpRoute.post(
   rateLimitMiddleware({
     keyPrefix: "send-verification-otp",
     windowMs: 60 * 1000,
-    limit: 1,
+    limit: 3,
   }),
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Auth],
