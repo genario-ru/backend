@@ -66,43 +66,8 @@ export const auth = betterAuth({
   },
   secondaryStorage: redisStorage({
     client: redis,
-    keyPrefix: "auth-api-rate-limit:", // optional, defaults to "better-auth:"
+    keyPrefix: "auth-api-rate-limit:",
   }),
-  rateLimit: {
-    enabled: true,
-    window: 60,
-    max: 10,
-    customRules: {
-      "/change-email": {
-        window: 60,
-        max: 1,
-      },
-      "/delete-user": {
-        window: 60,
-        max: 1,
-      },
-      "/get-session": {
-        window: 60,
-        max: 20,
-      },
-      "/email-otp/send-verification-otp": {
-        window: 60,
-        max: 1,
-      },
-      "/sign-in/email-otp": {
-        window: 60,
-        max: 3,
-      },
-      "/sign-out": {
-        window: 60,
-        max: 3,
-      },
-      "/update-user": {
-        window: 60,
-        max: 5,
-      },
-    },
-  },
   plugins: [
     emailOTP({
       disableSignUp: env.DISABLE_SIGN_UP,
