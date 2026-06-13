@@ -1,5 +1,3 @@
-import { isFuture, isPast } from "date-fns";
-import { isNull } from "es-toolkit";
 import { createMiddleware } from "hono/factory";
 
 import { type AuthType } from "@/auth";
@@ -25,7 +23,9 @@ export const subscriptionMiddleware = createMiddleware<{
 }>(async (c, next) => {
   const user = c.get("user");
 
-  const foundActiveSubscriptions = await db.query.subscription.findMany({
+  // Доступ определяется только статусом подписки: даты окончания обрабатывает
+  // биллинговый cron, который переводит истекшие подписки в "terminated".
+  const foundActiveSubscription = await db.query.subscription.findFirst({
     orderBy: (subscription, { asc }) => [asc(subscription.startsAt)],
     where: (subscription, { and, eq, notInArray }) =>
       and(
@@ -36,18 +36,6 @@ export const subscriptionMiddleware = createMiddleware<{
       tariff: true,
     },
   });
-
-  const foundActiveSubscription = foundActiveSubscriptions.find(
-    (subscription) => {
-      const isStarted =
-        isNull(subscription.startsAt) || isPast(subscription.startsAt);
-
-      const isNotEnded =
-        isNull(subscription.endsAt) || isFuture(subscription.endsAt);
-
-      return isStarted && isNotEnded;
-    },
-  );
 
   if (!foundActiveSubscription) {
     return throwAPIError({

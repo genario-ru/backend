@@ -38,6 +38,8 @@ getMyCreditsBatchesRoute.get(
   async (c) => {
     const user = c.get("user");
 
+    // Отдаем все активные батчи без проверки даты протухания: истекшие батчи
+    // переводит в "terminated" биллинговый cron.
     const foundCreditsBatches = await db.query.creditsBatch.findMany({
       orderBy: (creditsBatch, { asc }) => [
         asc(creditsBatch.expiresAt),
@@ -54,22 +56,9 @@ getMyCreditsBatchesRoute.get(
       },
     });
 
-    const filteredFoundCreditsBatches = foundCreditsBatches.filter(
-      (creditsBatch) => {
-        if (
-          creditsBatch.expiresAt &&
-          new Date(creditsBatch.expiresAt) < new Date()
-        ) {
-          return false;
-        }
-
-        return true;
-      },
-    );
-
     return c.json<GetMyCreditsBatchesResponse>(
       getMyCreditsBatchesResponseSchema.parse({
-        data: filteredFoundCreditsBatches,
+        data: foundCreditsBatches,
       }),
     );
   },

@@ -42,17 +42,16 @@ export async function chargeCredits({
   // старые батчи. Для подписочных батчей это совпадает с ближайшим сроком
   // истечения (каждый новый цикл создает батч с более поздним expiresAt), что
   // предотвращает сгорание истекающих раньше кредитов.
+  //
+  // Пригодность батча определяется только статусом: истекшие батчи переводит
+  // в "terminated" биллинговый cron, дату протухания здесь не проверяем.
   const foundCreditsBatches = await tx.query.creditsBatch.findMany({
     orderBy: (creditsBatch, { asc }) => asc(creditsBatch.createdAt),
-    where: (creditsBatch, { and, or, eq, gte, isNull }) =>
+    where: (creditsBatch, { and, eq, gte }) =>
       and(
         eq(creditsBatch.userId, userId),
         eq(creditsBatch.status, "active"),
         gte(creditsBatch.remainingAmount, chargeAmount),
-        or(
-          isNull(creditsBatch.expiresAt),
-          gte(creditsBatch.expiresAt, new Date().toISOString()),
-        ),
       ),
     with: {
       subscriptionToCreditsBatch: true,
