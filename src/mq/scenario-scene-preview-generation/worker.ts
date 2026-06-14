@@ -39,6 +39,11 @@ export const scenarioScenePreviewsGenerationWorker =
         with: {
           scenarioScene: {
             with: {
+              components: {
+                with: {
+                  type: true,
+                },
+              },
               scenarioChapter: {
                 with: {
                   scenarioVersion: true,
@@ -60,7 +65,14 @@ export const scenarioScenePreviewsGenerationWorker =
 
       const scenario = await db.query.scenario.findFirst({
         where: (scenario, { eq }) => eq(scenario.id, scenarioId),
-        with: { videoType: true },
+        with: {
+          videoType: true,
+          scenarioToTone: {
+            with: {
+              tone: true,
+            },
+          },
+        },
       });
 
       if (!scenario) {
@@ -84,11 +96,16 @@ export const scenarioScenePreviewsGenerationWorker =
         scenarioName: scenario.name,
         scenarioDescription: scenario.description,
         scenarioTargetAudience: scenario.targetAudience,
+        videoTypeSlug: scenario.videoType?.slug ?? null,
+        toneNames: scenario.scenarioToTone.map(({ tone }) => tone.name),
         chapterName: scene.scenarioChapter.name,
         chapterDescription: scene.scenarioChapter.description,
         sceneName: scene.name,
-        sceneStartTime: scene.startTime,
-        sceneEndTime: scene.endTime,
+        sceneComponents: scene.components.map((component) => ({
+          slug: component.type.slug,
+          name: component.type.name,
+          content: component.content,
+        })),
       });
 
       const { data, usage } = await vsellm.images.generate({
