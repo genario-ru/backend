@@ -34,6 +34,7 @@ export const user = pgTable("user", {
   email: text("email").unique().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   marketingAccepted: boolean("marketing_accepted").default(false).notNull(),
+  hideOnboarding: boolean("hide_onboarding").default(false).notNull(),
   phone: text("phone").unique(),
   phoneVerified: boolean("phone_verified").default(false).notNull(),
   name: text("name").notNull(),

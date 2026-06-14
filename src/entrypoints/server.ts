@@ -89,6 +89,7 @@ import {
   getLegalDocumentRoute,
   getLegalDocumentsRoute,
 } from "@/routes/api/v1/legal-documents";
+import { getOnboardingRoute } from "@/routes/api/v1/onboarding";
 import { getPlatformsRoute } from "@/routes/api/v1/platforms";
 import { getProductionStatusesRoute } from "@/routes/api/v1/production-statuses";
 import {
@@ -227,6 +228,7 @@ const appAPIv1RoutesList = [
   updateIdeasListRoute,
   getLegalDocumentRoute,
   getLegalDocumentsRoute,
+  getOnboardingRoute,
   getPlatformsRoute,
   getMyProfilesFromChannelsJobs,
   getMyProfilesRoute,

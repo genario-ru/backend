@@ -4,6 +4,7 @@ export const updateUserBodySchema = z
   .object({
     name: z.string().min(1).optional(),
     image: z.string().optional(),
+    hideOnboarding: z.boolean().optional(),
   })
   .meta({
     title: "Update user body",
