@@ -13,6 +13,8 @@ Each scene: name, startTime, endTime.
 
 For each scene, generate components from the types below. Use the type's name exactly (e.g. "Голосовое сопровождение").
 
+- **typeId is a closed set**: every `typeId` you output MUST be copied verbatim from the "Component types" list below. These are real database identifiers — never invent, guess, reformat, or modify an id. If a component does not match any listed type, omit it entirely. A scene with fewer components is always better than a fabricated id.
+
 - **Timing**: spoken/on-screen text must fit the scene duration. {{WORD_BUDGET_HINTS}}
 - **Continuity**: first scene in chapter — open with a hook. Later scenes — continue from the previous scene's last thought, no re-greeting.
 - **Variety of expression**: Each voice-over must open with a different word and rhetorical device. Scan all voice-overs in the Previous chapters section and in scenes already written for this chapter — never reuse an opening pattern (e.g. "Забудьте", "Представьте", "Вспомните", "Многие думают"). Every scene's voice-over must feel fresh and distinct from all others in the scenario.
@@ -29,7 +31,7 @@ For each scene: { name, startTime, endTime, components: [{ name, content, typeId
 
 - name: use component type name exactly.
 - content: natural speech within word budget; Markdown for utility components.
-- typeId: exact id from the list above.
+- typeId: copy an id verbatim from the "Component types" list above — it must be one of those exact strings, never a new or altered value.
 
 ## Context
 

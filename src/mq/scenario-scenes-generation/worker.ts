@@ -128,6 +128,10 @@ export const scenarioScenesGenerationWorker =
         throw new Error("Сгенерированный список сцен сценария пуст");
       }
 
+      const validComponentTypeIds = new Set(
+        scenarioSceneComponentTypes.map((type) => type.id),
+      );
+
       await db.transaction(async (tx) => {
         const createdScenes = await tx
           .insert(scenarioScene)
@@ -146,12 +150,30 @@ export const scenarioScenesGenerationWorker =
 
           if (!scene.components?.length) return [];
 
-          return scene.components.map((comp) => ({
-            scenarioSceneId: createdScene.id,
-            name: comp.name,
-            content: comp.content ?? null,
-            typeId: comp.typeId,
-          }));
+          return scene.components
+            .filter((comp) => {
+              const isKnownType = validComponentTypeIds.has(comp.typeId);
+
+              if (!isKnownType) {
+                console.warn(
+                  "Пропущен компонент сцены с неизвестным typeId (галлюцинация ИИ)",
+                  {
+                    scenarioChapterId,
+                    sceneName: scene.name,
+                    componentName: comp.name,
+                    typeId: comp.typeId,
+                  },
+                );
+              }
+
+              return isKnownType;
+            })
+            .map((comp) => ({
+              scenarioSceneId: createdScene.id,
+              name: comp.name,
+              content: comp.content,
+              typeId: comp.typeId,
+            }));
         });
 
         if (componentsData.length > 0) {
