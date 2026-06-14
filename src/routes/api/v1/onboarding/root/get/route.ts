@@ -61,6 +61,7 @@ getOnboardingRoute.get(
       db
         .select({ totalItems: count() })
         .from(scenarioMetadata)
+        .innerJoin(scenario, eq(scenarioMetadata.scenarioId, scenario.id))
         .where(eq(scenario.userId, user.id)),
     ]);
 
