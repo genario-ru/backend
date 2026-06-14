@@ -74,9 +74,9 @@ getOnboardingRoute.get(
       {
         type: "profile",
         status: hasProfiles ? "completed" : "pending",
-        title: "Создайте первый профиль",
+        title: "Создайте профиль",
         description:
-          "Импортируйте канал с RuTube или YouTube или вручную опишите автора, нишу и аудиторию, чтобы Genario точнее подбирал идеи.",
+          "Импортируйте канал с RuTube или YouTube либо опишите автора и нишу вручную.",
       },
       {
         type: "ideas-list",
@@ -85,9 +85,8 @@ getOnboardingRoute.get(
           : hasReadyIdeasLists
             ? "completed"
             : "pending",
-        title: "Сгенерируйте первый список идей",
-        description:
-          "Получите подборку тем для видео на основе профиля и выбранного шаблона.",
+        title: "Соберите список идей",
+        description: "Подберите темы для роликов по профилю и шаблону.",
       },
       {
         type: "scenario",
@@ -96,9 +95,9 @@ getOnboardingRoute.get(
           : hasScenarios
             ? "completed"
             : "pending",
-        title: "Создайте первый сценарий",
+        title: "Создайте сценарий",
         description:
-          "Превратите идею в структуру ролика со сценами, главами и подсказками.",
+          "Превратите идею в структуру ролика: сцены, главы, подсказки.",
       },
       {
         type: "metadata",
@@ -108,8 +107,7 @@ getOnboardingRoute.get(
             ? "completed"
             : "pending",
         title: "Сгенерируйте метаданные",
-        description:
-          "Подготовьте заголовки, описания и теги под платформы публикации.",
+        description: "Подготовьте заголовок, описание и теги для публикации.",
       },
     ];
 
@@ -117,8 +115,7 @@ getOnboardingRoute.get(
       getOnboardingResponseSchema.parse({
         icon: "rocket",
         title: "Быстрый старт",
-        description:
-          "Пройдите основные шаги, чтобы подготовить первый ролик в Genario.",
+        description: "Несколько шагов до вашего первого ролика в Genario.",
         items,
       }),
     );
