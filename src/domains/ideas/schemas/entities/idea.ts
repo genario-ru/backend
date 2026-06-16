@@ -21,6 +21,9 @@ export const ideaGeneratedSchema = ideaSchema
   .extend({
     name: z.string().min(3).max(256),
     description: z.string().min(16).max(4096),
+    hook: z.string().min(3).max(512),
+    complexity: z.number().int().min(0).max(5),
+    potential: z.number().int().min(0).max(5),
   })
   .meta({
     title: "Idea generated",

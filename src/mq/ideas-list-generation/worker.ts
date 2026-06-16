@@ -135,6 +135,9 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
             name: generatedIdea.name,
             description: generatedIdea.description,
             reason: generatedIdea.reason,
+            hook: generatedIdea.hook,
+            complexity: generatedIdea.complexity,
+            potential: generatedIdea.potential,
           })),
         )
         .returning();

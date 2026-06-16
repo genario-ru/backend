@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -27,6 +34,9 @@ export const idea = pgTable(
     name: text("name").notNull(),
     description: text("description").notNull(),
     reason: text("reason"),
+    hook: text("hook"),
+    complexity: integer("complexity").notNull().default(0),
+    potential: integer("potential").notNull().default(0),
     ...timestamps,
   },
   (table) => [

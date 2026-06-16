@@ -11,6 +11,9 @@ export const createIdeaBodySchema = createInsertSchema(idea)
     name: z.string().min(3).max(256),
     description: z.string().min(16).max(4096),
     reason: z.string().max(4096).nullish(),
+    hook: z.string().max(512).nullish(),
+    complexity: z.number().int().min(0).max(5).optional(),
+    potential: z.number().int().min(0).max(5).optional(),
   })
   .meta({
     title: "Create idea body",
