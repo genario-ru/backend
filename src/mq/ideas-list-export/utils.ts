@@ -20,6 +20,8 @@ export type RenderedDocumentFile = {
 
 type MetaItem = { label: string; value: string };
 
+const SCORE_MAX = 5;
+
 function getIdeasListTitle(data: IdeasListExportData) {
   return data.name?.trim() || "Список идей";
 }
@@ -94,6 +96,15 @@ async function renderIdeasListPdf(
   data.ideas.forEach((ideaItem, index) => {
     writer.addSubheading(`${index + 1}. ${ideaItem.name || "Без названия"}`);
     writer.addLabeledParagraph("Тип видео", ideaItem.videoType.name);
+    writer.addLabeledParagraph(
+      "Потенциал",
+      `${ideaItem.potential} / ${SCORE_MAX}`,
+    );
+    writer.addLabeledParagraph(
+      "Сложность",
+      `${ideaItem.complexity} / ${SCORE_MAX}`,
+    );
+    writer.addLabeledParagraph("Хук", ideaItem.hook || "Не указано");
     writer.addLabeledParagraph(
       "Описание",
       ideaItem.description || "Не указано",
@@ -186,6 +197,9 @@ async function renderIdeasListDocx(
         ],
       }),
       labeledParagraph("Тип видео", ideaItem.videoType.name),
+      labeledParagraph("Потенциал", `${ideaItem.potential} / ${SCORE_MAX}`),
+      labeledParagraph("Сложность", `${ideaItem.complexity} / ${SCORE_MAX}`),
+      labeledParagraph("Хук", ideaItem.hook || "Не указано"),
       labeledParagraph("Описание", ideaItem.description || "Не указано"),
       labeledParagraph("Почему это сработает", ideaItem.reason || "Не указано"),
     );
