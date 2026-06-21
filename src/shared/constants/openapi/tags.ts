@@ -1,4 +1,5 @@
 export enum OpenAPITags {
+  Applications = "Applications",
   Auth = "Auth",
   Alerts = "Alerts",
   Attachments = "Attachments",
@@ -11,6 +12,7 @@ export enum OpenAPITags {
   Onboarding = "Onboarding",
   Tariffs = "Tariffs",
   Platforms = "Platforms",
+  ProductFeatures = "Product features",
   Profiles = "Profiles",
   Referral = "Referral",
   Scenarios = "Scenarios",

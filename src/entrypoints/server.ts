@@ -34,6 +34,7 @@ import { subscriptionsChargeQueue } from "@/mq/subscriptions-charge/queue";
 import { terminateExpiredCreditsBatchesQueue } from "@/mq/terminate-expired-credits-batches/queue";
 import { upcomingChargesNewsletterQueue } from "@/mq/upcoming-charges-newsletter/queue";
 import { getAlertsRoute } from "@/routes/api/v1/alerts";
+import { createApplicationRoute } from "@/routes/api/v1/applications";
 import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
@@ -91,6 +92,7 @@ import {
 } from "@/routes/api/v1/legal-documents";
 import { getOnboardingRoute } from "@/routes/api/v1/onboarding";
 import { getPlatformsRoute } from "@/routes/api/v1/platforms";
+import { getProductFeaturesRoute } from "@/routes/api/v1/product-features";
 import { getProductionStatusesRoute } from "@/routes/api/v1/production-statuses";
 import {
   createProfileRoute,
@@ -193,6 +195,7 @@ const appAPIv1RoutesList = [
   changeEmailRoute,
   updateUserRoute,
   deleteUserRoute,
+  createApplicationRoute,
   getAlertsRoute,
   deleteIdeaRoute,
   getIdeaRoute,
@@ -240,6 +243,7 @@ const appAPIv1RoutesList = [
   getProfileRoute,
   updateProfileRoute,
   createProfileRoute,
+  getProductFeaturesRoute,
   getMyReferralCodesRoute,
   getMyReferralInvitesRoute,
   getReferralInfoRoute,

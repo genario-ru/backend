@@ -26,6 +26,7 @@ export * from "./schemas/billing/tariff-discount";
 export * from "./schemas/jobs/profiles-from-channels-job";
 
 // Linking
+export * from "./schemas/linking/application-to-product-feature";
 export * from "./schemas/linking/credits-batch-to-payment";
 export * from "./schemas/linking/ideas-list-to-export-document";
 export * from "./schemas/linking/ideas-list-to-tone";
@@ -42,6 +43,7 @@ export * from "./schemas/linking/subscription-to-credits-batch";
 export * from "./schemas/linking/subscription-to-payment";
 
 // Primary
+export * from "./schemas/primary/application";
 export * from "./schemas/primary/attachment";
 export * from "./schemas/primary/export-document";
 export * from "./schemas/primary/export-document-format";
@@ -49,6 +51,7 @@ export * from "./schemas/primary/idea";
 export * from "./schemas/primary/ideas-list";
 export * from "./schemas/primary/legal-document";
 export * from "./schemas/primary/platform";
+export * from "./schemas/primary/product-feature";
 export * from "./schemas/primary/production-status";
 export * from "./schemas/primary/profile";
 export * from "./schemas/primary/profile-attachment";

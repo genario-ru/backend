@@ -1,0 +1,90 @@
+[
+  {
+    "id": "0f1e2d3c-4b5a-4c6d-8e7f-1a2b3c4d5e6f",
+    "icon": "lightbulb",
+    "color": "#a5b4fc",
+    "name": "Подбор идей",
+    "description": "Предлагает темы и подачу под вашу нишу, аудиторию и то, что уже сработало в ваших роликах.",
+    "available": true,
+    "priority": 80,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "1a2b3c4d-5e6f-4a7b-9c8d-2e3f4a5b6c7d",
+    "icon": "clapperboard",
+    "color": "#ffcc00",
+    "name": "Сценарий под съёмку",
+    "description": "Даёт структуру, реплики, сцены и подсказки по кадрам: что говорить и как снимать.",
+    "available": true,
+    "priority": 70,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "2b3c4d5e-6f7a-4b8c-8d9e-3f4a5b6c7d8e",
+    "icon": "scissors",
+    "color": "#34c759",
+    "name": "План монтажа",
+    "description": "После съёмки раскладывает выпуск по сценам: порядок склейки, вставки, анимации и текст на экране.",
+    "available": false,
+    "priority": 60,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "3c4d5e6f-7a8b-4c9d-9e8f-4a5b6c7d8e9f",
+    "icon": "file-text",
+    "color": "#ff9500",
+    "name": "Подготовка метаданных",
+    "description": "Подбирает заголовки, описания и теги под YouTube, RuTube, Shorts и другие площадки.",
+    "available": true,
+    "priority": 50,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "4d5e6f7a-8b9c-4d8e-8f9a-5b6c7d8e9f0a",
+    "icon": "image",
+    "color": "#ef4444",
+    "name": "Генерация обложек",
+    "description": "Собирает кликабельное превью из ваших фото, референсов и фирменного стиля канала.",
+    "available": false,
+    "priority": 40,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "5e6f7a8b-9c0d-4e9f-9a8b-6c7d8e9f0a1b",
+    "icon": "download",
+    "color": "#00c0e8",
+    "name": "Импорт канала",
+    "description": "Подключает YouTube или RuTube и строит идеи и сценарии на основе вашего реального контента.",
+    "available": true,
+    "priority": 30,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "6f7a8b9c-0d1e-4f8a-8b9c-7d8e9f0a1b2c",
+    "icon": "upload",
+    "color": "#8b5cf6",
+    "name": "Загрузка материалов",
+    "description": "Принимает ваши видео, фото и референсы, чтобы подстроиться под стиль канала без импорта.",
+    "available": false,
+    "priority": 20,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  },
+  {
+    "id": "7a8b9c0d-1e2f-4a9b-9c8d-8e9f0a1b2c3d",
+    "icon": "users",
+    "color": "#ec4899",
+    "name": "Командный доступ",
+    "description": "Совместная работа над идеями, сценариями и выпуском видео в одном пространстве.",
+    "available": false,
+    "priority": 10,
+    "created_at": "2026-06-21 12:00:00+00",
+    "updated_at": "2026-06-21 12:00:00+00"
+  }
+]

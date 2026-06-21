@@ -5,6 +5,7 @@ import {
   exportDocumentFormat,
   legalDocument,
   platform,
+  productFeature,
   productionStatus,
   profileType,
   scenarioSceneComponentType,
@@ -19,6 +20,7 @@ import creditsPackageData from "../../../data/credits_package.json";
 import exportDocumentFormatData from "../../../data/export_document_format.json";
 import legalDocumentData from "../../../data/legal_document.json";
 import platformData from "../../../data/platform.json";
+import productFeatureData from "../../../data/product_feature.json";
 import productionStatusData from "../../../data/production_status.json";
 import profileTypeData from "../../../data/profile_type.json";
 import scenarioSceneComponentTypeData from "../../../data/scenario_scene_component_type.json";
@@ -48,6 +50,7 @@ export const seedEntries: SeedEntry[] = [
   { name: "template", table: template, rows: templateData },
   { name: "tone", table: tone, rows: toneData },
   { name: "platform", table: platform, rows: platformData },
+  { name: "product_feature", table: productFeature, rows: productFeatureData },
   { name: "video_duration", table: videoDuration, rows: videoDurationData },
   { name: "video_type", table: videoType, rows: videoTypeData },
   { name: "profile_type", table: profileType, rows: profileTypeData },
