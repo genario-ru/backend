@@ -4,6 +4,7 @@ import { pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "@/db/constants/timestamps";
 
 import { exportDocument } from "./export-document";
+import { profileAttachment } from "./profile-attachment";
 import { scenarioScenePreview } from "./scenario-scene-preview";
 import { user } from "./user";
 
@@ -24,6 +25,7 @@ export const attachmentRelations = relations(attachment, ({ one, many }) => ({
     references: [user.id],
   }),
   exportDocuments: many(exportDocument),
+  profileAttachments: many(profileAttachment),
   scenarioScenePreviews: many(scenarioScenePreview, {
     relationName: "previewOriginal",
   }),

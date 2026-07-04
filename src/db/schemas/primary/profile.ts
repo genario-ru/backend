@@ -7,6 +7,7 @@ import { profileToPlatform } from "../linking/profile-to-platform";
 import { profileToProfilesFromChannelsJob } from "../linking/profile-to-profiles-from-channels-job";
 import { profileToTone } from "../linking/profile-to-tone";
 import { ideasList } from "./ideas-list";
+import { profileAttachment } from "./profile-attachment";
 import { profileChannel } from "./profile-channel";
 import { profileType } from "./profile-type";
 import { scenario } from "./scenario";
@@ -24,8 +25,10 @@ export const profile = pgTable(
       onDelete: "set null",
     }),
     name: text("name").notNull(),
-    description: text("description"),
+    description: text("description"), // TODO: Удалить после перехода на новые поля
+    positioning: text("positioning"),
     targetAudience: text("target_audience"),
+    additionalInfo: text("additional_info"),
     ...timestamps,
   },
   (table) => [
@@ -44,6 +47,7 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
     references: [profileType.id],
   }),
   channels: many(profileChannel),
+  attachments: many(profileAttachment),
   ideasLists: many(ideasList),
   scenarios: many(scenario),
   profileToPlatform: many(profileToPlatform),

@@ -43,6 +43,13 @@
       "when": 1783179413339,
       "tag": "0005_wide_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783192555310,
+      "tag": "0006_stormy_vampiro",
+      "breakpoints": true
     }
   ]
 }

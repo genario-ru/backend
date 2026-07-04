@@ -54,6 +54,7 @@ export * from "./schemas/primary/platform";
 export * from "./schemas/primary/product-feature";
 export * from "./schemas/primary/production-status";
 export * from "./schemas/primary/profile";
+export * from "./schemas/primary/profile-attachment";
 export * from "./schemas/primary/profile-channel";
 export * from "./schemas/primary/profile-channel-video";
 export * from "./schemas/primary/profile-type";
