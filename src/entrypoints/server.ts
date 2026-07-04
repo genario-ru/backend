@@ -39,7 +39,10 @@ import {
   getArchiveFiltersRoute,
   getMyArchiveItemsRoute,
 } from "@/routes/api/v1/archive";
-import { getAttachmentDownloadRoute } from "@/routes/api/v1/attachments";
+import {
+  createAttachmentRoute,
+  getAttachmentDownloadRoute,
+} from "@/routes/api/v1/attachments";
 import {
   betterAuthRoute,
   changeEmailRoute,
@@ -202,6 +205,7 @@ const appAPIv1RoutesList = [
   updateIdeaRoute,
   saveIdeaRoute,
   getProductionStatusesRoute,
+  createAttachmentRoute,
   getAttachmentDownloadRoute,
   addPaymentMethodRoute,
   deletePaymentMethodRoute,
