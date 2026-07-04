@@ -36,6 +36,13 @@
       "when": 1782061448974,
       "tag": "0004_robust_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783179413339,
+      "tag": "0005_wide_multiple_man",
+      "breakpoints": true
     }
   ]
 }

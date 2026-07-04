@@ -7,7 +7,6 @@ import { profileToPlatform } from "../linking/profile-to-platform";
 import { profileToProfilesFromChannelsJob } from "../linking/profile-to-profiles-from-channels-job";
 import { profileToTone } from "../linking/profile-to-tone";
 import { ideasList } from "./ideas-list";
-import { profileAttachment } from "./profile-attachment";
 import { profileChannel } from "./profile-channel";
 import { profileType } from "./profile-type";
 import { scenario } from "./scenario";
@@ -47,7 +46,6 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
   channels: many(profileChannel),
   ideasLists: many(ideasList),
   scenarios: many(scenario),
-  attachments: many(profileAttachment),
   profileToPlatform: many(profileToPlatform),
   profileToTone: many(profileToTone),
   profileToProfilesFromChannelsJob: many(profileToProfilesFromChannelsJob),
