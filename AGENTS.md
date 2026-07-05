@@ -4,6 +4,18 @@ This is the canonical working guide for coding agents in `genario-backend`.
 Tool-specific files may add workflow detail, but they must not contradict this
 file.
 
+## Agent Instruction Design
+
+- Keep this file focused, concrete, and verifiable. Put global project rules
+  here, path-scoped details in `.cursor/rules/**`, and repeatable procedures in
+  `.agents/skills/**`.
+- Do not duplicate long procedures across tools. If a tool-specific file needs
+  the same rule, point it back to this file or keep only the tool-specific
+  delta.
+- Prefer rules that can be checked against files, commands, or code patterns.
+  Remove outdated or conflicting instructions in the same change that discovers
+  them.
+
 ## Project Snapshot
 
 - TypeScript ESM backend.
@@ -38,6 +50,19 @@ Read these before making non-trivial changes:
 If documentation disagrees with code/config, trust code/config first, then
 update the documentation in the same change.
 
+## Collaboration Rules
+
+- Communicate with the repository owner in Russian unless the owner explicitly
+  asks for another language.
+- Be direct and factual. Do not present guesses as decisions.
+- If requirements, architecture, file placement, or implementation choices are
+  unclear, ask the owner before coding.
+- If a task requires a custom construction that has no clear local precedent,
+  ask the owner first and, when possible, present concrete implementation
+  options.
+- Before adding a new pattern, prove there is no suitable existing pattern by
+  inspecting nearby code.
+
 ## Source Layout
 
 | Path              | Purpose                                                       |
@@ -54,6 +79,29 @@ update the documentation in the same change.
 | `src/codegen`     | Generated external API clients, read-only                     |
 | `src/globals`     | Global `.d.ts` declarations                                   |
 | `tests`           | Vitest unit and integration tests                             |
+
+## Local Reference Map
+
+Use these files as implementation references before creating new patterns.
+Some older files contain mojibake in Russian strings/comments; use them for
+structure only and do not copy broken text.
+
+| Pattern                       | References                                                                                                                                                                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public JSON route             | `src/routes/api/v1/product-features/root/get/route.ts`, `src/domains/product-features/schemas/handlers/get-product-features/response.ts`                                                                                                     |
+| Public write + transaction    | `src/routes/api/v1/applications/root/post/route.ts`, `src/domains/applications/schemas/handlers/create-application/body.ts`, `src/domains/applications/schemas/handlers/create-application/response.ts`                                      |
+| Protected route + enqueue     | `src/routes/api/v1/scenarios/root/post/route.ts`, `src/domains/scenarios/schemas/handlers/create-scenario/body.ts`, `src/domains/scenarios/schemas/handlers/create-scenario/response.ts`, `src/mq/scenario-chapters-generation/queue.ts`     |
+| Custom external-error mapping | `src/routes/api/v1/attachments/attachment/download/get/route.ts`                                                                                                                                                                             |
+| Route registration            | `src/entrypoints/server.ts`, nearby `src/routes/api/v1/<domain>/index.ts` files                                                                                                                                                              |
+| Primary DB table              | `src/db/schemas/primary/scenario.ts`, `src/db/schemas/billing/subscription.ts`                                                                                                                                                               |
+| Linking DB table              | `src/db/schemas/linking/application-to-product-feature.ts`, `src/db/schemas/linking/scenario-to-platform.ts`                                                                                                                                 |
+| DB exports                    | `src/db/schema.ts`                                                                                                                                                                                                                           |
+| Default data seed config      | `src/db/seed/config.ts`, matching `data/*.json` files                                                                                                                                                                                        |
+| Queue + worker                | `src/mq/scenario-metadata-generation/queue.ts`, `src/mq/scenario-metadata-generation/worker.ts`, `src/mq/subscriptions-charge/queue.ts`, `src/mq/subscriptions-charge/worker.ts`                                                             |
+| Worker/server registration    | `src/entrypoints/workers.ts`, `src/entrypoints/server.ts`                                                                                                                                                                                    |
+| Env propagation               | `env.ts`, `.env.example`, `docker-compose.yml`                                                                                                                                                                                               |
+| AI prompt triplet             | `src/ai/prompts/templates/generate-scenario-metadata.md`, `src/ai/prompts/types/generate-scenario-metadata.ts`, `src/ai/prompts/builders/generate-scenario-metadata.ts`, plus `generate-ideas-list.*` for optional context/list construction |
+| OpenAPI/Kubb codegen          | `kubb.config.ts`, `src/scripts/download-yookassa-openapi.ts`, `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`                                                                                                           |
 
 ## Placement Rules
 
@@ -92,6 +140,12 @@ Use:
 - `openAPIResponseMiddleware(...)` with `createOpenAPIResponse(...)`;
 - `throwAPIError(...)` for domain/API errors;
 - `responseSchema.parse(...)` before `c.json(...)`.
+- the global `app.onError(errorHandler)` path for ordinary thrown errors.
+
+Do not wrap route handlers or services in `try/catch` by default. Use
+`try/catch` only when the handler must translate an external/library failure
+into a project error, run cleanup, add required context, or implement custom
+error behavior that the global handler cannot provide.
 
 Typical protected route middleware order:
 
@@ -106,18 +160,17 @@ do the same.
 
 - Schema source lives in `src/db/schemas/**`, re-exported through
   `src/db/schema.ts`. It is the single source of truth.
-- Migrations are generated into `src/db/migrations/**`.
-- Canonical dev flow: edit schema -> `pnpm db:generate` -> review SQL ->
-  commit schema + SQL + snapshot together. There is no `db:push`; all schema
-  changes go through reviewable migrations.
-- For schema changes, agents may run `pnpm db:generate` to create a migration
-  file.
-- Do not run `pnpm db:migrate` or `pnpm db:seed` (or any command that applies
-  schema/data changes to a database) unless the user explicitly asks for that
-  exact command in the current task.
-- Commit schema and migration files together.
-- If a migration should be applied, stop after generation and tell the user what
-  was generated and what command a human can run.
+- Agents may edit table schemas, relations, and exports, but must not generate,
+  edit, or delete migration files under `src/db/migrations/**`.
+- Do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`,
+  `pnpm db:studio`, or any command that creates/applies schema or data changes
+  unless the owner explicitly asks for that exact command in the current task.
+- Migration generation and seed execution are owner-only steps. When schema
+  files change, report that a migration must be generated by the owner.
+- When adding/changing tables, add required indexes, foreign keys, and Drizzle
+  `relations(...)` immediately. Do not leave relation/index work as a follow-up.
+- Use native Drizzle ORM syntax for references, indexes, unique indexes, and
+  relations; follow nearby schema files for naming and cascade behavior.
 - If tables are exposed through API responses, update domain entity schemas in
   `src/domains/<domain>/schemas/entities/**`.
 
@@ -160,6 +213,9 @@ After adding a queue/worker:
 - register the queue in Bull Board in `src/entrypoints/server.ts`;
 - use shared Redis from `@/lib/redis`;
 - keep queue name, job name, payload type, and worker data consistent.
+- prefer BullMQ/Sentry worker error handlers and worker events over broad
+  `try/catch` wrappers. Use local `try/catch` only for cleanup or custom
+  failure-state updates.
 
 ## External API Codegen
 
@@ -228,12 +284,17 @@ pnpm test:unit
 pnpm test:integration
 pnpm lint:fix
 pnpm lint:typescript
-pnpm db:generate
-pnpm db:migrate # programmatic migrate (dist/migrate.js); runs at the deploy stage
-pnpm db:seed # human-only/local; upsert default data from data/*.json
-pnpm db:studio # human-only/local inspection
 pnpm api:download:yookassa
 pnpm api:generate
+```
+
+Human-only database commands:
+
+```bash
+pnpm db:generate # owner-only migration generation
+pnpm db:migrate # deploy-stage programmatic migrate (dist/migrate.js)
+pnpm db:seed # owner-only/local default data upsert from data/*.json
+pnpm db:studio # owner-only/local inspection
 ```
 
 ## Validation Matrix
@@ -245,7 +306,8 @@ Choose checks by changed area:
 - Build/runtime entrypoints: `pnpm build`.
 - Route/API contract: `pnpm lint:typescript`, targeted tests if available, and
   inspect OpenAPI metadata.
-- DB schema: `pnpm db:generate` only. Do not apply migrations to a database.
+- DB schema: `pnpm lint:typescript` when TypeScript schema files changed; do
+  not generate or apply migrations from an AI workflow.
 - External API codegen: relevant `api:download:*`, `pnpm api:generate`,
   TypeScript check.
 - Tests changed or behavior covered by tests: `pnpm test:unit` or targeted
@@ -261,6 +323,6 @@ Before finishing, report:
 - files changed;
 - local reference files inspected;
 - route/worker/env/db/codegen registration points updated;
-- generated files or migration SQL produced, if any;
+- DB schema changes that require owner-generated migrations, if any;
 - validation commands run and their result;
 - validation skipped, if any, with the reason.

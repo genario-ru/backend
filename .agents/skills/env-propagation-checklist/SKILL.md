@@ -16,3 +16,10 @@ Update every relevant layer for env changes:
 7. Run `pnpm validate:env` when a representative `.env` is available; otherwise report why it was skipped.
 
 Do not add runtime env usage that bypasses `env.ts`.
+
+## Reference Examples
+
+- Validation and defaults: `env.ts`.
+- Example values and required names: `.env.example`.
+- Runtime propagation for both backend processes: `docker-compose.yml`.
+- Build-time env/release metadata: `Dockerfile`.

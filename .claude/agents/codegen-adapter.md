@@ -34,3 +34,11 @@ You are an API codegen adaptation specialist for `genario-backend`.
 - Do not edit `src/codegen/api/**` manually unless explicitly documenting an emergency exception.
 - Fix broken generated output through specs, download scripts, or `kubb.config.ts`, then regenerate.
 - Keep generated changes and hand-written adapter changes separate in the report.
+
+## Reference Examples
+
+- Kubb provider configuration: `kubb.config.ts`.
+- YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.

@@ -17,4 +17,12 @@ Use this for background jobs in `src/mq/**`.
 8. Make routes/services call the enqueue helper instead of constructing jobs ad hoc.
 9. Run `pnpm lint:typescript` and targeted tests when available.
 
-Never leave a worker without shutdown handling or a queue without Bull Board visibility.
+Prefer BullMQ/Sentry worker handlers and worker events over broad `try/catch` wrappers. Use local `try/catch` only for cleanup or custom failure-state updates. Never leave a worker without shutdown handling or a queue without Bull Board visibility.
+
+## Reference Examples
+
+- Standard queue/worker pair: `src/mq/scenario-metadata-generation/queue.ts`, `src/mq/scenario-metadata-generation/worker.ts`.
+- Scheduled queue/worker pair: `src/mq/subscriptions-charge/queue.ts`, `src/mq/subscriptions-charge/worker.ts`.
+- Worker with local `types.ts` and `utils.ts`: `src/mq/scenario-version-export/**`.
+- Worker registration and shutdown: `src/entrypoints/workers.ts`.
+- Bull Board queue registration: `src/entrypoints/server.ts`.

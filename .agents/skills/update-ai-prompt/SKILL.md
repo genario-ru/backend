@@ -23,3 +23,10 @@ Workflow:
 8. Run `pnpm lint:typescript` when TypeScript files changed.
 
 Finish by checking that placeholders, builder variables, and call-site props match exactly.
+
+## Reference Examples
+
+- Standard triplet: `src/ai/prompts/templates/generate-scenario-metadata.md`, `src/ai/prompts/types/generate-scenario-metadata.ts`, `src/ai/prompts/builders/generate-scenario-metadata.ts`.
+- Optional context/list blocks: `src/ai/prompts/builders/generate-ideas-list.ts` and matching `templates/types` files.
+- Shared helpers: `src/ai/utils/build-context-lines.ts`, `src/ai/utils/interpolate-template.ts`.
+- Call-site wiring: workers under `src/mq/*/worker.ts` that call prompt builders, for example `src/mq/scenario-metadata-generation/worker.ts`.

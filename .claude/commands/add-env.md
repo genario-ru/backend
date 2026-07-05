@@ -29,3 +29,10 @@ Add, rename, or remove an environment variable across all backend layers.
 - Names match across all files.
 - `server` and `workers` have consistent runtime env blocks.
 - Optional/default semantics are explicit.
+
+## Reference Examples
+
+- Validation and defaults: `env.ts`.
+- Example variable list: `.env.example`.
+- Runtime propagation: `docker-compose.yml`.
+- Build-time release metadata: `Dockerfile`.

@@ -1,6 +1,6 @@
 ---
 name: drizzle-migration-workflow
-description: Workflow for DB schema changes through Drizzle schema files, generated migrations, and application checks.
+description: Workflow for DB schema changes through Drizzle schema files, relations, indexes, and application checks. Do not generate or edit migrations.
 ---
 
 # Drizzle Migration Workflow
@@ -12,17 +12,16 @@ Use this when tables, fields, indexes, relations, or enums are changed in `src/d
 ## Steps
 
 1. Inspect at least 3 relevant schemas/relations in `src/db/schemas/**`.
-2. Do not run database-apply commands. Agents may generate migration SQL but must not apply it.
-3. Apply schema changes in `src/db/schemas/**` and update `src/db/schema.ts` exports if required.
+2. Apply schema changes in `src/db/schemas/**` and update `src/db/schema.ts` exports if required.
+3. Add required indexes, foreign keys, and native Drizzle `relations(...)` immediately.
 4. Update domain entity/handler schemas under `src/domains/**` when API payloads expose changed DB fields.
-5. Generate migration: `pnpm db:generate`.
-6. Inspect generated SQL for unintended drops, table rewrites, wrong defaults, or missing indexes.
-7. Run project checks, at least `pnpm lint:typescript`; add tests when behavior changes.
-8. Tell the user which migration file was generated and that a human should apply it if appropriate.
+5. Run project checks, at least `pnpm lint:typescript`; add tests when behavior changes.
+6. Tell the owner that migration generation is required and remains owner-only.
 
 ## Constraints
 
-- Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task. There is no `db:push` — all schema changes go through reviewable migrations.
+- Do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:studio`, or any command that creates/applies schema/data changes unless the owner explicitly asks for that exact command in the current task.
+- Do not create, edit, or delete files under `src/db/migrations/**`.
 - Do not rewrite older migrations if it breaks migration history order.
 
 ## Production migrations & seed
@@ -32,6 +31,15 @@ Use this when tables, fields, indexes, relations, or enums are changed in `src/d
 
 ## Self-check
 
-- Both schema change and migration file are present.
-- No mismatch exists between schema code and SQL.
+- Schema changes include required relations, indexes, and foreign keys.
+- Owner-only migration generation is reported as required.
 - API/domain schemas affected by the DB shape were updated.
+
+## Reference Examples
+
+- Primary table with relations and indexes: `src/db/schemas/primary/scenario.ts`.
+- Billing table with enum and partial unique index: `src/db/schemas/billing/subscription.ts`.
+- Linking table with composite uniqueness: `src/db/schemas/linking/application-to-product-feature.ts`.
+- Many-to-many linking table: `src/db/schemas/linking/scenario-to-platform.ts`.
+- Schema barrel exports: `src/db/schema.ts`.
+- Seed/default data wiring: `src/db/seed/config.ts` and matching `data/*.json` files.

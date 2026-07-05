@@ -14,7 +14,17 @@ Use this for endpoint work under `src/routes/api/v1/**`.
 5. Use protected middleware order when applicable: `sessionMiddleware -> rateLimitMiddleware -> subscriptionMiddleware -> openAPIResponseMiddleware -> validator`.
 6. Use `validator("param" | "query" | "json", schema)` and read validated data via `c.req.valid(...)`.
 7. Use `createOpenAPIResponse(...)`, `throwAPIError(...)`, and `responseSchema.parse(...)` before `c.json(...)`.
-8. Export through route indexes and register in `src/entrypoints/server.ts`, usually `appAPIv1RoutesList`.
-9. Run `pnpm lint:typescript` for TypeScript changes and add targeted tests when behavior has coverage.
+8. Do not add local `try/catch` unless custom error mapping, cleanup, or required side effects are needed. Let the global Hono error handler process ordinary errors.
+9. Export through route indexes and register in `src/entrypoints/server.ts`, usually `appAPIv1RoutesList`.
+10. Run `pnpm lint:typescript` for TypeScript changes and add targeted tests when behavior has coverage.
 
 Report the references inspected and any registration points changed.
+
+## Reference Examples
+
+- Public read route: `src/routes/api/v1/product-features/root/get/route.ts`.
+- Public write + transaction: `src/routes/api/v1/applications/root/post/route.ts`.
+- Protected route + async enqueue: `src/routes/api/v1/scenarios/root/post/route.ts`.
+- Route with custom provider error mapping: `src/routes/api/v1/attachments/attachment/download/get/route.ts`.
+- Handler schemas: `src/domains/scenarios/schemas/handlers/create-scenario/{body,response}.ts`.
+- Registration: `src/routes/api/v1/scenarios/index.ts`, `src/entrypoints/server.ts`.

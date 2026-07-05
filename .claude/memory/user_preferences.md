@@ -10,6 +10,14 @@ Before creating new route, schema, DB, MQ, lib, middleware, or AI prompt files, 
 
 Why: naming, structure, imports, registration, and validation patterns must match the existing codebase.
 
+## Ask Before Guessing
+
+When requirements, architecture, file placement, or implementation choices are unclear, ask the owner instead of guessing. If a task requires a new custom construction with no local precedent, ask first and propose concrete options when possible.
+
+## Database Boundaries
+
+Agents may edit Drizzle schemas, relations, indexes, and exports, but migration generation and seed execution are owner-only. Do not run `pnpm db:generate`, create/edit/delete files in `src/db/migrations/**`, or run database apply/seed/studio commands unless explicitly asked for that exact command.
+
 ## Completion Checklist Is Mandatory
 
 Every task should end with concrete validation: commands run, registration points checked, and skipped checks explained.

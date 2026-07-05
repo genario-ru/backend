@@ -31,5 +31,7 @@ cross-process artifacts; missing a registration step is a common failure mode.
   planning, API review, or TypeScript repair.
 - Do not add personal permissions or local preferences to committed project
   instructions.
-- If a memory file disagrees with `AGENTS.md`, update the memory file rather
-  than following stale memory.
+- `AGENTS.md` is canonical. If `.claude/memory/**`, commands, or subagents
+  disagree with it, follow `AGENTS.md` and update the stale Claude file.
+- Ask the owner before inventing a new architectural pattern or custom
+  construction that is not already represented in the backend.

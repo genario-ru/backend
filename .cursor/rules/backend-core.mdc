@@ -6,11 +6,14 @@ alwaysApply: true
 # Backend Core Standards
 
 - Treat `AGENTS.md` as the canonical project contract. If this rule and code disagree, inspect code first and update this rule instead of following stale text.
+- Communicate with the repository owner in Russian unless asked otherwise; ask before guessing when requirements or implementation choices are unclear.
+- If a change needs a new custom pattern with no local precedent, ask the owner and propose concrete options before implementing it.
 - Use `@/` alias imports for code from `src`; do not introduce new deep relative paths like `../../../`.
 - For runtime validation, use Zod from `@/lib/zod` and colocate product schemas in `src/domains/<domain>/schemas/**`.
 - `env.ts` is the known exception: it imports direct `zod` because `@t3-oss/env-core` expects it.
 - For API errors, use `throwAPIError(...)` from `@/shared/utils/server/throw-api-error` instead of ad-hoc local response shapes.
 - Return JSON route responses through `responseSchema.parse(...)` before `c.json(...)`; this keeps runtime output, TypeScript types, and OpenAPI aligned.
+- Do not add defensive `try/catch` blocks in routes/services by default. Let the global Hono error handler process ordinary thrown errors; use `try/catch` only for custom error mapping, cleanup, or required side effects.
 - For new public APIs, keep OpenAPI metadata meaningful (`title`, `description`, `ref`) and use existing `createOpenAPIResponse(...)` conventions.
 - Avoid `any`; if strict typing is not possible yet, use `unknown` with narrowing or add a named type that reflects the actual data boundary.
 - Do not edit generated code under `src/codegen/api/**` by hand. Change specs/config/scripts, regenerate, then inspect the diff.
@@ -22,3 +25,11 @@ alwaysApply: true
 - Added/updated API handlers follow existing schema/response/OpenAPI patterns.
 - Route, worker, DB, env, and codegen registration points were checked when the changed area touches them.
 - If environment integration was changed, `env.ts`, `.env.example`, and both `server` and `workers` in `docker-compose.yml` were verified.
+
+## Reference Examples
+
+- Global route error handling: `src/shared/utils/server/error-handler.ts` and `src/entrypoints/server.ts`.
+- Project API errors: `src/shared/utils/server/throw-api-error.ts` plus route usage in `src/routes/api/v1/scenarios/root/post/route.ts`.
+- Justified local `try/catch` for external provider error mapping: `src/routes/api/v1/attachments/attachment/download/get/route.ts`.
+- Response schema parse pattern: `src/routes/api/v1/product-features/root/get/route.ts`.
+- Zod wrapper import pattern: `src/domains/scenarios/schemas/handlers/create-scenario/body.ts`; `env.ts` is the direct-env exception.

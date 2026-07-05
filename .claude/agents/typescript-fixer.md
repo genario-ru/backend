@@ -37,3 +37,11 @@ You are a TypeScript diagnostics and repair specialist for `genario-backend`.
 - Preserve route response contracts and OpenAPI schemas.
 
 Report the root cause and the files changed.
+
+## Reference Examples
+
+- Route type/response pattern: `src/routes/api/v1/product-features/root/get/route.ts`.
+- Validator/body/response schema pattern: `src/routes/api/v1/scenarios/root/post/route.ts` and `src/domains/scenarios/schemas/handlers/create-scenario/{body,response}.ts`.
+- DB schema/query shape examples: `src/db/schemas/primary/scenario.ts`, `src/db/schemas/linking/application-to-product-feature.ts`.
+- Queue payload typing: `src/mq/scenario-metadata-generation/queue.ts`, `src/mq/scenario-metadata-generation/worker.ts`.
+- Codegen consumer boundary: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.

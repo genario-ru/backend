@@ -27,3 +27,10 @@ Change backend prompt templates safely.
 - Optional blocks render clean Markdown.
 - Prompt semantics changed only as requested.
 - Call sites compile.
+
+## Reference Examples
+
+- Standard triplet: `src/ai/prompts/templates/generate-scenario-metadata.md`, `src/ai/prompts/types/generate-scenario-metadata.ts`, `src/ai/prompts/builders/generate-scenario-metadata.ts`.
+- Optional context/list construction: `src/ai/prompts/templates/generate-ideas-list.md`, `src/ai/prompts/types/generate-ideas-list.ts`, `src/ai/prompts/builders/generate-ideas-list.ts`.
+- Shared helpers: `src/ai/utils/build-context-lines.ts`, `src/ai/utils/interpolate-template.ts`.
+- Worker call site: `src/mq/scenario-metadata-generation/worker.ts`.

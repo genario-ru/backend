@@ -12,8 +12,16 @@ Choose checks by changed area:
 - Env config: `pnpm validate:env` when a representative `.env` is available.
 - Build/runtime entrypoints: `pnpm build`.
 - Route/API contract: `pnpm lint:typescript`, targeted tests if available, and OpenAPI metadata inspection.
-- DB schema: `pnpm db:generate` only. Do not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task.
+- DB schema: run `pnpm lint:typescript` when schema TypeScript changed. Do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
 - External API codegen: relevant `api:download:*`, `pnpm api:generate`, then TypeScript check.
 - Tests changed or behavior covered by tests: `pnpm test:unit` or targeted Vitest; `pnpm test` for broader validation.
 
-Always state what was run, what was skipped, and why. Do not claim DB migrations were applied from an AI workflow; generation is the maximum default action.
+Always state what was run, what was skipped, and why. Do not claim DB migrations were generated or applied from an AI workflow; migration generation is owner-only.
+
+## Reference Examples
+
+- Exact scripts: `package.json`.
+- Validation policy: `AGENTS.md`.
+- Env validation inputs: `env.ts`, `.env.example`, `docker-compose.yml`.
+- Route/API registration checks: `src/entrypoints/server.ts`.
+- Worker registration checks: `src/entrypoints/workers.ts`.

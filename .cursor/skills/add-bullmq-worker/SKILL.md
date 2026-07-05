@@ -20,7 +20,8 @@ Create a background processing module without missing runtime integration steps.
 4. Add `worker.ts`:
    - `Worker<JobData>`;
    - job handler with input validation when payload crosses a trust boundary;
-   - existing logging/Sentry/error handling pattern.
+   - existing logging/Sentry/error handling pattern;
+   - no broad `try/catch` wrapper unless cleanup or custom failure-state updates are required.
 5. Update `src/entrypoints/workers.ts`:
    - import worker;
    - add `await worker.close()` in `shutdown()`.
@@ -37,3 +38,11 @@ Create a background processing module without missing runtime integration steps.
 - Queue is visible in `/admin/queues`.
 - Payload does not use `any`; `JobData` is typed.
 - Shutdown still closes every existing worker.
+
+## Reference Examples
+
+- Standard queue/worker pair: `src/mq/scenario-metadata-generation/queue.ts`, `src/mq/scenario-metadata-generation/worker.ts`.
+- Scheduled queue/worker pair: `src/mq/subscriptions-charge/queue.ts`, `src/mq/subscriptions-charge/worker.ts`.
+- Worker with `types.ts` and `utils.ts`: `src/mq/scenario-version-export/**`.
+- Startup/shutdown registration: `src/entrypoints/workers.ts`.
+- Bull Board registration: `src/entrypoints/server.ts`.

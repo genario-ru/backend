@@ -20,7 +20,7 @@ print(file_path)
 
 case "$FILE" in
   */src/db/schemas/*.ts|*/src/db/schemas/*/*.ts)
-    echo "[hook] DB schema changed: run pnpm db:generate only; do not apply migrations from AI workflow."
+    echo "[hook] DB schema changed: do not generate/apply migrations from AI workflow; owner must generate migration."
     ;;
 esac
 

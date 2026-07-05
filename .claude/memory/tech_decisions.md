@@ -36,11 +36,11 @@ Each job type should have a queue producer module and a worker consumer module.
 
 Why: routes/services enqueue jobs without importing worker code, and entrypoints can register queues/workers explicitly.
 
-## Agents Generate Migrations But Do Not Apply Them
+## Migrations Are Owner-Only
 
-For repository schema changes, agents may run `pnpm db:generate` to create migration SQL. Agents must not run `pnpm db:migrate` or `pnpm db:seed` unless the user explicitly asks for that exact command in the current task.
+Agents may edit Drizzle schema files, relations, indexes, and exports, but must not run `pnpm db:generate`, create/edit/delete files in `src/db/migrations/**`, or run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
 
-Why: generated SQL is reviewable, while applying it mutates a real database and should remain a human-controlled action.
+Why: migration generation and seed execution are human-controlled steps in this project.
 
 ## External API Clients Are Generated
 

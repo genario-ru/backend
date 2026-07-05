@@ -17,3 +17,11 @@ Generated code lives in `src/codegen/api/{yookassa,rutube}/**`; specs live in `d
 7. Run `pnpm lint:typescript` after generated code or wrappers change.
 
 Do not manually edit generated provider folders unless explicitly documenting an emergency exception.
+
+## Reference Examples
+
+- Kubb provider configuration: `kubb.config.ts`.
+- YooKassa spec download and normalization: `src/scripts/download-yookassa-openapi.ts`.
+- Generated output roots: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
+- Hand-written clients consumed by generated code: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Adapter usage outside generated folders: search `rg "from \"@/codegen/api" src -g "*.ts"`.

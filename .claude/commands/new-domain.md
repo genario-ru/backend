@@ -30,7 +30,7 @@ Domain code usually spans:
 ## Workflow
 
 1. Start with schemas and route skeletons that match local precedent.
-2. Add DB schema and migrations only when persistence is required.
+2. Add DB schema only when persistence is required. Do not generate or edit migrations.
 3. Add MQ queue/worker only when work should be asynchronous.
 4. Register routes in `src/entrypoints/server.ts`.
 5. Register queues in Bull Board and workers in `src/entrypoints/workers.ts`.
@@ -40,6 +40,14 @@ Domain code usually spans:
 
 - Domain files are in the real backend layout, not `src/schemas`.
 - Routes are exported and registered.
-- DB schema changes have generated migration SQL, but migrations were not applied by the agent.
+- DB schema changes include required indexes/relations and are reported as needing owner-generated migration SQL.
 - Workers have queue registration and shutdown handling.
 - Validation commands and skipped checks are reported.
+
+## Reference Examples
+
+- Simple catalog-like domain: `src/routes/api/v1/product-features/**`, `src/domains/product-features/**`, `src/db/schemas/primary/product-feature.ts`.
+- Domain with write route and linking table: `src/routes/api/v1/applications/**`, `src/domains/applications/**`, `src/db/schemas/primary/application.ts`, `src/db/schemas/linking/application-to-product-feature.ts`.
+- Domain with async generation: `src/routes/api/v1/scenarios/**`, `src/domains/scenarios/**`, `src/mq/scenario-metadata-generation/**`, `src/db/schemas/primary/scenario.ts`.
+- Route registration: `src/entrypoints/server.ts`.
+- Worker registration: `src/entrypoints/workers.ts`.

@@ -31,3 +31,10 @@ Use this when adding, renaming, or removing an environment variable.
 - Variable name is consistent across files.
 - No case exists where `server` has the variable but `workers` does not.
 - Optional variables have explicit defaults or optional schema semantics.
+
+## Reference Examples
+
+- `env.ts` for validation, defaults, coercion, optional values, and `stringbool()`.
+- `.env.example` for repository-visible variable names.
+- `docker-compose.yml` for server/worker runtime env blocks.
+- `Dockerfile` for build-time values such as release metadata.

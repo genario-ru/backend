@@ -25,6 +25,7 @@ Add an endpoint without missing schema validation, OpenAPI metadata, or router r
    - `validator("param" | "query" | "json", ...)` for input;
    - read inputs from `c.req.valid(...)`;
    - `throwAPIError(...)` for domain errors;
+   - no local `try/catch` unless custom error mapping, cleanup, or required side effects are needed;
    - `c.json<ResponseType>(responseSchema.parse({ data }))`.
 5. Export the route from the nearest route `index.ts`.
 6. Register route in `src/entrypoints/server.ts`, usually in `appAPIv1RoutesList`.
@@ -38,3 +39,12 @@ Add an endpoint without missing schema validation, OpenAPI metadata, or router r
 - Response is not returned without `responseSchema.parse`.
 - No unjustified `any`.
 - References inspected are listed in the final response.
+
+## Reference Examples
+
+- Public read route: `src/routes/api/v1/product-features/root/get/route.ts`.
+- Public write + transaction: `src/routes/api/v1/applications/root/post/route.ts`.
+- Protected route + async enqueue: `src/routes/api/v1/scenarios/root/post/route.ts`.
+- Route with justified custom `try/catch`: `src/routes/api/v1/attachments/attachment/download/get/route.ts`.
+- Matching schemas: `src/domains/applications/schemas/handlers/create-application/{body,response}.ts` and `src/domains/scenarios/schemas/handlers/create-scenario/{body,response}.ts`.
+- Registration: nearby `index.ts` files plus `src/entrypoints/server.ts`.

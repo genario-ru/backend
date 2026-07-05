@@ -36,3 +36,11 @@ description: Updates OpenAPI specifications and regenerates API clients via Kubb
 - Diff includes only expected changes.
 - No regressions in client/schema import paths.
 - No manual edits were made inside generated provider folders unless explicitly documented.
+
+## Reference Examples
+
+- Provider setup and output shape: `kubb.config.ts`.
+- YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.

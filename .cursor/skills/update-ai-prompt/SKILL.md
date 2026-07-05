@@ -32,3 +32,10 @@ Use this when changing prompt templates, prompt variables, prompt builder output
 - Optional blocks do not leave dangling empty labels or malformed Markdown.
 - Prompt changes are scoped to the requested behavior.
 - Existing generated/user-facing text semantics were not silently rewritten.
+
+## Reference Examples
+
+- Standard triplet: `src/ai/prompts/templates/generate-scenario-metadata.md`, `src/ai/prompts/types/generate-scenario-metadata.ts`, `src/ai/prompts/builders/generate-scenario-metadata.ts`.
+- Optional context/list construction: `src/ai/prompts/templates/generate-ideas-list.md`, `src/ai/prompts/types/generate-ideas-list.ts`, `src/ai/prompts/builders/generate-ideas-list.ts`.
+- Shared interpolation helpers: `src/ai/utils/build-context-lines.ts`, `src/ai/utils/interpolate-template.ts`.
+- Worker call site: `src/mq/scenario-metadata-generation/worker.ts`.

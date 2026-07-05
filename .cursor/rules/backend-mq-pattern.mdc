@@ -14,6 +14,7 @@ alwaysApply: false
   - `src/entrypoints/workers.ts` for worker import/startup and `await worker.close()` in `shutdown()`;
   - `src/entrypoints/server.ts` for Bull Board registration with `new BullMQAdapter(queue)`.
 - Use the existing worker error handling/logging/Sentry pattern instead of inventing local logging.
+- Prefer BullMQ/Sentry worker handlers and worker events over broad `try/catch` wrappers. Use local `try/catch` only for cleanup or custom failure-state updates.
 - If a queue is enqueued from an API route, validate route inputs before enqueueing and return the project response schema shape.
 
 ## What Not To Do
@@ -22,3 +23,11 @@ alwaysApply: false
 - Do not duplicate queue keys/names in inconsistent formats.
 - Do not use implicitly typed payload structures.
 - Do not add a worker without shutdown handling; it can hang deploys and local dev processes.
+
+## Reference Examples
+
+- Standard AI-generation queue/worker: `src/mq/scenario-metadata-generation/queue.ts` and `src/mq/scenario-metadata-generation/worker.ts`.
+- Scheduled job queue/worker: `src/mq/subscriptions-charge/queue.ts` and `src/mq/subscriptions-charge/worker.ts`.
+- Export job with local `types.ts`/`utils.ts`: `src/mq/scenario-version-export/**`.
+- Worker startup/shutdown registration: `src/entrypoints/workers.ts`.
+- Bull Board queue registration: `src/entrypoints/server.ts`.

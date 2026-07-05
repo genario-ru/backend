@@ -30,3 +30,11 @@ Update OpenAPI specs and regenerate Kubb clients.
 - Never edit `src/codegen/api/**` manually unless explicitly documenting an emergency exception.
 - Fix bad generated output in `kubb.config.ts` or download scripts, then regenerate.
 - Keep generated-code changes and wrapper/service changes clear in the final summary.
+
+## Reference Examples
+
+- Kubb provider configuration: `kubb.config.ts`.
+- YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.

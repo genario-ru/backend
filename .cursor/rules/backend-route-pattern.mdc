@@ -27,6 +27,7 @@ Use this rule for route modules under `src/routes/api/v1/**`.
 - Return domain errors through `throwAPIError(...)`.
 - Format success responses as `c.json<ResponseType>(responseSchema.parse({ data }))`.
 - Keep business workflows in domain services or lib modules when route logic grows beyond orchestration.
+- Do not wrap handlers in `try/catch` just to return generic errors. The server-level `errorHandler` handles ordinary thrown errors; local `try/catch` is for custom mapping, cleanup, or required side effects.
 
 ## What Not To Do
 
@@ -35,3 +36,12 @@ Use this rule for route modules under `src/routes/api/v1/**`.
 - Do not bloat routes with heavy business logic without explicit justification.
 - Do not create schemas in `src/schemas`; this repository uses domain colocated schemas.
 - Do not add route files without registering them in `src/entrypoints/server.ts`.
+
+## Reference Examples
+
+- Public read route: `src/routes/api/v1/product-features/root/get/route.ts`.
+- Public write + transaction: `src/routes/api/v1/applications/root/post/route.ts`.
+- Protected route + queue enqueue: `src/routes/api/v1/scenarios/root/post/route.ts`.
+- Custom external-error mapping with justified `try/catch`: `src/routes/api/v1/attachments/attachment/download/get/route.ts`.
+- Matching handler schemas: `src/domains/scenarios/schemas/handlers/create-scenario/{body,response}.ts` and `src/domains/applications/schemas/handlers/create-application/{body,response}.ts`.
+- Route export/registration: nearby `src/routes/api/v1/<domain>/index.ts` plus `src/entrypoints/server.ts`.
