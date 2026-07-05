@@ -82,7 +82,7 @@ getAttachmentDownloadRoute.get(
 
       const fileName = getAttachmentDownloadFileName(
         foundAttachment.id,
-        foundAttachment.key,
+        foundAttachment.fileName,
       );
 
       const headers = new Headers({

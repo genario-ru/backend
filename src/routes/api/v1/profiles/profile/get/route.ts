@@ -6,6 +6,7 @@ import {
   type GetProfileResponse,
   getProfileResponseSchema,
 } from "@/domains/profiles/schemas/handlers/get-profile/response";
+import { prepareProfileWithReferences } from "@/domains/profiles/utils/prepare-profile-with-references";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -48,13 +49,17 @@ getProfileRoute.get(
         return and(eq(profile.id, profileId), eq(profile.userId, user.id));
       },
       with: {
-        user: true,
         type: true,
         profileToPlatform: {
           with: { platform: true },
         },
-        profileToTone: {
-          with: { tone: true },
+        attachments: {
+          orderBy: (profileAttachment, { asc }) => [
+            asc(profileAttachment.createdAt),
+          ],
+          with: {
+            attachment: true,
+          },
         },
       },
     });
@@ -67,15 +72,9 @@ getProfileRoute.get(
       });
     }
 
-    const { profileToPlatform, profileToTone, ...profile } = foundProfile;
-
     return c.json<GetProfileResponse>(
       getProfileResponseSchema.parse({
-        data: {
-          ...profile,
-          platforms: profileToPlatform.map(({ platform }) => platform),
-          tones: profileToTone.map(({ tone }) => tone),
-        },
+        data: prepareProfileWithReferences(foundProfile),
       }),
     );
   },

@@ -1,15 +1,23 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { difference } from "es-toolkit";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import { profile, profileToPlatform, profileToTone } from "@/db/schema";
-import { updateProfileBodySchema } from "@/domains/profiles/schemas/handlers/update-profile/body";
+import {
+  attachment,
+  profile,
+  profileAttachment,
+  profileToPlatform,
+} from "@/db/schema";
+import {
+  type UpdateProfileBody,
+  updateProfileBodySchema,
+} from "@/domains/profiles/schemas/handlers/update-profile/body";
 import { updateProfileParamsSchema } from "@/domains/profiles/schemas/handlers/update-profile/params";
 import {
   type UpdateProfileResponse,
   updateProfileResponseSchema,
 } from "@/domains/profiles/schemas/handlers/update-profile/response";
+import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -20,6 +28,8 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
+
+import { getProfileReferenceUpdates } from "./utils";
 
 export const updateProfileRoute = createHonoApp().basePath(
   "/profiles/:profileId",
@@ -48,22 +58,22 @@ updateProfileRoute.patch(
   validator("json", updateProfileBodySchema),
   async (c) => {
     const { profileId } = c.req.valid("param");
-
+    const requestBody = c.req.valid("json") as UpdateProfileBody;
     const {
-      platformIds: newPlatformIds,
-      toneIds: newToneIds,
+      platformIds,
+      videoReferences: _videoReferences,
+      thumbnailReferences: _thumbnailReferences,
+      actorReferences: _actorReferences,
+      transcriptReferences: _transcriptReferences,
       ...updateProfileParams
-    } = c.req.valid("json");
+    } = requestBody;
 
+    const profileReferenceUpdates = getProfileReferenceUpdates(requestBody);
     const user = c.get("user");
 
     const foundProfile = await db.query.profile.findFirst({
       where: (profile, { eq, and }) => {
         return and(eq(profile.id, profileId), eq(profile.userId, user.id));
-      },
-      with: {
-        profileToPlatform: true,
-        profileToTone: true,
       },
     });
 
@@ -75,92 +85,122 @@ updateProfileRoute.patch(
       });
     }
 
-    const updatedProfile = await db.transaction(async (tx) => {
-      const updateLinkingTablePromises: Promise<any>[] = [];
+    const requestedReferenceAttachmentIds = profileReferenceUpdates.flatMap(
+      ({ attachmentIds }) => attachmentIds,
+    );
 
-      // Добавляем и удаляем платформы, связанные с профилем
-      if (newPlatformIds) {
-        const oldPlatformIds = foundProfile.profileToPlatform.map(
-          ({ platformId }) => platformId,
+    if (requestedReferenceAttachmentIds.length > 0) {
+      const foundAttachments = await db.query.attachment.findMany({
+        where: and(
+          eq(attachment.userId, user.id),
+          inArray(attachment.id, requestedReferenceAttachmentIds),
+        ),
+      });
+
+      const hasUnavailableAttachment = requestedReferenceAttachmentIds.some(
+        (attachmentId) =>
+          !foundAttachments.some(
+            (foundAttachment) => foundAttachment.id === attachmentId,
+          ),
+      );
+
+      if (hasUnavailableAttachment) {
+        return throwAPIError({
+          code: APIErrorCode.NotFound,
+          message: "Один или несколько файлов не найдены или недоступны",
+        });
+      }
+    }
+
+    await db.transaction(async (tx) => {
+      const txOperations: Promise<unknown>[] = [];
+
+      if (platformIds) {
+        txOperations.push(
+          tx
+            .delete(profileToPlatform)
+            .where(eq(profileToPlatform.profileId, profileId)),
         );
 
-        const createPlatformIds = difference(newPlatformIds, oldPlatformIds);
-        const deletePlatformIds = difference(oldPlatformIds, newPlatformIds);
-
-        if (createPlatformIds.length > 0) {
-          updateLinkingTablePromises.push(
+        if (platformIds.length > 0) {
+          txOperations.push(
             tx.insert(profileToPlatform).values(
-              createPlatformIds.map((platformId) => ({
+              platformIds.map((platformId) => ({
                 profileId,
                 platformId,
               })),
             ),
           );
         }
-
-        if (deletePlatformIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx
-              .delete(profileToPlatform)
-              .where(
-                and(
-                  eq(profileToPlatform.profileId, profileId),
-                  inArray(profileToPlatform.platformId, deletePlatformIds),
-                ),
-              ),
-          );
-        }
       }
 
-      // Добавляем и удаляем тона, связанные с профилем
-      if (newToneIds) {
-        const oldToneIds = foundProfile.profileToTone.map(
-          ({ toneId }) => toneId,
+      if (profileReferenceUpdates.length > 0) {
+        const attachmentTypes = profileReferenceUpdates.map(
+          ({ attachmentType }) => attachmentType,
         );
 
-        const createToneIds = difference(newToneIds, oldToneIds);
-        const deleteToneIds = difference(oldToneIds, newToneIds);
-
-        if (createToneIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx.insert(profileToTone).values(
-              createToneIds.map((toneId) => ({
-                profileId,
-                toneId,
-              })),
-            ),
-          );
-        }
-
-        if (deleteToneIds.length > 0) {
-          updateLinkingTablePromises.push(
-            tx
-              .delete(profileToTone)
-              .where(
-                and(
-                  eq(profileToTone.profileId, profileId),
-                  inArray(profileToTone.toneId, deleteToneIds),
-                ),
+        txOperations.push(
+          tx
+            .delete(profileAttachment)
+            .where(
+              and(
+                eq(profileAttachment.profileId, profileId),
+                inArray(profileAttachment.type, attachmentTypes),
               ),
+            ),
+        );
+
+        const createdProfileAttachments = profileReferenceUpdates.flatMap(
+          ({ attachmentIds, attachmentType }) =>
+            attachmentIds.map((attachmentId) => ({
+              profileId,
+              type: attachmentType,
+              attachmentId,
+            })),
+        );
+
+        if (createdProfileAttachments.length > 0) {
+          txOperations.push(
+            tx.insert(profileAttachment).values(createdProfileAttachments),
           );
         }
       }
 
-      const [[updatedProfile]] = await Promise.all([
-        tx
-          .update(profile)
-          .set(updateProfileParams)
-          .where(and(eq(profile.id, profileId), eq(profile.userId, user.id)))
-          .returning(),
-        ...updateLinkingTablePromises,
-      ]);
+      if (Object.keys(updateProfileParams).length > 0) {
+        txOperations.push(
+          tx
+            .update(profile)
+            .set(updateProfileParams)
+            .where(and(eq(profile.id, profileId), eq(profile.userId, user.id))),
+        );
+      }
 
-      return updatedProfile;
+      await Promise.all(txOperations);
     });
+
+    const updatedProfile = await db.query.profile.findFirst({
+      where: (profile, { and, eq }) =>
+        and(eq(profile.id, profileId), eq(profile.userId, user.id)),
+      with: {
+        type: true,
+        profileToPlatform: {
+          with: {
+            platform: true,
+          },
+        },
+      },
+    });
+
+    if (!updatedProfile) {
+      return throwAPIError({
+        code: APIErrorCode.InternalServerError,
+        message: "Не удалось загрузить обновленный профиль",
+      });
+    }
 
     return c.json<UpdateProfileResponse>(
       updateProfileResponseSchema.parse({
-        data: updatedProfile,
+        data: prepareProfileExtended(updatedProfile),
       }),
     );
   },

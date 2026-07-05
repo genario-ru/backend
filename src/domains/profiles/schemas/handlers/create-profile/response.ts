@@ -1,9 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { profileSchema } from "../../entities/profile";
+import { profileExtendedSchema } from "../../entities/profile";
+
 export const createProfileResponseSchema = z
   .object({
-    data: profileSchema,
+    data: profileExtendedSchema,
   })
   .meta({
     title: "Create profile response",

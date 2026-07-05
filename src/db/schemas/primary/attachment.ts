@@ -13,6 +13,7 @@ export const attachment = pgTable("attachment", {
   userId: uuid("user_id")
     .references(() => user.id, { onUpdate: "cascade", onDelete: "cascade" })
     .notNull(),
+  fileName: text("file_name").notNull(),
   key: text("key").notNull(),
   bucketName: text("bucket_name").notNull(),
   mimeType: text("mime_type").notNull(),

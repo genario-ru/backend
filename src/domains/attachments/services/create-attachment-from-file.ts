@@ -57,6 +57,7 @@ export async function createAttachmentFromFile({
       .values({
         id: attachmentId,
         userId,
+        fileName: file.name,
         key: attachmentKey,
         bucketName: env.S3_BUCKET_NAME,
         mimeType,
