@@ -161,7 +161,7 @@ export const profilesFromChannelsGenerationWorker =
               .insert(profileChannel)
               .values({
                 profileId: createdProfile.id,
-                internalId: channel.internalId,
+                externalId: channel.externalId,
                 slug: channel.slug,
                 url: channel.input.url,
                 avatarUrl: channel.avatarUrl,
@@ -180,7 +180,7 @@ export const profilesFromChannelsGenerationWorker =
               await tx.insert(profileChannelVideo).values(
                 channel.videos.map((video) => ({
                   profileChannelId: createdChannel.id,
-                  internalId: video.internalId,
+                  externalId: video.externalId,
                   url: video.url,
                   thumbnailUrl: video.thumbnailUrl,
                   name: video.name,

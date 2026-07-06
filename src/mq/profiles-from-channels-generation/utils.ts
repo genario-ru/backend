@@ -62,7 +62,7 @@ async function fetchYouTubeChannelData(
     const videoId = videoSnippet.resourceId?.videoId ?? item.id ?? "";
 
     return {
-      internalId: videoId,
+      externalId: videoId,
       url: `https://www.youtube.com/watch?v=${videoId}`,
       thumbnailUrl:
         videoSnippet.thumbnails?.high?.url ??
@@ -94,7 +94,7 @@ async function fetchYouTubeChannelData(
         description: v.description,
       })),
     },
-    internalId: channelId,
+    externalId: channelId,
     slug: snippet.customUrl ?? null,
     avatarUrl:
       snippet.thumbnails?.high?.url ?? snippet.thumbnails?.default?.url ?? null,
@@ -122,7 +122,7 @@ async function fetchRuTubeChannelData(
   });
 
   const videos = videosPage.results.map((item) => ({
-    internalId: item.id,
+    externalId: item.id,
     url: item.video_url ?? `https://rutube.ru/video/${item.id}/`,
     thumbnailUrl: item.thumbnail_url ?? null,
     name: item.title,
@@ -142,7 +142,7 @@ async function fetchRuTubeChannelData(
         description: v.description,
       })),
     },
-    internalId: String(channel.id),
+    externalId: String(channel.id),
     slug: null,
     avatarUrl: channel.avatar_url ?? null,
     name: channel.name,

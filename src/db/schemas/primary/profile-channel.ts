@@ -16,7 +16,7 @@ export const profileChannel = pgTable("profile_channel", {
       onUpdate: "cascade",
     })
     .notNull(),
-  internalId: text("internal_id").notNull(),
+  externalId: text("external_id").notNull(),
   slug: text("slug"),
   url: text("url").notNull(),
   avatarUrl: text("avatar_url"),

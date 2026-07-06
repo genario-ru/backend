@@ -13,7 +13,7 @@ export const profileChannelVideo = pgTable("profile_channel_video", {
       onUpdate: "cascade",
     })
     .notNull(),
-  internalId: text("internal_id").notNull(),
+  externalId: text("external_id").notNull(),
   url: text("url").notNull(),
   thumbnailUrl: text("thumbnail_url"),
   name: text("name").notNull(),

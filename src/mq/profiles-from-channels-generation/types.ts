@@ -3,7 +3,7 @@ import type { ChannelDataInput } from "@/ai/prompts/types/generate-profile-from-
 import type { ChannelInput } from "./queue";
 
 export type FetchedChannelVideo = {
-  internalId: string;
+  externalId: string;
   url: string;
   thumbnailUrl: string | null;
   name: string;
@@ -13,7 +13,7 @@ export type FetchedChannelVideo = {
 export type FetchedChannel = {
   input: ChannelInput;
   data: ChannelDataInput;
-  internalId: string;
+  externalId: string;
   slug: string | null;
   avatarUrl: string | null;
   name: string;
