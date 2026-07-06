@@ -27,6 +27,8 @@ export const env = createEnv({
     VSELLM_API_KEY: z.string().min(1),
     VSELLM_STRUCTURED_OUTPUT_MODEL: z.string().min(1),
     VSELLM_IMAGE_MODEL: z.string().min(1),
+    SOCIALKIT_OPENAPI_URL: z.url(),
+    SOCIALKIT_BASE_API_URL: z.url(),
     YOOKASSA_OPENAPI_URL: z.url(),
     YOOKASSA_BASE_URL: z.url(),
     YOOKASSA_SECRET_KEY: z.string().min(1),
