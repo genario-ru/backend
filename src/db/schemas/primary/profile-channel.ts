@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -16,18 +16,22 @@ export const profileChannel = pgTable("profile_channel", {
       onUpdate: "cascade",
     })
     .notNull(),
-  externalId: text("external_id").notNull(),
-  slug: text("slug"),
-  url: text("url").notNull(),
-  avatarUrl: text("avatar_url"),
-  name: text("name").notNull(),
-  description: text("description"),
   platformId: uuid("platform_id")
     .references(() => platform.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     })
     .notNull(),
+  externalId: text("external_id"),
+  url: text("url").notNull(),
+  avatarUrl: text("avatar_url"),
+  slug: text("slug"),
+  name: text("name"),
+  description: text("description"),
+  verified: boolean("verified"),
+  followers: integer("followers"),
+  following: integer("following"),
+  totalPosts: integer("total_posts"),
   ...timestamps,
 });
 

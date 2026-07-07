@@ -64,6 +64,13 @@
       "when": 1783369000889,
       "tag": "0008_sudden_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1783459449242,
+      "tag": "0009_vengeful_jocasta",
+      "breakpoints": true
     }
   ]
 }

@@ -66,6 +66,7 @@ function createProfileWithReferencesRecord(): ProfileExtendedWithReferencesRecor
           key: "attachments/video.mp4",
           bucketName: "bucket",
           mimeType: "video/mp4",
+          previewUrl: null,
           createdAt: "2026-07-05T12:00:00.000Z",
           updatedAt: "2026-07-05T12:00:00.000Z",
         },
@@ -79,6 +80,7 @@ function createProfileWithReferencesRecord(): ProfileExtendedWithReferencesRecor
           key: "attachments/thumb.png",
           bucketName: "bucket",
           mimeType: "image/png",
+          previewUrl: null,
           createdAt: "2026-07-05T12:01:00.000Z",
           updatedAt: "2026-07-05T12:01:00.000Z",
         },
@@ -92,21 +94,9 @@ function createProfileWithReferencesRecord(): ProfileExtendedWithReferencesRecor
           key: "attachments/actor.jpg",
           bucketName: "bucket",
           mimeType: "image/jpeg",
+          previewUrl: null,
           createdAt: "2026-07-05T12:02:00.000Z",
           updatedAt: "2026-07-05T12:02:00.000Z",
-        },
-      },
-      {
-        type: "transcript-reference",
-        attachment: {
-          id: "f3553148-7214-4de6-a6f0-345df78b1fe4",
-          userId: "8d51712d-ebf0-41b6-99ec-71b4f8d27ca9",
-          fileName: "script.pdf",
-          key: "attachments/script.pdf",
-          bucketName: "bucket",
-          mimeType: "application/pdf",
-          createdAt: "2026-07-05T12:03:00.000Z",
-          updatedAt: "2026-07-05T12:03:00.000Z",
         },
       },
     ],
@@ -135,7 +125,6 @@ describe("prepareProfileResponse", () => {
     });
     expect(grouped.thumbnailReferences[0]?.fileName).toBe("thumb.png");
     expect(grouped.actorReferences[0]?.fileName).toBe("actor.jpg");
-    expect(grouped.transcriptReferences[0]?.fileName).toBe("script.pdf");
   });
 
   it("prepares profile with references and unchanged description", () => {
@@ -147,6 +136,5 @@ describe("prepareProfileResponse", () => {
     expect(result.references.videoReferences).toHaveLength(1);
     expect(result.references.thumbnailReferences).toHaveLength(1);
     expect(result.references.actorReferences).toHaveLength(1);
-    expect(result.references.transcriptReferences).toHaveLength(1);
   });
 });

@@ -8,7 +8,6 @@ function createEmptyProfileReferences(): ProfileReferences {
     videoReferences: [],
     thumbnailReferences: [],
     actorReferences: [],
-    transcriptReferences: [],
   };
 }
 
@@ -35,9 +34,6 @@ export function prepareProfileReferences(
         break;
       case "actor-reference":
         references.actorReferences.push(referenceItem);
-        break;
-      case "transcript-reference":
-        references.transcriptReferences.push(referenceItem);
         break;
     }
   }

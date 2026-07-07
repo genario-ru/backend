@@ -21,7 +21,6 @@ export const profileReferencesSchema = z
     videoReferences: z.array(profileReferenceItemSchema),
     thumbnailReferences: z.array(profileReferenceItemSchema),
     actorReferences: z.array(profileReferenceItemSchema),
-    transcriptReferences: z.array(profileReferenceItemSchema),
   })
   .meta({
     title: "Profile references",

@@ -13,10 +13,6 @@ export const profileReferenceFields = [
     requestField: "actorReferences",
     attachmentType: "actor-reference",
   },
-  {
-    requestField: "transcriptReferences",
-    attachmentType: "transcript-reference",
-  },
 ] as const;
 
 export function getProfileReferenceUpdates(body: UpdateProfileBody) {

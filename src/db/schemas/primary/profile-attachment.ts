@@ -10,7 +10,6 @@ export const profileAttachmentType = pgEnum("profile_attachment_type", [
   "actor-reference",
   "thumbnail-reference",
   "video-reference",
-  "transcript-reference",
 ]);
 
 export const profileAttachment = pgTable("profile_attachment", {
