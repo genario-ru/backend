@@ -3,16 +3,31 @@ import { integer, jsonb, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
+import { platform } from "./platform";
+import { profile } from "./profile";
 import { profileChannel } from "./profile-channel";
 
 export const profileChannelVideo = pgTable("profile_channel_video", {
   id: uuid("id").defaultRandom().primaryKey(),
-  profileChannelId: uuid("profile_channel_id")
-    .references(() => profileChannel.id, {
+  profileId: uuid("profile_id")
+    .references(() => profile.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     })
     .notNull(),
+  platformId: uuid("platform_id")
+    .references(() => platform.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
+  profileChannelId: uuid("profile_channel_id").references(
+    () => profileChannel.id,
+    {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    },
+  ),
   externalId: text("external_id"),
   url: text("url").notNull(),
   thumbnailUrl: text("thumbnail_url"),
@@ -39,6 +54,14 @@ export const profileChannelVideo = pgTable("profile_channel_video", {
 export const profileChannelVideoRelations = relations(
   profileChannelVideo,
   ({ one }) => ({
+    profile: one(profile, {
+      fields: [profileChannelVideo.profileId],
+      references: [profile.id],
+    }),
+    platform: one(platform, {
+      fields: [profileChannelVideo.platformId],
+      references: [platform.id],
+    }),
     profileChannel: one(profileChannel, {
       fields: [profileChannelVideo.profileChannelId],
       references: [profileChannel.id],

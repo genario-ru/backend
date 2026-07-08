@@ -9,6 +9,7 @@ import { profileToTone } from "../linking/profile-to-tone";
 import { ideasList } from "./ideas-list";
 import { profileAttachment } from "./profile-attachment";
 import { profileChannel } from "./profile-channel";
+import { profileChannelVideo } from "./profile-channel-video";
 import { profileType } from "./profile-type";
 import { scenario } from "./scenario";
 import { user } from "./user";
@@ -47,6 +48,7 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
     references: [profileType.id],
   }),
   channels: many(profileChannel),
+  channelVideos: many(profileChannelVideo),
   attachments: many(profileAttachment),
   ideasLists: many(ideasList),
   scenarios: many(scenario),
