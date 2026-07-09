@@ -70,7 +70,7 @@ updateScenarioSceneComponentRoute.patch(
     );
 
     if (!foundSceneComponent) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Запрашиваемый компонент сцены не найден",
       });
@@ -89,7 +89,7 @@ updateScenarioSceneComponentRoute.patch(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Сценарий для указнного компонента сцены не существует или у вас нет доступа к нему",

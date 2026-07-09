@@ -57,7 +57,7 @@ getProfileRoute.get(
     });
 
     if (!foundProfile) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный профиль не существует или у вас нет возможности просматривать его",

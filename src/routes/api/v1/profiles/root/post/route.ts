@@ -55,7 +55,7 @@ createProfileRoute.post(
       });
 
       if (userProfiles.length >= tariff.maxProfilesAmount) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Forbidden,
           message:
             "Вы достигли максимального количества профилей по тарифу вашей подписки",
@@ -98,7 +98,7 @@ createProfileRoute.post(
     });
 
     if (!createdProfile) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.InternalServerError,
         message: "Не удалось загрузить созданный профиль",
       });

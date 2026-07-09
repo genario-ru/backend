@@ -75,14 +75,14 @@ getScenarioChapterRoute.get(
     });
 
     if (!chapter) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Раздел сценария не найден",
       });
     }
 
     if (chapter.scenarioVersion.scenario.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этому разделу сценария",
       });

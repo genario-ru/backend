@@ -45,7 +45,7 @@ export async function createAttachmentFromFile({
       error,
     });
 
-    throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.UploadFailed,
       message: "Не удалось загрузить файл в хранилище",
     });

@@ -64,7 +64,7 @@ deleteScenarioSceneRoute.delete(
     });
 
     if (!existingScene) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Сцена не найдена",
       });
@@ -73,7 +73,7 @@ deleteScenarioSceneRoute.delete(
     if (
       existingScene.scenarioChapter.scenarioVersion.scenario.userId !== user.id
     ) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этой сцене",
       });

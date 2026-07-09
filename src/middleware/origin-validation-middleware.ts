@@ -65,7 +65,7 @@ export function originValidationMiddleware({
     const requestOrigin = getRequestOrigin(c);
 
     if (!requestOrigin || !normalizedTrustedOrigins.includes(requestOrigin)) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Origin или IP запроса не разрешен",
         details: {

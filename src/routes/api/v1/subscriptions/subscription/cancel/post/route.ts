@@ -60,7 +60,7 @@ cancelSubscriptionRoute.post(
     });
 
     if (!foundSubscription) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данная подписка не существует или у вас нет прав на ее отмену",
@@ -68,7 +68,7 @@ cancelSubscriptionRoute.post(
     }
 
     if (["cancelled", "terminated"].includes(foundSubscription.status)) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.BusinessRuleViolation,
         message: "Вы не можете отменить уже отмененную подписку",
       });

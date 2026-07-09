@@ -18,7 +18,7 @@ export async function validateProfileChannel({
   });
 
   if (foundPlatforms.length === 0) {
-    throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Platforms not found",
     });

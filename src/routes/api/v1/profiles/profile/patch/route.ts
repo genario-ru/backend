@@ -78,7 +78,7 @@ updateProfileRoute.patch(
     });
 
     if (!foundProfile) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный профиль не существует или у вас нет возможности редактировать его",
@@ -105,7 +105,7 @@ updateProfileRoute.patch(
       );
 
       if (hasUnavailableAttachment) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.NotFound,
           message: "Один или несколько файлов не найдены или недоступны",
         });
@@ -192,7 +192,7 @@ updateProfileRoute.patch(
     });
 
     if (!updatedProfile) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.InternalServerError,
         message: "Не удалось загрузить обновленный профиль",
       });

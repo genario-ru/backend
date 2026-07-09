@@ -19,7 +19,7 @@ export function ipAllowlistMiddleware({
     const clientIp = getClientIp(c);
 
     if (!isIpAllowed(clientIp)) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Access to this resource is forbidden",
       });

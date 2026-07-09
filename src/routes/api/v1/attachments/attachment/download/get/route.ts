@@ -59,7 +59,7 @@ getAttachmentDownloadRoute.get(
     });
 
     if (!foundAttachment) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Файл не найден или у вас нет доступа к нему",
       });
@@ -74,7 +74,7 @@ getAttachmentDownloadRoute.get(
       );
 
       if (!s3Object.Body) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InternalServerError,
           message: "Не удалось получить файл из хранилища",
         });
@@ -95,7 +95,7 @@ getAttachmentDownloadRoute.get(
       }
 
       if (!hasTransformToByteArray(s3Object.Body)) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InternalServerError,
           message: "Неподдерживаемый формат ответа хранилища",
         });
@@ -114,7 +114,7 @@ getAttachmentDownloadRoute.get(
         error instanceof Error &&
         (error.name === "NoSuchKey" || error.name === "NotFound")
       ) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.NotFound,
           message: "Файл не найден в хранилище",
         });

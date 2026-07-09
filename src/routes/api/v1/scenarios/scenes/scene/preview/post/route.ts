@@ -73,7 +73,7 @@ createScenarioScenePreviewRoute.post(
     });
 
     if (!existingScene) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Сцена не найдена",
       });
@@ -89,7 +89,7 @@ createScenarioScenePreviewRoute.post(
     });
 
     if (!foundScenario || foundScenario.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этой сцене",
       });
@@ -99,7 +99,7 @@ createScenarioScenePreviewRoute.post(
 
     if (!existingScene.preview) {
       if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.PaymentRequired,
           message: "Недостаточно кредитов для генерации превью сцены сценария",
         });
@@ -132,7 +132,7 @@ createScenarioScenePreviewRoute.post(
 
     if (isGenerationFinished) {
       if (creditsBalance < creditsPricing["scenario-scene-preview"]) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.PaymentRequired,
           message:
             "Недостаточно кредитов для повторной генерации превью сцены сценария",

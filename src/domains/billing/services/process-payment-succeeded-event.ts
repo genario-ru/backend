@@ -59,7 +59,7 @@ export async function processPaymentSucceededEvent(
   });
 
   if (!foundPayment) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Платеж не найден",
     });
@@ -93,7 +93,7 @@ export async function processPaymentSucceededEvent(
       })
       .where(eq(payment.id, foundPayment.id));
 
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: statusDetails,
     });

@@ -45,7 +45,7 @@ getLegalDocumentRoute.get(
     });
 
     if (!foundLegalDocument) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Юридический документ не найден",
       });
@@ -56,14 +56,14 @@ getLegalDocumentRoute.get(
     try {
       markdownResponse = await fetch(foundLegalDocument.url);
     } catch {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.InternalServerError,
         message: "Не удалось получить юридический документ из хранилища",
       });
     }
 
     if (!markdownResponse.ok) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.InternalServerError,
         message:
           "Хранилище вернуло ошибку при получении юридического документа",

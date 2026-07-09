@@ -24,7 +24,7 @@ export async function getProfileChannelVideos({
   });
 
   if (!foundProfile) {
-    throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Профиль не найден или у вас нет доступа к нему",
     });

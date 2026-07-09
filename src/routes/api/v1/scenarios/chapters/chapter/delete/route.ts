@@ -60,14 +60,14 @@ deleteScenarioChapterRoute.delete(
     });
 
     if (!existingChapter) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Раздел сценария не найден",
       });
     }
 
     if (existingChapter.scenarioVersion.scenario.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этому разделу сценария",
       });

@@ -84,7 +84,7 @@ createProfilesFromChannelsRoute.post(
       });
 
       if (userProfiles.length >= tariff.maxProfilesAmount) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Forbidden,
           message:
             "Вы достигли максимального количества профилей по тарифу вашей подписки",

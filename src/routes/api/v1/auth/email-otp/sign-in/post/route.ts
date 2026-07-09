@@ -61,7 +61,7 @@ signInEmailOtpRoute.post(
         signInEmailOtpResponseSchema.parse(response),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при входе в аккаунт",
       });

@@ -15,28 +15,28 @@ export function throwAuthAPIError({
   if (isAPIError(error)) {
     switch (error.status) {
       case 400:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InvalidInput,
           message: error.message,
           details: error.body,
         });
 
       case 401:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Unauthorized,
           message: error.message,
           details: error.body,
         });
 
       case 403:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Forbidden,
           message: error.message,
           details: error.body,
         });
 
       case 404:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.NotFound,
           message: error.message,
           details: error.body,
@@ -44,21 +44,21 @@ export function throwAuthAPIError({
 
       case 409:
       case 422:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.ResourceExists,
           message: error.message,
           details: error.body,
         });
 
       case 429:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.TooManyRequests,
           message: error.message,
           details: error.body,
         });
 
       default:
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InternalServerError,
           message: error.message || fallbackMessage,
           details: error.body,
@@ -66,7 +66,7 @@ export function throwAuthAPIError({
     }
   }
 
-  return throwAPIError({
+  throw throwAPIError({
     code: APIErrorCode.InternalServerError,
     message: fallbackMessage,
     details: error,

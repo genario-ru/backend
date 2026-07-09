@@ -42,7 +42,7 @@ getTrialTariffRoute.get(
     });
 
     if (!lastUpdatedTrialTariff) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         details: "Trial tariff was not found",
       });

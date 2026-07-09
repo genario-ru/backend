@@ -52,7 +52,7 @@ createIdeasListRoute.post(
     const creditsBalance = await getCreditsBalance({ userId: user.id });
 
     if (creditsBalance < creditsPricing["ideas-list"]) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.PaymentRequired,
         message: "Недостаточно кредитов для создания списка идей",
       });

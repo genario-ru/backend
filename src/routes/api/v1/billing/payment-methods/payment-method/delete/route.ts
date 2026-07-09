@@ -56,7 +56,7 @@ deletePaymentMethodRoute.delete(
     });
 
     if (!foundPaymentMethod) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный метод оплаты не существует или у вас нет прав на его удаление",

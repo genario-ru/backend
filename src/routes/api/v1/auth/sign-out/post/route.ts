@@ -44,7 +44,7 @@ signOutRoute.post(
 
       return c.json<SignOutResponse>(signOutResponseSchema.parse(response));
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при выходе из аккаунта",
       });

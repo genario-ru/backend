@@ -49,7 +49,7 @@ changeEmailRoute.post(
         changeEmailResponseSchema.parse(response),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при смене email",
       });

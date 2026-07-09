@@ -53,7 +53,7 @@ updateIdeaRoute.patch(
     });
 
     if (!foundIdeaVariant) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Данная идея не существует",
       });
@@ -62,7 +62,7 @@ updateIdeaRoute.patch(
     const user = c.get("user");
 
     if (foundIdeaVariant.ideasList.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет прав для редактирования данной идеи",
       });

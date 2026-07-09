@@ -65,7 +65,7 @@ regenerateScenarioMetadataRoute.post(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный сценарий не существует или у вас нет доступа к нему",
@@ -77,7 +77,7 @@ regenerateScenarioMetadataRoute.post(
     );
 
     if (!foundMetadata) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.BusinessRuleViolation,
         message: "Не найдено метаданных для указанной платформы",
       });

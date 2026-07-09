@@ -34,7 +34,7 @@ export async function processPaymentCanceledEvent(
   });
 
   if (!foundPayment) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Платеж не найден",
     });

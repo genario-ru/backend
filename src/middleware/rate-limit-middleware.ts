@@ -32,11 +32,12 @@ export function rateLimitMiddleware({
 
       return `${keyPrefix}:${clientIdentifier}`;
     },
-    handler: () =>
-      throwAPIError({
+    handler: () => {
+      throw throwAPIError({
         code: APIErrorCode.TooManyRequests,
         message,
-      }),
+      });
+    },
     store: createRedisRateLimitStore("product-api-rate-limit:"),
   });
 }

@@ -9,7 +9,7 @@ export const sessionMiddleware = createMiddleware<{ Variables: AuthType }>(
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
     if (!session) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Unauthorized,
         message: "You have to authenticate to access this resource",
       });
