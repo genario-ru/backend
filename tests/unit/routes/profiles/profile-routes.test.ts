@@ -231,7 +231,7 @@ describe("profile routes", () => {
     );
 
     const { getProfileRoute } =
-      await import("@/routes/api/v1/profiles/profile/get/route");
+      await import("@/routes/api/v1/profiles/profile/root/get/route");
 
     const response = await getProfileRoute.request(
       `http://localhost/profiles/${PROFILE_ID}`,
@@ -288,7 +288,7 @@ describe("profile routes", () => {
     ]);
 
     const { updateProfileRoute } =
-      await import("@/routes/api/v1/profiles/profile/patch/route");
+      await import("@/routes/api/v1/profiles/profile/root/patch/route");
 
     const response = await updateProfileRoute.request(
       `http://localhost/profiles/${PROFILE_ID}`,
@@ -320,7 +320,7 @@ describe("profile routes", () => {
       .mockResolvedValueOnce(createProfileExtendedRecord());
 
     const { updateProfileRoute } =
-      await import("@/routes/api/v1/profiles/profile/patch/route");
+      await import("@/routes/api/v1/profiles/profile/root/patch/route");
 
     const response = await updateProfileRoute.request(
       `http://localhost/profiles/${PROFILE_ID}`,
@@ -349,7 +349,7 @@ describe("profile routes", () => {
     mockState.db.query.attachment.findMany.mockResolvedValue([]);
 
     const { updateProfileRoute } =
-      await import("@/routes/api/v1/profiles/profile/patch/route");
+      await import("@/routes/api/v1/profiles/profile/root/patch/route");
 
     const response = await updateProfileRoute.request(
       `http://localhost/profiles/${PROFILE_ID}`,

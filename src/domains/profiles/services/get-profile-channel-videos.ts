@@ -35,5 +35,5 @@ export async function getProfileChannelVideos({
     orderBy: [desc(profileChannelVideo.createdAt)],
   });
 
-  return videos as ProfileChannelVideo[];
+  return videos;
 }

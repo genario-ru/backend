@@ -25,7 +25,7 @@ function createAttachmentRecord(): AttachmentRecord {
     key: "attachments/video.mp4",
     bucketName: "bucket",
     mimeType: "video/mp4",
-    previewUrl: null,
+    url: null,
     createdAt: "2026-07-05T12:00:00.000Z",
     updatedAt: "2026-07-05T12:00:00.000Z",
   };
