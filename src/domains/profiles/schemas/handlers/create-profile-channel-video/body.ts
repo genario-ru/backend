@@ -2,7 +2,6 @@ import { z } from "@/lib/zod";
 
 export const createProfileChannelVideoBodySchema = z
   .object({
-    profileId: z.uuid(),
     url: z.url(),
   })
   .meta({

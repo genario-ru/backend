@@ -1,6 +1,7 @@
 import { validator } from "hono-openapi";
 
 import { createProfileChannelVideoBodySchema } from "@/domains/profiles/schemas/handlers/create-profile-channel-video/body";
+import { createProfileChannelVideoParamsSchema } from "@/domains/profiles/schemas/handlers/create-profile-channel-video/params";
 import {
   type CreateProfileChannelVideoResponse,
   createProfileChannelVideoResponseSchema,
@@ -16,10 +17,10 @@ import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-res
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 
 export const createProfileChannelVideoRoute = createHonoApp().basePath(
-  "/profiles/channels/videos",
+  "/profiles/:profileId/channel-videos",
 );
 
-// POST /api/v1/profiles/channels/videos
+// POST /api/v1/profiles/{profileId}/channel-videos
 createProfileChannelVideoRoute.post(
   "/",
   rateLimitMiddleware({
@@ -38,9 +39,11 @@ createProfileChannelVideoRoute.post(
       }),
     },
   }),
+  validator("param", createProfileChannelVideoParamsSchema),
   validator("json", createProfileChannelVideoBodySchema),
   async (c) => {
-    const { profileId, url } = c.req.valid("json");
+    const { profileId } = c.req.valid("param");
+    const { url } = c.req.valid("json");
     const user = c.get("user");
 
     const createdVideo = await createProfileChannelVideo({
