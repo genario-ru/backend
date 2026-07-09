@@ -99,6 +99,7 @@ import { getPlatformsRoute } from "@/routes/api/v1/platforms";
 import { getProductFeaturesRoute } from "@/routes/api/v1/product-features";
 import { getProductionStatusesRoute } from "@/routes/api/v1/production-statuses";
 import {
+  createProfileAttachmentRoute,
   createProfileChannelVideoRoute,
   createProfileRoute,
   createProfilesFromChannelsRoute,
@@ -106,6 +107,7 @@ import {
   getMyProfilesFromChannelsJobs,
   getMyProfilesRoute,
   getPlatformsForChannelsRoute,
+  getProfileAttachmentsRoute,
   getProfileChannelVideosRoute,
   getProfileRoute,
   getProfileTypesRoute,
@@ -248,6 +250,8 @@ const appAPIv1RoutesList = [
   getPlatformsForChannelsRoute,
   createProfileChannelVideoRoute,
   getProfileChannelVideosRoute,
+  createProfileAttachmentRoute,
+  getProfileAttachmentsRoute,
   deleteProfileRoute,
   getProfileTypesRoute,
   getProfileRoute,

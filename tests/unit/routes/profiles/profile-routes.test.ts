@@ -225,9 +225,9 @@ describe("profile routes", () => {
     expect(payload.data.tones).toBeUndefined();
   });
 
-  it("returns grouped references in get profile response", async () => {
+  it("returns profile without references in get profile response", async () => {
     mockState.db.query.profile.findFirst.mockResolvedValue(
-      createProfileWithReferencesRecord(),
+      createProfileExtendedRecord(),
     );
 
     const { getProfileRoute } =
@@ -242,12 +242,7 @@ describe("profile routes", () => {
     const payload = await response.json();
 
     expect(payload.data.description).toBe("Legacy description");
-    expect(payload.data.references.videoReferences[0].fileName).toBe(
-      "video.mp4",
-    );
-    expect(payload.data.references.thumbnailReferences[0].fileName).toBe(
-      "thumb.png",
-    );
+    expect(payload.data.references).toBeUndefined();
     expect(payload.data.tones).toBeUndefined();
   });
 

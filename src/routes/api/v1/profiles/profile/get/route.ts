@@ -6,7 +6,7 @@ import {
   type GetProfileResponse,
   getProfileResponseSchema,
 } from "@/domains/profiles/schemas/handlers/get-profile/response";
-import { prepareProfileWithReferences } from "@/domains/profiles/utils/prepare-profile-with-references";
+import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -53,14 +53,6 @@ getProfileRoute.get(
         profileToPlatform: {
           with: { platform: true },
         },
-        attachments: {
-          orderBy: (profileAttachment, { asc }) => [
-            asc(profileAttachment.createdAt),
-          ],
-          with: {
-            attachment: true,
-          },
-        },
       },
     });
 
@@ -74,7 +66,7 @@ getProfileRoute.get(
 
     return c.json<GetProfileResponse>(
       getProfileResponseSchema.parse({
-        data: prepareProfileWithReferences(foundProfile),
+        data: prepareProfileExtended(foundProfile),
       }),
     );
   },

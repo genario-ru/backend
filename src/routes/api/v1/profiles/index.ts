@@ -5,6 +5,8 @@ export { validateProfileChannelRoute } from "./channels/validate/post/route";
 export { getProfileChannelVideosRoute } from "./channels/videos/get/route";
 export { createProfileChannelVideoRoute } from "./channels/videos/post/route";
 export { getMyProfilesRoute } from "./my/get/route";
+export { getProfileAttachmentsRoute } from "./profile/attachments/get/route";
+export { createProfileAttachmentRoute } from "./profile/attachments/post/route";
 export { deleteProfileRoute } from "./profile/delete/route";
 export { getProfileRoute } from "./profile/get/route";
 export { updateProfileRoute } from "./profile/patch/route";

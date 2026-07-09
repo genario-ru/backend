@@ -6,7 +6,6 @@ import type {
 } from "@/domains/profiles/types/profile-response";
 import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
 import { prepareProfileReferences } from "@/domains/profiles/utils/prepare-profile-references";
-import { prepareProfileWithReferences } from "@/domains/profiles/utils/prepare-profile-with-references";
 
 function createProfileExtendedRecord(): ProfileExtendedRecord {
   return {
@@ -126,16 +125,5 @@ describe("prepareProfileResponse", () => {
     });
     expect(grouped.thumbnailReferences[0]?.fileName).toBe("thumb.png");
     expect(grouped.actorReferences[0]?.fileName).toBe("actor.jpg");
-  });
-
-  it("prepares profile with references and unchanged description", () => {
-    const result = prepareProfileWithReferences(
-      createProfileWithReferencesRecord(),
-    );
-
-    expect(result.description).toBe("Legacy description");
-    expect(result.references.videoReferences).toHaveLength(1);
-    expect(result.references.thumbnailReferences).toHaveLength(1);
-    expect(result.references.actorReferences).toHaveLength(1);
   });
 });
