@@ -14,9 +14,25 @@ export const profileAttachmentSchema = createSelectSchema(
 
 export type ProfileAttachment = z.infer<typeof profileAttachmentSchema>;
 
+export const profileAttachmentFileSchema = attachmentSchema
+  .omit({
+    key: true,
+    bucketName: true,
+  })
+  .extend({
+    url: z.string(),
+  })
+  .meta({
+    title: "Profile attachment file",
+    description: "Profile attachment file description",
+    ref: "ProfileAttachmentFileSchema",
+  });
+
+export type ProfileAttachmentFile = z.infer<typeof profileAttachmentFileSchema>;
+
 export const profileAttachmentExtendedSchema = profileAttachmentSchema
   .extend({
-    attachment: attachmentSchema,
+    attachment: profileAttachmentFileSchema,
   })
   .meta({
     title: "Profile attachment extended",

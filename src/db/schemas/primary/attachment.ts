@@ -17,7 +17,6 @@ export const attachment = pgTable("attachment", {
   fileName: text("file_name").notNull(),
   bucketName: text("bucket_name").notNull(),
   mimeType: text("mime_type").notNull(),
-  url: text("url"),
   ...timestamps,
 });
 

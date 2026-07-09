@@ -1,13 +1,12 @@
-import { eq } from "drizzle-orm";
-
 import { db } from "@/db";
-import { attachment, profileAttachment } from "@/db/schema";
+import { profileAttachment } from "@/db/schema";
 import { createAttachmentFromFile } from "@/domains/attachments/services/create-attachment-from-file";
 import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-attachment";
 import type { ProfileAttachmentRecord } from "@/domains/profiles/types/profile-response";
-import { createS3ObjectUrl } from "@/lib/s3/utils/create-s3-object-url";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
+
+import { prepareProfileAttachmentForResponse } from "../utils/prepare-profile-attachment-for-response";
 
 type CreateProfileAttachmentFromFileParams = {
   userId: string;
@@ -42,28 +41,17 @@ export async function createProfileAttachmentFromFile({
     file,
   });
 
-  const [attachmentWithUrl] = await db
-    .update(attachment)
-    .set({
-      url: createS3ObjectUrl({
-        bucketName: createdAttachment.bucketName,
-        key: createdAttachment.key,
-      }),
-    })
-    .where(eq(attachment.id, createdAttachment.id))
-    .returning();
-
   const [createdProfileAttachment] = await db
     .insert(profileAttachment)
     .values({
       profileId,
       type,
-      attachmentId: attachmentWithUrl.id,
+      attachmentId: createdAttachment.id,
     })
     .returning();
 
-  return {
-    ...createdProfileAttachment,
-    attachment: attachmentWithUrl,
-  };
+  return prepareProfileAttachmentForResponse({
+    profileAttachment: createdProfileAttachment,
+    attachment: createdAttachment,
+  });
 }

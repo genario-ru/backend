@@ -6,6 +6,8 @@ import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entit
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
+import { prepareProfileAttachmentForResponse } from "../utils/prepare-profile-attachment-for-response";
+
 type GetProfileAttachmentsParams = {
   userId: string;
   profileId: string;
@@ -38,8 +40,12 @@ export async function getProfileAttachments({
     },
   });
 
-  return profileAttachments.map(({ attachment, ...profileAttachmentItem }) => ({
-    ...profileAttachmentItem,
-    attachment,
-  }));
+  return Promise.all(
+    profileAttachments.map(({ attachment, ...profileAttachmentItem }) =>
+      prepareProfileAttachmentForResponse({
+        profileAttachment: profileAttachmentItem,
+        attachment,
+      }),
+    ),
+  );
 }
