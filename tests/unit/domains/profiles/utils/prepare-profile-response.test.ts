@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type {
-  ProfileExtendedRecord,
-  ProfileExtendedWithReferencesRecord,
-} from "@/domains/profiles/types/profile-response";
+import type { ProfileExtendedRecord } from "@/domains/profiles/types/profile-response";
 import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
-import { prepareProfileReferences } from "@/domains/profiles/utils/prepare-profile-references";
 
 function createProfileExtendedRecord(): ProfileExtendedRecord {
   return {
@@ -53,57 +49,7 @@ function createProfileExtendedRecord(): ProfileExtendedRecord {
   };
 }
 
-function createProfileWithReferencesRecord(): ProfileExtendedWithReferencesRecord {
-  return {
-    ...createProfileExtendedRecord(),
-    attachments: [
-      {
-        type: "video-reference",
-        attachment: {
-          id: "6c01d4b1-4886-4d4e-a1cf-a04fdb53853d",
-          userId: "8d51712d-ebf0-41b6-99ec-71b4f8d27ca9",
-          fileName: "video.mp4",
-          key: "attachments/video.mp4",
-          bucketName: "bucket",
-          mimeType: "video/mp4",
-          url: null,
-          createdAt: "2026-07-05T12:00:00.000Z",
-          updatedAt: "2026-07-05T12:00:00.000Z",
-        },
-      },
-      {
-        type: "thumbnail-reference",
-        attachment: {
-          id: "2197b2d5-6d2e-40f7-8d3d-9fa3eebf4a87",
-          userId: "8d51712d-ebf0-41b6-99ec-71b4f8d27ca9",
-          fileName: "thumb.png",
-          key: "attachments/thumb.png",
-          bucketName: "bucket",
-          mimeType: "image/png",
-          url: null,
-          createdAt: "2026-07-05T12:01:00.000Z",
-          updatedAt: "2026-07-05T12:01:00.000Z",
-        },
-      },
-      {
-        type: "actor-reference",
-        attachment: {
-          id: "2fbd8a0a-2cb3-4995-a31f-74f7a8b995e3",
-          userId: "8d51712d-ebf0-41b6-99ec-71b4f8d27ca9",
-          fileName: "actor.jpg",
-          key: "attachments/actor.jpg",
-          bucketName: "bucket",
-          mimeType: "image/jpeg",
-          url: null,
-          createdAt: "2026-07-05T12:02:00.000Z",
-          updatedAt: "2026-07-05T12:02:00.000Z",
-        },
-      },
-    ],
-  };
-}
-
-describe("prepareProfileResponse", () => {
+describe("prepareProfileExtended", () => {
   it("prepares profile extended and keeps description as-is", () => {
     const result = prepareProfileExtended(createProfileExtendedRecord());
 
@@ -111,19 +57,5 @@ describe("prepareProfileResponse", () => {
     expect(result.platforms).toHaveLength(1);
     expect(result.platforms[0]?.name).toBe("YouTube");
     expect("profileToPlatform" in result).toBe(false);
-  });
-
-  it("groups profile attachments by category and exposes fileName/downloadUrl", () => {
-    const grouped = prepareProfileReferences(
-      createProfileWithReferencesRecord().attachments,
-    );
-
-    expect(grouped.videoReferences[0]).toMatchObject({
-      fileName: "video.mp4",
-      downloadUrl:
-        "/api/v1/attachments/6c01d4b1-4886-4d4e-a1cf-a04fdb53853d/download",
-    });
-    expect(grouped.thumbnailReferences[0]?.fileName).toBe("thumb.png");
-    expect(grouped.actorReferences[0]?.fileName).toBe("actor.jpg");
   });
 });

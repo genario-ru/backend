@@ -1,9 +1,8 @@
 import { createSelectSchema } from "drizzle-zod";
 
 import { profileAttachment } from "@/db/schema";
+import { attachmentSchema } from "@/domains/attachments/schemas/entities/attachment";
 import { z } from "@/lib/zod";
-
-import { profileReferenceItemSchema } from "./profile-reference";
 
 export const profileAttachmentSchema = createSelectSchema(
   profileAttachment,
@@ -17,7 +16,7 @@ export type ProfileAttachment = z.infer<typeof profileAttachmentSchema>;
 
 export const profileAttachmentExtendedSchema = profileAttachmentSchema
   .extend({
-    attachment: profileReferenceItemSchema,
+    attachment: attachmentSchema,
   })
   .meta({
     title: "Profile attachment extended",

@@ -43,14 +43,14 @@ getProfileAttachmentsRoute.get(
     const { profileId } = c.req.valid("param");
     const user = c.get("user");
 
-    const references = await getProfileAttachments({
+    const attachments = await getProfileAttachments({
       userId: user.id,
       profileId,
     });
 
     return c.json<GetProfileAttachmentsResponse>(
       getProfileAttachmentsResponseSchema.parse({
-        data: references,
+        data: attachments,
       }),
     );
   },

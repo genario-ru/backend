@@ -2,11 +2,9 @@ import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { profileAttachment } from "@/db/schema";
-import type { ProfileReferences } from "@/domains/profiles/schemas/entities/profile-reference";
+import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-attachment";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import { prepareProfileReferences } from "../utils/prepare-profile-references";
 
 type GetProfileAttachmentsParams = {
   userId: string;
@@ -16,7 +14,7 @@ type GetProfileAttachmentsParams = {
 export async function getProfileAttachments({
   userId,
   profileId,
-}: GetProfileAttachmentsParams): Promise<ProfileReferences> {
+}: GetProfileAttachmentsParams): Promise<ProfileAttachmentExtended[]> {
   const foundProfile = await db.query.profile.findFirst({
     where: (profileTable, { eq: eqFn, and: andFn }) =>
       andFn(
@@ -40,10 +38,8 @@ export async function getProfileAttachments({
     },
   });
 
-  return prepareProfileReferences(
-    profileAttachments.map(({ type, attachment }) => ({
-      type,
-      attachment,
-    })),
-  );
+  return profileAttachments.map(({ attachment, ...profileAttachmentItem }) => ({
+    ...profileAttachmentItem,
+    attachment,
+  }));
 }

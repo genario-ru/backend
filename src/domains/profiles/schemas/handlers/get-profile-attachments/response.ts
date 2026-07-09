@@ -1,10 +1,10 @@
 import { z } from "@/lib/zod";
 
-import { profileReferencesSchema } from "../../entities/profile-reference";
+import { profileAttachmentExtendedSchema } from "../../entities/profile-attachment";
 
 export const getProfileAttachmentsResponseSchema = z
   .object({
-    data: profileReferencesSchema,
+    data: z.array(profileAttachmentExtendedSchema),
   })
   .meta({
     title: "Get profile attachments response",
