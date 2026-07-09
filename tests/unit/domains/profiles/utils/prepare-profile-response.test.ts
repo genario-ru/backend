@@ -43,6 +43,7 @@ function createProfileExtendedRecord(): ProfileExtendedRecord {
           baseUrl: null,
           urlRegex: null,
           channelUrlRegex: null,
+          videoUrlRegex: null,
           hasAutoImport: true,
           priority: 0,
           createdAt: "2026-07-05T12:00:00.000Z",

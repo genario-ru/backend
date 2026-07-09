@@ -13,6 +13,7 @@ import {
   type CreateProfilesFromChannelsResponse,
   createProfilesFromChannelsResponseSchema,
 } from "@/domains/profiles/schemas/handlers/create-profiles-from-channels/response";
+import { validateProfileChannel } from "@/domains/profiles/services/validate-profile-channel";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -24,8 +25,6 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import { validateProfileChannel } from "../../utils";
 
 export const createProfilesFromChannelsRoute =
   createHonoApp().basePath("/profiles/channels");
@@ -58,7 +57,9 @@ createProfilesFromChannelsRoute.post(
     const { channelUrls } = c.req.valid("json");
 
     const validationResults = await Promise.all(
-      channelUrls.map((channelUrl) => validateProfileChannel(channelUrl)),
+      channelUrls.map((channelUrl) =>
+        validateProfileChannel({ url: channelUrl }),
+      ),
     );
 
     const errorValidationResults = validationResults.filter(

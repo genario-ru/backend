@@ -179,6 +179,8 @@ export const profilesFromChannelsGenerationWorker =
             if (channel.videos.length > 0) {
               await tx.insert(profileChannelVideo).values(
                 channel.videos.map((video) => ({
+                  profileId: createdProfile.id,
+                  platformId: channel.input.platformId,
                   profileChannelId: createdChannel.id,
                   externalId: video.externalId,
                   url: video.url,

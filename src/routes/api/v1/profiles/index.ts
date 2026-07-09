@@ -2,6 +2,8 @@ export { getMyProfilesFromChannelsJobs } from "./channels/jobs/my/get/route";
 export { getPlatformsForChannelsRoute } from "./channels/platforms/get/route";
 export { createProfilesFromChannelsRoute } from "./channels/root/post/route";
 export { validateProfileChannelRoute } from "./channels/validate/post/route";
+export { getProfileChannelVideosRoute } from "./channels/videos/get/route";
+export { createProfileChannelVideoRoute } from "./channels/videos/post/route";
 export { getMyProfilesRoute } from "./my/get/route";
 export { deleteProfileRoute } from "./profile/delete/route";
 export { getProfileRoute } from "./profile/get/route";

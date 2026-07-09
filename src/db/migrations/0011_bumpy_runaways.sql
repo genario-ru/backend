@@ -1,0 +1,1 @@
+ALTER TABLE "platform" ADD COLUMN "video_url_regex" text;

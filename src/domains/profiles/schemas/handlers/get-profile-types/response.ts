@@ -1,6 +1,7 @@
 import { z } from "@/lib/zod";
 
 import { profileTypeSchema } from "../../entities/profile-type";
+
 export const getProfileTypesResponseSchema = z
   .object({
     data: z.array(profileTypeSchema),

@@ -1,18 +1,18 @@
-import { getUserProfile as getRuTubeUserProfile } from "@/codegen/api/rutube/clients";
 import { db } from "@/db";
 import type { ProfileChannelUrlValidation } from "@/domains/profiles/schemas/entities/profile-channel-url-validation";
-import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
-import {
-  extractYouTubeChannelIdentifier,
-  getYouTubeChannel,
-} from "@/lib/youtube";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { testString } from "@/shared/utils/regex/test-string";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
-export async function validateProfileChannel(
-  url: string,
-): Promise<ProfileChannelUrlValidation> {
+import { checkProfileChannelExists } from "./check-profile-channel-exists";
+
+type ValidateProfileChannelParams = {
+  url: string;
+};
+
+export async function validateProfileChannel({
+  url,
+}: ValidateProfileChannelParams): Promise<ProfileChannelUrlValidation> {
   const foundPlatforms = await db.query.platform.findMany({
     where: (platform, { eq }) => eq(platform.hasAutoImport, true),
   });
@@ -54,10 +54,10 @@ export async function validateProfileChannel(
     };
   }
 
-  const channelExists = await checkChannelExists(
+  const channelExists = await checkProfileChannelExists({
     url,
-    platformByChannelUrl.slug,
-  );
+    platformSlug: platformByChannelUrl.slug,
+  });
 
   if (!channelExists) {
     return {
@@ -74,42 +74,4 @@ export async function validateProfileChannel(
     statusDetails: "Канал найден",
     platform: platformByUrl,
   };
-}
-
-async function checkChannelExists(
-  url: string,
-  platformSlug: string,
-): Promise<boolean> {
-  switch (platformSlug) {
-    case "youtube":
-      const youTubeIdentifier = extractYouTubeChannelIdentifier(url);
-
-      if (!youTubeIdentifier) return false;
-
-      const youTubeChannel = await getYouTubeChannel(youTubeIdentifier).catch(
-        (error) => {
-          console.error("Error getting YouTube channel", error);
-          return null;
-        },
-      );
-
-      return youTubeChannel !== null;
-
-    case "rutube":
-      const identifier = extractRuTubeChannelIdentifier(url);
-
-      if (!identifier) return false;
-
-      const ruTubeChannel = await getRuTubeUserProfile({
-        author_id: identifier.authorId,
-      }).catch((error) => {
-        console.error("Error getting RuTube channel", error);
-        return null;
-      });
-
-      return ruTubeChannel !== null;
-
-    default:
-      return false;
-  }
 }
