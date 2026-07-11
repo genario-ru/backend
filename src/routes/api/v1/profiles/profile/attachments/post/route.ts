@@ -29,8 +29,8 @@ createProfileAttachmentRoute.post(
   "/",
   rateLimitMiddleware({
     keyPrefix: "create-profile-attachment",
-    windowMs: 5 * 1000,
-    limit: 3,
+    windowMs: 1 * 1000,
+    limit: 10,
   }),
   sessionMiddleware,
   subscriptionMiddleware,

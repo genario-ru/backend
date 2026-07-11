@@ -24,8 +24,8 @@ deleteProfileAttachmentRoute.delete(
   "/",
   rateLimitMiddleware({
     keyPrefix: "delete-profile-attachment",
-    windowMs: 2 * 1000,
-    limit: 1,
+    windowMs: 1 * 1000,
+    limit: 3,
   }),
   sessionMiddleware,
   subscriptionMiddleware,
