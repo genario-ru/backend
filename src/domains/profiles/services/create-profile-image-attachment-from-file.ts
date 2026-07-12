@@ -1,12 +1,12 @@
 import { db } from "@/db";
-import { profileAttachment } from "@/db/schema";
+import { profileImageAttachment } from "@/db/schema";
 import { createAttachmentFromFile } from "@/domains/attachments/services/create-attachment-from-file";
 import type { ProfileAttachmentImageType } from "@/domains/profiles/constants/profile-attachment-types";
-import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-attachment";
+import type { ProfileImageAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-image-attachment";
 import { toWebpFileName } from "@/lib/attachments/utils/to-webp-file-name";
 import { optimizeImageBuffer } from "@/lib/image";
 
-import { prepareProfileAttachmentForResponse } from "../utils/prepare-profile-attachment-for-response";
+import { prepareProfileImageAttachmentForResponse } from "../utils/prepare-profile-image-attachment-for-response";
 
 type CreateProfileImageAttachmentFromFileParams = {
   userId: string;
@@ -20,7 +20,7 @@ export async function createProfileImageAttachmentFromFile({
   profileId,
   type,
   file,
-}: CreateProfileImageAttachmentFromFileParams): Promise<ProfileAttachmentExtended> {
+}: CreateProfileImageAttachmentFromFileParams): Promise<ProfileImageAttachmentExtended> {
   const inputBuffer = Buffer.from(await file.arrayBuffer());
   const optimized = await optimizeImageBuffer({ buffer: inputBuffer });
 
@@ -32,8 +32,8 @@ export async function createProfileImageAttachmentFromFile({
     fileName: toWebpFileName({ fileName: file.name }),
   });
 
-  const [createdProfileAttachment] = await db
-    .insert(profileAttachment)
+  const [createdProfileImageAttachment] = await db
+    .insert(profileImageAttachment)
     .values({
       profileId,
       type,
@@ -41,8 +41,8 @@ export async function createProfileImageAttachmentFromFile({
     })
     .returning();
 
-  return prepareProfileAttachmentForResponse({
-    profileAttachment: createdProfileAttachment,
+  return prepareProfileImageAttachmentForResponse({
+    profileImageAttachment: createdProfileImageAttachment,
     attachment: createdAttachment,
   });
 }

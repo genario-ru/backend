@@ -96,7 +96,7 @@ export const scenarioMetadataRegenerationWorker =
           scenarioTemplateName: foundScenario.template?.name,
           scenarioTemplateDescription: foundScenario.template?.description,
           scenarioProfileName: foundScenario.profile?.name,
-          scenarioProfileDescription: foundScenario.profile?.description,
+          scenarioProfileDescription: foundScenario.profile?.positioning,
           scenarioVideoTypeName: foundScenario.videoType?.name,
           scenarioVideoDurationName: foundScenario.videoDuration?.name,
           scenarioTones: foundScenario.scenarioToTone.map(

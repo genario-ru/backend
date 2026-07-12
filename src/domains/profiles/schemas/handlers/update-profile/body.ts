@@ -33,18 +33,6 @@ export const updateProfileBodySchema = z
     platformIds: z
       .array(z.string().uuid("Некорректный формат идентификатора платформы"))
       .optional(),
-    videoReferences: z
-      .array(z.string().uuid("Некорректный формат идентификатора вложения"))
-      .optional(),
-    thumbnailReferences: z
-      .array(z.string().uuid("Некорректный формат идентификатора вложения"))
-      .optional(),
-    actorReferences: z
-      .array(z.string().uuid("Некорректный формат идентификатора вложения"))
-      .optional(),
-    transcriptReferences: z
-      .array(z.string().uuid("Некорректный формат идентификатора вложения"))
-      .optional(),
   })
   .meta({
     title: "Update profile body",

@@ -15,13 +15,25 @@ export async function deleteProfileAttachment({
   userId,
   attachmentId,
 }: DeleteProfileAttachmentParams): Promise<Attachment> {
-  const foundProfileAttachment = await db.query.profileAttachment.findFirst({
-    where: (profileAttachmentTable, { eq: eqFn }) =>
-      eqFn(profileAttachmentTable.attachmentId, attachmentId),
-    with: {
-      profile: true,
-    },
-  });
+  const [foundImageAttachment, foundVideoAttachment] = await Promise.all([
+    db.query.profileImageAttachment.findFirst({
+      where: (profileImageAttachmentTable, { eq: eqFn }) =>
+        eqFn(profileImageAttachmentTable.attachmentId, attachmentId),
+      with: {
+        profile: true,
+      },
+    }),
+    db.query.profileVideoAttachment.findFirst({
+      where: (profileVideoAttachmentTable, { eq: eqFn }) =>
+        eqFn(profileVideoAttachmentTable.attachmentId, attachmentId),
+      with: {
+        profile: true,
+      },
+    }),
+  ]);
+
+  const foundProfileAttachment =
+    foundImageAttachment ?? foundVideoAttachment ?? null;
 
   if (!foundProfileAttachment) {
     throw throwAPIError({

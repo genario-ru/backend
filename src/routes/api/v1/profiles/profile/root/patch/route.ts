@@ -1,17 +1,9 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import {
-  attachment,
-  profile,
-  profileAttachment,
-  profileToPlatform,
-} from "@/db/schema";
-import {
-  type UpdateProfileBody,
-  updateProfileBodySchema,
-} from "@/domains/profiles/schemas/handlers/update-profile/body";
+import { profile, profileToPlatform } from "@/db/schema";
+import { updateProfileBodySchema } from "@/domains/profiles/schemas/handlers/update-profile/body";
 import { updateProfileParamsSchema } from "@/domains/profiles/schemas/handlers/update-profile/params";
 import {
   type UpdateProfileResponse,
@@ -28,8 +20,6 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import { getProfileReferenceUpdates } from "./utils";
 
 export const updateProfileRoute = createHonoApp().basePath(
   "/profiles/:profileId",
@@ -58,17 +48,7 @@ updateProfileRoute.patch(
   validator("json", updateProfileBodySchema),
   async (c) => {
     const { profileId } = c.req.valid("param");
-    const requestBody = c.req.valid("json") as UpdateProfileBody;
-    const {
-      platformIds,
-      videoReferences: _videoReferences,
-      thumbnailReferences: _thumbnailReferences,
-      actorReferences: _actorReferences,
-      transcriptReferences: _transcriptReferences,
-      ...updateProfileParams
-    } = requestBody;
-
-    const profileReferenceUpdates = getProfileReferenceUpdates(requestBody);
+    const { platformIds, ...updateProfileParams } = c.req.valid("json");
     const user = c.get("user");
 
     const foundProfile = await db.query.profile.findFirst({
@@ -83,33 +63,6 @@ updateProfileRoute.patch(
         message:
           "Данный профиль не существует или у вас нет возможности редактировать его",
       });
-    }
-
-    const requestedReferenceAttachmentIds = profileReferenceUpdates.flatMap(
-      ({ attachmentIds }) => attachmentIds,
-    );
-
-    if (requestedReferenceAttachmentIds.length > 0) {
-      const foundAttachments = await db.query.attachment.findMany({
-        where: and(
-          eq(attachment.userId, user.id),
-          inArray(attachment.id, requestedReferenceAttachmentIds),
-        ),
-      });
-
-      const hasUnavailableAttachment = requestedReferenceAttachmentIds.some(
-        (attachmentId) =>
-          !foundAttachments.some(
-            (foundAttachment) => foundAttachment.id === attachmentId,
-          ),
-      );
-
-      if (hasUnavailableAttachment) {
-        throw throwAPIError({
-          code: APIErrorCode.NotFound,
-          message: "Один или несколько файлов не найдены или недоступны",
-        });
-      }
     }
 
     await db.transaction(async (tx) => {
@@ -130,38 +83,6 @@ updateProfileRoute.patch(
                 platformId,
               })),
             ),
-          );
-        }
-      }
-
-      if (profileReferenceUpdates.length > 0) {
-        const attachmentTypes = profileReferenceUpdates.map(
-          ({ attachmentType }) => attachmentType,
-        );
-
-        txOperations.push(
-          tx
-            .delete(profileAttachment)
-            .where(
-              and(
-                eq(profileAttachment.profileId, profileId),
-                inArray(profileAttachment.type, attachmentTypes),
-              ),
-            ),
-        );
-
-        const createdProfileAttachments = profileReferenceUpdates.flatMap(
-          ({ attachmentIds, attachmentType }) =>
-            attachmentIds.map((attachmentId) => ({
-              profileId,
-              type: attachmentType,
-              attachmentId,
-            })),
-        );
-
-        if (createdProfileAttachments.length > 0) {
-          txOperations.push(
-            tx.insert(profileAttachment).values(createdProfileAttachments),
           );
         }
       }

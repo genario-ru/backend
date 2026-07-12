@@ -6,15 +6,14 @@ import { timestamps } from "@/db/constants/timestamps";
 import { attachment } from "./attachment";
 import { profile } from "./profile";
 
-export const profileAttachmentType = pgEnum("profile_attachment_type", [
-  "actor-reference",
-  "thumbnail-reference",
-  "video-reference",
-]);
+export const profileImageAttachmentType = pgEnum(
+  "profile_image_attachment_type",
+  ["actor-reference", "thumbnail-reference"],
+);
 
-export const profileAttachment = pgTable("profile_attachment", {
+export const profileImageAttachment = pgTable("profile_image_attachment", {
   id: uuid("id").defaultRandom().primaryKey(),
-  type: profileAttachmentType("type").notNull(),
+  type: profileImageAttachmentType("type").notNull(),
   profileId: uuid("profile_id")
     .references(() => profile.id, {
       onDelete: "cascade",
@@ -30,15 +29,15 @@ export const profileAttachment = pgTable("profile_attachment", {
   ...timestamps,
 });
 
-export const profileAttachmentRelations = relations(
-  profileAttachment,
+export const profileImageAttachmentRelations = relations(
+  profileImageAttachment,
   ({ one }) => ({
     profile: one(profile, {
-      fields: [profileAttachment.profileId],
+      fields: [profileImageAttachment.profileId],
       references: [profile.id],
     }),
     attachment: one(attachment, {
-      fields: [profileAttachment.attachmentId],
+      fields: [profileImageAttachment.attachmentId],
       references: [attachment.id],
     }),
   }),

@@ -9,7 +9,6 @@ function createProfileExtendedRecord(): ProfileExtendedRecord {
     userId: "8d51712d-ebf0-41b6-99ec-71b4f8d27ca9",
     typeId: "6e2f1552-9415-449e-a8e8-a3b91244c77f",
     name: "Profile name",
-    description: "Legacy description",
     positioning: "Positioning",
     targetAudience: "Audience",
     additionalInfo: "Additional info",
@@ -50,10 +49,10 @@ function createProfileExtendedRecord(): ProfileExtendedRecord {
 }
 
 describe("prepareProfileExtended", () => {
-  it("prepares profile extended and keeps description as-is", () => {
+  it("prepares profile extended with platforms", () => {
     const result = prepareProfileExtended(createProfileExtendedRecord());
 
-    expect(result.description).toBe("Legacy description");
+    expect(result.positioning).toBe("Positioning");
     expect(result.platforms).toHaveLength(1);
     expect(result.platforms[0]?.name).toBe("YouTube");
     expect("profileToPlatform" in result).toBe(false);

@@ -4,6 +4,7 @@ import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
 import { mailSendWorker } from "@/mq/mail-send/worker";
 import { profileChannelVideoImportWorker } from "@/mq/profile-channel-video-import/worker";
+import { profileVideoAttachmentEnrichmentWorker } from "@/mq/profile-video-attachment-enrichment/worker";
 import { profilesFromChannelsGenerationWorker } from "@/mq/profiles-from-channels-generation/worker";
 import { scenarioChapterScenesGenerationWorker } from "@/mq/scenario-chapter-scenes-generation/worker";
 import { scenarioChaptersGenerationWorker } from "@/mq/scenario-chapters-generation/worker";
@@ -35,6 +36,7 @@ registerWorkerErrorHandlers([
   ideasListExportWorker,
   profilesFromChannelsGenerationWorker,
   profileChannelVideoImportWorker,
+  profileVideoAttachmentEnrichmentWorker,
   scenarioChaptersGenerationWorker,
   scenarioScenesGenerationWorker,
   scenarioChapterScenesGenerationWorker,
@@ -75,6 +77,7 @@ const shutdown = async () => {
   await ideasListExportWorker.close();
   await profilesFromChannelsGenerationWorker.close();
   await profileChannelVideoImportWorker.close();
+  await profileVideoAttachmentEnrichmentWorker.close();
   await scenarioChaptersGenerationWorker.close();
   await scenarioScenesGenerationWorker.close();
   await scenarioChapterScenesGenerationWorker.close();

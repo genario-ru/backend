@@ -120,7 +120,7 @@ export const profilesFromChannelsGenerationWorker =
             .values({
               userId,
               name: generatedProfile.name,
-              description: generatedProfile.description,
+              positioning: generatedProfile.description,
               targetAudience: generatedProfile.targetAudience,
             })
             .returning();

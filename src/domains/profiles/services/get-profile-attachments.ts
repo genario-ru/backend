@@ -1,12 +1,13 @@
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { profileAttachment } from "@/db/schema";
+import { profileImageAttachment, profileVideoAttachment } from "@/db/schema";
 import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-attachment";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
-import { prepareProfileAttachmentForResponse } from "../utils/prepare-profile-attachment-for-response";
+import { prepareProfileImageAttachmentForResponse } from "../utils/prepare-profile-image-attachment-for-response";
+import { prepareProfileVideoAttachmentForResponse } from "../utils/prepare-profile-video-attachment-for-response";
 
 type GetProfileAttachmentsParams = {
   userId: string;
@@ -32,20 +33,43 @@ export async function getProfileAttachments({
     });
   }
 
-  const profileAttachments = await db.query.profileAttachment.findMany({
-    where: eq(profileAttachment.profileId, profileId),
-    orderBy: [asc(profileAttachment.createdAt)],
-    with: {
-      attachment: true,
-    },
-  });
+  const [imageAttachments, videoAttachments] = await Promise.all([
+    db.query.profileImageAttachment.findMany({
+      where: eq(profileImageAttachment.profileId, profileId),
+      orderBy: [asc(profileImageAttachment.createdAt)],
+      with: {
+        attachment: true,
+      },
+    }),
+    db.query.profileVideoAttachment.findMany({
+      where: eq(profileVideoAttachment.profileId, profileId),
+      orderBy: [asc(profileVideoAttachment.createdAt)],
+      with: {
+        attachment: true,
+      },
+    }),
+  ]);
 
-  return Promise.all(
-    profileAttachments.map(({ attachment, ...profileAttachmentItem }) =>
-      prepareProfileAttachmentForResponse({
-        profileAttachment: profileAttachmentItem,
+  const preparedImageAttachments = await Promise.all(
+    imageAttachments.map(({ attachment, ...profileImageAttachmentItem }) =>
+      prepareProfileImageAttachmentForResponse({
+        profileImageAttachment: profileImageAttachmentItem,
         attachment,
       }),
     ),
+  );
+
+  const preparedVideoAttachments = await Promise.all(
+    videoAttachments.map(({ attachment, ...profileVideoAttachmentItem }) =>
+      prepareProfileVideoAttachmentForResponse({
+        profileVideoAttachment: profileVideoAttachmentItem,
+        attachment,
+      }),
+    ),
+  );
+
+  return [...preparedImageAttachments, ...preparedVideoAttachments].sort(
+    (left, right) =>
+      new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime(),
   );
 }

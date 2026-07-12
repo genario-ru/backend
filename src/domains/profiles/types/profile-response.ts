@@ -2,22 +2,30 @@ import {
   attachment,
   platform,
   profile,
-  profileAttachment,
+  profileImageAttachment,
   profileType,
+  profileVideoAttachment,
 } from "@/db/schema";
 
 export type ProfileRecord = typeof profile.$inferSelect;
 export type ProfileTypeRecord = typeof profileType.$inferSelect;
 export type PlatformRecord = typeof platform.$inferSelect;
 export type AttachmentRecord = typeof attachment.$inferSelect;
-export type ProfileAttachmentRecord = typeof profileAttachment.$inferSelect;
+export type ProfileImageAttachmentRecord =
+  typeof profileImageAttachment.$inferSelect;
+export type ProfileVideoAttachmentRecord =
+  typeof profileVideoAttachment.$inferSelect;
 
 export type ProfilePlatformRelationRecord = {
   platform: PlatformRecord;
 };
 
-export type ProfileAttachmentRelationRecord = {
-  type: ProfileAttachmentRecord["type"];
+export type ProfileImageAttachmentRelationRecord = {
+  type: ProfileImageAttachmentRecord["type"];
+  attachment: AttachmentRecord;
+};
+
+export type ProfileVideoAttachmentRelationRecord = {
   attachment: AttachmentRecord;
 };
 
@@ -27,5 +35,6 @@ export type ProfileExtendedRecord = ProfileRecord & {
 };
 
 export type ProfileExtendedWithReferencesRecord = ProfileExtendedRecord & {
-  attachments: ProfileAttachmentRelationRecord[];
+  imageAttachments: ProfileImageAttachmentRelationRecord[];
+  videoAttachments: ProfileVideoAttachmentRelationRecord[];
 };

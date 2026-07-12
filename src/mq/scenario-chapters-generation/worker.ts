@@ -77,7 +77,7 @@ export const scenarioChaptersGenerationWorker =
           scenarioTemplateDescription: foundScenario.template?.description,
           scenarioTemplateDetails: foundScenario.template?.details,
           scenarioProfileName: foundScenario.profile?.name,
-          scenarioProfileDescription: foundScenario.profile?.description,
+          scenarioProfileDescription: foundScenario.profile?.positioning,
           scenarioPlatformNames: foundScenario.scenarioToPlatform.map(
             ({ platform }) => platform.name,
           ),
