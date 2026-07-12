@@ -17,6 +17,8 @@ export { getTiktokSearch } from "./clients/get-tiktok-search.ts";
 export { getTiktokStats } from "./clients/get-tiktok-stats.ts";
 export { getTiktokSummarize } from "./clients/get-tiktok-summarize.ts";
 export { getTiktokTranscript } from "./clients/get-tiktok-transcript.ts";
+export { getVideoSummarize } from "./clients/get-video-summarize.ts";
+export { getVideoTranscript } from "./clients/get-video-transcript.ts";
 export { getYoutubeChannelStats } from "./clients/get-youtube-channel-stats.ts";
 export { getYoutubeComments } from "./clients/get-youtube-comments.ts";
 export { getYoutubeDownload } from "./clients/get-youtube-download.ts";
@@ -54,6 +56,8 @@ export { postTiktokSummarize } from "./clients/post-tiktok-summarize.ts";
 export { postTiktokSummarizeBulk } from "./clients/post-tiktok-summarize-bulk.ts";
 export { postTiktokTranscript } from "./clients/post-tiktok-transcript.ts";
 export { postTiktokTranscriptBulk } from "./clients/post-tiktok-transcript-bulk.ts";
+export { postVideoSummarize } from "./clients/post-video-summarize.ts";
+export { postVideoTranscript } from "./clients/post-video-transcript.ts";
 export { postYoutubeChannelStats } from "./clients/post-youtube-channel-stats.ts";
 export { postYoutubeComments } from "./clients/post-youtube-comments.ts";
 export { postYoutubeCommentsBulk } from "./clients/post-youtube-comments-bulk.ts";
@@ -256,6 +260,26 @@ export type {
   GetTiktokTranscriptQueryParams,
   GetTiktokTranscriptQueryResponse,
 } from "./models/get-tiktok-transcript.ts";
+export type {
+  GetVideoSummarize200,
+  GetVideoSummarize400,
+  GetVideoSummarize403,
+  GetVideoSummarize404,
+  GetVideoSummarize500,
+  GetVideoSummarizeQuery,
+  GetVideoSummarizeQueryParams,
+  GetVideoSummarizeQueryResponse,
+} from "./models/get-video-summarize.ts";
+export type {
+  GetVideoTranscript200,
+  GetVideoTranscript400,
+  GetVideoTranscript403,
+  GetVideoTranscript404,
+  GetVideoTranscript500,
+  GetVideoTranscriptQuery,
+  GetVideoTranscriptQueryParams,
+  GetVideoTranscriptQueryResponse,
+} from "./models/get-video-transcript.ts";
 export type {
   GetYoutubeChannelStats200,
   GetYoutubeChannelStats400,
@@ -627,6 +651,26 @@ export type {
   PostTiktokTranscriptBulkMutationResponse,
 } from "./models/post-tiktok-transcript-bulk.ts";
 export type {
+  PostVideoSummarize200,
+  PostVideoSummarize400,
+  PostVideoSummarize403,
+  PostVideoSummarize404,
+  PostVideoSummarize500,
+  PostVideoSummarizeMutation,
+  PostVideoSummarizeMutationResponse,
+  PostVideoSummarizeQueryParams,
+} from "./models/post-video-summarize.ts";
+export type {
+  PostVideoTranscript200,
+  PostVideoTranscript400,
+  PostVideoTranscript403,
+  PostVideoTranscript404,
+  PostVideoTranscript500,
+  PostVideoTranscriptMutation,
+  PostVideoTranscriptMutationResponse,
+  PostVideoTranscriptQueryParams,
+} from "./models/post-video-transcript.ts";
+export type {
   PostYoutubeChannelStats200,
   PostYoutubeChannelStats400,
   PostYoutubeChannelStats403,
@@ -917,6 +961,24 @@ export {
   getTiktokTranscriptQueryParamsSchema,
   getTiktokTranscriptQueryResponseSchema,
 } from "./zod/get-tiktok-transcript-schema.ts";
+export {
+  getVideoSummarize200Schema,
+  getVideoSummarize400Schema,
+  getVideoSummarize403Schema,
+  getVideoSummarize404Schema,
+  getVideoSummarize500Schema,
+  getVideoSummarizeQueryParamsSchema,
+  getVideoSummarizeQueryResponseSchema,
+} from "./zod/get-video-summarize-schema.ts";
+export {
+  getVideoTranscript200Schema,
+  getVideoTranscript400Schema,
+  getVideoTranscript403Schema,
+  getVideoTranscript404Schema,
+  getVideoTranscript500Schema,
+  getVideoTranscriptQueryParamsSchema,
+  getVideoTranscriptQueryResponseSchema,
+} from "./zod/get-video-transcript-schema.ts";
 export {
   getYoutubeChannelStats200Schema,
   getYoutubeChannelStats400Schema,
@@ -1250,6 +1312,24 @@ export {
   postTiktokTranscriptMutationResponseSchema,
   postTiktokTranscriptQueryParamsSchema,
 } from "./zod/post-tiktok-transcript-schema.ts";
+export {
+  postVideoSummarize200Schema,
+  postVideoSummarize400Schema,
+  postVideoSummarize403Schema,
+  postVideoSummarize404Schema,
+  postVideoSummarize500Schema,
+  postVideoSummarizeMutationResponseSchema,
+  postVideoSummarizeQueryParamsSchema,
+} from "./zod/post-video-summarize-schema.ts";
+export {
+  postVideoTranscript200Schema,
+  postVideoTranscript400Schema,
+  postVideoTranscript403Schema,
+  postVideoTranscript404Schema,
+  postVideoTranscript500Schema,
+  postVideoTranscriptMutationResponseSchema,
+  postVideoTranscriptQueryParamsSchema,
+} from "./zod/post-video-transcript-schema.ts";
 export {
   postYoutubeChannelStats200Schema,
   postYoutubeChannelStats400Schema,

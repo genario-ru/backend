@@ -9388,6 +9388,652 @@
         }
       }
     },
+    "/video/transcript": {
+      "get": {
+        "summary": "Video Transcript",
+        "tags": [
+          "Video"
+        ],
+        "description": "Extract the spoken transcript from any publicly accessible video URL.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "description": "Direct URL to the video file"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "access_key",
+            "required": false,
+            "description": "Project access key (also accepted as x-access-key header)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transcript extracted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Transcript extracted successfully",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "videoId": {
+                          "type": "string"
+                        },
+                        "transcript": {
+                          "type": "string",
+                          "description": "Full plain-text transcript"
+                        },
+                        "transcriptSegments": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "text": {
+                                "type": "string"
+                              },
+                              "start": {
+                                "type": "number"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "timestamp": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "wordCount": {
+                          "type": "integer"
+                        },
+                        "segments": {
+                          "type": "integer"
+                        },
+                        "language": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing required parameter",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Credit limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Credit limit exceeded",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Content not found or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Content not found or unavailable",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Internal server error",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Video Transcript",
+        "tags": [
+          "Video"
+        ],
+        "description": "Extract the spoken transcript from any publicly accessible video URL.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "description": "Direct URL to the video file"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "access_key",
+            "required": false,
+            "description": "Project access key (also accepted as x-access-key header)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transcript extracted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Transcript extracted successfully",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "videoId": {
+                          "type": "string"
+                        },
+                        "transcript": {
+                          "type": "string",
+                          "description": "Full plain-text transcript"
+                        },
+                        "transcriptSegments": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "text": {
+                                "type": "string"
+                              },
+                              "start": {
+                                "type": "number"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "timestamp": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "wordCount": {
+                          "type": "integer"
+                        },
+                        "segments": {
+                          "type": "integer"
+                        },
+                        "language": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing required parameter",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Credit limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Credit limit exceeded",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Content not found or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Content not found or unavailable",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Internal server error",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/video/summarize": {
+      "get": {
+        "summary": "Video Summarize",
+        "tags": [
+          "Video"
+        ],
+        "description": "Summarize any publicly accessible video URL using AI.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "description": "Direct URL to the video file"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "access_key",
+            "required": false,
+            "description": "Project access key (also accepted as x-access-key header)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Summary generated successfully",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "summary": {
+                          "type": "string"
+                        },
+                        "mainTopics": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "keyPoints": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "tone": {
+                          "type": "string"
+                        },
+                        "targetAudience": {
+                          "type": "string"
+                        },
+                        "quotes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing required parameter",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Credit limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Credit limit exceeded",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Content not found or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Content not found or unavailable",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Internal server error",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Video Summarize",
+        "tags": [
+          "Video"
+        ],
+        "description": "Summarize any publicly accessible video URL using AI.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "url",
+            "required": false,
+            "description": "Direct URL to the video file"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "access_key",
+            "required": false,
+            "description": "Project access key (also accepted as x-access-key header)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Summary generated successfully",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "summary": {
+                          "type": "string"
+                        },
+                        "mainTopics": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "keyPoints": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "tone": {
+                          "type": "string"
+                        },
+                        "targetAudience": {
+                          "type": "string"
+                        },
+                        "quotes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing required parameter",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Credit limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Credit limit exceeded",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Content not found or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Content not found or unavailable",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Internal server error",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tiktok/transcript/bulk": {
       "post": {
         "summary": "Tiktok Transcript Bulk",
@@ -11344,6 +11990,10 @@
     {
       "name": "Instagram",
       "description": "Instagram post, reel, profile endpoints"
+    },
+    {
+      "name": "Video",
+      "description": "Direct-URL video transcription / summarization"
     }
   ]
 }

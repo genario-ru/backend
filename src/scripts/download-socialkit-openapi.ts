@@ -12,7 +12,7 @@ import { env } from "@/env";
 
 const OUTPUT_DIR = "deps/api";
 const FINAL_FILENAME = "socialkit.json";
-const TARGET_TAGS = ["YouTube", "Instagram", "TikTok"];
+const TARGET_TAGS = ["YouTube", "Instagram", "TikTok", "Video"];
 const DOWNLOAD_URL = env.SOCIALKIT_OPENAPI_URL;
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================

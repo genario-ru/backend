@@ -189,6 +189,26 @@ export type {
   GetTiktokTranscriptQueryResponse,
 } from "./get-tiktok-transcript.ts";
 export type {
+  GetVideoSummarize200,
+  GetVideoSummarize400,
+  GetVideoSummarize403,
+  GetVideoSummarize404,
+  GetVideoSummarize500,
+  GetVideoSummarizeQuery,
+  GetVideoSummarizeQueryParams,
+  GetVideoSummarizeQueryResponse,
+} from "./get-video-summarize.ts";
+export type {
+  GetVideoTranscript200,
+  GetVideoTranscript400,
+  GetVideoTranscript403,
+  GetVideoTranscript404,
+  GetVideoTranscript500,
+  GetVideoTranscriptQuery,
+  GetVideoTranscriptQueryParams,
+  GetVideoTranscriptQueryResponse,
+} from "./get-video-transcript.ts";
+export type {
   GetYoutubeChannelStats200,
   GetYoutubeChannelStats400,
   GetYoutubeChannelStats403,
@@ -558,6 +578,26 @@ export type {
   PostTiktokTranscriptBulkMutationRequest,
   PostTiktokTranscriptBulkMutationResponse,
 } from "./post-tiktok-transcript-bulk.ts";
+export type {
+  PostVideoSummarize200,
+  PostVideoSummarize400,
+  PostVideoSummarize403,
+  PostVideoSummarize404,
+  PostVideoSummarize500,
+  PostVideoSummarizeMutation,
+  PostVideoSummarizeMutationResponse,
+  PostVideoSummarizeQueryParams,
+} from "./post-video-summarize.ts";
+export type {
+  PostVideoTranscript200,
+  PostVideoTranscript400,
+  PostVideoTranscript403,
+  PostVideoTranscript404,
+  PostVideoTranscript500,
+  PostVideoTranscriptMutation,
+  PostVideoTranscriptMutationResponse,
+  PostVideoTranscriptQueryParams,
+} from "./post-video-transcript.ts";
 export type {
   PostYoutubeChannelStats200,
   PostYoutubeChannelStats400,
