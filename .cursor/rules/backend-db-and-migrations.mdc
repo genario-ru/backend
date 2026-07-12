@@ -1,35 +1,21 @@
 ---
 description: Rules for DB schema changes and Drizzle migrations
-globs: src/db/**/*.ts
+globs: src/db/**
 alwaysApply: false
 ---
 
-# Backend DB And Migrations
+# Database And Migrations
 
-- Schema source lives in `src/db/schemas/**`; exports are collected through `src/db/schema.ts`.
+- Schema source: `src/db/schemas/**`, exported through `src/db/schema.ts`.
 - Migrations live in `src/db/migrations/**`.
-- Agents may edit schema files, relations, and `src/db/schema.ts` exports.
-- Agents must not generate, edit, or delete migration files in `src/db/migrations/**`.
-- Agents must not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:studio`, or any command that creates/applies schema/data changes unless the owner explicitly asks for that exact command in the current task.
-- Migration generation and seed execution are owner-only steps. If schema files change, report that the owner must generate a migration.
-- Add required indexes, foreign keys, and native Drizzle `relations(...)` in the same schema change.
-- Keep Drizzle query, relation, enum, index, and cascade style consistent with nearby schemas.
-- If a table shape is returned by an API, update the matching domain entity/handler schemas under `src/domains/<domain>/schemas/**`.
-- If a schema change affects workers, billing, auth, or AI workflows, inspect the corresponding service code before finalizing.
+- When schema files change, run `pnpm db:generate` and commit SQL, snapshot, and journal together with the schema change.
+- Do not manually rewrite or delete old migrations if it breaks migration history order.
+- Do not run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
+- Migration application is deploy-stage only (`pnpm db:migrate` via `dist/migrate.js`); agents must not apply migrations to a database.
+- Seed execution remains a separate manual/local step unless explicitly asked.
 
-## What Not To Do
+## Agent workflow
 
-- Do not create migration files from an AI workflow.
-- Do not apply migrations to a database from an AI workflow.
-- Do not manually rewrite old migrations if it breaks migration history.
-- Do not mix business-rule and infra SQL changes in one large unstructured commit.
-- Do not add DB columns without checking API response schemas and serialization code that depend on that entity.
-
-## Reference Examples
-
-- Primary table with many FKs, indexes, and relations: `src/db/schemas/primary/scenario.ts`.
-- Billing table with enum, composite indexes, and partial unique index: `src/db/schemas/billing/subscription.ts`.
-- Linking table with composite uniqueness and relation pairs: `src/db/schemas/linking/application-to-product-feature.ts`.
-- Many-to-many linking pattern: `src/db/schemas/linking/scenario-to-platform.ts`.
-- Barrel exports: `src/db/schema.ts`.
-- Default-data wiring: `src/db/seed/config.ts` and matching `data/*.json` files.
+- Edit schemas, relations, indexes, and exports.
+- Generate migrations with `pnpm db:generate` when schema changes.
+- Do not apply migrations to a database from an agent workflow.

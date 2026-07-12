@@ -13,12 +13,12 @@ alwaysApply: true
   - Env config: `pnpm validate:env` when a representative `.env` is available.
   - Build/runtime entrypoints: `pnpm build`.
   - Route/API contract: `pnpm lint:typescript`, targeted tests if available, and OpenAPI metadata inspection.
-  - DB schema: run TypeScript validation when schema files changed, but do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
+  - DB schema: run `pnpm lint:typescript` when schema files changed; run `pnpm db:generate` when schema files changed and include migration artifacts. Do not run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
   - External API codegen: relevant `api:download:*`, `pnpm api:generate`, then TypeScript check.
   - Tests changed or behavior covered by tests: `pnpm test:unit` or targeted Vitest; `pnpm test` when broader validation is needed.
 - If full checks were not run, state it explicitly and list what remains unverified.
 - Do not claim full completion without actual validation or explicit constraints.
-- For DB schema changes, state that migration generation is owner-only and remains to be done by the owner.
+- For DB schema changes, include generated migration files from `pnpm db:generate` in the same change. Do not run `pnpm db:migrate` from an agent workflow.
 
 ## Quality Principle
 

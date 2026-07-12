@@ -30,7 +30,7 @@ Domain code usually spans:
 ## Workflow
 
 1. Start with schemas and route skeletons that match local precedent.
-2. Add DB schema only when persistence is required. Do not generate or edit migrations.
+2. Add DB schema only when persistence is required. Run `pnpm db:generate` when schema files change.
 3. Add MQ queue/worker only when work should be asynchronous.
 4. Register routes in `src/entrypoints/server.ts`.
 5. Register queues in Bull Board and workers in `src/entrypoints/workers.ts`.
@@ -40,7 +40,7 @@ Domain code usually spans:
 
 - Domain files are in the real backend layout, not `src/schemas`.
 - Routes are exported and registered.
-- DB schema changes include required indexes/relations and are reported as needing owner-generated migration SQL.
+- DB schema changes include required indexes/relations and generated migration SQL from `pnpm db:generate`.
 - Workers have queue registration and shutdown handling.
 - Validation commands and skipped checks are reported.
 
