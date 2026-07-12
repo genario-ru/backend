@@ -22,6 +22,7 @@ import { originValidationMiddleware } from "@/middleware/origin-validation-middl
 import { ideasListExportQueue } from "@/mq/ideas-list-export/queue";
 import { ideasListGenerationQueue } from "@/mq/ideas-list-generation/queue";
 import { mailSendQueue } from "@/mq/mail-send/queue";
+import { profileAttachmentVideoProcessingQueue } from "@/mq/profile-attachment-video-processing/queue";
 import { profileChannelVideoImportQueue } from "@/mq/profile-channel-video-import/queue";
 import { profilesFromChannelsGenerationQueue } from "@/mq/profiles-from-channels-generation/queue";
 import { scenarioChapterScenesGenerationQueue } from "@/mq/scenario-chapter-scenes-generation/queue";
@@ -181,6 +182,7 @@ createBullBoard({
     new BullMQAdapter(ideasListExportQueue),
     new BullMQAdapter(profilesFromChannelsGenerationQueue),
     new BullMQAdapter(profileChannelVideoImportQueue),
+    new BullMQAdapter(profileAttachmentVideoProcessingQueue),
     new BullMQAdapter(scenarioChaptersGenerationQueue),
     new BullMQAdapter(scenarioScenesGenerationQueue),
     new BullMQAdapter(scenarioChapterScenesGenerationQueue),

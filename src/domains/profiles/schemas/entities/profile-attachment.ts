@@ -20,7 +20,7 @@ export const profileAttachmentFileSchema = attachmentSchema
     bucketName: true,
   })
   .extend({
-    url: z.string(),
+    url: z.string().nullable(),
   })
   .meta({
     title: "Profile attachment file",

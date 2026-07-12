@@ -1,12 +1,12 @@
 import { db } from "@/db";
-import { profileAttachment } from "@/db/schema";
-import { createAttachmentFromFile } from "@/domains/attachments/services/create-attachment-from-file";
+import { isProfileAttachmentImageType } from "@/domains/profiles/constants/profile-attachment-types";
 import type { ProfileAttachmentExtended } from "@/domains/profiles/schemas/entities/profile-attachment";
 import type { ProfileAttachmentRecord } from "@/domains/profiles/types/profile-response";
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
 
-import { prepareProfileAttachmentForResponse } from "../utils/prepare-profile-attachment-for-response";
+import { createProfileImageAttachmentFromFile } from "./create-profile-image-attachment-from-file";
+import { createProfileVideoAttachmentFromFile } from "./create-profile-video-attachment-from-file";
 
 type CreateProfileAttachmentFromFileParams = {
   userId: string;
@@ -36,22 +36,18 @@ export async function createProfileAttachmentFromFile({
     });
   }
 
-  const createdAttachment = await createAttachmentFromFile({
-    userId,
-    file,
-  });
-
-  const [createdProfileAttachment] = await db
-    .insert(profileAttachment)
-    .values({
+  if (isProfileAttachmentImageType(type)) {
+    return createProfileImageAttachmentFromFile({
+      userId,
       profileId,
       type,
-      attachmentId: createdAttachment.id,
-    })
-    .returning();
+      file,
+    });
+  }
 
-  return prepareProfileAttachmentForResponse({
-    profileAttachment: createdProfileAttachment,
-    attachment: createdAttachment,
+  return createProfileVideoAttachmentFromFile({
+    userId,
+    profileId,
+    file,
   });
 }

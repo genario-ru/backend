@@ -18,6 +18,10 @@ alwaysApply: true
 - Avoid `any`; if strict typing is not possible yet, use `unknown` with narrowing or add a named type that reflects the actual data boundary.
 - Do not edit generated code under `src/codegen/api/**` by hand. Change specs/config/scripts, regenerate, then inspect the diff.
 - Do not mix policy and workflow: coding standards belong to rules, step-by-step procedures belong to skills.
+- Utility and helper functions accept parameters as a single object (`{ field }`), not positional arguments, unless the helper truly has zero inputs.
+- In `src/lib/**/utils/**` and `src/domains/**/utils/**`, keep one exported function per file.
+- Prefer `const` and early returns over `let` with later reassignment.
+- Do not use inline ternaries for conditional async logic; extract a named function or use an explicit `if`.
 
 ## Required Self-Check Before Finishing
 

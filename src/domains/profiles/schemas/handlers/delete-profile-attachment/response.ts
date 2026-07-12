@@ -1,6 +1,5 @@
-import { z } from "@/lib/zod";
-
 import { attachmentSchema } from "@/domains/attachments/schemas/entities/attachment";
+import { z } from "@/lib/zod";
 
 export const deleteProfileAttachmentResponseSchema = z
   .object({

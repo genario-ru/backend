@@ -15,23 +15,32 @@ const DEFAULT_ATTACHMENT_MIME_TYPE = "application/octet-stream";
 type CreateAttachmentFromFileParams = {
   userId: string;
   file: File;
+  buffer?: Buffer;
+  mimeType?: string;
+  fileName?: string;
 };
 
 export async function createAttachmentFromFile({
   userId,
   file,
+  buffer: providedBuffer,
+  mimeType: providedMimeType,
+  fileName: providedFileName,
 }: CreateAttachmentFromFileParams): Promise<Attachment> {
-  const mimeType = file.type || DEFAULT_ATTACHMENT_MIME_TYPE;
+  const mimeType =
+    providedMimeType ?? file.type ?? DEFAULT_ATTACHMENT_MIME_TYPE;
+
+  const fileName = providedFileName ?? file.name;
   const attachmentId = randomUUID();
 
   const attachmentKey = createUploadedAttachmentS3Key({
     userId,
     attachmentId,
-    fileName: file.name,
+    fileName,
   });
 
   try {
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = providedBuffer ?? Buffer.from(await file.arrayBuffer());
 
     await uploadBufferToS3({
       key: attachmentKey,
@@ -41,7 +50,7 @@ export async function createAttachmentFromFile({
   } catch (error) {
     console.error("Не удалось загрузить attachment в S3", {
       userId,
-      fileName: file.name,
+      fileName,
       error,
     });
 
@@ -57,7 +66,7 @@ export async function createAttachmentFromFile({
       .values({
         id: attachmentId,
         userId,
-        fileName: file.name,
+        fileName,
         key: attachmentKey,
         bucketName: env.S3_BUCKET_NAME,
         mimeType,

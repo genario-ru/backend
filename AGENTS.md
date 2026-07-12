@@ -63,6 +63,23 @@ update the documentation in the same change.
 - Before adding a new pattern, prove there is no suitable existing pattern by
   inspecting nearby code.
 
+## Code Style
+
+- Before writing new code, inspect nearby files in the same domain and follow
+  their naming, structure, and parameter style. Do not invent filenames or
+  layouts from scratch.
+- Utility and helper functions accept parameters as a single object
+  (`{ field }`), not as positional arguments. Zero-argument helpers are the
+  only common exception.
+- In `src/lib/**/utils/**` and `src/domains/**/utils/**`, keep one exported
+  function per file.
+- In `src/mq/<name>/`, use only the established filenames: `queue.ts`,
+  `worker.ts`, and optionally `utils.ts` or `types.ts`. Do not add custom names
+  like `file-name-utils.ts` or extra subfolders.
+- Prefer `const` and early returns over `let` with later reassignment.
+- Do not use inline ternaries for conditional async logic or object fields;
+  extract a named function or use an explicit `if` with a variable.
+
 ## Source Layout
 
 | Path              | Purpose                                                       |

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, uuid } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "@/db/constants/timestamps";
 
@@ -10,6 +10,13 @@ export const profileAttachmentType = pgEnum("profile_attachment_type", [
   "actor-reference",
   "thumbnail-reference",
   "video-reference",
+]);
+
+export const profileAttachmentStatus = pgEnum("profile_attachment_status", [
+  "pending",
+  "generation",
+  "failed",
+  "ready",
 ]);
 
 export const profileAttachment = pgTable("profile_attachment", {
@@ -27,6 +34,8 @@ export const profileAttachment = pgTable("profile_attachment", {
       onUpdate: "cascade",
     })
     .notNull(),
+  status: profileAttachmentStatus("status").default("ready").notNull(),
+  statusDetails: text("status_details"),
   ...timestamps,
 });
 
