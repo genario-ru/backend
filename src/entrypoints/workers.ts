@@ -3,7 +3,6 @@ import { initSentry, registerWorkerErrorHandlers } from "@/lib/sentry";
 import { ideasListExportWorker } from "@/mq/ideas-list-export/worker";
 import { ideasListGenerationWorker } from "@/mq/ideas-list-generation/worker";
 import { mailSendWorker } from "@/mq/mail-send/worker";
-import { profileAttachmentVideoProcessingWorker } from "@/mq/profile-attachment-video-processing/worker";
 import { profileChannelVideoImportWorker } from "@/mq/profile-channel-video-import/worker";
 import { profilesFromChannelsGenerationWorker } from "@/mq/profiles-from-channels-generation/worker";
 import { scenarioChapterScenesGenerationWorker } from "@/mq/scenario-chapter-scenes-generation/worker";
@@ -36,7 +35,6 @@ registerWorkerErrorHandlers([
   ideasListExportWorker,
   profilesFromChannelsGenerationWorker,
   profileChannelVideoImportWorker,
-  profileAttachmentVideoProcessingWorker,
   scenarioChaptersGenerationWorker,
   scenarioScenesGenerationWorker,
   scenarioChapterScenesGenerationWorker,
@@ -77,7 +75,6 @@ const shutdown = async () => {
   await ideasListExportWorker.close();
   await profilesFromChannelsGenerationWorker.close();
   await profileChannelVideoImportWorker.close();
-  await profileAttachmentVideoProcessingWorker.close();
   await scenarioChaptersGenerationWorker.close();
   await scenarioScenesGenerationWorker.close();
   await scenarioChapterScenesGenerationWorker.close();

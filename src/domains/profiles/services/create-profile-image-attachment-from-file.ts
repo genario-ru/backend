@@ -38,7 +38,6 @@ export async function createProfileImageAttachmentFromFile({
       profileId,
       type,
       attachmentId: createdAttachment.id,
-      status: "ready",
     })
     .returning();
 

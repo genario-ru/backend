@@ -1,9 +1,10 @@
+import { getSignedS3Url } from "@/lib/s3/utils/get-signed-s3-url";
+
 import type { ProfileAttachmentExtended } from "../schemas/entities/profile-attachment";
 import type {
   AttachmentRecord,
   ProfileAttachmentRecord,
 } from "../types/profile-response";
-import { resolveProfileAttachmentUrl } from "./resolve-profile-attachment-url";
 
 type PrepareProfileAttachmentForResponseParams = {
   profileAttachment: ProfileAttachmentRecord;
@@ -14,18 +15,13 @@ export async function prepareProfileAttachmentForResponse({
   profileAttachment,
   attachment,
 }: PrepareProfileAttachmentForResponseParams): Promise<ProfileAttachmentExtended> {
-  const { key, ...attachmentData } = attachment;
-
-  const url = await resolveProfileAttachmentUrl({
-    status: profileAttachment.status,
-    key,
-  });
+  const { key, bucketName, ...attachmentData } = attachment;
 
   return {
     ...profileAttachment,
     attachment: {
       ...attachmentData,
-      url,
+      url: await getSignedS3Url(key),
     },
   };
 }
