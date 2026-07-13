@@ -19,7 +19,7 @@ If it is unclear, prefer «я» for a person-led channel and «мы» for an org
 
 - Core topics and areas of expertise
 - Content style, format, and approach (educational, entertainment, commentary, reviews, etc.)
-- Recurring themes across recent videos
+- Recurring themes across recent videos (use video summaries, key points, and transcript excerpts when available)
 - Unique voice, perspective, or brand positioning
 - Any notable patterns in production quality or presentation
 - 3–6 sentences minimum, written in Russian, in first person (я or мы depending on the author).

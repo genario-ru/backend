@@ -65,7 +65,7 @@ function buildComponentTypesBlock(types: SceneComponentType[]): string {
       const badge = ct.optional ? "[optional]" : "[required]";
       const desc = ct.description ? `: ${ct.description}` : "";
 
-      return `- name: "${ct.name}" ${badge}${desc}\n  typeId: "${ct.id}"`;
+      return `- name: "${ct.name}" ${badge}${desc}\n- typeId: "${ct.id}"`;
     })
     .join("\n");
 }

@@ -1,9 +1,8 @@
-import { getUserProfile as getRuTubeUserProfile } from "@/codegen/api/rutube/clients";
-import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
-  extractYouTubeChannelIdentifier,
-  getYouTubeChannel,
-} from "@/lib/youtube";
+  isSocialKitVideoPlatformSlug,
+  type SocialKitVideoPlatformSlug,
+} from "@/lib/socialkit/types/video-platform-slug";
+import { fetchProfileChannelStats } from "@/lib/socialkit/utils/fetch-profile-channel-stats";
 
 type CheckProfileChannelExistsParams = {
   url: string;
@@ -14,36 +13,23 @@ export async function checkProfileChannelExists({
   url,
   platformSlug,
 }: CheckProfileChannelExistsParams): Promise<boolean> {
-  switch (platformSlug) {
-    case "youtube":
-      const youTubeIdentifier = extractYouTubeChannelIdentifier(url);
+  if (!isSocialKitVideoPlatformSlug(platformSlug)) {
+    return false;
+  }
 
-      if (!youTubeIdentifier) return false;
+  const socialKitPlatformSlug: SocialKitVideoPlatformSlug = platformSlug;
 
-      const youTubeChannel = await getYouTubeChannel(youTubeIdentifier).catch(
-        (error) => {
-          console.error("Error getting YouTube channel", error);
-          return null;
-        },
-      );
-
-      return youTubeChannel !== null;
-
-    case "rutube":
-      const identifier = extractRuTubeChannelIdentifier(url);
-
-      if (!identifier) return false;
-
-      const ruTubeChannel = await getRuTubeUserProfile({
-        author_id: identifier.authorId,
-      }).catch((error) => {
-        console.error("Error getting RuTube channel", error);
-        return null;
+  return fetchProfileChannelStats({
+    url,
+    platformSlug: socialKitPlatformSlug,
+  })
+    .then((stats) => stats.name.length > 0)
+    .catch((error) => {
+      console.error("Error getting channel stats from SocialKit", {
+        platformSlug,
+        error,
       });
 
-      return ruTubeChannel !== null;
-
-    default:
       return false;
-  }
+    });
 }

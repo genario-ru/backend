@@ -29,7 +29,7 @@ export const profileChannelVideo = pgTable("profile_channel_video", {
     },
   ),
   externalId: text("external_id"),
-  url: text("url").notNull(),
+  url: text("url"),
   thumbnailUrl: text("thumbnail_url"),
   name: text("name"),
   description: text("description"),
