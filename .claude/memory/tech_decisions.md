@@ -44,11 +44,9 @@ Why: migration SQL is reviewable in PRs; application happens at deploy.
 
 ## External API Clients Are Generated
 
-YooKassa and Rutube clients live under `src/codegen/api/**`.
+YooKassa and SocialKit clients live under `src/codegen/api/**`.
 
 Why: generated clients track provider specs. Manual edits drift and are overwritten by Kubb.
-
-Note: Rutube currently uses a pinned local spec in `deps/api/rutube.json`.
 
 ## AI Prompts Are Triplets
 

@@ -27,7 +27,7 @@ file.
   `src/db/migrations/**`.
 - Validation/OpenAPI: Zod 4, `hono-openapi`, response schemas, and OpenAPI
   metadata.
-- External API clients: Kubb-generated code for YooKassa and Rutube in
+- External API clients: Kubb-generated code for YooKassa and SocialKit in
   `src/codegen/api/**`.
 - AI prompts: Markdown templates, typed props, and builders under
   `src/ai/prompts/**`.
@@ -118,7 +118,7 @@ structure only and do not copy broken text.
 | Worker/server registration    | `src/entrypoints/workers.ts`, `src/entrypoints/server.ts`                                                                                                                                                                                    |
 | Env propagation               | `env.ts`, `.env.example`, `docker-compose.yml`                                                                                                                                                                                               |
 | AI prompt triplet             | `src/ai/prompts/templates/generate-scenario-metadata.md`, `src/ai/prompts/types/generate-scenario-metadata.ts`, `src/ai/prompts/builders/generate-scenario-metadata.ts`, plus `generate-ideas-list.*` for optional context/list construction |
-| OpenAPI/Kubb codegen          | `kubb.config.ts`, `src/scripts/download-yookassa-openapi.ts`, `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`                                                                                                           |
+| OpenAPI/Kubb codegen          | `kubb.config.ts`, `src/scripts/download-yookassa-openapi.ts`, `src/lib/yookassa/client/index.ts`, `src/lib/socialkit/client/index.ts`                                                                                                        |
 
 ## Placement Rules
 
@@ -244,7 +244,7 @@ Generated folders:
 
 ```text
 src/codegen/api/yookassa/**
-src/codegen/api/rutube/**
+src/codegen/api/socialkit/**
 ```
 
 Do not edit generated code manually. Update source specs/config/scripts, then
@@ -254,12 +254,9 @@ Use:
 
 ```bash
 pnpm api:download:yookassa
+pnpm api:download:socialkit
 pnpm api:generate
 ```
-
-Rutube currently has `deps/api/rutube.json` and generated output, but no
-download script in `package.json`. Treat it as a pinned local spec unless a task
-explicitly changes that workflow.
 
 ## Environment Variables
 

@@ -31,7 +31,6 @@
     "@bull-board/api": "^6.16.4",
     "@bull-board/hono": "^6.16.4",
     "@fontsource/noto-sans": "^5.2.10",
-    "@googleapis/youtube": "^31.0.0",
     "@hono/node-server": "^1.19.3",
     "@hono/standard-validator": "^0.2.0",
     "@hono/zod-validator": "^0.7.6",

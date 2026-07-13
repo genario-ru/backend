@@ -42,8 +42,6 @@ export const env = createEnv({
     TERMINATE_EXPIRED_CREDITS_BATCHES_SCHEDULER_ENABLED: z
       .stringbool()
       .default(false),
-    YOUTUBE_API_KEY: z.string().min(1),
-    RUTUBE_BASE_API_URL: z.url(),
     FRONTEND_BASE_URL: z.url(),
     BACKEND_BASE_URL: z.url(),
     SMTP_HOST: z.string().min(1),

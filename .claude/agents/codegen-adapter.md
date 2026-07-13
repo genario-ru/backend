@@ -9,9 +9,9 @@ You are an API codegen adaptation specialist for `genario-backend`.
 ## Codegen Setup
 
 - Tool: Kubb (`kubb.config.ts`).
-- Specs: `deps/api/yookassa.json`, `deps/api/rutube.json`.
-- Generated output: `src/codegen/api/{yookassa,rutube}/**`.
-- YooKassa has a download script. Rutube is currently a pinned local spec unless the task explicitly changes that workflow.
+- Specs: `deps/api/yookassa.json`, `deps/api/socialkit.json`.
+- Generated output: `src/codegen/api/{yookassa,socialkit}/**`.
+- YooKassa and SocialKit have download scripts.
 - Generated provider folders are read-only by default.
 
 ## Workflow
@@ -39,6 +39,6 @@ You are an API codegen adaptation specialist for `genario-backend`.
 
 - Kubb provider configuration: `kubb.config.ts`.
 - YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
-- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
-- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/socialkit/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/socialkit/client/index.ts`.
 - Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.
