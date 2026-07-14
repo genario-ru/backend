@@ -13,7 +13,8 @@ import {
   type CreateProfilesFromChannelsResponse,
   createProfilesFromChannelsResponseSchema,
 } from "@/domains/profiles/schemas/handlers/create-profiles-from-channels/response";
-import { validateProfileChannel } from "@/domains/profiles/services/validate-profile-channel";
+import { resolveProfileChannel } from "@/domains/profiles/services/resolve-profile-channel";
+import { mapResolveProfileChannelResultToValidation } from "@/domains/profiles/utils/map-resolve-profile-channel-result-to-validation";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -56,10 +57,12 @@ createProfilesFromChannelsRoute.post(
   async (c) => {
     const { channelUrls } = c.req.valid("json");
 
-    const validationResults = await Promise.all(
-      channelUrls.map((channelUrl) =>
-        validateProfileChannel({ url: channelUrl }),
-      ),
+    const resolveResults = await Promise.all(
+      channelUrls.map((channelUrl) => resolveProfileChannel({ url: channelUrl })),
+    );
+
+    const validationResults = resolveResults.map((result) =>
+      mapResolveProfileChannelResultToValidation({ result }),
     );
 
     const errorValidationResults = validationResults.filter(
@@ -97,17 +100,18 @@ createProfilesFromChannelsRoute.post(
       .values({ userId: user.id, status: "pending" })
       .returning();
 
-    const successValidationResults = validationResults.filter(
+    const successResolveResults = resolveResults.filter(
       (result) => result.status === "success",
     );
 
     await enqueueProfilesFromChannelsGeneration({
       jobId: job.id,
       userId: user.id,
-      channels: successValidationResults.map((result) => ({
-        url: result.url,
-        platformId: result.platform.id,
-        platformSlug: result.platform.slug,
+      channels: successResolveResults.map((result) => ({
+        url: result.data.url,
+        platformId: result.data.platform.id,
+        platformSlug: result.data.platform.slug,
+        stats: result.data.stats,
       })),
     });
 

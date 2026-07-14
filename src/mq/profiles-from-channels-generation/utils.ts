@@ -9,7 +9,7 @@ import {
   isSocialKitVideoPlatformSlug,
   type SocialKitVideoPlatformSlug,
 } from "@/lib/socialkit/types/video-platform-slug";
-import { fetchProfileChannelStats } from "@/lib/socialkit/utils/fetch-profile-channel-stats";
+import type { ProfileChannelStatsData } from "@/lib/socialkit/utils/fetch-profile-channel-stats";
 import {
   fetchProfileChannelVideoSummarize,
   fetchProfileChannelVideoTranscript,
@@ -24,20 +24,17 @@ const RECENT_VIDEOS_LIMIT = 3;
 export async function fetchChannelData(
   channelInput: ChannelInput,
 ): Promise<FetchedChannel | null> {
-  const { url, platformSlug } = channelInput;
+  const { url, platformSlug, stats } = channelInput;
 
   if (!isSocialKitVideoPlatformSlug(platformSlug)) {
     return null;
   }
 
-  const [stats, videos] = await Promise.all([
-    fetchProfileChannelStats({ url, platformSlug }),
-    fetchProfileChannelVideos({
-      url,
-      platformSlug,
-      limit: RECENT_VIDEOS_LIMIT,
-    }),
-  ]);
+  const videos = await fetchProfileChannelVideos({
+    url,
+    platformSlug,
+    limit: RECENT_VIDEOS_LIMIT,
+  });
 
   const enrichedVideos = await enrichChannelVideos({
     videos: videos.map((video) => ({ ...video, enrichment: null })),
@@ -123,7 +120,7 @@ export async function enrichChannelVideos({
 
 type BuildChannelDataInputParams = {
   platformSlug: string;
-  stats: Awaited<ReturnType<typeof fetchProfileChannelStats>>;
+  stats: ProfileChannelStatsData;
   videos: FetchedChannelVideo[];
 };
 

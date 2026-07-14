@@ -73,6 +73,13 @@ update the documentation in the same change.
   only common exception.
 - In `src/lib/**/utils/**` and `src/domains/**/utils/**`, keep one exported
   function per file.
+- In `src/domains/<domain>/services/**`, export the primary service entrypoint
+  only. Do not colocate helper utilities or multiple named types in the same
+  service file.
+- Put reusable domain helper utilities in `src/domains/<domain>/utils/**`.
+- Put domain-specific named types in `src/domains/<domain>/types/**` when a
+  module needs more than one type or when types are shared across services and
+  utilities.
 - In `src/mq/<name>/`, use only the established filenames: `queue.ts`,
   `worker.ts`, and optionally `utils.ts` or `types.ts`. Do not add custom names
   like `file-name-utils.ts` or extra subfolders.
@@ -127,7 +134,8 @@ Use this before creating files:
 1. HTTP endpoint or route index? Use `src/routes/**`.
 2. Request/response/entity schema for product API? Use
    `src/domains/<domain>/schemas/**`.
-3. Domain business service or domain-specific utility? Use `src/domains/<domain>`.
+3. Domain business service, domain-specific utility, or domain type? Use
+   `src/domains/<domain>` (`services/**`, `utils/**`, `types/**`).
 4. Table schema, relation, migration, or DB-only helper? Use `src/db/**`.
 5. Queue, worker, job payload, or job-specific utility? Use `src/mq/**`.
 6. External service adapter, client wrapper, S3/PDF/DOCX/email/provider code? Use
