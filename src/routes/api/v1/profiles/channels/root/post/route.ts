@@ -13,6 +13,8 @@ import {
   type CreateProfilesFromChannelsResponse,
   createProfilesFromChannelsResponseSchema,
 } from "@/domains/profiles/schemas/handlers/create-profiles-from-channels/response";
+import { resolveProfileChannel } from "@/domains/profiles/services/resolve-profile-channel";
+import { mapResolveProfileChannelResultToValidation } from "@/domains/profiles/utils/map-resolve-profile-channel-result-to-validation";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -24,8 +26,6 @@ import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
 import { createHonoApp } from "@/shared/utils/server/create-hono-app";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import { validateProfileChannel } from "../../utils";
 
 export const createProfilesFromChannelsRoute =
   createHonoApp().basePath("/profiles/channels");
@@ -57,8 +57,12 @@ createProfilesFromChannelsRoute.post(
   async (c) => {
     const { channelUrls } = c.req.valid("json");
 
-    const validationResults = await Promise.all(
-      channelUrls.map((channelUrl) => validateProfileChannel(channelUrl)),
+    const resolveResults = await Promise.all(
+      channelUrls.map((channelUrl) => resolveProfileChannel({ url: channelUrl })),
+    );
+
+    const validationResults = resolveResults.map((result) =>
+      mapResolveProfileChannelResultToValidation({ result }),
     );
 
     const errorValidationResults = validationResults.filter(
@@ -83,7 +87,7 @@ createProfilesFromChannelsRoute.post(
       });
 
       if (userProfiles.length >= tariff.maxProfilesAmount) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Forbidden,
           message:
             "Вы достигли максимального количества профилей по тарифу вашей подписки",
@@ -96,17 +100,18 @@ createProfilesFromChannelsRoute.post(
       .values({ userId: user.id, status: "pending" })
       .returning();
 
-    const successValidationResults = validationResults.filter(
+    const successResolveResults = resolveResults.filter(
       (result) => result.status === "success",
     );
 
     await enqueueProfilesFromChannelsGeneration({
       jobId: job.id,
       userId: user.id,
-      channels: successValidationResults.map((result) => ({
-        url: result.url,
-        platformId: result.platform.id,
-        platformSlug: result.platform.slug,
+      channels: successResolveResults.map((result) => ({
+        url: result.data.url,
+        platformId: result.data.platform.id,
+        platformSlug: result.data.platform.slug,
+        stats: result.data.stats,
       })),
     });
 

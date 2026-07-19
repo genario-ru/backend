@@ -1,16 +1,12 @@
-import { posix } from "node:path";
-
 export function getAttachmentDownloadFileName(
   attachmentId: string,
-  attachmentKey: string,
+  fileName: string | null | undefined,
 ): string {
-  const fileName = posix.basename(attachmentKey);
-
-  if (!fileName || fileName === "." || fileName === "/") {
+  if (!fileName?.trim()) {
     return `attachment-${attachmentId}`;
   }
 
-  return fileName;
+  return fileName.trim();
 }
 
 export function createContentDisposition(fileName: string): string {

@@ -5,6 +5,11 @@ import type {
   ToneInput,
 } from "@/ai/prompts/types/generate-profile-from-channels";
 import { interpolate } from "@/ai/utils/interpolate-template";
+import { truncateForPrompt } from "@/ai/utils/truncate-for-prompt";
+
+const PROMPT_VIDEO_DESCRIPTION_MAX_LENGTH = 200;
+const PROMPT_VIDEO_SUMMARY_MAX_LENGTH = 400;
+const PROMPT_VIDEO_TRANSCRIPT_MAX_LENGTH = 500;
 
 export function generateProfileFromChannelsPrompt({
   channels,
@@ -16,6 +21,53 @@ export function generateProfileFromChannelsPrompt({
   });
 }
 
+function buildVideoEntry(
+  video: ChannelDataInput["recentVideos"][number],
+): string {
+  const lines = [`- "${video.title}"`];
+
+  if (video.description) {
+    lines.push(
+      `- Description: ${truncateForPrompt({
+        text: video.description,
+        maxLength: PROMPT_VIDEO_DESCRIPTION_MAX_LENGTH,
+      })}`,
+    );
+  }
+
+  if (video.summary) {
+    lines.push(
+      `- Summary: ${truncateForPrompt({
+        text: video.summary,
+        maxLength: PROMPT_VIDEO_SUMMARY_MAX_LENGTH,
+      })}`,
+    );
+  }
+
+  if (video.mainTopics && video.mainTopics.length > 0) {
+    lines.push(`- Main topics: ${video.mainTopics.join(", ")}`);
+  }
+
+  if (video.keyPoints && video.keyPoints.length > 0) {
+    lines.push(`- Key points: ${video.keyPoints.join("; ")}`);
+  }
+
+  if (video.tone) {
+    lines.push(`- Tone: ${video.tone}`);
+  }
+
+  if (video.transcript) {
+    lines.push(
+      `- Transcript excerpt: ${truncateForPrompt({
+        text: video.transcript,
+        maxLength: PROMPT_VIDEO_TRANSCRIPT_MAX_LENGTH,
+      })}`,
+    );
+  }
+
+  return lines.join("\n");
+}
+
 function buildChannelsBlock(channels: ChannelDataInput[]): string {
   return channels
     .map((channel, index) => {
@@ -24,8 +76,20 @@ function buildChannelsBlock(channels: ChannelDataInput[]): string {
         `- Name: ${channel.name}`,
       ];
 
+      if (channel.slug) {
+        lines.push(`- Username: @${channel.slug.replace(/^@/, "")}`);
+      }
+
       if (channel.description) {
         lines.push(`- Description: ${channel.description}`);
+      }
+
+      if (channel.verified != null) {
+        lines.push(`- Verified: ${channel.verified ? "yes" : "no"}`);
+      }
+
+      if (channel.followers != null) {
+        lines.push(`- Followers: ${channel.followers}`);
       }
 
       if (channel.subscribersCount != null) {
@@ -38,12 +102,8 @@ function buildChannelsBlock(channels: ChannelDataInput[]): string {
 
       if (channel.recentVideos.length > 0) {
         lines.push("- Recent videos:");
-        channel.recentVideos.forEach((video, i) => {
-          const desc = video.description
-            ? ` — ${video.description.slice(0, 200)}`
-            : "";
-
-          lines.push(`  ${i + 1}. "${video.title}"${desc}`);
+        channel.recentVideos.forEach((video) => {
+          lines.push(buildVideoEntry(video));
         });
       }
 

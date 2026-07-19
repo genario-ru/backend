@@ -38,7 +38,7 @@ export const subscriptionMiddleware = createMiddleware<{
   });
 
   if (!foundActiveSubscription) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.PaymentRequired,
       message:
         "Для доступа к данному ресурсу необходимо иметь активную подписку",

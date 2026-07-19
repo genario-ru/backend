@@ -3,6 +3,7 @@ import {
   type GetMyProfilesResponse,
   getMyProfilesResponseSchema,
 } from "@/domains/profiles/schemas/handlers/get-my-profiles/response";
+import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -40,24 +41,16 @@ getMyProfilesRoute.get(
       orderBy: (profile, { desc }) => [desc(profile.createdAt)],
       where: (profile, { eq }) => eq(profile.userId, user.id),
       with: {
-        user: true,
         type: true,
         profileToPlatform: {
           with: { platform: true },
-        },
-        profileToTone: {
-          with: { tone: true },
         },
       },
     });
 
     return c.json<GetMyProfilesResponse>(
       getMyProfilesResponseSchema.parse({
-        data: foundProfiles.map((profile) => ({
-          ...profile,
-          platforms: profile.profileToPlatform.map(({ platform }) => platform),
-          tones: profile.profileToTone.map(({ tone }) => tone),
-        })),
+        data: foundProfiles.map(prepareProfileExtended),
       }),
     );
   },

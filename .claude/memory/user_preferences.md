@@ -16,7 +16,7 @@ When requirements, architecture, file placement, or implementation choices are u
 
 ## Database Boundaries
 
-Agents may edit Drizzle schemas, relations, indexes, and exports, but migration generation and seed execution are owner-only. Do not run `pnpm db:generate`, create/edit/delete files in `src/db/migrations/**`, or run database apply/seed/studio commands unless explicitly asked for that exact command.
+Agents may edit Drizzle schemas, relations, indexes, and exports. When schema files change, run `pnpm db:generate` and commit migration artifacts. Do not run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless explicitly asked for that exact command.
 
 ## Completion Checklist Is Mandatory
 

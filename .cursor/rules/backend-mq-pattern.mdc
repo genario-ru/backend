@@ -7,6 +7,7 @@ alwaysApply: false
 # Backend MQ Pattern
 
 - For each new queue, follow the paired structure already used in `src/mq/**`: `queue.ts` + `worker.ts`, with `types.ts` or `utils.ts` only when the local pattern needs it.
+- Do not invent extra MQ filenames or folders such as `file-name-utils.ts` or `utils/create-job-temp-dir.ts`.
 - Type job payloads as `Queue<JobData>` and `Worker<JobData>`; avoid implicit object payloads and `any`.
 - Use Redis via the shared module `@/lib/redis`.
 - Keep queue name, job name, payload type, and worker `job.data` shape consistent.

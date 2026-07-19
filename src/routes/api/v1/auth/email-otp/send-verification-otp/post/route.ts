@@ -49,7 +49,7 @@ sendVerificationOtpRoute.post(
         sendVerificationOtpResponseSchema.parse(response),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при отправке кода подтверждения",
       });

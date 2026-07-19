@@ -27,6 +27,9 @@ export const env = createEnv({
     VSELLM_API_KEY: z.string().min(1),
     VSELLM_STRUCTURED_OUTPUT_MODEL: z.string().min(1),
     VSELLM_IMAGE_MODEL: z.string().min(1),
+    SOCIALKIT_OPENAPI_URL: z.url(),
+    SOCIALKIT_BASE_API_URL: z.url(),
+    SOCIALKIT_API_KEY: z.string().min(1),
     YOOKASSA_OPENAPI_URL: z.url(),
     YOOKASSA_BASE_URL: z.url(),
     YOOKASSA_SECRET_KEY: z.string().min(1),
@@ -39,8 +42,6 @@ export const env = createEnv({
     TERMINATE_EXPIRED_CREDITS_BATCHES_SCHEDULER_ENABLED: z
       .stringbool()
       .default(false),
-    YOUTUBE_API_KEY: z.string().min(1),
-    RUTUBE_BASE_API_URL: z.url(),
     FRONTEND_BASE_URL: z.url(),
     BACKEND_BASE_URL: z.url(),
     SMTP_HOST: z.string().min(1),

@@ -76,7 +76,7 @@ export const ideasListGenerationWorker = new Worker<IdeasListGenerationJobData>(
       ideasListTemplateDescription: foundIdeasList.template?.description,
       ideasListTemplateDetails: foundIdeasList.template?.details,
       ideasListProfileName: foundIdeasList.profile?.name,
-      ideasListProfileDescription: foundIdeasList.profile?.description,
+      ideasListProfileDescription: foundIdeasList.profile?.positioning,
       ideasListTones: foundIdeasList.ideasListToTone.map(
         ({ tone }) => tone.name,
       ),

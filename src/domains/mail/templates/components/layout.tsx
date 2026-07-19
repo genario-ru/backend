@@ -10,6 +10,7 @@ import {
 } from "@react-email/components";
 import type { ReactNode } from "react";
 
+import { getEmailSiteDomain } from "@/domains/mail/utils/get-email-site-domain";
 import { APP_NAME_CAPITALIZED } from "@/shared/constants/common/app-info";
 
 import {
@@ -18,6 +19,7 @@ import {
   footerStyle,
   headerStyle,
   hrStyle,
+  siteDomainBadgeStyle,
 } from "../styles/layout";
 
 type EmailLayoutProps = {
@@ -26,6 +28,8 @@ type EmailLayoutProps = {
 };
 
 export function EmailLayout({ preview, children }: EmailLayoutProps) {
+  const siteDomain = getEmailSiteDomain();
+
   return (
     <Html lang="ru">
       <Head />
@@ -34,6 +38,7 @@ export function EmailLayout({ preview, children }: EmailLayoutProps) {
         <Container style={containerStyle}>
           <Section>
             <Text style={headerStyle}>{APP_NAME_CAPITALIZED}</Text>
+            <Text style={siteDomainBadgeStyle}>{siteDomain}</Text>
           </Section>
           {children}
           <Hr style={hrStyle} />

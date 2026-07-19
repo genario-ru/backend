@@ -40,7 +40,7 @@ getSessionRoute.get(
         getSessionResponseSchema.parse(session),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при получении сессии",
       });

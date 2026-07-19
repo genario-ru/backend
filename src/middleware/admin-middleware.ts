@@ -9,7 +9,7 @@ export const adminMiddleware = createMiddleware<{ Variables: AuthType }>(
     const user = c.get("user");
 
     if (user.role !== "admin") {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Доступ к данному ресурсу разрешен только администраторам",
       });

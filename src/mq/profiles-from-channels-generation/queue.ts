@@ -1,6 +1,7 @@
 import { Queue } from "bullmq";
 
 import { redis } from "@/lib/redis";
+import type { ProfileChannelStatsData } from "@/lib/socialkit/utils/fetch-profile-channel-stats";
 
 export const PROFILES_FROM_CHANNELS_GENERATION_QUEUE_NAME =
   "profiles-from-channels-generation";
@@ -9,6 +10,7 @@ export type ChannelInput = {
   url: string;
   platformId: string;
   platformSlug: string;
+  stats: ProfileChannelStatsData;
 };
 
 export type ProfilesFromChannelsGenerationJobData = {

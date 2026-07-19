@@ -54,7 +54,7 @@ getScenarioExportsRoute.get(
     const tariff = c.get("tariff");
 
     if (!tariff.exportAvailable) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Экспорт сценариев не доступен по тарифу вашей подписки",
       });
@@ -66,7 +66,7 @@ getScenarioExportsRoute.get(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный сценарий не существует или у вас нет возможности экспортировать его",
@@ -89,7 +89,7 @@ getScenarioExportsRoute.get(
     });
 
     if (!foundScenarioVersion) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Версия сценария не найдена",
       });

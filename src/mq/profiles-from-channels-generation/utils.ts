@@ -3,151 +3,150 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { groupChannelsByCreatorPrompt } from "@/ai/prompts/builders/group-channels-by-creator";
 import { analyticalSystemPrompt } from "@/ai/prompts/builders/system-prompt";
 import { polzaAI } from "@/ai/providers/open-ai/polza-ai";
-import {
-  getUserProfile as getRuTubeUserProfile,
-  getVideosByAuthorId as getRuTubeVideosByAuthorId,
-} from "@/codegen/api/rutube/clients";
 import { channelGroupsGeneratedSchema } from "@/domains/profiles/schemas/entities/channel-groups-generated";
 import { env } from "@/env";
-import { extractRuTubeChannelIdentifier } from "@/lib/rutube";
 import {
-  extractYouTubeChannelIdentifier,
-  getYouTubeChannel,
-  getYouTubeChannelVideos,
-} from "@/lib/youtube";
+  isSocialKitVideoPlatformSlug,
+  type SocialKitVideoPlatformSlug,
+} from "@/lib/socialkit/types/video-platform-slug";
+import type { ProfileChannelStatsData } from "@/lib/socialkit/utils/fetch-profile-channel-stats";
+import {
+  fetchProfileChannelVideoSummarize,
+  fetchProfileChannelVideoTranscript,
+} from "@/lib/socialkit/utils/fetch-profile-channel-video-enrichment";
+import { fetchProfileChannelVideos } from "@/lib/socialkit/utils/fetch-profile-channel-videos";
 
 import type { ChannelInput } from "./queue";
-import type { FetchedChannel } from "./types";
+import type { FetchedChannel, FetchedChannelVideo } from "./types";
 
-const RECENT_VIDEOS_LIMIT = 5;
+const RECENT_VIDEOS_LIMIT = 3;
 
 export async function fetchChannelData(
   channelInput: ChannelInput,
 ): Promise<FetchedChannel | null> {
-  const { url, platformSlug } = channelInput;
+  const { url, platformSlug, stats } = channelInput;
 
-  if (platformSlug === "youtube") {
-    return fetchYouTubeChannelData(channelInput, url);
+  if (!isSocialKitVideoPlatformSlug(platformSlug)) {
+    return null;
   }
 
-  if (platformSlug === "rutube") {
-    return fetchRuTubeChannelData(channelInput, url);
-  }
-
-  return null;
-}
-
-async function fetchYouTubeChannelData(
-  channelInput: ChannelInput,
-  url: string,
-): Promise<FetchedChannel | null> {
-  const identifier = extractYouTubeChannelIdentifier(url);
-
-  if (!identifier) return null;
-
-  const channel = await getYouTubeChannel(identifier);
-
-  if (!channel) return null;
-
-  const { platformSlug } = channelInput;
-  const snippet = channel.snippet ?? {};
-  const channelId = channel.id ?? "";
-
-  const videosResult = await getYouTubeChannelVideos(channel, {
-    maxResults: RECENT_VIDEOS_LIMIT,
+  const videos = await fetchProfileChannelVideos({
+    url,
+    platformSlug,
+    limit: RECENT_VIDEOS_LIMIT,
   });
 
-  const videos = videosResult.items.map((item) => {
-    const videoSnippet = item.snippet ?? {};
-    const videoId = videoSnippet.resourceId?.videoId ?? item.id ?? "";
-
-    return {
-      internalId: videoId,
-      url: `https://www.youtube.com/watch?v=${videoId}`,
-      thumbnailUrl:
-        videoSnippet.thumbnails?.high?.url ??
-        videoSnippet.thumbnails?.default?.url ??
-        null,
-      name: videoSnippet.title ?? "Untitled",
-      description: videoSnippet.description ?? null,
-    };
+  const enrichedVideos = await enrichChannelVideos({
+    videos: videos.map((video) => ({ ...video, enrichment: null })),
+    platformSlug,
   });
-
-  const subscribersCount = channel.statistics?.subscriberCount
-    ? Number(channel.statistics.subscriberCount)
-    : null;
-
-  const videoCount = channel.statistics?.videoCount
-    ? Number(channel.statistics.videoCount)
-    : null;
 
   return {
     input: channelInput,
-    data: {
+    data: buildChannelDataInput({
       platformSlug,
-      name: snippet.title ?? channelId,
-      description: snippet.description ?? null,
-      subscribersCount,
-      videoCount,
-      recentVideos: videos.map((v) => ({
-        title: v.name,
-        description: v.description,
-      })),
-    },
-    internalId: channelId,
-    slug: snippet.customUrl ?? null,
-    avatarUrl:
-      snippet.thumbnails?.high?.url ?? snippet.thumbnails?.default?.url ?? null,
-    name: snippet.title ?? channelId,
-    description: snippet.description ?? null,
-    videos,
+      stats,
+      videos: enrichedVideos,
+    }),
+    externalId: stats.externalId ?? stats.slug ?? url,
+    slug: stats.slug,
+    avatarUrl: stats.avatarUrl,
+    name: stats.name,
+    description: stats.description,
+    verified: stats.verified,
+    followers: stats.followers,
+    following: stats.following,
+    totalPosts: stats.totalPosts,
+    videos: enrichedVideos,
   };
 }
 
-async function fetchRuTubeChannelData(
-  channelInput: ChannelInput,
-  url: string,
-): Promise<FetchedChannel | null> {
-  const identifier = extractRuTubeChannelIdentifier(url);
+type EnrichChannelVideosParams = {
+  videos: FetchedChannelVideo[];
+  platformSlug: SocialKitVideoPlatformSlug;
+};
 
-  if (!identifier) return null;
+export async function enrichChannelVideos({
+  videos,
+  platformSlug,
+}: EnrichChannelVideosParams): Promise<FetchedChannelVideo[]> {
+  const enrichmentResults = await Promise.allSettled(
+    videos.map(async (video) => {
+      if (!video.url) {
+        return {
+          ...video,
+          enrichment: null,
+        };
+      }
 
-  const channel = await getRuTubeUserProfile({
-    author_id: identifier.authorId,
+      const [summarizeData, transcriptData] = await Promise.all([
+        fetchProfileChannelVideoSummarize({
+          url: video.url,
+          platformSlug,
+        }),
+        fetchProfileChannelVideoTranscript({
+          url: video.url,
+          platformSlug,
+        }),
+      ]);
+
+      return {
+        ...video,
+        enrichment: {
+          ...summarizeData,
+          ...transcriptData,
+        },
+      };
+    }),
+  );
+
+  return enrichmentResults.map((result, index) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    }
+
+    console.error("Failed to enrich channel video", {
+      url: videos[index]?.url,
+      platformSlug,
+      error: result.reason,
+    });
+
+    return {
+      ...videos[index],
+      enrichment: null,
+    };
   });
+}
 
-  const videosPage = await getRuTubeVideosByAuthorId({
-    author_id: identifier.authorId,
-    params: { limit: RECENT_VIDEOS_LIMIT },
-  });
+type BuildChannelDataInputParams = {
+  platformSlug: string;
+  stats: ProfileChannelStatsData;
+  videos: FetchedChannelVideo[];
+};
 
-  const videos = videosPage.results.map((item) => ({
-    internalId: item.id,
-    url: item.video_url ?? `https://rutube.ru/video/${item.id}/`,
-    thumbnailUrl: item.thumbnail_url ?? null,
-    name: item.title,
-    description: item.description ?? null,
-  }));
-
+function buildChannelDataInput({
+  platformSlug,
+  stats,
+  videos,
+}: BuildChannelDataInputParams) {
   return {
-    input: channelInput,
-    data: {
-      platformSlug: channelInput.platformSlug,
-      name: channel.name,
-      description: channel.description ?? null,
-      subscribersCount: channel.subscribers_count ?? null,
-      videoCount: channel.video_count ?? null,
-      recentVideos: videos.map((v) => ({
-        title: v.name,
-        description: v.description,
-      })),
-    },
-    internalId: String(channel.id),
-    slug: null,
-    avatarUrl: channel.avatar_url ?? null,
-    name: channel.name,
-    description: channel.description ?? null,
-    videos,
+    platformSlug,
+    name: stats.name,
+    description: stats.description,
+    slug: stats.slug,
+    verified: stats.verified,
+    followers: stats.followers,
+    subscribersCount: stats.followers,
+    videoCount: stats.totalPosts,
+    recentVideos: videos.map((video) => ({
+      title: video.name ?? "",
+      description: video.description,
+      summary: video.enrichment?.summary ?? null,
+      mainTopics: video.enrichment?.mainTopics ?? undefined,
+      keyPoints: video.enrichment?.keyPoints ?? undefined,
+      tone: video.enrichment?.tone ?? null,
+      transcript: video.enrichment?.transcript ?? null,
+    })),
   };
 }
 
@@ -158,17 +157,28 @@ export async function groupChannelsByCreator(
     return [[0]];
   }
 
+  const fallbackGroups = fetchedChannels.map((_, index) => [index]);
+
   const prompt = groupChannelsByCreatorPrompt({
     channels: fetchedChannels.map((channel) => ({
       platformSlug: channel.data.platformSlug,
       name: channel.data.name,
+      slug: channel.data.slug,
       description: channel.data.description,
-      recentVideoTitles: channel.data.recentVideos.map((v) => v.title),
+      verified: channel.verified,
+      followers: channel.followers,
+      recentVideoTitles: channel.data.recentVideos.map((video) => video.title),
+      recentVideos: channel.data.recentVideos.map((video) => ({
+        title: video.title,
+        summary: video.summary,
+        mainTopics: video.mainTopics,
+        tone: video.tone,
+      })),
     })),
   });
 
-  try {
-    const { output_parsed } = await polzaAI.responses.parse({
+  const parseResult = await polzaAI.responses
+    .parse({
       model: env.POLZA_AI_STRUCTURED_OUTPUT_MODEL,
       temperature: 0.1,
       input: [
@@ -178,26 +188,28 @@ export async function groupChannelsByCreator(
       text: {
         format: zodTextFormat(channelGroupsGeneratedSchema, "channelGroups"),
       },
+    })
+    .catch((error) => {
+      console.error("Failed to group channels by creator", error);
+      return null;
     });
 
-    if (!output_parsed) {
-      return fetchedChannels.map((_, i) => [i]);
-    }
+  const outputParsed = parseResult?.output_parsed;
 
-    const allIndicesSet = new Set(fetchedChannels.map((_, i) => i));
-    const coveredIndicesSet = new Set(output_parsed.groups.flat());
-    const coveredIndicesArray = Array.from(coveredIndicesSet);
-
-    const isValid =
-      coveredIndicesSet.size === allIndicesSet.size &&
-      coveredIndicesArray.every((i) => coveredIndicesSet.has(i));
-
-    if (isValid) {
-      return output_parsed.groups;
-    }
-
-    return fetchedChannels.map((_, i) => [i]);
-  } catch {
-    return fetchedChannels.map((_, i) => [i]);
+  if (!outputParsed) {
+    return fallbackGroups;
   }
+
+  const allIndicesSet = new Set(fetchedChannels.map((_, index) => index));
+  const coveredIndicesSet = new Set(outputParsed.groups.flat());
+
+  const isValid =
+    coveredIndicesSet.size === allIndicesSet.size &&
+    Array.from(coveredIndicesSet).every((index) => allIndicesSet.has(index));
+
+  if (isValid) {
+    return outputParsed.groups;
+  }
+
+  return fallbackGroups;
 }

@@ -1,6 +1,6 @@
 ---
 name: db-schema-planner
-description: Use this agent to plan Drizzle schema changes: tables, columns, relations, enums, indexes, and dependent domain schemas. It must not generate or edit migrations.
+description: Use this agent to plan Drizzle schema changes: tables, columns, relations, enums, indexes, dependent domain schemas, and migration generation.
 tools: Read, Grep, Glob
 ---
 
@@ -12,8 +12,8 @@ You are a Drizzle ORM schema design specialist for `genario-backend`.
 - Schema source: `src/db/schemas/**`.
 - Barrel export: `src/db/schema.ts`.
 - API/domain entity schemas: `src/domains/<domain>/schemas/entities/**`.
-- Migrations: `src/db/migrations/**`, owner-managed only.
-- Agent workflow: edit schema/exports/domain schemas only; migration generation and seed execution are owner-only.
+- Migrations: `src/db/migrations/**`, generated via `pnpm db:generate` when schema changes.
+- Agent workflow: edit schema/exports/domain schemas, then generate and commit migration SQL. Do not run `pnpm db:migrate`.
 
 ## Research Before Planning
 
@@ -35,15 +35,14 @@ Then list:
 - `src/db/schema.ts` exports to add or change;
 - domain schemas under `src/domains/**` to update;
 - route/service/worker code likely affected;
-- validation commands and a note that owner-generated migration is required.
+- validation commands and generated migration files from `pnpm db:generate`, if applicable.
 
 ## Constraints
 
-- Do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
-- Do not create, edit, or delete files under `src/db/migrations/**`.
+- Run `pnpm db:generate` when schema files change and include migration artifacts in the change.
+- Do not run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
 - Add required indexes, foreign keys, and native Drizzle `relations(...)` in the same schema change.
-- Do not rewrite old migrations.
-- Report that migration generation remains an owner-only follow-up.
+- Do not manually rewrite or delete old migrations if it breaks migration history order.
 
 ## Reference Examples
 

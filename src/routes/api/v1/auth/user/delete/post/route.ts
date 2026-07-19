@@ -53,7 +53,7 @@ deleteUserRoute.post(
         deleteUserResponseSchema.parse(response),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при удалении пользователя",
       });

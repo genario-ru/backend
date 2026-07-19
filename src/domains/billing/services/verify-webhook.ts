@@ -103,7 +103,7 @@ async function verifyPaymentMethodWebhook(body: PaymentMethodWebhookData) {
 
 function assert(condition: unknown, message: string) {
   if (!condition) {
-    throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.Forbidden,
       message,
     });

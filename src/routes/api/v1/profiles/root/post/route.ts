@@ -3,12 +3,13 @@ import { isNull } from "es-toolkit";
 import { validator } from "hono-openapi";
 
 import { db } from "@/db";
-import { profile, profileToPlatform, profileToTone } from "@/db/schema";
+import { profile, profileToPlatform } from "@/db/schema";
 import { createProfileBodySchema } from "@/domains/profiles/schemas/handlers/create-profile/body";
 import {
   type CreateProfileResponse,
   createProfileResponseSchema,
 } from "@/domains/profiles/schemas/handlers/create-profile/response";
+import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
@@ -43,8 +44,7 @@ createProfileRoute.post(
   }),
   validator("json", createProfileBodySchema),
   async (c) => {
-    const { platformIds, toneIds, ...createProfileParams } =
-      c.req.valid("json");
+    const { platformIds, ...createProfileParams } = c.req.valid("json");
 
     const user = c.get("user");
     const tariff = c.get("tariff");
@@ -55,7 +55,7 @@ createProfileRoute.post(
       });
 
       if (userProfiles.length >= tariff.maxProfilesAmount) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.Forbidden,
           message:
             "Вы достигли максимального количества профилей по тарифу вашей подписки",
@@ -63,7 +63,7 @@ createProfileRoute.post(
       }
     }
 
-    const createdProfile = await db.transaction(async (tx) => {
+    const createdProfileId = await db.transaction(async (tx) => {
       const [createdProfile] = await tx
         .insert(profile)
         .values({
@@ -72,38 +72,41 @@ createProfileRoute.post(
         })
         .returning();
 
-      const createLinkingTablePromises: Promise<any>[] = [];
-
-      if (platformIds && platformIds.length > 0) {
-        createLinkingTablePromises.push(
-          tx.insert(profileToPlatform).values(
-            platformIds.map((platformId) => ({
-              profileId: createdProfile.id,
-              platformId,
-            })),
-          ),
+      if (platformIds?.length) {
+        await tx.insert(profileToPlatform).values(
+          platformIds.map((platformId) => ({
+            profileId: createdProfile.id,
+            platformId,
+          })),
         );
       }
 
-      if (toneIds && toneIds.length > 0) {
-        createLinkingTablePromises.push(
-          tx.insert(profileToTone).values(
-            toneIds.map((toneId) => ({
-              profileId: createdProfile.id,
-              toneId,
-            })),
-          ),
-        );
-      }
-
-      await Promise.all(createLinkingTablePromises);
-
-      return createdProfile;
+      return createdProfile.id;
     });
+
+    const createdProfile = await db.query.profile.findFirst({
+      where: (profile, { and, eq }) =>
+        and(eq(profile.id, createdProfileId), eq(profile.userId, user.id)),
+      with: {
+        type: true,
+        profileToPlatform: {
+          with: {
+            platform: true,
+          },
+        },
+      },
+    });
+
+    if (!createdProfile) {
+      throw throwAPIError({
+        code: APIErrorCode.InternalServerError,
+        message: "Не удалось загрузить созданный профиль",
+      });
+    }
 
     return c.json<CreateProfileResponse>(
       createProfileResponseSchema.parse({
-        data: createdProfile,
+        data: prepareProfileExtended(createdProfile),
       }),
       HTTPStatusCode.Created,
     );

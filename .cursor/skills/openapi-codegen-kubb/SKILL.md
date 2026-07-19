@@ -1,6 +1,6 @@
 ---
 name: openapi-codegen-kubb
-description: Updates OpenAPI specifications and regenerates API clients via Kubb for YooKassa, Rutube, or codegen configuration changes.
+description: Updates OpenAPI specifications and regenerates API clients via Kubb for YooKassa, SocialKit, or codegen configuration changes.
 ---
 
 # OpenAPI Codegen Kubb
@@ -16,12 +16,12 @@ description: Updates OpenAPI specifications and regenerates API clients via Kubb
 1. Check `package.json` scripts and `deps/api/*.json` to confirm which provider workflow exists.
 2. Refresh specifications when a download script exists:
    - `pnpm api:download:yookassa`
-3. Treat `deps/api/rutube.json` as a pinned local spec unless the task explicitly adds or changes Rutube download automation.
-4. Run generation: `pnpm api:generate`.
-5. Review `git diff` in `deps/api/**`, `src/codegen/api/**`, and consuming wrappers/services.
-6. If needed, adjust `kubb.config.ts` (`importPath`, parser, transformers, naming, output paths).
-7. Re-run generation after config changes.
-8. Run `pnpm lint:typescript` after generated code or wrappers change.
+   - `pnpm api:download:socialkit`
+3. Run generation: `pnpm api:generate`.
+4. Review `git diff` in `deps/api/**`, `src/codegen/api/**`, and consuming wrappers/services.
+5. If needed, adjust `kubb.config.ts` (`importPath`, parser, transformers, naming, output paths).
+6. Re-run generation after config changes.
+7. Run `pnpm lint:typescript` after generated code or wrappers change.
 
 ## Rules
 
@@ -41,6 +41,7 @@ description: Updates OpenAPI specifications and regenerates API clients via Kubb
 
 - Provider setup and output shape: `kubb.config.ts`.
 - YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
-- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
-- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- SocialKit download/normalization script: `src/scripts/download-socialkit-openapi.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/socialkit/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/socialkit/client/index.ts`.
 - Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.

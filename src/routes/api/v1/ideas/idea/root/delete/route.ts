@@ -50,7 +50,7 @@ deleteIdeaRoute.delete(
     });
 
     if (!foundIdeaVariant) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Данная идея не существует",
       });
@@ -59,7 +59,7 @@ deleteIdeaRoute.delete(
     const user = c.get("user");
 
     if (foundIdeaVariant.ideasList.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет прав для удаления данной идеи",
       });

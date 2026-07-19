@@ -73,7 +73,7 @@ updateIdeasListRoute.patch(
     });
 
     if (!foundIdeasList) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный список идей не существует или у вас нет возможности редактировать его",

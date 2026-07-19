@@ -56,7 +56,7 @@ getScenarioMetadataRoute.get(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный сценарий не существует или у вас нет к нему доступа",

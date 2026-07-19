@@ -1,0 +1,1 @@
+ALTER TABLE "attachment" RENAME COLUMN "preview_url" TO "url";

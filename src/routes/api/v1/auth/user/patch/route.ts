@@ -49,7 +49,7 @@ updateUserRoute.patch(
         updateUserResponseSchema.parse(response),
       );
     } catch (error) {
-      return throwAuthAPIError({
+      throw throwAuthAPIError({
         error,
         fallbackMessage: "Произошла ошибка при обновлении пользователя",
       });

@@ -8,6 +8,7 @@ import { platformToVideoType } from "../linking/platform-to-video-type";
 import { profileToPlatform } from "../linking/profile-to-platform";
 import { scenarioToPlatform } from "../linking/scenario-to-platform";
 import { profileChannel } from "./profile-channel";
+import { profileChannelVideo } from "./profile-channel-video";
 import { scenarioVideoReference } from "./scenario-video-reference";
 
 export const platform = pgTable("platform", {
@@ -20,6 +21,7 @@ export const platform = pgTable("platform", {
   baseUrl: text("base_url"),
   urlRegex: text("url_regex"),
   channelUrlRegex: text("channel_url_regex"),
+  videoUrlRegex: text("video_url_regex"),
   hasAutoImport: boolean("has_auto_import").notNull().default(false),
   priority: integer("priority").notNull().default(0),
   ...uniqueSlug(),
@@ -29,6 +31,7 @@ export const platform = pgTable("platform", {
 export const platformRelations = relations(platform, ({ many }) => ({
   scenarioVideoReferences: many(scenarioVideoReference),
   profileChannels: many(profileChannel),
+  profileChannelVideos: many(profileChannelVideo),
   profileToPlatform: many(profileToPlatform),
   platformToVideoType: many(platformToVideoType),
   scenarioToPlatform: many(scenarioToPlatform),
