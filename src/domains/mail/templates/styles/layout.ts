@@ -18,7 +18,20 @@ export const headerStyle = {
   color: "#111827",
   fontSize: "20px",
   fontWeight: 700,
+  margin: "0 0 8px 0",
+};
+
+export const siteDomainBadgeStyle = {
+  backgroundColor: "#f4f4f5",
+  borderRadius: "4px",
+  color: "#6b7280",
+  display: "inline-block",
+  fontSize: "11px",
+  fontWeight: 500,
+  letterSpacing: "0.01em",
+  lineHeight: "16px",
   margin: "0 0 24px 0",
+  padding: "2px 8px",
 };
 
 export const hrStyle = {
