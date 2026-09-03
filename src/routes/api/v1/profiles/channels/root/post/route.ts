@@ -58,7 +58,9 @@ createProfilesFromChannelsRoute.post(
     const { channelUrls } = c.req.valid("json");
 
     const resolveResults = await Promise.all(
-      channelUrls.map((channelUrl) => resolveProfileChannel({ url: channelUrl })),
+      channelUrls.map((channelUrl) =>
+        resolveProfileChannel({ url: channelUrl }),
+      ),
     );
 
     const validationResults = resolveResults.map((result) =>

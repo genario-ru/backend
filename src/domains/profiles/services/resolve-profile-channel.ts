@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import type { ResolveProfileChannelResult } from "@/domains/profiles/types/resolve-profile-channel";
 import {
   isSocialKitVideoPlatformSlug,
   type SocialKitVideoPlatformSlug,
@@ -7,8 +8,6 @@ import { fetchProfileChannelStats } from "@/lib/socialkit/utils/fetch-profile-ch
 import { APIErrorCode } from "@/shared/schemas/errors/api-error";
 import { testString } from "@/shared/utils/regex/test-string";
 import { throwAPIError } from "@/shared/utils/server/throw-api-error";
-
-import type { ResolveProfileChannelResult } from "@/domains/profiles/types/resolve-profile-channel";
 
 type ResolveProfileChannelParams = {
   url: string;

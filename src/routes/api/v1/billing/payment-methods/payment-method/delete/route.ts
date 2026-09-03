@@ -9,6 +9,7 @@ import {
   deletePaymentMethodResponseSchema,
 } from "@/domains/billing/schemas/handlers/delete-payment-method/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -32,6 +33,7 @@ deletePaymentMethodRoute.delete(
     limit: 1,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

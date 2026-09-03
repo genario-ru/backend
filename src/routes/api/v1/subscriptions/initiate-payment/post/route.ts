@@ -8,6 +8,7 @@ import {
   initiateSubscriptionPaymentResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/initiate-subscriptions-payment/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
@@ -35,6 +36,7 @@ initiateSubscriptionPaymentRoute.post(
     limit: 10,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],
     responses: {

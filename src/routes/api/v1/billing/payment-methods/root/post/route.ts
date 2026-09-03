@@ -12,6 +12,7 @@ import {
 import { createYooKassaPaymentMethod } from "@/domains/billing/services/create-yookassa-payment-method";
 import { env } from "@/env";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -42,6 +43,7 @@ addPaymentMethodRoute.post(
     limit: 10,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

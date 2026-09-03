@@ -10,6 +10,7 @@ import {
   cancelSubscriptionResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/cancel-subscription/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -33,6 +34,7 @@ cancelSubscriptionRoute.post(
     limit: 3,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],

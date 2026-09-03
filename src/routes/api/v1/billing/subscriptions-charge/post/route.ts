@@ -4,6 +4,7 @@ import {
 } from "@/domains/billing/schemas/handlers/trigger-subscriptions-charge/response";
 import { adminMiddleware } from "@/middleware/admin-middleware";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { enqueueSubscriptionsCharge } from "@/mq/subscriptions-charge/queue";
@@ -25,6 +26,7 @@ triggerSubscriptionsChargeRoute.post(
     limit: 1,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   adminMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],

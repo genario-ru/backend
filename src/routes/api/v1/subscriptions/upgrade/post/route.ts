@@ -7,6 +7,7 @@ import {
   upgradeSubscriptionResponseSchema,
 } from "@/domains/subscriptions/schemas/handlers/upgrade-subscription/response";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -33,6 +34,7 @@ upgradeSubscriptionRoute.post(
     limit: 10,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Subscriptions],

@@ -10,6 +10,7 @@ import {
 } from "@/domains/credits/schemas/handlers/initiate-credits-package-payment/response";
 import { getCreditsPackageForPurchase } from "@/domains/credits/services/get-credits-package-for-purchase";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -38,6 +39,7 @@ initiateCreditsPackagePaymentRoute.post(
     limit: 10,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Credits],

@@ -19,6 +19,7 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.url(),
     BETTER_AUTH_FIXED_SIGN_IN_OTPS: z.string().optional(),
     DISABLE_SIGN_UP: z.stringbool().default(false),
+    DISABLE_PAYMENTS: z.stringbool().default(false),
     POLZA_AI_BASE_URL: z.url(),
     POLZA_AI_API_KEY: z.string().min(1),
     POLZA_AI_STRUCTURED_OUTPUT_MODEL: z.string().min(1),

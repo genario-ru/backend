@@ -7,6 +7,7 @@ import {
 } from "@/domains/billing/schemas/handlers/select-default-payment-method/response";
 import { selectDefaultPaymentMethod } from "@/domains/billing/services/select-default-payment-method";
 import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { paymentsKillSwitchMiddleware } from "@/middleware/payments-kill-switch-middleware";
 import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
 import { sessionMiddleware } from "@/middleware/session-middleware";
 import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
@@ -28,6 +29,7 @@ selectDefaultPaymentMethodRoute.patch(
     limit: 1,
   }),
   sessionMiddleware,
+  paymentsKillSwitchMiddleware,
   subscriptionMiddleware,
   openAPIResponseMiddleware({
     tags: [OpenAPITags.Billing],
