@@ -163,6 +163,7 @@ export const scenarioScenePreviewsGenerationWorker =
                 .insert(attachment)
                 .values({
                   userId: scenario.userId,
+                  fileName: `${scenarioScenePreviewId}.webp`,
                   key: s3KeyOriginal,
                   bucketName: env.S3_BUCKET_NAME,
                   mimeType: originalMimeType,
@@ -172,6 +173,7 @@ export const scenarioScenePreviewsGenerationWorker =
                 .insert(attachment)
                 .values({
                   userId: scenario.userId,
+                  fileName: `${scenarioScenePreviewId}-compressed.webp`,
                   key: s3KeyCompressed,
                   bucketName: env.S3_BUCKET_NAME,
                   mimeType: compressedMimeType,

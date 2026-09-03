@@ -46,13 +46,24 @@ export const profilesFromChannelsGenerationWorker =
         .set({ status: "generation" })
         .where(eq(profilesFromChannelsJob.id, jobId));
 
-      const fetchResults = await Promise.all(
+      const fetchResults = await Promise.allSettled(
         channels.map((channel) => fetchChannelData(channel)),
       );
 
-      const fetchedChannels = fetchResults.filter(
-        (channel) => channel !== null,
-      );
+      const fetchedChannels = fetchResults.flatMap((result) => {
+        if (result.status === "fulfilled" && result.value !== null) {
+          return [result.value];
+        }
+
+        if (result.status === "rejected") {
+          console.error(
+            "Failed to fetch channel data from SocialKit",
+            result.reason,
+          );
+        }
+
+        return [];
+      });
 
       if (fetchedChannels.length === 0) {
         await db
@@ -120,7 +131,7 @@ export const profilesFromChannelsGenerationWorker =
             .values({
               userId,
               name: generatedProfile.name,
-              description: generatedProfile.description,
+              positioning: generatedProfile.description,
               targetAudience: generatedProfile.targetAudience,
             })
             .returning();
@@ -161,13 +172,17 @@ export const profilesFromChannelsGenerationWorker =
               .insert(profileChannel)
               .values({
                 profileId: createdProfile.id,
-                internalId: channel.internalId,
+                externalId: channel.externalId,
                 slug: channel.slug,
                 url: channel.input.url,
                 avatarUrl: channel.avatarUrl,
                 name: channel.name,
                 description: channel.description,
                 platformId: channel.input.platformId,
+                verified: channel.verified,
+                followers: channel.followers,
+                following: channel.following,
+                totalPosts: channel.totalPosts,
               })
               .returning();
 
@@ -179,12 +194,30 @@ export const profilesFromChannelsGenerationWorker =
             if (channel.videos.length > 0) {
               await tx.insert(profileChannelVideo).values(
                 channel.videos.map((video) => ({
+                  profileId: createdProfile.id,
+                  platformId: channel.input.platformId,
                   profileChannelId: createdChannel.id,
-                  internalId: video.internalId,
+                  externalId: video.externalId,
                   url: video.url,
                   thumbnailUrl: video.thumbnailUrl,
                   name: video.name,
                   description: video.description,
+                  likes: video.likes,
+                  views: video.views,
+                  comments: video.comments,
+                  duration: video.duration,
+                  summary: video.enrichment?.summary ?? null,
+                  mainTopics: video.enrichment?.mainTopics ?? null,
+                  keyPoints: video.enrichment?.keyPoints ?? null,
+                  tone: video.enrichment?.tone ?? null,
+                  targetAudience: video.enrichment?.targetAudience ?? null,
+                  quotes: video.enrichment?.quotes ?? null,
+                  transcript: video.enrichment?.transcript ?? null,
+                  transcriptSegments:
+                    video.enrichment?.transcriptSegments ?? null,
+                  wordCount: video.enrichment?.wordCount ?? null,
+                  segments: video.enrichment?.segments ?? null,
+                  timeline: video.enrichment?.timeline ?? null,
                 })),
               );
             }

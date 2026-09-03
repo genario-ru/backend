@@ -56,7 +56,7 @@ getScenarioCurrentVersionRoute.get(
     });
 
     if (!scenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный сценарий не существует или у вас нет возможности просматривать его",
@@ -99,7 +99,7 @@ getScenarioCurrentVersionRoute.get(
     });
 
     if (!foundScenarioVersion) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Версия сценария не найдена",
       });

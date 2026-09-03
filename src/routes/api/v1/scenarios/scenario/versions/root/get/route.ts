@@ -52,7 +52,7 @@ getScenarioVersionsRoute.get(
     });
 
     if (!scenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Сценарий не найден",
       });

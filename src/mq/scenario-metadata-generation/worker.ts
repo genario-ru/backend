@@ -85,7 +85,7 @@ export const scenarioMetadataGenerationWorker =
           scenarioTemplateDescription: foundScenario.template?.description,
           scenarioTemplateDetails: foundScenario.template?.details,
           scenarioProfileName: foundScenario.profile?.name,
-          scenarioProfileDescription: foundScenario.profile?.description,
+          scenarioProfileDescription: foundScenario.profile?.positioning,
           scenarioVideoTypeName: foundScenario.videoType?.name,
           scenarioVideoDurationName: foundScenario.videoDuration?.name,
           scenarioTones: foundScenario.scenarioToTone.map(

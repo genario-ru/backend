@@ -54,7 +54,7 @@ getIdeasListExportRoute.post(
     const tariff = c.get("tariff");
 
     if (!tariff.exportAvailable) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Экспорт списков идей не доступен по тарифу вашей подписки",
       });
@@ -80,7 +80,7 @@ getIdeasListExportRoute.post(
     });
 
     if (!foundIdeasList) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный список идей не существует или у вас нет возможности экспортировать его",
@@ -97,7 +97,7 @@ getIdeasListExportRoute.post(
       });
 
       if (!foundFormat) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InvalidInput,
           message: "Данный формат документа не поддерживается",
         });

@@ -1,0 +1,1 @@
+ALTER TABLE "profile_channel_video" ALTER COLUMN "url" DROP NOT NULL;

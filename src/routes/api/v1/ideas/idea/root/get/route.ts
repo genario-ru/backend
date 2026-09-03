@@ -63,14 +63,14 @@ getIdeaRoute.get(
     });
 
     if (!foundIdea) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Данная идея не существует",
       });
     }
 
     if (foundIdea.ideasList.userId !== user.id) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет прав для просмотра данной идеи",
       });

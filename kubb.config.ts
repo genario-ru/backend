@@ -19,24 +19,24 @@ type CreateConfigParams = {
 export default defineConfig(() => {
   return [
     createConfig({
-      input: `${API_DIR}/yookassa.json`,
-      output: `${API_OUTPUT_DIR}/yookassa`,
+      input: `${API_DIR}/socialkit.json`,
+      output: `${API_OUTPUT_DIR}/socialkit`,
       clientConfig: {
         pathParamsType: "object",
         paramsType: "object",
-        importPath: "@/lib/yookassa/client",
+        importPath: "@/lib/socialkit/client",
         transformers: {
           name: kebabCaseTransformer,
         },
       },
     }),
     createConfig({
-      input: `${API_DIR}/rutube.json`,
-      output: `${API_OUTPUT_DIR}/rutube`,
+      input: `${API_DIR}/yookassa.json`,
+      output: `${API_OUTPUT_DIR}/yookassa`,
       clientConfig: {
         pathParamsType: "object",
         paramsType: "object",
-        importPath: "@/lib/rutube/client",
+        importPath: "@/lib/yookassa/client",
         transformers: {
           name: kebabCaseTransformer,
         },

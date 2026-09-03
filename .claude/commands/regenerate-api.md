@@ -12,18 +12,18 @@ Update OpenAPI specs and regenerate Kubb clients.
 2. Refresh specs when scripts exist:
    ```bash
    pnpm api:download:yookassa
+   pnpm api:download:socialkit
    ```
-3. Treat `deps/api/rutube.json` as a pinned local spec unless explicitly changing Rutube automation.
-4. Regenerate all clients:
+3. Regenerate all clients:
    ```bash
    pnpm api:generate
    ```
-5. Review generated diff:
+4. Review generated diff:
    ```bash
    git diff -- src/codegen/api deps/api kubb.config.ts
    ```
-6. Adapt hand-written code that imports from `@/codegen/api/**`, especially in `src/lib/**` and `src/domains/**`.
-7. Run `pnpm lint:typescript`.
+5. Adapt hand-written code that imports from `@/codegen/api/**`, especially in `src/lib/**` and `src/domains/**`.
+6. Run `pnpm lint:typescript`.
 
 ## Rules
 
@@ -35,6 +35,6 @@ Update OpenAPI specs and regenerate Kubb clients.
 
 - Kubb provider configuration: `kubb.config.ts`.
 - YooKassa download/normalization script: `src/scripts/download-yookassa-openapi.ts`.
-- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/rutube/**`.
-- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/rutube/client/index.ts`.
+- Generated provider folders: `src/codegen/api/yookassa/**`, `src/codegen/api/socialkit/**`.
+- Hand-written clients: `src/lib/yookassa/client/index.ts`, `src/lib/socialkit/client/index.ts`.
 - Consumer search: `rg "from \"@/codegen/api" src -g "*.ts"`.

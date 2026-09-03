@@ -38,17 +38,15 @@ Why: routes/services enqueue jobs without importing worker code, and entrypoints
 
 ## Migrations Are Owner-Only
 
-Agents may edit Drizzle schema files, relations, indexes, and exports, but must not run `pnpm db:generate`, create/edit/delete files in `src/db/migrations/**`, or run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
+Agents may edit Drizzle schema files, relations, indexes, and exports. When schema changes, run `pnpm db:generate` and commit SQL under `src/db/migrations/**`. Do not run `pnpm db:migrate` (deploy applies migrations), `pnpm db:seed`, or `pnpm db:studio` unless the owner explicitly asks for that exact command in the current task.
 
-Why: migration generation and seed execution are human-controlled steps in this project.
+Why: migration SQL is reviewable in PRs; application happens at deploy.
 
 ## External API Clients Are Generated
 
-YooKassa and Rutube clients live under `src/codegen/api/**`.
+YooKassa and SocialKit clients live under `src/codegen/api/**`.
 
 Why: generated clients track provider specs. Manual edits drift and are overwritten by Kubb.
-
-Note: Rutube currently uses a pinned local spec in `deps/api/rutube.json`.
 
 ## AI Prompts Are Triplets
 

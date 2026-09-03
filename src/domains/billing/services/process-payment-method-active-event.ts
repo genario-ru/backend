@@ -19,7 +19,7 @@ export async function processPaymentMethodActiveEvent(
   });
 
   if (!foundPaymentMethod) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Метод оплаты не найден",
     });

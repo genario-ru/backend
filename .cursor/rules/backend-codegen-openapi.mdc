@@ -6,13 +6,15 @@ alwaysApply: false
 
 # Backend OpenAPI Codegen
 
-- Generated clients live under `src/codegen/api/{yookassa,rutube}/**`.
+- Generated clients live under `src/codegen/api/{yookassa,socialkit}/**`.
 - Spec sources are stored in `deps/api/*.json`.
 - Do not manually edit generated files unless the task explicitly asks for an emergency patch and the final answer calls that out.
 - For YooKassa updates, refresh specs first:
   - `pnpm api:download:yookassa`
   - `pnpm api:generate`
-- Rutube has `deps/api/rutube.json` and generated output but no download script in `package.json`; treat it as a pinned local spec unless the task explicitly changes that workflow.
+- For SocialKit updates, refresh specs first:
+  - `pnpm api:download:socialkit`
+  - `pnpm api:generate`
 - For `kubb.config.ts` changes, verify `importPath`, parser, transformers, naming, and output paths.
 - After generation, inspect the diff for unexpected changes in `src/codegen/api/**` and update wrappers/adapters that consume generated types.
 - For API-specific normalizations, add explicit steps in download scripts instead of manual post-fixes.

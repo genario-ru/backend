@@ -1,0 +1,73 @@
+import { validator } from "hono-openapi";
+
+import { db } from "@/db";
+import { getProfileParamsSchema } from "@/domains/profiles/schemas/handlers/get-profile/params";
+import {
+  type GetProfileResponse,
+  getProfileResponseSchema,
+} from "@/domains/profiles/schemas/handlers/get-profile/response";
+import { prepareProfileExtended } from "@/domains/profiles/utils/prepare-profile-extended";
+import { openAPIResponseMiddleware } from "@/middleware/openapi-response-middleware";
+import { rateLimitMiddleware } from "@/middleware/rate-limit-middleware";
+import { sessionMiddleware } from "@/middleware/session-middleware";
+import { subscriptionMiddleware } from "@/middleware/subscription-middleware";
+import { HTTPStatusCode } from "@/shared/constants/common/http-status-code";
+import { OpenAPITags } from "@/shared/constants/openapi/tags";
+import { APIErrorCode } from "@/shared/schemas/errors/api-error";
+import { createOpenAPIResponse } from "@/shared/utils/openapi/create-openapi-response";
+import { createHonoApp } from "@/shared/utils/server/create-hono-app";
+import { throwAPIError } from "@/shared/utils/server/throw-api-error";
+
+export const getProfileRoute = createHonoApp().basePath("/profiles/:profileId");
+
+// GET /api/v1/profiles/{profileId}
+getProfileRoute.get(
+  "/",
+  rateLimitMiddleware({
+    keyPrefix: "get-profile",
+    windowMs: 1000,
+    limit: 2,
+  }),
+  sessionMiddleware,
+  subscriptionMiddleware,
+  openAPIResponseMiddleware({
+    tags: [OpenAPITags.Profiles],
+    responses: {
+      [HTTPStatusCode.Ok]: createOpenAPIResponse({
+        description: "Profile retrieved successfully",
+        schema: getProfileResponseSchema,
+      }),
+    },
+  }),
+  validator("param", getProfileParamsSchema),
+  async (c) => {
+    const { profileId } = c.req.valid("param");
+    const user = c.get("user");
+
+    const foundProfile = await db.query.profile.findFirst({
+      where: (profile, { eq, and }) => {
+        return and(eq(profile.id, profileId), eq(profile.userId, user.id));
+      },
+      with: {
+        type: true,
+        profileToPlatform: {
+          with: { platform: true },
+        },
+      },
+    });
+
+    if (!foundProfile) {
+      throw throwAPIError({
+        code: APIErrorCode.NotFound,
+        message:
+          "Данный профиль не существует или у вас нет возможности просматривать его",
+      });
+    }
+
+    return c.json<GetProfileResponse>(
+      getProfileResponseSchema.parse({
+        data: prepareProfileExtended(foundProfile),
+      }),
+    );
+  },
+);

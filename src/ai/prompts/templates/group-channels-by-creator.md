@@ -1,6 +1,6 @@
 # Task
 
-You are given {{CHANNEL_COUNT}} video channels from different platforms. Determine which channels belong to the same creator by comparing their names, descriptions, and recent video topics. Focus on content similarity, not identifiers.
+You are given {{CHANNEL_COUNT}} video channels from different platforms. Determine which channels belong to the same creator by comparing their names, usernames, descriptions, follower counts, and recent video topics/summaries. Focus on content similarity, not identifiers.
 
 # Channels
 

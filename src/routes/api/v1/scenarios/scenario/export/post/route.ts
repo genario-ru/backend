@@ -58,7 +58,7 @@ createScenarioExportRoute.post(
     const tariff = c.get("tariff");
 
     if (!tariff.exportAvailable) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Экспорт сценариев не доступен по тарифу вашей подписки",
       });
@@ -70,7 +70,7 @@ createScenarioExportRoute.post(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный сценарий не существует или у вас нет возможности экспортировать его",
@@ -93,7 +93,7 @@ createScenarioExportRoute.post(
     });
 
     if (!foundScenarioVersion) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Указанная версия сценария не существует",
       });
@@ -124,7 +124,7 @@ createScenarioExportRoute.post(
       });
 
       if (!foundFormat) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.InternalServerError,
           message: `Формат экспорта '${format}' не настроен в таблице export_document_format`,
         });

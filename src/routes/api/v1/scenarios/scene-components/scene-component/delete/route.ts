@@ -69,7 +69,7 @@ deleteScenarioSceneComponentRoute.delete(
     });
 
     if (!existingComponent) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message: "Компонент сцены не найден",
       });
@@ -79,7 +79,7 @@ deleteScenarioSceneComponentRoute.delete(
       existingComponent.scenarioScene.scenarioChapter.scenarioVersion.scenario
         .userId !== user.id
     ) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "У вас нет доступа к этому компоненту сцены",
       });

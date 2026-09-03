@@ -53,7 +53,7 @@ createApplicationRoute.post(
           .where(inArray(productFeature.id, uniqueFeatureIds));
 
         if (foundFeatures.length !== uniqueFeatureIds.length) {
-          return throwAPIError({
+          throw throwAPIError({
             code: APIErrorCode.InvalidInput,
             message: "Указаны некорректные идентификаторы фичей",
           });

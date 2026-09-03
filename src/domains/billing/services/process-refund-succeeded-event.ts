@@ -44,7 +44,7 @@ export async function processRefundSucceededEvent(
   });
 
   if (!foundPayment) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Платеж для возврата не найден",
     });
@@ -57,7 +57,7 @@ export async function processRefundSucceededEvent(
     foundPayment.creditsBatchToPayment?.creditsBatch;
 
   if (!foundLinkedSubscription && !foundLinkedCreditsBatch) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.NotFound,
       message: "Связанный субъект возврата не найден",
     });

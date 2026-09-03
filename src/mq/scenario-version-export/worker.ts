@@ -167,6 +167,7 @@ export const scenarioVersionExportWorker =
         .insert(attachment)
         .values({
           userId: foundExportDocument.userId,
+          fileName: renderedExportFile.fileName,
           key: s3Key,
           bucketName: env.S3_BUCKET_NAME,
           mimeType: renderedExportFile.mimeType,

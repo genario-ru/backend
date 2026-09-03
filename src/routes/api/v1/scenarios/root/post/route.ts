@@ -55,7 +55,7 @@ createScenarioRoute.post(
     const creditsBalance = await getCreditsBalance({ userId: user.id });
 
     if (creditsBalance < AVERAGE_SCENARIO_CREDITS_COST) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.PaymentRequired,
         message: "Недостаточно кредитов для создания сценария",
       });

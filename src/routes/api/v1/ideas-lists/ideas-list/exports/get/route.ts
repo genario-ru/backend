@@ -52,7 +52,7 @@ getIdeasListExportsRoute.get(
     const tariff = c.get("tariff");
 
     if (!tariff.exportAvailable) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.Forbidden,
         message: "Экспорт списков идей не доступен по тарифу вашей подписки",
       });
@@ -78,7 +78,7 @@ getIdeasListExportsRoute.get(
     });
 
     if (!foundIdeasList) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный список идей не существует или у вас нет возможности экспортировать его",

@@ -57,7 +57,7 @@ generateScenarioMetadataRoute.post(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный сценарий не существует или у вас нет возможности редактировать его",
@@ -65,14 +65,14 @@ generateScenarioMetadataRoute.post(
     }
 
     if (foundScenario.metadataStatus === "generation") {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.ResourceConflict,
         message: "Генерация метаданных для этого сценария уже выполняется",
       });
     }
 
     if (foundScenario.scenarioToPlatform.length === 0) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.BusinessRuleViolation,
         message:
           "У сценария нет привязанных платформ, для которых можно сгенерировать метаданные",

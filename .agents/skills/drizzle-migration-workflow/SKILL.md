@@ -1,6 +1,6 @@
 ---
 name: drizzle-migration-workflow
-description: Use for Drizzle schema changes in src/db/schemas, including table/index/relation updates and dependent API/domain schema updates. Do not generate or edit migrations.
+description: Use for Drizzle schema changes in src/db/schemas, including table/index/relation updates, migration generation, and dependent API/domain schema updates.
 ---
 
 # Drizzle Migration Workflow
@@ -12,14 +12,18 @@ Use when changing tables, columns, indexes, enums, relations, or migration behav
 3. Add required indexes, foreign keys, and native Drizzle `relations(...)` immediately.
 4. Update domain entity/handler schemas under `src/domains/**` when API responses expose changed DB fields.
 5. Run `pnpm lint:typescript` and relevant tests when TypeScript behavior changed.
-6. Tell the owner that migration generation is required and remains owner-only.
+6. Run `pnpm db:generate` and commit generated files under `src/db/migrations/**`
+   (SQL, snapshot, journal) in the same change as the schema edit.
 
-Do not run `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:studio`, or any command that creates/applies schema/data changes unless the owner explicitly asks for that exact command in the current task. Do not create, edit, or delete files under `src/db/migrations/**`.
+Do not run `pnpm db:migrate`, `pnpm db:seed`, or `pnpm db:studio` unless the owner
+explicitly asks for that exact command in the current task. Do not manually rewrite
+or delete old migrations if it breaks migration history order.
 
 ## Production migrations
 
 - The runtime image has no `drizzle-kit`, so migrations run programmatically via `src/entrypoints/migrate.ts` (`dist/migrate.js`, drizzle's `migrate()`), exposed as `pnpm db:migrate` and executed at the deploy stage.
 - SQL files are copied into the image at `src/db/migrations` (`Dockerfile`); a one-shot `migrate` service in `docker-compose.yml` runs them on deploy before `server`/`workers`.
+- Agents generate migration SQL; deploy applies it. Do not apply migrations locally from an agent workflow.
 
 ## Default data (seed)
 

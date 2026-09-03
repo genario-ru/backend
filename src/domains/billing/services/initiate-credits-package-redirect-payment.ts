@@ -62,7 +62,7 @@ export async function initiateCreditsPackageRedirectPayment({
     !createdYooKassaPayment.confirmation ||
     !("confirmation_url" in createdYooKassaPayment.confirmation)
   ) {
-    return throwAPIError({
+    throw throwAPIError({
       code: APIErrorCode.InternalServerError,
       message: "Произошла ошибка при инициализации платежа для пакета кредитов",
     });

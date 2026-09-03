@@ -56,7 +56,7 @@ saveScenarioRoute.patch(
     });
 
     if (!foundScenario) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный сценарий не существует или у вас нет возможности редактировать его",

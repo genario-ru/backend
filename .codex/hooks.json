@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash 'C:\\Users\\ilialksv\\personal-projects\\genario\\genario-backend\\.codex\\hooks\\post-edit.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}

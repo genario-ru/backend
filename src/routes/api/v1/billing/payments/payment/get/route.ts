@@ -70,7 +70,7 @@ getPaymentRoute.get(
     });
 
     if (!foundPayment) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Данный платеж не существует или у вас нет прав на его просмотр",

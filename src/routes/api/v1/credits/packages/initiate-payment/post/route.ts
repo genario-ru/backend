@@ -62,7 +62,7 @@ initiateCreditsPackagePaymentRoute.post(
     });
 
     if (!foundCreditsPackage) {
-      return throwAPIError({
+      throw throwAPIError({
         code: APIErrorCode.NotFound,
         message:
           "Указанный пакет кредитов не существует или недоступен для покупки",
@@ -78,7 +78,7 @@ initiateCreditsPackagePaymentRoute.post(
       });
 
       if (!foundPaymentMethod) {
-        return throwAPIError({
+        throw throwAPIError({
           code: APIErrorCode.NotFound,
           message: "Указанный способ оплаты не найден или недоступен",
         });
