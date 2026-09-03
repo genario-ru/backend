@@ -3,7 +3,7 @@
 TypeScript backend for Genario. It provides the public product API, Better Auth
 integration, Drizzle/PostgreSQL persistence, BullMQ background processing,
 OpenAPI documentation, external payment/video API clients, AI prompt builders,
-and operational metrics.
+and metrics.
 
 ## Quick Start
 
